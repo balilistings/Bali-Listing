@@ -58,6 +58,7 @@ export { default as ResponsiveBackgroundImageContainer } from './ResponsiveBackg
 export { default as TimeRange } from './TimeRange/TimeRange';
 export { default as UserDisplayName } from './UserDisplayName/UserDisplayName';
 export { default as ValidationError } from './ValidationError/ValidationError';
+export {default as ImageUploader} from '../components/ImageUploader/ImageUploader';
 
 /**
  * Composite components

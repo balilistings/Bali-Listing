@@ -14,6 +14,7 @@ import { isUploadImageOverLimitError } from '../../../../util/errors';
 
 // Import shared components
 import { Button, Form, AspectRatioWrapper } from '../../../../components';
+import FieldAddImageMultiple from '../../../../components/FieldAddImageMultiple';
 
 // Import modules from this directory
 import ListingImage from './ListingImage';
@@ -178,7 +179,7 @@ export const EditListingPhotosForm = props => {
           listingImageConfig,
         } = formRenderProps;
 
-        const images = values.images;
+        const images = values.images || [];
         const { aspectWidth = 1, aspectHeight = 1, variantPrefix } = listingImageConfig;
 
         const { publishListingError, showListingsError, updateListingError, uploadImageError } =
@@ -186,7 +187,7 @@ export const EditListingPhotosForm = props => {
         const uploadOverLimit = isUploadImageOverLimitError(uploadImageError);
 
         // imgs can contain added images (with temp ids) and submitted images with uniq ids.
-        const arrayOfImgIds = imgs => imgs.map(i => (typeof i.id === 'string' ? i.imageId : i.id));
+        const arrayOfImgIds = imgs => imgs?.map(i => (typeof i.id === 'string' ? i.imageId : i.id));
         const imageIdsFromProps = arrayOfImgIds(images);
         const imageIdsFromPreviousSubmit = arrayOfImgIds(submittedImages);
         const imageArrayHasSameImages = isEqual(imageIdsFromProps, imageIdsFromPreviousSubmit);
@@ -244,26 +245,9 @@ export const EditListingPhotosForm = props => {
                 }
               </FieldArray>
 
-              <FieldAddImage
-                id="addImage"
-                name="addImage"
-                accept={ACCEPT_IMAGES}
-                label={
-                  <span className={css.chooseImageText}>
-                    <span className={css.chooseImage}>
-                      <FormattedMessage id="EditListingPhotosForm.chooseImage" />
-                    </span>
-                    <span className={css.imageTypes}>
-                      <FormattedMessage id="EditListingPhotosForm.imageTypes" />
-                    </span>
-                  </span>
-                }
-                type="file"
-                disabled={state.imageUploadRequested}
-                formApi={form}
+              <FieldAddImageMultiple
                 onImageUploadHandler={onImageUploadHandler}
-                aspectWidth={aspectWidth}
-                aspectHeight={aspectHeight}
+                disabled={state.imageUploadRequested}
               />
             </div>
 

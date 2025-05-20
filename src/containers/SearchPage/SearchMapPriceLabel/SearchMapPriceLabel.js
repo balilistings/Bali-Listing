@@ -48,20 +48,11 @@ class SearchMapPriceLabel extends Component {
     } = this.props;
     const currentListing = ensureListing(listing);
     const { price, publicData } = currentListing.attributes;
-    const priceAmount = price?.amount / 100;
-
-    let formattedPriceAmount = priceAmount?.toString();
-
-    if (formattedPriceAmount) {
-      const numValue = parseFloat(formattedPriceAmount);
-      const millions = numValue / 1000000; // Convert to millions
-      formattedPriceAmount = `IDR ${millions} Mil`;
-    }
 
     // Create formatted price if currency is known or alternatively show just the unknown currency.
     const formattedPrice =
       price && price.currency === config.currency
-        ? formattedPriceAmount
+        ? formatMoney(intl, price)
         : price?.currency
         ? price.currency
         : null;

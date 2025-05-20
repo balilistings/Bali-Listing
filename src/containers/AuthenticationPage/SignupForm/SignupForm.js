@@ -13,6 +13,7 @@ import { Form, PrimaryButton, FieldTextInput, CustomExtendedDataField } from '..
 import FieldSelectUserType from '../FieldSelectUserType';
 import UserFieldDisplayName from '../UserFieldDisplayName';
 import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
+import { ImageUploader } from '../../../components';
 
 import css from './SignupForm.module.css';
 
@@ -101,6 +102,10 @@ const SignupFormComponent = props => (
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
       const submitDisabled = invalid || submitInProgress;
+
+      const handleProfileSelect = file => {
+        console.log('Selected profile image:', file);
+      };
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -194,6 +199,17 @@ const SignupFormComponent = props => (
                 intl={intl}
               />
             </div>
+          ) : null}
+
+          {showCustomUserFields ? (
+            <ImageUploader
+              label="ID Document (KTP/Driving License/Passport)"
+              columns={1}
+              dropzoneHeight="100px"
+              labelText=""
+              maxImages={1}
+              onProfileChange={handleProfileSelect}
+            />
           ) : null}
 
           {showCustomUserFields ? (

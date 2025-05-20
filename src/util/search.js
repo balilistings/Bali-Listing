@@ -35,6 +35,92 @@ export const constructQueryParamName = (key, scope) => {
  * @param {Object} defaultFiltersConfig Configuration of default filters.
  */
 export const getQueryParamNames = (listingFieldsConfig, defaultFiltersConfig) => {
+  const existingKeys = defaultFiltersConfig.map(f => f.key);
+
+  if (
+    !existingKeys.includes('livingroom') &&
+    !existingKeys.includes('pool') &&
+    !existingKeys.includes('furnished')
+  ) {
+    defaultFiltersConfig.push(
+      {
+        key: 'livingroom',
+        scope: 'public',
+        schemaType: 'enum',
+        enumOptions: [{ label: 'Open', option: 'open' }, { label: 'Close', option: 'close' }],
+        filterConfig: {
+          indexForSearch: true,
+          label: 'Living',
+          filterType: 'SelectSingleFilter',
+          group: 'secondary',
+        },
+        showConfig: {
+          label: 'Living',
+          isDetail: true,
+          unselectedOptions: false,
+        },
+        saveConfig: {
+          label: 'Living',
+          isRequired: false,
+        },
+        categoryConfig: {
+          limitToCategoryIds: false,
+        },
+      },
+      {
+        key: 'pool',
+        scope: 'public',
+        schemaType: 'enum',
+        enumOptions: [{ label: 'Yes', option: 'yes' }, { label: 'No', option: 'no' }],
+        filterConfig: {
+          indexForSearch: true,
+          label: 'Pool',
+          filterType: 'SelectSingleFilter',
+          group: 'secondary',
+        },
+        showConfig: {
+          label: 'Pool',
+          isDetail: true,
+          unselectedOptions: false,
+        },
+        saveConfig: {
+          label: 'Pool',
+          isRequired: false,
+        },
+        categoryConfig: {
+          limitToCategoryIds: false,
+        },
+      },
+      {
+        key: 'furnished',
+        scope: 'public',
+        schemaType: 'enum',
+        enumOptions: [
+          { label: 'Yes', option: 'yes' },
+          { label: 'No', option: 'no' },
+          { label: 'Semi', option: 'semi' },
+        ],
+        filterConfig: {
+          indexForSearch: true,
+          label: 'Furnished',
+          filterType: 'SelectSingleFilter',
+          group: 'secondary',
+        },
+        showConfig: {
+          label: 'Furnished',
+          isDetail: true,
+          unselectedOptions: false,
+        },
+        saveConfig: {
+          label: 'Furnished',
+          isRequired: false,
+        },
+        categoryConfig: {
+          limitToCategoryIds: false,
+        },
+      }
+    );
+  }
   const queryParamKeysOfDefaultFilters = defaultFiltersConfig.reduce((pickedKeys, config) => {
     const { key, schemaType, scope, nestedParams } = config;
     const newKeys =

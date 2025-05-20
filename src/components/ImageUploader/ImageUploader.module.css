@@ -1,0 +1,128 @@
+.uploadContainer {
+    padding-top: 2rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .pdfPreview {
+    background-color: #f3f4f6;
+    border: 2px dashed #9ca3af;
+    height: 10rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .fileTypeLabel {
+    font-weight: bold;
+    color: #ef4444;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .fileName {
+    font-size: 0.875rem;
+    color: #374151;
+    word-break: break-word;
+  }
+  
+  
+  .dropzone {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    border: 2px dashed #9ca3af;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    text-align: center;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    padding: 1rem;
+  }
+
+  .text {
+    color: #6b7280;
+    font-size: small;
+  }
+  
+  .imageGrid {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .imageWrapper {
+    position: relative;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem;
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .imageWrapper:hover {
+    border-color: #28D146;
+  }
+  
+  .selected {
+    border: 2px solid #28D146;
+  }
+  
+  .previewImage {
+    width: 21rem;
+    height: auto;  
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .profileLabel {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: #3b82f6;
+    color: white;
+    padding: 2px 6px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+  .deleteButton {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    color: #6b7280;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .deleteButton:hover {
+    background: #dc2626;
+  }
+  
+  .progressBarContainer {
+    position: relative;
+    height: 6px;
+    background-color: #e5e7eb;
+    border-radius: 3px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  
+  .progressBar {
+    height: 100%;
+    background-color: #3b82f6;
+    transition: width 0.3s ease;
+  }
