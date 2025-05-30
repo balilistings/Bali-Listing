@@ -59,7 +59,8 @@ export { default as TimeRange } from './TimeRange/TimeRange';
 export { default as UserDisplayName } from './UserDisplayName/UserDisplayName';
 export { default as ValidationError } from './ValidationError/ValidationError';
 export {default as ImageUploader} from '../components/ImageUploader/ImageUploader';
-
+export { default as WhatsAppButton } from '../components/WhatsAppButton/WhatsAppButton';
+export { default as Dropdown } from '../components/Dropdown/Dropdown';
 /**
  * Composite components
  * These components include other components

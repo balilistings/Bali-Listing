@@ -34,7 +34,7 @@ const FieldHidden = props => {
  * @returns {JSX.Element}
  */
 const FieldSelectUserType = props => {
-  const { rootClassName, className, name, userTypes, hasExistingUserType, intl } = props;
+  const { rootClassName, className, name, userTypes, hasExistingUserType, intl, onChange } = props;
   const hasMultipleUserTypes = userTypes?.length > 1;
   const classes = classNames(rootClassName || css.userTypeSelect, className);
 
