@@ -492,7 +492,7 @@ class LocationAutocompleteInputImplementation extends Component {
 
     return (
       <div className={rootClass}>
-        <div className={iconClass}>
+        {/* <div className={iconClass}>
           {this.state.fetchingPlaceDetails ? (
             <IconSpinner className={css.iconSpinner} />
           ) : CustomIcon ? (
@@ -500,7 +500,7 @@ class LocationAutocompleteInputImplementation extends Component {
           ) : (
             <IconHourGlass />
           )}
-        </div>
+        </div> */}
         <input
           className={inputClass}
           type="search"

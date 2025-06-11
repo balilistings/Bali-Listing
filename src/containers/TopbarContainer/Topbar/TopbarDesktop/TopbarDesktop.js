@@ -104,6 +104,66 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
   );
 };
 
+const NotSignedInProfileMenu = ({
+  currentPage,
+  customLinks,
+  intl,
+  authenticatedOnClientSide,
+  isAuthenticatedOrJustHydrated,
+  scrollToBottom,
+}) => {
+  return (
+    <Menu>
+      <MenuLabel className={css.profileMenuLabel} isOpenClassName={css.profileMenuIsOpen}>
+        <div className={css.profileMenuIcon}>
+          <svg
+            width="44"
+            height="44"
+            viewBox="0 0 44 44"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="44" height="44" rx="22" fill="white" fill-opacity="0.3" />
+            <path
+              d="M27.982 28.725C27.2833 27.7999 26.3793 27.0496 25.3412 26.5334C24.3031 26.0171 23.1594 25.7489 22 25.75C20.8407 25.7489 19.6969 26.0171 18.6588 26.5334C17.6208 27.0496 16.7168 27.7999 16.018 28.725M27.982 28.725C29.3455 27.5122 30.3071 25.9136 30.7412 24.1411C31.1753 22.3686 31.0603 20.5061 30.4115 18.8005C29.7627 17.0949 28.6107 15.6268 27.1084 14.5909C25.6061 13.555 23.8244 13.0003 21.9995 13.0003C20.1747 13.0003 18.3929 13.555 16.8906 14.5909C15.3883 15.6268 14.2363 17.0949 13.5875 18.8005C12.9388 20.5061 12.8238 22.3686 13.2578 24.1411C13.6919 25.9136 14.6545 27.5122 16.018 28.725M27.982 28.725C26.336 30.1932 24.2056 31.0031 22 31C19.794 31.0034 17.6642 30.1934 16.018 28.725M25 19.75C25 20.5456 24.6839 21.3087 24.1213 21.8713C23.5587 22.4339 22.7957 22.75 22 22.75C21.2044 22.75 20.4413 22.4339 19.8787 21.8713C19.3161 21.3087 19 20.5456 19 19.75C19 18.9543 19.3161 18.1913 19.8787 17.6287C20.4413 17.0661 21.2044 16.75 22 16.75C22.7957 16.75 23.5587 17.0661 24.1213 17.6287C24.6839 18.1913 25 18.9543 25 19.75Z"
+              stroke="#231F20"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+      </MenuLabel>
+      <MenuContent className={css.profileMenuContent}>
+        <MenuItem key="createListing">
+          <div className={classNames(css.customLinksMenuWrapper, css.menuLink)}>
+            <CustomLinksMenu
+              currentPage={currentPage}
+              customLinks={customLinks}
+              intl={intl}
+              hasClientSideContentReady={
+                authenticatedOnClientSide || !isAuthenticatedOrJustHydrated
+              }
+            />
+          </div>
+        </MenuItem>
+        <MenuItem key="login">
+          <NamedLink className={css.menuLink} name="LoginPage">
+            <span className={css.menuItemBorder} />
+            <FormattedMessage id="TopbarDesktop.login" />
+          </NamedLink>
+        </MenuItem>
+        <MenuItem key="signup">
+          <NamedLink className={css.menuLink} name="SignupPage">
+            <span className={css.menuItemBorder} />
+            <FormattedMessage id="TopbarDesktop.signup" />
+          </NamedLink>
+        </MenuItem>
+      </MenuContent>
+    </Menu>
+  );
+};
+
 /**
  * Topbar for desktop layout
  *
@@ -144,9 +204,22 @@ const TopbarDesktop = props => {
     inboxTab,
   } = props;
   const [mounted, setMounted] = useState(false);
+  const [scrollToBottom, setScrollToBottom] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+
+    const handleScroll = () => {
+      setScrollToBottom(window.scrollY > 100);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Set initial state in case already scrolled
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
   }, []);
 
   const marketplaceName = config.marketplaceName;
@@ -154,7 +227,13 @@ const TopbarDesktop = props => {
   const isAuthenticatedOrJustHydrated = isAuthenticated || !mounted;
 
   const giveSpaceForSearch = customLinks == null || customLinks?.length === 0;
-  const classes = classNames(rootClassName || css.root, className);
+
+  const classes = classNames(
+    rootClassName || css.root,
+    className,
+    currentPage === 'LandingPage' && css.landingPageTopbar,
+    scrollToBottom ? css.scrolledTopbar : null // ensure boolean logic
+  );
 
   const inboxLinkMaybe = authenticatedOnClientSide ? (
     <InboxLink notificationCount={notificationCount} inboxTab={inboxTab} />
@@ -167,7 +246,19 @@ const TopbarDesktop = props => {
       onLogout={onLogout}
       showManageListingsLink={showCreateListingsLink}
     />
-  ) : null;
+  ) : (
+    <NotSignedInProfileMenu
+      scrollToBottom={scrollToBottom}
+      currentPage={currentPage}
+      customLinks={customLinks}
+      intl={intl}
+      authenticatedOnClientSide={authenticatedOnClientSide}
+      isAuthenticatedOrJustHydrated={isAuthenticatedOrJustHydrated}
+      Add
+      commentMore
+      actions
+    />
+  );
 
   const signupLinkMaybe = isAuthenticatedOrJustHydrated ? null : <SignupLink />;
   const loginLinkMaybe = isAuthenticatedOrJustHydrated ? null : <LoginLink />;
@@ -179,6 +270,7 @@ const TopbarDesktop = props => {
       onSubmit={onSearchSubmit}
       initialValues={initialSearchFormValues}
       appConfig={config}
+      scrollToBottom={scrollToBottom}
     />
   ) : (
     <div
@@ -190,26 +282,25 @@ const TopbarDesktop = props => {
 
   return (
     <nav className={classes}>
-      <LinkedLogo
-        className={css.logoLink}
-        layout="desktop"
-        alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
-        linkToExternalSite={config?.topbar?.logoLink}
-      />
-      {searchFormMaybe}
+      <div className={css.topbarContent}>
+        <LinkedLogo
+          className={css.logoLink}
+          layout="desktop"
+          alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
+          linkToExternalSite={config?.topbar?.logoLink}
+        />
 
-      <CustomLinksMenu
-        currentPage={currentPage}
-        customLinks={customLinks}
-        intl={intl}
-        hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
-        showCreateListingsLink={showCreateListingsLink}
-      />
-
-      {inboxLinkMaybe}
-      {profileMenuMaybe}
-      {signupLinkMaybe}
-      {loginLinkMaybe}
+        <div className={css.rightMenus}>
+          <CustomLinksMenu
+            currentPage={currentPage}
+            customLinks={customLinks}
+            intl={intl}
+            hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
+            showCreateListingsLink={showCreateListingsLink}
+          />
+          {profileMenuMaybe}
+        </div>
+      </div>
     </nav>
   );
 };

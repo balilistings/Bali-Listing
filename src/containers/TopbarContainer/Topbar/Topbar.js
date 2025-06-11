@@ -16,6 +16,7 @@ import {
   LinkedLogo,
   Modal,
   ModalMissingInformation,
+  NamedLink,
 } from '../../../components';
 import { getSearchPageResourceLocatorStringParams } from '../../SearchPage/SearchPage.shared';
 
@@ -315,22 +316,29 @@ const TopbarComponent = props => {
         onLogout={handleLogout}
         currentPage={resolvedCurrentPage}
       />
+
       <div className={classNames(mobileRootClassName || css.container, mobileClassName)}>
-        <Button
-          rootClassName={css.menu}
-          onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
-          title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
-        >
-          <MenuIcon className={css.menuIcon} />
-          {notificationDot}
-        </Button>
         <LinkedLogo
+          className={css.logoMobile}
           layout={'mobile'}
           alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
           linkToExternalSite={config?.topbar?.logoLink}
         />
-        {mobileSearchButtonMaybe}
+        <div className={css.mobileContent}>
+          <NamedLink name="SignupPage" className={css.addListing}>
+            <FormattedMessage id="TopbarDesktop.addListing" />
+          </NamedLink>
+          <Button
+            rootClassName={css.menu}
+            onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
+            title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
+          >
+            <MenuIcon className={css.menuIcon} />
+            {notificationDot}
+          </Button>
+        </div>
       </div>
+
       <div className={css.desktop}>
         <TopbarDesktop
           className={desktopClassName}

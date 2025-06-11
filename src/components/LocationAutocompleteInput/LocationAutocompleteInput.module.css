@@ -58,6 +58,7 @@ size and position, etc.
 .predictionsRoot {
   position: absolute;
   width: 100%;
+  min-width: 250px;
   top: 50px;
   left: 0;
   background-color: var(--marketplaceColor);

@@ -1,0 +1,172 @@
+.sliderContainer {
+  background: #fafbfc;
+  padding: 32px 0;
+  overflow: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  position: relative;
+  @media (max-width: 1023px) {
+    gap: 10px;
+    padding-bottom: 0;
+  }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 150px;
+    height: 100%;
+    background: linear-gradient(270.45deg, rgba(249, 249, 249, 0.3) 0.4%, #f9f9f9 62.91%);
+
+    pointer-events: none;
+    z-index: 1;
+    @media (max-width: 767px) {
+      width: 50px;
+    }
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(249, 249, 249, 0.3) 0.4%, #f9f9f9 62.91%);
+    pointer-events: none;
+    z-index: 1;
+    @media (max-width: 767px) {
+      width: 50px;
+    }
+  }
+}
+
+.marquee {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  animation: marquee 30s linear infinite;
+}
+
+/* @keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+} */
+.profileContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  padding: 20px;
+  min-width: 340px;
+  max-width: 340px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  @media (max-width: 767px) {
+    min-width: 255px;
+    max-width: 255px;
+    padding: 10px 20px;
+  }
+}
+
+.testimonialText {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: -2.3%;
+
+  color: #8d8d8d;
+  margin-bottom: 20px;
+
+  position: relative;
+  word-break: break-word;
+  white-space: normal;
+  @media (max-width: 767px) {
+    font-size: 9px;
+    margin-bottom: 10px;
+  }
+}
+
+.quoteMark {
+  font-size: 28px;
+  color: #bbb;
+  vertical-align: top;
+  margin-right: 4px;
+}
+
+.quoteMarkEnd {
+  font-size: 28px;
+  color: #bbb;
+  vertical-align: bottom;
+  margin-left: 4px;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+  border: 2px solid #f0f0f0;
+  @media (max-width: 767px) {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+.name {
+  font-family: Inter;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: -2.3%;
+
+  margin: 0;
+  padding: 0;
+  color: #231f20;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
+}
+
+.title {
+  font-family: Inter;
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 130%;
+  letter-spacing: -2.3%;
+
+  color: #7c7c7c;
+  margin: 0;
+  padding: 0;
+  @media (max-width: 767px) {
+    font-size: 8px;
+  }
+}
+
+.linkedin {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  opacity: 0.5;
+}
