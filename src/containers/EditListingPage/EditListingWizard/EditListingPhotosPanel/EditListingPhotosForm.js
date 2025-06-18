@@ -198,6 +198,7 @@ export const EditListingPhotosForm = props => {
         } = formRenderProps;
 
         const images = values.images || [];
+        // const { aspectWidth = 1, aspectHeight = 1, variantPrefix = '' } = listingImageConfig || {};
         const { aspectWidth = 1, aspectHeight = 1, variantPrefix } = listingImageConfig;
 
         const { publishListingError, showListingsError, updateListingError, uploadImageError } =

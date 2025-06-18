@@ -46,6 +46,7 @@ const FieldSelectUserType = props => {
         className={classes}
         label={intl.formatMessage({ id: 'FieldSelectUserType.label' })}
         validate={validators.required(intl.formatMessage({ id: 'FieldSelectUserType.required' }))}
+        // onChange={onChange}
       >
         <option disabled value="">
           {intl.formatMessage({ id: 'FieldSelectUserType.placeholder' })}
