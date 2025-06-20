@@ -2,6 +2,10 @@
   max-width: calc(1220px + 40px);
   padding: 0 20px;
   margin: 0 auto;
+  @media (max-width: 767px) {
+    max-width: calc(100vw - 0px);
+    overflow: hidden;
+  }
 }
 
 .cardsWrapper {
@@ -355,6 +359,7 @@
   @media (max-width: 767px) {
     gap: 10px;
     overflow-x: hidden;
+    padding: 2px 0;
   }
 }
 
@@ -463,7 +468,10 @@
 .slider {
   /* height: 240px;
   max-height: 240px; */
-
+  @media (max-width: 767px) {
+    max-width: calc(100vw - 40px);
+    margin: 0 auto;
+  }
   & :global(.slick-track) {
     display: flex !important;
   }

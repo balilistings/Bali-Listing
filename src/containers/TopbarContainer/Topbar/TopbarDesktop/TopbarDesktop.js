@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../../util/reactIntl';
@@ -205,12 +205,37 @@ const TopbarDesktop = props => {
   } = props;
   const [mounted, setMounted] = useState(false);
   const [scrollToBottom, setScrollToBottom] = useState(false);
+  const lastScrollState = useRef(false);
+  const debounceTimeout = useRef(null);
+
+  // check if user is proffesional and has created a listing already
+  // const listingLength = useSelector(state => state.user.totalListingsLength);
+  // const userType = currentUser?.attributes?.profile?.publicData?.userType;
+  // const showCreateNewListingLink = !(listingLength > 0 && userType == USER_TYPE_PROFESSIONAL);
+
+  // Debounced scroll handler with hysteresis
 
   useEffect(() => {
     setMounted(true);
 
+    const SCROLL_ADD_CLASS = 100; // px - reduced from 110
+    const SCROLL_REMOVE_CLASS = 80; // px - reduced from 90
+
     const handleScroll = () => {
-      setScrollToBottom(window.scrollY > 100);
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+      debounceTimeout.current = setTimeout(() => {
+        const scrollY = window.scrollY;
+        // Remove console.log to prevent spam
+        if (!lastScrollState.current && scrollY > SCROLL_ADD_CLASS) {
+          setScrollToBottom(true);
+          lastScrollState.current = true;
+        } else if (lastScrollState.current && scrollY < SCROLL_REMOVE_CLASS) {
+          setScrollToBottom(false);
+          lastScrollState.current = false;
+        }
+      }, 100); // Increased debounce from 50ms to 100ms for more stability
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -219,6 +244,9 @@ const TopbarDesktop = props => {
 
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
     };
   }, []);
 

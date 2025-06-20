@@ -49,7 +49,7 @@
 .priorityLinkLabel {
   composes: textSmall from global;
   display: inline-block;
-  margin: 28px 0;
+  margin: 26px 0;
   text-decoration: inherit;
   text-wrap: nowrap;
 

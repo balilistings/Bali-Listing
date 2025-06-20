@@ -145,6 +145,10 @@
       padding: 0 20px;
       margin: 0 auto;
       gap: 28px;
+      @media (max-width: 767px) {
+        max-width: calc(100vw - 0px);
+        overflow: hidden;
+      }
       & > div {
         background: #f2f2f2;
         border-radius: 20px;
@@ -511,6 +515,7 @@
         height: 28px;
         padding: 8px 20px;
         bottom: 75px;
+        width: max-content;
       }
       &:hover {
         background: #e14ed0;

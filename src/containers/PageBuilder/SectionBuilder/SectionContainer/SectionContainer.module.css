@@ -17,6 +17,10 @@
       scroll-margin-top: var(--topbarHeightDesktop);
     }
   }
+  @media (max-width: 767px) {
+    max-width: calc(100vw - 0px);
+    overflow: hidden;
+  }
 }
 
 .sectionContent {
