@@ -72,6 +72,7 @@ export const fetchFeaturedListings = (
     dispatch(searchFeaturedListingsRequest());
     const response = await sdk.listings.query({
       ...params,
+      perPage: 3,
       include: ['author', 'images'],
       'fields.listing': [
         'title',
