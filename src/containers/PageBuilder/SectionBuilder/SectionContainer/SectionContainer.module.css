@@ -17,6 +17,8 @@
       scroll-margin-top: var(--topbarHeightDesktop);
     }
   }
+  max-width: calc(100vw - 0px);
+  overflow: hidden;
   @media (max-width: 767px) {
     max-width: calc(100vw - 0px);
     overflow: hidden;
