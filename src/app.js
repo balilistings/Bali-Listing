@@ -23,6 +23,7 @@ import { includeCSSProperties } from './util/style';
 import { IncludeScripts } from './util/includeScripts';
 
 import { MaintenanceMode } from './components';
+import { WhatsAppButton } from './components';
 
 // routing
 import routeConfiguration from './routing/routeConfiguration';

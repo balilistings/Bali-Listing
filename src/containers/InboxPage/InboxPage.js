@@ -48,7 +48,6 @@ import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 
 import { stateDataShape, getStateData } from './InboxPage.stateData';
 import css from './InboxPage.module.css';
-import { getCurrentUserTypeRoles } from '../../util/userHelpers';
 
 // Check if the transaction line-items use booking-related units
 const getUnitLineItem = lineItems => {
@@ -233,11 +232,6 @@ export const InboxPageComponent = props => {
     return <NotFoundPage staticContext={props.staticContext} />;
   }
 
-  const { customer: isCustomerUserType, provider: isProviderUserType } = getCurrentUserTypeRoles(
-    config,
-    currentUser
-  );
-
   const isOrders = tab === 'orders';
   const hasNoResults = !fetchInProgress && transactions.length === 0 && !fetchOrdersOrSalesError;
   const ordersTitle = intl.formatMessage({ id: 'InboxPage.ordersTitle' });
@@ -291,44 +285,35 @@ export const InboxPageComponent = props => {
   const hasTransactions =
     !fetchInProgress && hasOrderOrSaleTransactions(transactions, isOrders, currentUser);
 
-  const ordersTabMaybe = isCustomerUserType
-    ? [
-        {
-          text: (
-            <span>
-              <FormattedMessage id="InboxPage.ordersTabTitle" />
-            </span>
-          ),
-          selected: isOrders,
-          linkProps: {
-            name: 'InboxPage',
-            params: { tab: 'orders' },
-          },
-        },
-      ]
-    : [];
-
-  const salesTabMaybe = isProviderUserType
-    ? [
-        {
-          text: (
-            <span>
-              <FormattedMessage id="InboxPage.salesTabTitle" />
-              {providerNotificationCount > 0 ? (
-                <NotificationBadge count={providerNotificationCount} />
-              ) : null}
-            </span>
-          ),
-          selected: !isOrders,
-          linkProps: {
-            name: 'InboxPage',
-            params: { tab: 'sales' },
-          },
-        },
-      ]
-    : [];
-
-  const tabs = [...ordersTabMaybe, ...salesTabMaybe];
+  const tabs = [
+    {
+      text: (
+        <span>
+          <FormattedMessage id="InboxPage.ordersTabTitle" />
+        </span>
+      ),
+      selected: isOrders,
+      linkProps: {
+        name: 'InboxPage',
+        params: { tab: 'orders' },
+      },
+    },
+    {
+      text: (
+        <span>
+          <FormattedMessage id="InboxPage.salesTabTitle" />
+          {providerNotificationCount > 0 ? (
+            <NotificationBadge count={providerNotificationCount} />
+          ) : null}
+        </span>
+      ),
+      selected: !isOrders,
+      linkProps: {
+        name: 'InboxPage',
+        params: { tab: 'sales' },
+      },
+    },
+  ];
 
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>

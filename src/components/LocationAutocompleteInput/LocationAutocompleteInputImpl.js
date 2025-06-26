@@ -42,7 +42,6 @@ const LocationPredictionsList = props => {
   const {
     rootClassName,
     className,
-    useDarkText,
     children,
     predictions,
     currentLocationId,
@@ -63,10 +62,7 @@ const LocationPredictionsList = props => {
 
     return (
       <li
-        className={classNames(
-          isHighlighted ? css.highlighted : null,
-          useDarkText ? css.listItemBlackText : css.listItemWhiteText
-        )}
+        className={isHighlighted ? css.highlighted : null}
         key={predictionId}
         onTouchStart={e => {
           e.preventDefault();
@@ -437,9 +433,7 @@ class LocationAutocompleteInputImplementation extends Component {
       autoFocus,
       rootClassName,
       className,
-      useDarkText,
       iconClassName,
-      CustomIcon,
       inputClassName,
       predictionsClassName,
       predictionsAttributionClassName,
@@ -492,15 +486,13 @@ class LocationAutocompleteInputImplementation extends Component {
 
     return (
       <div className={rootClass}>
-        {/* <div className={iconClass}>
+        <div className={iconClass}>
           {this.state.fetchingPlaceDetails ? (
             <IconSpinner className={css.iconSpinner} />
-          ) : CustomIcon ? (
-            <CustomIcon />
           ) : (
             <IconHourGlass />
           )}
-        </div> */}
+        </div>
         <input
           className={inputClass}
           type="search"
@@ -521,7 +513,6 @@ class LocationAutocompleteInputImplementation extends Component {
         {renderPredictions ? (
           <LocationPredictionsList
             rootClassName={predictionsClass}
-            useDarkText={useDarkText}
             predictions={predictions}
             currentLocationId={geocoderVariant.CURRENT_LOCATION_ID}
             isGoogleMapsInUse={config.maps.mapProvider === 'googleMaps'}
@@ -531,10 +522,7 @@ class LocationAutocompleteInputImplementation extends Component {
             onSelectMove={this.handlePredictionsSelectMove}
             onSelectEnd={this.handlePredictionsSelectEnd}
           >
-            <GeocoderAttribution
-              className={predictionsAttributionClassName}
-              useDarkText={useDarkText}
-            />
+            <GeocoderAttribution className={predictionsAttributionClassName} />
           </LocationPredictionsList>
         ) : null}
       </div>
@@ -592,7 +580,6 @@ class LocationAutocompleteInputImplementation extends Component {
  * @param {boolean} props.meta.valid
  * @param {boolean} props.meta.touched
  * @param {Function | RefHook} props.inputRef
- * @param {ReactNode} props.CustomIcon override the default icon
  * @returns {JSX.Element} LocationAutocompleteInputImpl component
  */
 const LocationAutocompleteInputImpl = props => {

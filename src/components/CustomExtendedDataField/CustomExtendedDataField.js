@@ -40,25 +40,28 @@ const CustomFieldEnum = props => {
   const label = getLabel(fieldConfig);
 
   return filterOptions ? (
-    <FieldSelect
-      className={css.customField}
-      name={name}
-      id={formId ? `${formId}.${name}` : name}
-      label={label}
-      {...validateMaybe}
-    >
-      <option disabled value="">
-        {placeholder}
-      </option>
-      {filterOptions.map(optionConfig => {
-        const key = optionConfig.key;
-        return (
-          <option key={key} value={key}>
-            {optionConfig.label}
-          </option>
-        );
-      })}
-    </FieldSelect>
+    <div>
+      enum
+      <FieldSelect
+        className={css.customField}
+        name={name}
+        id={formId ? `${formId}.${name}` : name}
+        label={label}
+        {...validateMaybe}
+      >
+        <option disabled value="">
+          {placeholder}
+        </option>
+        {filterOptions.map(optionConfig => {
+          const key = optionConfig.key;
+          return (
+            <option key={key} value={key}>
+              {optionConfig.label}
+            </option>
+          );
+        })}
+      </FieldSelect>
+    </div>
   ) : null;
 };
 
@@ -72,14 +75,17 @@ const CustomFieldMultiEnum = props => {
     : {};
 
   return enumOptions ? (
-    <FieldCheckboxGroup
-      className={css.customField}
-      id={formId ? `${formId}.${name}` : name}
-      name={name}
-      label={label}
-      options={createFilterOptions(enumOptions)}
-      {...validateMaybe}
-    />
+    <div>
+      checkbox
+      <FieldCheckboxGroup
+        className={css.customField}
+        id={formId ? `${formId}.${name}` : name}
+        name={name}
+        label={label}
+        options={createFilterOptions(enumOptions)}
+        {...validateMaybe}
+      />
+    </div>
   ) : null;
 };
 
@@ -94,15 +100,18 @@ const CustomFieldText = props => {
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
 
   return (
-    <FieldTextInput
-      className={css.customField}
-      id={formId ? `${formId}.${name}` : name}
-      name={name}
-      type="textarea"
-      label={label}
-      placeholder={placeholder}
-      {...validateMaybe}
-    />
+    <div>
+      fieldTextInput
+      <FieldTextInput
+        className={css.customField}
+        id={formId ? `${formId}.${name}` : name}
+        name={name}
+        type="textarea"
+        label={label}
+        placeholder={placeholder}
+        {...validateMaybe}
+      />
+    </div>
   );
 };
 
@@ -131,32 +140,35 @@ const CustomFieldLong = props => {
   };
 
   return (
-    <FieldTextInput
-      className={css.customField}
-      id={formId ? `${formId}.${name}` : name}
-      name={name}
-      type="number"
-      step="1"
-      parse={value => {
-        const parsed = Number.parseInt(value, 10);
-        return Number.isNaN(parsed) ? null : parsed;
-      }}
-      label={label}
-      placeholder={placeholder}
-      validate={value => validate(value, minimum, maximum)}
-      onWheel={e => {
-        // fix: number input should not change value on scroll
-        if (e.target === document.activeElement) {
-          // Prevent the input value change, because we prefer page scrolling
-          e.target.blur();
+    <div>
+      fieldTextInput2
+      <FieldTextInput
+        className={css.customField}
+        id={formId ? `${formId}.${name}` : name}
+        name={name}
+        type="number"
+        step="1"
+        parse={value => {
+          const parsed = Number.parseInt(value, 10);
+          return Number.isNaN(parsed) ? null : parsed;
+        }}
+        label={label}
+        placeholder={placeholder}
+        validate={value => validate(value, minimum, maximum)}
+        onWheel={e => {
+          // fix: number input should not change value on scroll
+          if (e.target === document.activeElement) {
+            // Prevent the input value change, because we prefer page scrolling
+            e.target.blur();
 
-          // Refocus immediately, on the next tick (after the current function is done)
-          setTimeout(() => {
-            e.target.focus();
-          }, 0);
-        }
-      }}
-    />
+            // Refocus immediately, on the next tick (after the current function is done)
+            setTimeout(() => {
+              e.target.focus();
+            }, 0);
+          }
+        }}
+      />
+    </div>
   );
 };
 

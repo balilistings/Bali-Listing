@@ -36,7 +36,7 @@ const LayoutSideNavigation = props => {
     footer: footerContent,
     sideNav: sideNavContent,
     useAccountSettingsNav,
-    accountSettingsNavProps,
+    currentPage,
     ...rest
   } = props;
 
@@ -63,9 +63,7 @@ const LayoutSideNavigation = props => {
             <Main as="div" className={containerClasses}>
               <aside className={classNames(css.sideNav, sideNavClassName)}>
                 {useAccountSettingsNav ? (
-                  <LayoutWrapperAccountSettingsSideNav
-                    accountSettingsNavProps={accountSettingsNavProps}
-                  />
+                  <LayoutWrapperAccountSettingsSideNav currentPage={currentPage} />
                 ) : null}
                 {sideNavContent}
               </aside>

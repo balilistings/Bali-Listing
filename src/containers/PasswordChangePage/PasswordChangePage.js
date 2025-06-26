@@ -2,11 +2,9 @@ import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
-import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
-import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers';
 
 import { Page, UserNav, H3, LayoutSideNavigation } from '../../components';
 
@@ -35,7 +33,6 @@ import css from './PasswordChangePage.module.css';
  */
 export const PasswordChangePageComponent = props => {
   const intl = useIntl();
-  const config = useConfiguration();
   const {
     changePasswordError,
     changePasswordInProgress,
@@ -67,14 +64,6 @@ export const PasswordChangePageComponent = props => {
 
   const title = intl.formatMessage({ id: 'PasswordChangePage.title' });
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
-  const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
-  const accountSettingsNavProps = {
-    currentPage: 'PasswordChangePage',
-    showPaymentMethods,
-    showPayoutDetails,
-  };
-
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation
@@ -84,15 +73,12 @@ export const PasswordChangePageComponent = props => {
               desktopClassName={css.desktopTopbar}
               mobileClassName={css.mobileTopbar}
             />
-            <UserNav
-              currentPage="PasswordChangePage"
-              showManageListingsLink={showManageListingsLink}
-            />
+            <UserNav currentPage="PasswordChangePage" />
           </>
         }
         sideNav={null}
         useAccountSettingsNav
-        accountSettingsNavProps={accountSettingsNavProps}
+        currentPage="PasswordChangePage"
         footer={<FooterContainer />}
       >
         <div className={css.content}>

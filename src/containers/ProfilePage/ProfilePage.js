@@ -25,11 +25,7 @@ import {
   isNotFoundError,
 } from '../../util/errors';
 import { pickCustomFieldProps } from '../../util/fieldHelpers';
-import {
-  getCurrentUserTypeRoles,
-  hasPermissionToViewData,
-  isUserAuthorized,
-} from '../../util/userHelpers';
+import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers';
 import { richText } from '../../util/richText';
 
 import { isScrollingDisabled } from '../../ducks/ui.duck';
@@ -121,52 +117,38 @@ export const MobileReviews = props => {
 };
 
 export const DesktopReviews = props => {
-  const { reviews, queryReviewsError, userTypeRoles } = props;
-  const { customer: isCustomerUserType, provider: isProviderUserType } = userTypeRoles;
-
-  const initialReviewState = !isProviderUserType
-    ? REVIEW_TYPE_OF_CUSTOMER
-    : REVIEW_TYPE_OF_PROVIDER;
-  const [showReviewsType, setShowReviewsType] = useState(initialReviewState);
-
+  const [showReviewsType, setShowReviewsType] = useState(REVIEW_TYPE_OF_PROVIDER);
+  const { reviews, queryReviewsError } = props;
   const reviewsOfProvider = reviews.filter(r => r.attributes.type === REVIEW_TYPE_OF_PROVIDER);
   const reviewsOfCustomer = reviews.filter(r => r.attributes.type === REVIEW_TYPE_OF_CUSTOMER);
   const isReviewTypeProviderSelected = showReviewsType === REVIEW_TYPE_OF_PROVIDER;
   const isReviewTypeCustomerSelected = showReviewsType === REVIEW_TYPE_OF_CUSTOMER;
-  const providerReviewsMaybe = isProviderUserType
-    ? [
-        {
-          text: (
-            <Heading as="h3" rootClassName={css.desktopReviewsTitle}>
-              <FormattedMessage
-                id="ProfilePage.reviewsFromMyCustomersTitle"
-                values={{ count: reviewsOfProvider.length }}
-              />
-            </Heading>
-          ),
-          selected: isReviewTypeProviderSelected,
-          onClick: () => setShowReviewsType(REVIEW_TYPE_OF_PROVIDER),
-        },
-      ]
-    : [];
-
-  const customerReviewsMaybe = isCustomerUserType
-    ? [
-        {
-          text: (
-            <Heading as="h3" rootClassName={css.desktopReviewsTitle}>
-              <FormattedMessage
-                id="ProfilePage.reviewsAsACustomerTitle"
-                values={{ count: reviewsOfCustomer.length }}
-              />
-            </Heading>
-          ),
-          selected: isReviewTypeCustomerSelected,
-          onClick: () => setShowReviewsType(REVIEW_TYPE_OF_CUSTOMER),
-        },
-      ]
-    : [];
-  const desktopReviewTabs = [...providerReviewsMaybe, ...customerReviewsMaybe];
+  const desktopReviewTabs = [
+    {
+      text: (
+        <Heading as="h3" rootClassName={css.desktopReviewsTitle}>
+          <FormattedMessage
+            id="ProfilePage.reviewsFromMyCustomersTitle"
+            values={{ count: reviewsOfProvider.length }}
+          />
+        </Heading>
+      ),
+      selected: isReviewTypeProviderSelected,
+      onClick: () => setShowReviewsType(REVIEW_TYPE_OF_PROVIDER),
+    },
+    {
+      text: (
+        <Heading as="h3" rootClassName={css.desktopReviewsTitle}>
+          <FormattedMessage
+            id="ProfilePage.reviewsAsACustomerTitle"
+            values={{ count: reviewsOfCustomer.length }}
+          />
+        </Heading>
+      ),
+      selected: isReviewTypeCustomerSelected,
+      onClick: () => setShowReviewsType(REVIEW_TYPE_OF_CUSTOMER),
+    },
+  ];
 
   return (
     <div className={css.desktopReviews}>
@@ -229,7 +211,6 @@ export const MainContent = props => {
     userFieldConfig,
     intl,
     hideReviews,
-    userTypeRoles,
   } = props;
 
   const hasListings = listings.length > 0;
@@ -288,17 +269,9 @@ export const MainContent = props => {
         </div>
       ) : null}
       {hideReviews ? null : isMobileLayout ? (
-        <MobileReviews
-          reviews={reviews}
-          queryReviewsError={queryReviewsError}
-          userTypeRoles={userTypeRoles}
-        />
+        <MobileReviews reviews={reviews} queryReviewsError={queryReviewsError} />
       ) : (
-        <DesktopReviews
-          reviews={reviews}
-          queryReviewsError={queryReviewsError}
-          userTypeRoles={userTypeRoles}
-        />
+        <DesktopReviews reviews={reviews} queryReviewsError={queryReviewsError} />
       )}
     </div>
   );
@@ -363,8 +336,6 @@ export const ProfilePageComponent = props => {
   const hasUserPendingApprovalError = isErrorUserPendingApproval(userShowError);
   const hasNoViewingRightsUser = currentUser && !hasPermissionToViewData(currentUser);
   const hasNoViewingRightsOnPrivateMarketplace = isPrivateMarketplace && hasNoViewingRightsUser;
-
-  const userTypeRoles = getCurrentUserTypeRoles(config, profileUser);
 
   const isDataLoaded = isPreview
     ? currentUser != null || userShowError != null
@@ -448,7 +419,6 @@ export const ProfilePageComponent = props => {
           userFieldConfig={userFields}
           hideReviews={hasNoViewingRightsOnPrivateMarketplace}
           intl={intl}
-          userTypeRoles={userTypeRoles}
           {...rest}
         />
       </LayoutSideNavigation>

@@ -7,7 +7,6 @@ import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser } from '../../util/data';
-import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../util/userHelpers';
 
 import { sendVerificationEmail } from '../../ducks/user.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
@@ -105,14 +104,6 @@ export const ContactDetailsPageComponent = props => {
 
   const title = intl.formatMessage({ id: 'ContactDetailsPage.title' });
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
-  const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
-  const accountSettingsNavProps = {
-    currentPage: 'ContactDetailsPage',
-    showPaymentMethods,
-    showPayoutDetails,
-  };
-
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSideNavigation
@@ -122,15 +113,12 @@ export const ContactDetailsPageComponent = props => {
               desktopClassName={css.desktopTopbar}
               mobileClassName={css.mobileTopbar}
             />
-            <UserNav
-              currentPage="ContactDetailsPage"
-              showManageListingsLink={showManageListingsLink}
-            />
+            <UserNav currentPage="ContactDetailsPage" />
           </>
         }
         sideNav={null}
         useAccountSettingsNav
-        accountSettingsNavProps={accountSettingsNavProps}
+        currentPage="ContactDetailsPage"
         footer={<FooterContainer />}
       >
         <div className={css.content}>

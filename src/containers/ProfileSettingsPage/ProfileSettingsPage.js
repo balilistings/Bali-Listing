@@ -11,7 +11,6 @@ import {
   initialValuesForUserFields,
   isUserAuthorized,
   pickUserFieldsData,
-  showCreateListingLinkForUser,
 } from '../../util/userHelpers';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
@@ -172,18 +171,13 @@ export const ProfileSettingsPageComponent = props => {
 
   const title = intl.formatMessage({ id: 'ProfileSettingsPage.title' });
 
-  const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
-
   return (
     <Page className={css.root} title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSingleColumn
         topbar={
           <>
             <TopbarContainer />
-            <UserNav
-              currentPage="ProfileSettingsPage"
-              showManageListingsLink={showManageListingsLink}
-            />
+            <UserNav currentPage="ProfileSettingsPage" />
           </>
         }
         footer={<FooterContainer />}

@@ -11,10 +11,8 @@ export const CURRENT_LOCATION_ID = 'current-location';
 // attribution is required next to the results.
 // See: https://developers.google.com/places/web-service/policies#powered
 export const GeocoderAttribution = props => {
-  const { rootClassName, className, useDarkText } = props;
-  const classes = classNames(rootClassName || css.poweredByGoogle, className, {
-    [css.invert]: useDarkText,
-  });
+  const { rootClassName, className } = props;
+  const classes = classNames(rootClassName || css.poweredByGoogle, className);
   return <div className={classes} />;
 };
 

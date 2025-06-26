@@ -39,11 +39,7 @@ export const DateRangeController = props => {
       : {};
 
   const handleChange = value => {
-    // Clearing datepicker values will trigger this conditional
     if (!Array.isArray(value)) {
-      if (onChange) {
-        onChange(value);
-      }
       return;
     }
 

@@ -17,23 +17,17 @@ import css from './UserNav.module.css';
  * @returns {JSX.Element} User navigation component
  */
 const UserNav = props => {
-  const { className, rootClassName, currentPage, showManageListingsLink } = props;
+  const { className, rootClassName, currentPage } = props;
   const classes = classNames(rootClassName || css.root, className);
 
-  const manageListingsTabMaybe = showManageListingsLink
-    ? [
-        {
-          text: <FormattedMessage id="UserNav.yourListings" />,
-          selected: currentPage === 'ManageListingsPage',
-          linkProps: {
-            name: 'ManageListingsPage',
-          },
-        },
-      ]
-    : [];
-
   const tabs = [
-    ...manageListingsTabMaybe,
+    {
+      text: <FormattedMessage id="UserNav.yourListings" />,
+      selected: currentPage === 'ManageListingsPage',
+      linkProps: {
+        name: 'ManageListingsPage',
+      },
+    },
     {
       text: <FormattedMessage id="UserNav.profileSettings" />,
       selected: currentPage === 'ProfileSettingsPage',

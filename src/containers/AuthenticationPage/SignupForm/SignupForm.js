@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
@@ -13,7 +13,7 @@ import { Form, PrimaryButton, FieldTextInput, CustomExtendedDataField } from '..
 import FieldSelectUserType from '../FieldSelectUserType';
 import UserFieldDisplayName from '../UserFieldDisplayName';
 import UserFieldPhoneNumber from '../UserFieldPhoneNumber';
-import { ImageUploader } from '../../../components';
+import { ImageUploader, Dropdown } from '../../../components';
 
 import css from './SignupForm.module.css';
 
@@ -106,6 +106,14 @@ const SignupFormComponent = props => (
       const handleProfileSelect = file => {
         console.log('Selected profile image:', file);
       };
+
+      const [role, setRole] = useState('');
+
+      const roles = [
+        { value: 'individual', label: 'I am an individual property owner' },
+        { value: 'freelance', label: 'I am a freelance agent' },
+        { value: 'company', label: 'I represent a registered company' },
+      ];
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -200,16 +208,162 @@ const SignupFormComponent = props => (
               />
             </div>
           ) : null}
-
-          {showCustomUserFields ? (
-            <ImageUploader
-              label="ID Document (KTP/Driving License/Passport)"
-              columns={1}
-              dropzoneHeight="100px"
-              labelText=""
-              maxImages={1}
-              onProfileChange={handleProfileSelect}
-            />
+          {userType == 'provider' ? (
+            <div>
+              <ImageUploader
+                label="ID Document (KTP/Driving License/Passport)"
+                columns={1}
+                dropzoneHeight="100px"
+                labelText=""
+                maxImages={1}
+                onProfileChange={handleProfileSelect}
+              />
+              <div style={{ marginTop: '1.5rem' }}>
+                <Dropdown label="Role" value={role} onChange={setRole} options={roles} />
+              </div>
+              {role == 'individual' ? (
+                <>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'NIK'}
+                      name="NIK"
+                      label="Personal Number on ID card (NIK)"
+                      placeholder={3212345678990001}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'facebook'}
+                      name="Facebook"
+                      label="Facebook Profile"
+                      placeholder={'Your Facebook Profile'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'instagram'}
+                      name="Instagram"
+                      label="Instagram Profile"
+                      placeholder={'Your Instagram Profile'}
+                    />
+                  </div>
+                  <ImageUploader
+                    label="Add a selfie of you holding your ID card"
+                    columns={1}
+                    dropzoneHeight="100px"
+                    labelText=""
+                    maxImages={1}
+                    onProfileChange={handleProfileSelect}
+                  />
+                </>
+              ) : role == 'freelance' ? (
+                <>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'NIK'}
+                      name="NIK"
+                      label="Personal NPWP or NIK"
+                      placeholder={'Your NPWP or NIK Number'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'facebook'}
+                      name="Facebook"
+                      label="Facebook Profile"
+                      placeholder={'Your Facebook Profile'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'instagram'}
+                      name="Instagram"
+                      label="Instagram Profile"
+                      placeholder={'Your Instagram Profile'}
+                    />
+                  </div>
+                  <ImageUploader
+                    label="Add a selfie of you holding your ID card"
+                    columns={1}
+                    dropzoneHeight="100px"
+                    labelText=""
+                    maxImages={1}
+                    onProfileChange={handleProfileSelect}
+                  />
+                </>
+              ) : role == 'company' ? (
+                <>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'company'}
+                      name="company"
+                      label="Company Name"
+                      placeholder={'Your Company Name'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'companyAddress'}
+                      name="CompanyAddress "
+                      label="Company Address"
+                      placeholder={'Your Company Address'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'NIB'}
+                      name="NIB"
+                      label="Business registration number (NIB) or tax number (NPWP)"
+                      placeholder={'Business Number'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'web'}
+                      name="web"
+                      label="Company Website"
+                      placeholder={'Your Company Website'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'facebook'}
+                      name="facebook"
+                      label="Company Facebook Page or Account"
+                      placeholder={'Your Company Facebook'}
+                    />
+                  </div>
+                  <div style={{ marginTop: '2rem' }}>
+                    <FieldTextInput
+                      type="text"
+                      id={'instagram'}
+                      name="instagram"
+                      label="Instagram Profile"
+                      placeholder={'Your Company Instagram'}
+                    />
+                  </div>
+                  <ImageUploader
+                    label="Screenshot/Picture NIB or NPWP Mentioning Company Name"
+                    columns={1}
+                    dropzoneHeight="100px"
+                    labelText=""
+                    maxImages={1}
+                    onProfileChange={handleProfileSelect}
+                  />
+                </>
+              ) : null}
+            </div>
           ) : null}
 
           {showCustomUserFields ? (

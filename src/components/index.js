@@ -18,7 +18,6 @@ export { default as IconArrowHead } from './IconArrowHead/IconArrowHead';
 export { default as IconBannedUser } from './IconBannedUser/IconBannedUser';
 export { default as IconCheckmark } from './IconCheckmark/IconCheckmark';
 export { default as IconClose } from './IconClose/IconClose';
-export { default as IconDate } from './IconDate/IconDate';
 export { default as IconDelete } from './IconDelete/IconDelete';
 export { default as IconDisputeOrder } from './IconDisputeOrder/IconDisputeOrder';
 export { default as IconEdit } from './IconEdit/IconEdit';
@@ -31,7 +30,6 @@ export { default as IconKeysSuccess } from './IconKeysSuccess/IconKeysSuccess';
 export { default as IconReviewStar } from './IconReviewStar/IconReviewStar';
 export { default as IconReviewUser } from './IconReviewUser/IconReviewUser';
 export { default as IconSearch } from './IconSearch/IconSearch';
-export { default as IconLocation } from './IconLocation/IconLocation';
 export { default as IconSocialMediaFacebook } from './IconSocialMediaFacebook/IconSocialMediaFacebook';
 export { default as IconSocialMediaInstagram } from './IconSocialMediaInstagram/IconSocialMediaInstagram';
 export { default as IconSocialMediaTwitter } from './IconSocialMediaTwitter/IconSocialMediaTwitter';
@@ -61,7 +59,8 @@ export { default as TimeRange } from './TimeRange/TimeRange';
 export { default as UserDisplayName } from './UserDisplayName/UserDisplayName';
 export { default as ValidationError } from './ValidationError/ValidationError';
 export {default as ImageUploader} from '../components/ImageUploader/ImageUploader';
-
+export { default as WhatsAppButton } from '../components/WhatsAppButton/WhatsAppButton';
+export { default as Dropdown } from '../components/Dropdown/Dropdown';
 /**
  * Composite components
  * These components include other components
@@ -141,6 +140,3 @@ export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/
 export { default as LayoutComposer, LayoutSingleColumn, LayoutSideNavigation } from './LayoutComposer';
 export { default as MaintenanceMode } from './MaintenanceMode/MaintenanceMode';
 export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';
-
-export { default as IconCollection } from './IconCollection/IconCollection';
-export { default as TestmonialSlider } from './TestmonialSlider/TestmonialSlider';

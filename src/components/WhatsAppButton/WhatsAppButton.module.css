@@ -1,0 +1,14 @@
+.whatsappButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
+  
+  .whatsappIcon {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    cursor: pointer;
+  }
+  
