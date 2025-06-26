@@ -19,7 +19,10 @@ import {
 // Import shared components
 import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '../../components';
 // Import modules from this directory
+
+import { useCheckboxContext } from '../../context/checkBoxContext';
 import css from './CustomExtendedDataField.module.css';
+import { useState } from 'react';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
@@ -40,8 +43,8 @@ const CustomFieldEnum = props => {
   const label = getLabel(fieldConfig);
 
   return filterOptions ? (
-    <div>
-      enum
+    <div style={{ marginTop: '1rem' }}>
+      {/* enum */}
       <FieldSelect
         className={css.customField}
         name={name}
@@ -74,9 +77,23 @@ const CustomFieldMultiEnum = props => {
     ? { validate: nonEmptyArray(requiredMessage || defaultRequiredMessage) }
     : {};
 
+  const { checkboxState, updateCheckbox } = useCheckboxContext();
+
+  const handleCheckboxChange = event => {
+    const { value, checked } = event.target;
+
+    if (['weekly', 'monthly', 'yearly'].includes(value)) {
+      updateCheckbox(value, checked);
+    }
+  };
+
+  const showGuideIcon = label === 'Rental period';
+  const guideText = showGuideIcon
+    ? 'Select all allowed periods (Weekly, Monthly, Yearly); users can filter by these.'
+    : '';
+
   return enumOptions ? (
-    <div>
-      checkbox
+    <div style={{ marginTop: '1rem' }}>
       <FieldCheckboxGroup
         className={css.customField}
         id={formId ? `${formId}.${name}` : name}
@@ -84,6 +101,9 @@ const CustomFieldMultiEnum = props => {
         label={label}
         options={createFilterOptions(enumOptions)}
         {...validateMaybe}
+        guideText={guideText}
+        showGuideIcon={true}
+        onChange={handleCheckboxChange}
       />
     </div>
   ) : null;
@@ -99,9 +119,29 @@ const CustomFieldText = props => {
   const placeholder =
     placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
 
+  const getTextInput = label => {
+    switch (label) {
+      case 'Email adress':
+        return 'Enter a valid email for notifications and inquiries (e.g., yourname@email.com).';
+      case 'Phone number':
+        return 'Add your phone number with country code (e.g., +62 812-3456-7890); it’ll be hidden behind a WhatsApp button.';
+      case 'Payment terms':
+        return 'Describe your payment terms (e.g., “50% deposit, balance on arrival”).';
+      case 'Link to Facebook post':
+        return 'Paste the link to your FB post about this property (if applicable).';
+      case 'Number of years for leasehold':
+        return 'Specify remaining lease years (e.g., “20 years”); leave blank if freehold.';
+      case 'Minimum rental period':
+        return 'Specify the minimum stay (e.g., “1 week” or “1 month”) to set expectations.';
+      default:
+        return '';
+    }
+  };
+
+  const textInput = getTextInput(label);
   return (
-    <div>
-      fieldTextInput
+    <div style={{ marginTop: '1rem' }}>
+      {/* fieldTextInput */}
       <FieldTextInput
         className={css.customField}
         id={formId ? `${formId}.${name}` : name}
@@ -109,6 +149,8 @@ const CustomFieldText = props => {
         type="textarea"
         label={label}
         placeholder={placeholder}
+        textInput={textInput}
+        showGuideIcon={true}
         {...validateMaybe}
       />
     </div>
@@ -139,15 +181,43 @@ const CustomFieldLong = props => {
       : validateInteger(value, max, min, numberTooSmallMessage, numberTooBigMessage);
   };
 
+  const { checkboxState } = useCheckboxContext();
+
+  const getTextInput = label => {
+    switch (label) {
+      case 'Weekly price in millions':
+        return 'Enter your weekly price in millions of IDR (e.g., 2 for IDR 2.000.000); leave blank if not applicable.';
+      case 'Monthly price in millions':
+        return 'Monthly price in millions';
+      case 'Yearly price in millions':
+        return 'Enter your yearly price in millions of IDR (e.g., 50 for IDR 50.000.000); leave blank if not applicable.';
+      case 'Land size in m2':
+        return 'Land size in m2';
+      case 'Price per Are':
+        return 'Enter the price per are (100 m²) in millions of IDR (e.g., 10 for IDR 10.000.000/are).';
+      case 'Building size in M2':
+        return 'Enter the building size in square meters (e.g., 100)';
+      case 'Total price in millions':
+        return 'Enter the sale price in millions of IDR (e.g., 96 for IDR 96.000.000M)';
+      default:
+        return '';
+    }
+  };
+
+  const textInput = getTextInput(label);
+
   return (
-    <div>
-      fieldTextInput2
+    <div style={{ marginTop: '1rem' }}>
+      {/* fieldTextInput2 */}
       <FieldTextInput
         className={css.customField}
         id={formId ? `${formId}.${name}` : name}
         name={name}
+        textInput={textInput}
+        showGuideIcon={true}
         type="number"
         step="1"
+        checkboxState={checkboxState}
         parse={value => {
           const parsed = Number.parseInt(value, 10);
           return Number.isNaN(parsed) ? null : parsed;

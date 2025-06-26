@@ -94,13 +94,6 @@ const FieldCheckbox = props => {
       }
     : {};
 
-  let textCheckbox = '';
-
-  if (label == 'Rental period') {
-    textCheckbox =
-      'Select all allowed periods (Weekly, Monthly, Yearly); users can filter by these.';
-  }
-
   return (
     <span className={classes}>
       <Field type="checkbox" {...rest}>

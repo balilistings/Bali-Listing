@@ -11,6 +11,7 @@ import React from 'react';
 import classNames from 'classnames';
 import { FieldArray } from 'react-final-form-arrays';
 import { FieldCheckbox, ValidationError } from '../../components';
+import guideIcon from '../../assets/guideIcon.png';
 
 import css from './FieldCheckboxGroup.module.css';
 
@@ -25,14 +26,34 @@ const FieldCheckboxRenderer = props => {
     fields,
     options,
     meta,
+    guideText,
+    showGuideIcon,
   } = props;
-
   const classes = classNames(rootClassName || css.root, className);
   const listClasses = twoColumns ? classNames(css.list, css.twoColumns) : css.list;
-
+  let textCheckbox = '';
+  if (label == 'Rental period') {
+    textCheckbox =
+      'Select all allowed periods (Weekly, Monthly, Yearly); users can filter by these.';
+  }
   return (
     <fieldset className={classes}>
-      {label ? <legend>{label}</legend> : null}
+      {label ? (
+        <legend>
+          {showGuideIcon && guideText ? (
+            <div className={css.labelWithIcon}>
+              <span>{label}</span>
+              <div className={css.labelIconWrapper}>
+                <img src={guideIcon} alt="Rental" className={css.img} />
+                <div className={css.tooltip}>{guideText}</div>
+              </div>
+            </div>
+          ) : (
+            label
+          )}
+        </legend>
+      ) : null}
+
       <ul className={listClasses}>
         {options.map((option, index) => {
           const fieldId = `${id}.${option.key}`;
@@ -45,6 +66,7 @@ const FieldCheckboxRenderer = props => {
                 name={fields.name}
                 label={option.label}
                 value={option.key}
+                onChange={props.onChange}
                 {...textClassNameMaybe}
               />
             </li>

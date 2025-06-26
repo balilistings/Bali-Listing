@@ -116,12 +116,30 @@ const FieldSelectComponent = props => {
             >
               {label}
             </label>
-            {/* {label != 'Category' && ( */}
-            <div className={css.imgWrapper}>
-              <img src={iconGuide} alt="instruction" className={css.img} />
-              <div className={css.tooltip}>{textEnum}</div>
-            </div>
-            {/* ) */}
+            {[
+              'Property type',
+              'Bedrooms',
+              'Bathrooms',
+              'Available now',
+              'Living',
+              'Pool',
+              'Furnished',
+              'Kitchen',
+              'Airconditioning',
+              'Pet friendly',
+              'Working desk',
+              'Car parking',
+              'Gym',
+              'Agent or Direct owner',
+              'Freehold or leasehold',
+              'Land Title',
+              'Land zone',
+            ].includes(label) ? (
+              <div className={css.imgWrapper}>
+                <img src={iconGuide} alt="instruction" className={css.img} />
+                <div className={css.tooltip}>{textEnum}</div>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

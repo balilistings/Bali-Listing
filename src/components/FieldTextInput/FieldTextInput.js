@@ -21,9 +21,15 @@ const FieldTextInputComponent = props => {
     onUnmount,
     isUncontrolled,
     inputRef,
+    textInput,
+    showGuideIcon,
     hideErrorMessage,
     ...rest
   } = props;
+  const shouldDisable =
+    (label === 'Weekly price in millions' && !props.checkboxState?.weekly) ||
+    (label === 'Monthly price in millions' && !props.checkboxState?.monthly) ||
+    (label === 'Yearly price in millions' && !props.checkboxState?.yearly);
 
   if (label && !id) {
     throw new Error('id required when a label is given');
@@ -61,6 +67,7 @@ const FieldTextInputComponent = props => {
         id,
         rows: 1,
         maxLength,
+        disabled: shouldDisable,
         ...refMaybe,
         ...inputWithoutType,
         ...rest,
@@ -71,76 +78,51 @@ const FieldTextInputComponent = props => {
         id,
         type,
         defaultValue,
+        disabled: shouldDisable,
         ...refMaybe,
         ...inputWithoutValue,
         ...rest,
       }
-    : { className: inputClasses, id, type, ...refMaybe, ...input, ...rest };
+    : {
+        className: inputClasses,
+        id,
+        type,
+        disabled: shouldDisable,
+        ...refMaybe,
+        ...input,
+        ...rest,
+      };
 
   const classes = classNames(rootClassName || css.root, className);
-  // console.log('label', label);
-  let textInput = '';
 
-  switch (label) {
-    case 'Property Name ':
-      textInput = '';
-      break;
-    case 'Email adress':
-      textInput = 'Enter a valid email for notifications and inquiries (e.g., yourname@email.com).';
-      break;
-    case 'Phone number':
-      textInput =
-        'Add your phone number with country code (e.g., +62 812-3456-7890); it’ll be hidden behind a WhatsApp button.';
-      break;
-    case 'Payment terms':
-      textInput = 'Describe your payment terms (e.g., “50% deposit, balance on arrival”).';
-      break;
-    case 'Link to Facebook post':
-      textInput = 'Paste the link to your FB post about this property (if applicable).';
-      break;
-    case 'Number of years for leasehold':
-      textInput = 'Specify remaining lease years (e.g., “20 years”); leave blank if freehold.';
-      break;
-    case 'Minimum rental period':
-      textInput = 'Specify the minimum stay (e.g., “1 week” or “1 month”) to set expectations.';
-      break;
-
-    case 'Weekly price in millions':
-      textInput =
-        'Enter your weekly price in millions of IDR (e.g., 2 for IDR 2.000.000); leave blank if not applicable.';
-      break;
-    case 'Monthly price in millions':
-      textInput = 'Monthly price in millions';
-      break;
-    case 'Yearly price in millions':
-      textInput =
-        'Enter your yearly price in millions of IDR (e.g., 50 for IDR 50.000.000); leave blank if not applicable.';
-      break;
-    case 'Land size in m2':
-      textInput = 'Land size in m2';
-      break;
-    case 'Price per Are':
-      textInput =
-        'Enter the price per are (100 m²) in millions of IDR (e.g., 10 for IDR 10.000.000/are).';
-      break;
-
-    case 'Building size in M2':
-      textInput = 'Enter the building size in square meters (e.g., 100)';
-      break;
-    case 'Total price in millions':
-      textInput = 'Enter the sale price in millions of IDR (e.g., 96 for IDR 96.000.000M)';
-      break;
-  }
   return (
     <div className={classes}>
       {label ? (
         <div className={css.customFieldWrapper}>
           <div className={css.labelAndGuide}>
             <label htmlFor={id}>{label}</label>
-            <div className={css.imgWrapper}>
-              <img src={iconGuide} alt="instruction" className={css.img} />
-              <div className={css.tooltip}>{textInput}</div>
-            </div>
+            {showGuideIcon &&
+            [
+              // 'Property Name ',
+              'Email adress',
+              'Phone number',
+              'Payment terms',
+              'Link to Facebook post',
+              'Number of years for leasehold',
+              'Minimum rental period',
+              'Weekly price in millions',
+              'Monthly price in millions',
+              'Yearly price in millions',
+              'Land size in m2',
+              'Price per Are',
+              'Building size in M2',
+              'Total price in millions',
+            ].includes(label) ? (
+              <div className={css.imgWrapper}>
+                <img src={iconGuide} alt="instruction" className={css.img} />
+                <div className={css.tooltip}>{textInput}</div>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

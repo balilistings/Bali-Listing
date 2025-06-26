@@ -23,8 +23,7 @@ import { includeCSSProperties } from './util/style';
 import { IncludeScripts } from './util/includeScripts';
 
 import { MaintenanceMode } from './components';
-import { WhatsAppButton } from './components';
-
+import { CheckboxProvider } from './context/checkBoxContext';
 // routing
 import routeConfiguration from './routing/routeConfiguration';
 import Routes from './routing/Routes';
@@ -253,7 +252,9 @@ export const ClientApp = props => {
           <HelmetProvider>
             <IncludeScripts config={appConfig} />
             <BrowserRouter>
-              <Routes logLoadDataCalls={logLoadDataCalls} />
+              <CheckboxProvider>
+                <Routes logLoadDataCalls={logLoadDataCalls} />
+              </CheckboxProvider>
             </BrowserRouter>
           </HelmetProvider>
         </Provider>

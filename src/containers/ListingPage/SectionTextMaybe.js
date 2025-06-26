@@ -1,5 +1,6 @@
 import React from 'react';
 import { Heading } from '../../components';
+import img from '../../assets/Button WhatsApp.svg';
 import { richText } from '../../util/richText';
 
 import css from './ListingPage.module.css';
@@ -15,7 +16,20 @@ const SectionTextMaybe = props => {
     longWordClass: css.longWord,
     breakChars: '/',
   });
-  console.log('heading', heading);
+
+  let urlWA = '';
+  if (heading === 'Phone number') {
+    const rawNumber = String(content[1]);
+    const numberWA =
+      rawNumber.charAt(0) === '0'
+        ? '62' + rawNumber.slice(1)
+        : rawNumber.charAt(0) === '+'
+        ? rawNumber.slice(1)
+        : rawNumber;
+
+    urlWA = `https://wa.me/${numberWA}`;
+  }
+
   return text ? (
     <section className={css.sectionText}>
       {heading ? (
@@ -23,7 +37,13 @@ const SectionTextMaybe = props => {
           {heading}
         </Heading>
       ) : null}
-      <p className={textClass}>{content}</p>
+      {heading === 'Phone number' ? (
+        <a href={urlWA} target="_blank" rel="noopener noreferrer">
+          <img src={img} alt="Contact by Whatsapp" />
+        </a>
+      ) : (
+        <span>{content}</span>
+      )}
     </section>
   ) : null;
 };
