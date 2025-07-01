@@ -2,6 +2,7 @@ import React from 'react';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import { ValidationError } from '../../components';
+import iconGuide from '../../assets/guideIcon.png';
 
 import css from './FieldSelect.module.css';
 
@@ -44,12 +45,85 @@ const FieldSelectComponent = props => {
   const selectProps = { className: selectClasses, id, ...input, onChange: handleChange, ...rest };
 
   const classes = classNames(rootClassName || css.root, className);
+
+  let textEnum = '';
+
+  switch (label) {
+    case 'Property type':
+      textEnum =
+        'Choose the type of property you’re listing. This helps users filter listings based on their needs.';
+      break;
+    case 'Bedrooms':
+      textEnum = 'Choose the number of bedrooms (e.g., 1, 2, 3+); select “0” for land';
+      break;
+    case 'Bathrooms':
+      textEnum = 'Choose the number of bathrooms (e.g., 1, 2, 3+); select “0” for land.';
+      break;
+    case 'Available now':
+      textEnum =
+        'Select “Yes” if the property is available immediately, or “No” if it’s available later. This helps users filter for properties they can book right away.';
+      break;
+    case 'Living':
+      textEnum = 'Select whether the living room is “Open” or “Closed.” ';
+      break;
+    case 'Pool':
+      textEnum = 'Select “Yes” if the property has a pool, or “No” if it doesn’t.';
+      break;
+    case 'Furnished':
+      textEnum =
+        'Select “Yes” if the property is furnished, or “No” if it’s unfurnished. Choose “Semi” if it is partly furnished.';
+      break;
+    case 'Kitchen':
+      textEnum = 'Select “Yes” if there’s a kitchen, or “No” if there isn’t.';
+      break;
+    case 'Airconditioning':
+      textEnum = 'Select “Yes” if the property has air conditioning, or “No” if it doesn’t. ';
+      break;
+    case 'Pet friendly':
+      textEnum = 'Select “Yes” if pets are allowed, or “No” if they’re not.';
+      break;
+    case 'Working desk':
+      textEnum = 'Select “Yes” if there’s a working desk, or “No” if there isn’t.';
+      break;
+    case 'Car parking':
+      textEnum = 'Select “Yes” if there’s car parking available, or “No” if there isn’t. ';
+      break;
+    case 'Gym':
+      textEnum = 'Select “Yes” if there’s a gym on-site, or “No” if there isn’t.';
+      break;
+    case 'Agent or Direct owner':
+      textEnum = 'Select if you’re the owner or an agent; this builds trust with users.';
+      break;
+    case 'Freehold or leasehold':
+      textEnum = 'Select “Freehold” for outright ownership, or “Leasehold” for leased property.';
+      break;
+    case 'Land Title':
+      textEnum = 'Select the title (e.g., Hak Milik, HGB); critical for buyers to avoid scams.';
+      break;
+    case 'Land zone':
+      textEnum =
+        'Select the zone (e.g., Green, Pink); informs buyers about usage and investment potential.';
+      break;
+  }
   return (
     <div className={classes}>
       {label ? (
-        <label htmlFor={id} className={classNames({ [css.labelDisabled]: showLabelAsDisabled })}>
-          {label}
-        </label>
+        <div className={css.customFieldWrapper}>
+          <div className={css.labelAndGuide}>
+            <label
+              htmlFor={id}
+              className={classNames({ [css.labelDisabled]: showLabelAsDisabled })}
+            >
+              {label}
+            </label>
+            {/* {label != 'Category' && ( */}
+            <div className={css.imgWrapper}>
+              <img src={iconGuide} alt="instruction" className={css.img} />
+              <div className={css.tooltip}>{textEnum}</div>
+            </div>
+            {/* ) */}
+          </div>
+        </div>
       ) : null}
       <select {...selectProps}>{children}</select>
       <ValidationError fieldMeta={meta} />

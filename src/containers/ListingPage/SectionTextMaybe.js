@@ -15,7 +15,7 @@ const SectionTextMaybe = props => {
     longWordClass: css.longWord,
     breakChars: '/',
   });
-
+  console.log('heading', heading);
   return text ? (
     <section className={css.sectionText}>
       {heading ? (
