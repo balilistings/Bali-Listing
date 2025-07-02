@@ -72,6 +72,7 @@ const CustomFieldMultiEnum = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId } = props;
   const { enumOptions = [], saveConfig } = fieldConfig || {};
   const { isRequired, requiredMessage } = saveConfig || {};
+
   const label = getLabel(fieldConfig);
   const validateMaybe = isRequired
     ? { validate: nonEmptyArray(requiredMessage || defaultRequiredMessage) }

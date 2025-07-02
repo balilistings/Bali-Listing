@@ -12,6 +12,8 @@ import {
   ResponsiveImage,
 } from '../../../components';
 
+import IconHeart from '../../../assets/favicon.svg';
+import IconShare from '../../../assets/ShareIcon.svg';
 // Copied directly from
 // `node_modules/react-image-gallery/styles/css/image-gallery.css`. The
 // copied file is left unedited, and all the overrides are defined in
@@ -88,7 +90,44 @@ const ListingImageGallery = props => {
   const imageSizesMaybe = isFullscreen
     ? {}
     : { sizes: `(max-width: 1024px) 100vw, (max-width: 1200px) calc(100vw - 192px), 708px` };
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [animateHeart, setAnimateHeart] = useState(false);
+
   const renderItem = item => {
+    const handleShareClick = () => {
+      const currentUrl = window.location.href;
+
+      navigator.clipboard
+        .writeText(currentUrl)
+        .then(() => {
+          setCopySuccess(true);
+          setCopyError(false);
+
+          setTimeout(() => {
+            setCopySuccess(false);
+          }, 1500);
+        })
+        .catch(() => {
+          setCopySuccess(false);
+          setCopyError(true);
+
+          setTimeout(() => {
+            setCopyError(false);
+          }, 1500);
+        });
+    };
+    const handleFavoriteClick = () => {
+      setIsFavorited(!isFavorited);
+      setAnimateHeart(true);
+
+      // Reset animasi setelah selesai (sesuai durasi animasi CSS)
+      setTimeout(() => {
+        setAnimateHeart(false);
+      }, 400); // harus sama dengan durasi animasi di CSS
+    };
+
     return (
       <AspectRatioWrapper
         width={aspectWidth || 1}
@@ -96,6 +135,31 @@ const ListingImageGallery = props => {
         className={isFullscreen ? css.itemWrapperFullscreen : css.itemWrapper}
       >
         <div className={css.itemCentering}>
+          <div className={css.topRightIcons}>
+            <div className={css.shareWrapper}>
+              {(copySuccess || copyError) && (
+                <div className={copySuccess ? css.successTooltip : css.errorTooltip}>
+                  {copySuccess ? 'Link copied' : 'Failed to copy link'}
+                </div>
+              )}{' '}
+              <button className={css.iconButton} onClick={handleShareClick}>
+                <img src={IconShare} alt="Favorite" className={css.iconImage} />
+              </button>
+            </div>
+            <div className={css.margin}>
+              <button
+                className={classNames(
+                  css.iconButton,
+                  animateHeart && css.heartAnimate,
+                  isFavorited && css.heartActive
+                )}
+                onClick={handleFavoriteClick}
+              >
+                {' '}
+                <img src={IconHeart} alt="Share" className={css.iconImage} />
+              </button>
+            </div>
+          </div>
           <ResponsiveImage
             rootClassName={css.item}
             image={item.image}

@@ -213,3 +213,104 @@
 .closeIcon {
   composes: marketplaceModalCloseIcon from global;
 }
+
+.topRightIcons {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.iconButton {
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+  width: 38px;
+  height: 38px;
+  gap: 20px;
+}
+
+.margin {
+  margin-right: 3rem;
+}
+
+
+.iconButton:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.iconImage {
+  width: 38px;
+  height: 38px;
+  transition: transform 0.3s ease;
+}
+
+.shareWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.successTooltip,
+.errorTooltip {
+  position: absolute;
+  top: 0%;
+  margin-bottom: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 3;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+}
+
+.successTooltip {
+  background-color: #FF4FF7; /* hijau */
+  color: white;
+}
+
+.errorTooltip {
+  background-color: #f44336; /* merah */
+}
+
+.iconButton {
+  border: none;
+  background: transparent;
+  padding: 6px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+
+/* Aktif (favorit) - background merah */
+.heartActive {
+  background-color: #FF4FF7; /* latar belakang merah muda */
+}
+
+/* Animasi ketika diklik */
+.heartAnimate .iconImage {
+  animation: scaleUpDown 0.4s ease;
+}
+
+@keyframes scaleUpDown {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.4);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

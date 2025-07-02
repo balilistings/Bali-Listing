@@ -29,6 +29,7 @@ const FieldCheckboxRenderer = props => {
     guideText,
     showGuideIcon,
   } = props;
+  console.log('fields', fields);
   const classes = classNames(rootClassName || css.root, className);
   const listClasses = twoColumns ? classNames(css.list, css.twoColumns) : css.list;
   let textCheckbox = '';

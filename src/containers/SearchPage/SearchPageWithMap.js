@@ -100,7 +100,6 @@ export class SearchPageComponent extends Component {
       currentQueryParams: validUrlQueryParamsFromProps(props),
       isSecondaryFiltersOpen: false,
     };
-
     this.onMapMoveEnd = debounce(this.onMapMoveEnd.bind(this), SEARCH_WITH_MAP_DEBOUNCE);
     this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
     this.onCloseMobileModal = this.onCloseMobileModal.bind(this);
@@ -411,6 +410,7 @@ export class SearchPageComponent extends Component {
       listingFieldsConfig,
       activeListingTypes
     );
+    console.log('availableFilters', activeListingTypes);
     const availablePrimaryFilters = [
       ...builtInPrimaryFilters,
       ...customPrimaryFilters,
