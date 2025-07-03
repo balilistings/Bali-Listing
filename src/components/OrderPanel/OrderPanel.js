@@ -33,7 +33,7 @@ import {
   resolveLatestProcessName,
 } from '../../transactions/transaction';
 
-import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2 } from '../../components';
+import { ModalInMobile, PrimaryButton, AvatarSmall, H1, H2, Button } from '../../components';
 import PriceVariantPicker from './PriceVariantPicker/PriceVariantPicker';
 
 import css from './OrderPanel.module.css';
@@ -367,19 +367,19 @@ const OrderPanel = props => {
 
   const priceVariantsMaybe = isPriceVariationsInUse
     ? {
-        isPriceVariationsInUse,
-        priceVariants,
-        priceVariantFieldComponent: PriceVariantPicker,
-        preselectedPriceVariant,
-        isPublishedListing: isPublishedListing(listing),
-      }
+      isPriceVariationsInUse,
+      priceVariants,
+      priceVariantFieldComponent: PriceVariantPicker,
+      preselectedPriceVariant,
+      isPublishedListing: isPublishedListing(listing),
+    }
     : !isPriceVariationsInUse && showBookingFixedDurationForm
-    ? {
+      ? {
         isPriceVariationsInUse: false,
         priceVariants: [getCheapestPriceVariant(priceVariants)],
         priceVariantFieldComponent: PriceVariantPicker,
       }
-    : {};
+      : {};
 
   const showInvalidPriceVariantsMessage =
     isPriceVariationsInUse && !hasValidPriceVariants(priceVariants);
@@ -410,8 +410,14 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
+  const [selectedTab, setSelectedTab] = useState('Yearly'); // Default selected
+  const tabOptions = ['Weakly', 'Monthly', 'Yearly'];
+
   return (
     <div className={classes}>
+      <Button className={css.availableNowButton}>
+        Available Now!
+      </Button>
       <ModalInMobile
         containerClassName={css.modalContainer}
         id="OrderFormInModal"
@@ -426,10 +432,24 @@ const OrderPanel = props => {
         </div>
 
         <div className={css.orderHeading}>
-          {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>}
+          {/* {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>} */}
           {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
         </div>
-
+        <div className={css.tabsContainer}>
+          {tabOptions.map(option => (
+            <button
+              key={option}
+              type="button"
+              className={classNames(css.tabButton, {
+                [css.tabButtonSelected]: selectedTab === option,
+              })}
+              onClick={() => setSelectedTab(option)}
+            >
+              {option}
+            </button>
+          ))}
+        </div>
+        <h4 className={css.priceHeading}>Price</h4>
         <PriceMaybe
           price={price}
           publicData={publicData}
@@ -437,8 +457,10 @@ const OrderPanel = props => {
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-
-        <div className={css.author}>
+        <div className={css.availableFrom}>
+          Available from June 1st
+        </div>
+        {/* <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>
             <FormattedMessage id="OrderPanel.author" values={{ name: authorLink }} />
@@ -446,7 +468,7 @@ const OrderPanel = props => {
           <span className={css.providerNamePlain}>
             <FormattedMessage id="OrderPanel.author" values={{ name: authorDisplayName }} />
           </span>
-        </div>
+        </div> */}
 
         {showPriceMissing ? (
           <PriceMissing />

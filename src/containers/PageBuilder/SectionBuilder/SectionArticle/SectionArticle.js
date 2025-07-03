@@ -78,12 +78,7 @@ const SectionArticle = props => {
       appearance={appearance}
       options={fieldOptions}
     >
-      {sectionId === 'select_your_properties' ? (
-        <Button id="needHelpButton">
-          <IconCollection name="message_icon" />
-          Need help?
-        </Button>
-      ) : null}
+   
 
       {hasHeaderFields ? (
         <header className={defaultClasses.sectionDetails}>

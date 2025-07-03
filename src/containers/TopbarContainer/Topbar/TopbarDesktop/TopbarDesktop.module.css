@@ -50,6 +50,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -62,6 +63,7 @@
     opacity: 1;
     transform: scale(1);
   }
+
   100% {
     opacity: 0;
     transform: scale(0.95);
@@ -72,6 +74,7 @@
   background-color: #fff !important;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.05) !important;
   margin-top: 0 !important;
+
   /* transition: background-color 0.6s cubic-bezier(0.23, 1, 0.32, 1); */
   & .profileMenuIcon {
     background-color: rgba(0, 0, 0, 0.062);
@@ -92,8 +95,10 @@
   display: flex;
   justify-content: center;
   padding: 0;
-  & > div {
+
+  &>div {
     width: 114px !important;
+
     & img {
       max-height: 50px !important;
       width: 114px !important;
@@ -147,6 +152,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   @media (--viewportLarge) {
     padding-left: 34px;
   }
@@ -219,6 +225,7 @@
     transform: scale(0);
     opacity: 0;
   }
+
   100% {
     transform: scale(1);
     opacity: 1;
@@ -254,8 +261,13 @@
 }
 
 .profileMenuIsOpen {
+
   &:hover {
     border-bottom: 0;
+  }
+
+  & rect {
+    fill-opacity: 1;
   }
 }
 
@@ -264,9 +276,15 @@
 }
 
 .profileMenuContent {
-  min-width: 276px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+
+  padding: 20px;
+  padding: 20px;
+  box-shadow: 0px 4px 10px 0px #0000001A;
+  border-radius: 10px;
+  min-width: 218px;
+  right: 0 !important;
+  left: unset !important;
+  margin-top: 5px;
 }
 
 /* left animated "border" like hover element */
@@ -279,6 +297,8 @@
   transition: width var(--transitionStyleButton);
 }
 
+
+
 .menuLink {
   composes: textSmall from global;
   position: relative;
@@ -286,7 +306,7 @@
 
   /* Dimensions */
   width: 100%;
-  min-width: 276px;
+  min-width: 178px;
   margin: 0;
   padding: 6px 24px;
 
@@ -308,6 +328,46 @@
   @media (--viewportMedium) {
     margin: 0;
   }
+}
+
+.loginLink{
+  width: 178px;
+height: 41px;
+border-radius: 10px;
+padding: 10px;
+gap: 10px;
+background-color: #F74DF4;
+font-family: Mulish;
+font-weight: 700;
+font-size: 16px;
+line-height: 130%;
+letter-spacing: 0%;
+text-align: center;
+color: #fff !important;
+display: flex !important;
+align-items: center;
+justify-content: center;
+}
+
+.signupLink{
+  border: 1px solid #F74DF4;
+  width: 178px;
+height: 41px;
+border-radius: 10px;
+border-width: 1px;
+padding: 10px;
+gap: 10px;
+font-family: Mulish;
+font-weight: 700;
+font-size: 16px;
+line-height: 130%;
+letter-spacing: 0%;
+text-align: center;
+color: #F74DF4 !important;
+display: flex !important;
+align-items: center;
+justify-content: center;
+margin-top: 20px;
 }
 
 .logoutButton {
@@ -390,17 +450,20 @@
 }
 
 .customLinksMenuWrapper {
-  & > div {
+  &>div {
     justify-content: flex-start;
     height: auto;
+
     & a {
       width: 100%;
       display: block;
       padding: 0;
       color: var(--colorBlack);
+
       &:hover {
         border: 0;
       }
+
       & span {
         margin: 0;
       }
