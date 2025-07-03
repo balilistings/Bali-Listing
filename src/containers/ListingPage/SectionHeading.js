@@ -1,24 +1,40 @@
 import React from 'react';
 
 import { FormattedMessage } from '../../util/reactIntl';
-import { isFieldForListingType } from '../../util/fieldHelpers';
+import { isFieldForListingType,pickCustomFieldProps,isFieldForCategory } from '../../util/fieldHelpers';
 
 import { Heading } from '../../components';
 
 import css from './ListingPage.module.css';
 
-const SectionDetailsMaybe = props => {
-  const { publicData, metadata = {}, listingFieldConfigs, isFieldForCategory, intl } = props;
+const SectionHeading = props => {
+  const { publicData, metadata = {}, listingFieldConfigs, intl } = props;
 
   if (!publicData || !listingFieldConfigs) {
     return null;
   }
+  const { key: categoryPrefix, categories: listingCategoriesConfig } = categoryConfiguration;
+  const categoriesObj = pickCategoryFields(publicData, categoryPrefix, 1, listingCategoriesConfig);
+  const currentCategories = Object.values(categoriesObj);
+
+  const isFieldForSelectedCategories = fieldConfig => {
+    const isTargetCategory = isFieldForCategory(currentCategories, fieldConfig);
+    return isTargetCategory;
+  };
+  const propsForCustomFields =
+    pickCustomFieldProps(
+      publicData,
+      metadata,
+      listingFieldConfigs,
+      'listingType',
+      isFieldForSelectedCategories
+    ) || [];
 
   const pickListingFields = (filteredConfigs, config) => {
     const { key, schemaType, enumOptions, showConfig = {} } = config;
     const listingType = publicData.listingType;
     const isTargetListingType = isFieldForListingType(listingType, config);
-    const isTargetCategory = isFieldForCategory(config);
+    const isTargetCategory = isFieldForSelectedCategories(config);
 
     const { isDetail, label } = showConfig;
     const publicDataValue = publicData[key];
@@ -48,14 +64,12 @@ const SectionDetailsMaybe = props => {
 console.log(existingListingFields)
   return existingListingFields.length > 0 ? (
     <section className={css.sectionDetails}>
-      <Heading as="h2" rootClassName={css.sectionHeading}>
-        <FormattedMessage id="ListingPage.detailsTitle" />
-      </Heading>
-      <ul className={css.details}>
+    
+      <ul className={css.detailsType}>
         {existingListingFields.map(detail => (
-          <li key={detail.key} className={css.detailsRow}>
-            <span className={css.detailLabel}>{detail.label}</span>
-            <span>{detail.value}</span>
+          <li key={detail.key} className={css.detailsTypeRow}>
+            <span className={css.detailTypeLabel}>{detail.label}</span>
+            <span className={css.detailTypeValue}>{detail.value}</span>
           </li>
         ))}
       </ul>
@@ -63,4 +77,4 @@ console.log(existingListingFields)
   ) : null;
 };
 
-export default SectionDetailsMaybe;
+export default SectionHeading;

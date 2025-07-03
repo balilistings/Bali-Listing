@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Utils
-import { SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_TEXT, SCHEMA_TYPE_YOUTUBE } from '../../util/types';
+import { SCHEMA_TYPE_MULTI_ENUM, } from '../../util/types';
 import {
   isFieldForCategory,
   pickCategoryFields,
@@ -10,8 +10,8 @@ import {
 
 import SectionDetailsMaybe from './SectionDetailsMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
-import SectionTextMaybe from './SectionTextMaybe';
-import SectionYoutubeVideoMaybe from './SectionYoutubeVideoMaybe';
+import { PropertyGroup } from '../../components';
+import css from './ListingPage.module.css';
 
 /**
  * Renders custom listing fields.
@@ -22,7 +22,7 @@ import SectionYoutubeVideoMaybe from './SectionYoutubeVideoMaybe';
  * @param {*} props include publicData, metadata, listingFieldConfigs, categoryConfiguration
  * @returns React.Fragment containing aforementioned components
  */
-const CustomListingFields = props => {
+const RentalPeriod = props => {
   const { publicData, metadata, listingFieldConfigs, categoryConfiguration } = props;
 
   const { key: categoryPrefix, categories: listingCategoriesConfig } = categoryConfiguration;
@@ -41,21 +41,25 @@ const CustomListingFields = props => {
       'listingType',
       isFieldForSelectedCategories
     ) || [];
-    console.log(isFieldForSelectedCategories)
+
   return (
     <>
-      <SectionDetailsMaybe {...props} isFieldForCategory={isFieldForSelectedCategories} />
+
       {propsForCustomFields.map(customFieldProps => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
-        
-        return schemaType === SCHEMA_TYPE_TEXT ? (
-          <SectionTextMaybe key={key} {...fieldProps} />
-        ) : schemaType === SCHEMA_TYPE_YOUTUBE ? (
-          <SectionYoutubeVideoMaybe key={key} {...fieldProps} />
+        return schemaType === SCHEMA_TYPE_MULTI_ENUM ? (
+            <PropertyGroup
+        id="ListingPage.amenities"
+        options={fieldProps.options}
+        selectedOptions={fieldProps.selectedOptions}
+        twoColumns={fieldProps.options.length > 5}
+        showUnselectedOptions={fieldProps.showUnselectedOptions}
+        rootClassName={css.rentalPeriod}
+      />
         ) : null;
       })}
     </>
   );
 };
 
-export default CustomListingFields;
+export default RentalPeriod;
