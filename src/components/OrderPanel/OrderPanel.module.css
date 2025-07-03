@@ -1,7 +1,6 @@
 @import '../../styles/customMediaQueries.css';
 
-.root {
-}
+.root {}
 
 /* Order form inside modalContainer needs special handling */
 /* since "inMobile" breakpoint is actually --viewportLarge */
@@ -49,6 +48,7 @@
   width: 100%;
   margin-top: 0;
   margin-bottom: 0;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 5px;
@@ -56,8 +56,12 @@
 }
 
 .price {
-  composes: h4 from global;
-  font-weight: var(--fontWeightBold);
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
   margin: 0 0 0 24px;
 
   @media (--viewportMedium) {
@@ -65,12 +69,13 @@
     padding: 0;
   }
 }
+
 .priceValue {
-  color: var(--marketplaceColor);
+  color: #231F20;
 }
 
 .perUnit {
-  color: var(--marketplaceColor);
+  color: #231F20;
 }
 
 .author {
@@ -208,6 +213,7 @@
     padding: 0;
   }
 }
+
 .priceContainerInCTA {
   flex-direction: column;
   align-items: center;
@@ -222,6 +228,7 @@
 
   margin-top: 0;
   margin-bottom: 0px;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 0;
@@ -243,8 +250,7 @@
     margin-bottom: 0;
   }
 
-  @media (--viewportLarge) {
-  }
+  @media (--viewportLarge) {}
 }
 
 .closedListingButton {
@@ -268,6 +274,7 @@
     padding: 0;
   }
 }
+
 .errorSidebar {
   color: var(--colorFail);
   padding: 0 24px;
@@ -275,4 +282,69 @@
   @media (--viewportMedium) {
     padding: 0;
   }
+}
+
+
+.priceHeading {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #F74DF4;
+}
+
+.tabsContainer {
+  display: flex;
+  background: #fff;
+  border-radius: 999px;
+  border: 1px solid #F2F2F2;
+  padding: 4px;
+  width: fit-content;
+  margin-bottom: 1.4rem;
+}
+
+.tabButton {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 12px 32px;
+  border-radius: 999px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.tabButtonSelected {
+  background: #FBA6F933;
+  border: 1px solid #F74DF4;
+  color: #222;
+
+}
+
+.availableFrom {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #6B7280;
+}
+
+.availableNowButton {
+  min-height: 39px;
+  background-color: #06C270;
+  border-radius: 12px;
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #FFFFFF;
+  margin-bottom: 12px;
 }
