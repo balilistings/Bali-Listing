@@ -411,15 +411,16 @@ export const ListingPageComponent = props => {
                 <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
               </H4>
               <SectionHeading
-              publicData={publicData}
-              metadata={metadata}
-              listingFieldConfigs={listingConfig.listingFields}
-              categoryConfiguration={config.categoryConfiguration}
-              intl={intl}
-            />
+                publicData={publicData}
+                metadata={metadata}
+                listingFieldConfigs={listingConfig.listingFields}
+                categoryConfiguration={config.categoryConfiguration}
+                intl={intl}
+                location={publicData?.location?.address}
+              />
             </div>
-          
-            
+
+
 
             <div className={css.tabsConrainer}>
               {SECTIONS.map(section => (
@@ -434,6 +435,7 @@ export const ListingPageComponent = props => {
               ))}
             </div>
             <div id="description">
+              <h4 className={css.descriptionHeading}>Description</h4>
               <SectionTextMaybe text={description} showAsIngress />
             </div>
 
@@ -455,6 +457,7 @@ export const ListingPageComponent = props => {
                 mapsConfig={config.maps}
               />
             </div>
+      
 
             <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
             <SectionAuthorMaybe
