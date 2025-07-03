@@ -148,14 +148,14 @@ const NotSignedInProfileMenu = ({
           </div>
         </MenuItem>
         <MenuItem key="login">
-          <NamedLink className={css.menuLink} name="LoginPage">
-            <span className={css.menuItemBorder} />
+          <NamedLink className={classNames(css.menuLink, css.loginLink)} name="LoginPage">
+            
             <FormattedMessage id="TopbarDesktop.login" />
           </NamedLink>
         </MenuItem>
         <MenuItem key="signup">
-          <NamedLink className={css.menuLink} name="SignupPage">
-            <span className={css.menuItemBorder} />
+          <NamedLink className={classNames(css.menuLink, css.signupLink)} name="SignupPage">
+       
             <FormattedMessage id="TopbarDesktop.signup" />
           </NamedLink>
         </MenuItem>
