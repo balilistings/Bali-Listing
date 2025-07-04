@@ -46,7 +46,6 @@ const RentalPeriod = props => {
     <>
       {propsForCustomFields.map(customFieldProps => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
-
         return schemaType === SCHEMA_TYPE_MULTI_ENUM ? (
           <PropertyGroup
             id="ListingPage.amenities"
@@ -58,6 +57,17 @@ const RentalPeriod = props => {
           />
         ) : null;
       })}
+
+      {publicData.Freehold === 'leasehold' && (
+        <PropertyGroup
+          id="ListingPage.amenities"
+          options={[{ key: 'leasehold', label: 'Leasehold' }]}
+          selectedOptions={['leasehold']}
+          twoColumns={false}
+          showUnselectedOptions={false}
+          rootClassName={css.rentalPeriod}
+        />
+      )}
     </>
   );
 };

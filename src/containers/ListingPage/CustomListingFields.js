@@ -6,7 +6,7 @@ import { IconCollection } from '../../components/index.js';
 const amenitiesConfig = [
   { icon: <IconCollection name="wifi" />, label: 'Wifi', key: 'wifi' },
   { icon: <IconCollection name="pool" />, label: 'Pool', key: 'pool' },
-  { icon: <IconCollection name="gym" />, label: 'Gym', key: 'gym' },
+  { icon: <IconCollection name="gym" />, label: 'Gym', key: 'Gym' },
   { icon: <IconCollection name="pet" />, label: 'Pet Friendly', key: 'petfriendly' },
   { icon: <IconCollection name="desk" />, label: 'Working desk', key: 'workingdesk' },
   { icon: <IconCollection name="parking" />, label: 'Car parking', key: 'carparking' },
