@@ -137,7 +137,7 @@
 }
 
 .itemWrapperFullscreen {
-  height: calc(100vh - 130px);
+  height: calc(100vh - 0px);
 }
 
 .itemCentering {
