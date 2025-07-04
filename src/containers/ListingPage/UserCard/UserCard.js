@@ -151,10 +151,13 @@ const UserCard = props => {
             <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
             {editProfileDesktop}
           </div>
-          {hasBio ? <ExpandableBio className={css.desktopBio} bio={bio} /> : null}
+         
           {links}
         </div>
       </div>
+      <h5 className={css.aboutTitle}>
+      About:
+      </h5>
       {hasBio ? <ExpandableBio className={css.mobileBio} bio={bio} /> : null}
     </div>
   );

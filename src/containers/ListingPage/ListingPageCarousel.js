@@ -96,7 +96,7 @@ const SECTIONS = [
   { id: 'description', label: 'Description' },
   { id: 'amenities', label: 'Amenities' },
   { id: 'location', label: 'Location' },
-  { id: 'rentalTerms', label: 'Rental Terms' },
+  //{ id: 'rentalTerms', label: 'Rental Terms' },
   { id: 'listedBy', label: 'Listed By' },
 ];
 
@@ -434,12 +434,13 @@ export const ListingPageComponent = props => {
                 </button>
               ))}
             </div>
-            <div id="description">
+          <div className={css.descriptionContainer}>
+          <div id="description">
               <h4 className={css.descriptionHeading}>Description</h4>
               <SectionTextMaybe text={description} showAsIngress />
             </div>
 
-            <div id="amenities">
+            <div >
               <CustomListingFields
                 publicData={publicData}
                 metadata={metadata}
@@ -448,6 +449,7 @@ export const ListingPageComponent = props => {
                 intl={intl}
               />
             </div>
+          </div>
 
             <div id="location">
               <SectionMapMaybe
@@ -459,7 +461,7 @@ export const ListingPageComponent = props => {
             </div>
       
 
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
+           {reviews.length > 0 && <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />}
             <SectionAuthorMaybe
               title={title}
               listing={currentListing}

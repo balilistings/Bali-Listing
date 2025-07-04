@@ -174,7 +174,7 @@
   bottom: 0;
   left: 0;
   width: 100vw;
-  padding: 18px 24px 18px 16px;
+  padding: 30px 24px 18px 16px;
   background-color: var(--colorWhite);
   box-shadow: var(--boxShadowTop);
   display: flex;
@@ -184,7 +184,7 @@
   transform: translate3d(0, 0, 0);
 
   @media (--viewportMedium) {
-    padding: 18px 60px 18px 60px;
+    padding: 30px 60px 18px 60px;
   }
 
   @media (--viewportLarge) {
@@ -212,6 +212,9 @@
     margin-right: unset;
     padding: 0;
   }
+  @media screen and (max-width: 768px) {
+    padding: 0;
+  }
 }
 
 .priceContainerInCTA {
@@ -219,6 +222,9 @@
   align-items: center;
   justify-content: center;
   gap: unset;
+  @media screen and (max-width: 768px) {
+   display: block;
+  }
 }
 
 .priceValueInCTA {
@@ -232,6 +238,14 @@
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 0;
+  }
+  @media screen and (max-width: 768px) {
+    font-family: Istok Web;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #231F20;
   }
 }
 
@@ -292,6 +306,11 @@
   line-height: 130%;
   letter-spacing: 0%;
   color: #F74DF4;
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .tabsContainer {
@@ -302,6 +321,9 @@
   padding: 4px;
   width: fit-content;
   margin-bottom: 1.4rem;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 }
 
 .tabButton {
@@ -318,6 +340,11 @@
   color: #231F20;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
+  @media screen and (max-width: 768px) {
+    padding: 10px 20px;
+    font-size: 10px;
+    flex: 1;
+  }
 }
 
 .tabButtonSelected {
@@ -347,4 +374,52 @@
   letter-spacing: 0%;
   color: #FFFFFF;
   margin-bottom: 12px;
+}
+
+.availableNowButtonDesktop{
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+}
+
+.availableNowButtonMobile{
+  position: absolute;
+  width: max-content;
+  left: 20px;
+  top: -15px;
+  font-size: 10px;
+  min-height: 29px;
+  padding: 0 12px;
+}
+
+.openOrderFormContainer{
+  width: 100%;
+}
+
+.priceContainerWrapper{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.openOrderFormButton{
+  min-height: 49px;
+  background: #F74DF4;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  border-radius: 5px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 41px;
+  width: max-content;
+  padding: 0 14px;
+  & svg{
+    width: 20px;
+  }
 }

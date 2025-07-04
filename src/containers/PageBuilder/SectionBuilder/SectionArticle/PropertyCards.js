@@ -222,7 +222,7 @@ const PropertyCards = () => {
         });
       }
     }, 10);
-  }, [activeTab]);
+  }, [activeTab,listings]);
 
   // const handleLike = idx => {
   //   setLikedCards(likedCards => likedCards.map((liked, i) => (i === idx ? !liked : liked)));

@@ -3,7 +3,7 @@
 .root {}
 
 .pageRoot {
-  padding-bottom: 90px;
+  padding-bottom: 190px;
   background-color: #fff;
 
   @media (--viewportLarge) {
@@ -333,6 +333,9 @@
   line-height: 130%;
   letter-spacing: 0%;
   color: #C4C4C4;
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 
   & a {
     font-family: Mulish;
@@ -408,6 +411,10 @@
     box-shadow: 0px 4px 20px 0px #00000033;
     padding: 20px;
     border-radius: 20px;
+    @media screen and (max-width: 768px) {
+      padding-top: 30px;
+      border-radius: 0;
+    }
   }
 }
 
@@ -500,7 +507,7 @@
 
 .heading {
   margin-bottom: 33px;
-  padding: 0 24px;
+  padding: 0 20px;
 
   @media (--viewportMedium) {
     margin-bottom: 0;
@@ -586,7 +593,7 @@
 }
 
 .sectionText {
-  padding: 0 24px;
+  padding: 0 0px;
   margin-bottom: 36px;
 
   @media (--viewportMedium) {
@@ -654,6 +661,10 @@
   top: 70px;
   background-color: #fff;
   z-index: 1;
+  @media screen and (max-width: 768px) {
+    padding: 0 20px;
+    top: 56px;
+  }
 }
 
 .ingress {
@@ -681,7 +692,13 @@
 
   @media (--viewportMedium) {
     padding: 0;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
+  }
+}
+
+.sectionDetails {
+  @media screen and (max-width: 768px) {
+    padding: 0 0px;
   }
 }
 
@@ -709,6 +726,19 @@
 
   @media (--viewportLarge) {
     padding: 8px 0;
+  }
+}
+
+.sectionAuthor{
+  margin-top: 20px;
+}
+
+.sectionAuthor {
+  box-shadow: 0px 4px 20px 0px #0000001A;
+  border-radius: 20px;
+  padding: 26px;
+  @media screen and (max-width: 768px) {
+    padding: 10px;
   }
 }
 
@@ -799,7 +829,7 @@
   }
 }
 
-.location{
+.location {
   display: flex;
   gap: 5px;
   align-items: center;
@@ -807,12 +837,12 @@
 
 .map {
   /* Dimensions: Map takes all available space from viewport (excludes action button and section title) */
-  height: calc(100vh - 193px);
+  height: 120px;
   width: 100%;
 
   /* Static map: dimensions are 640px */
   max-width: 804px;
-  max-height: 275px;
+  max-height: 120px;
   background-color: #eee;
   padding: 0;
   border: 0;
@@ -834,9 +864,46 @@
   hyphens: auto;
 }
 
+.backButton{
+  width: 38px;
+height: 38px;
+border-radius: 25px;
+
+
+background-color: #fff;
+display: flex;
+align-items: center;
+justify-content: center;
+
+cursor: pointer;
+
+}
+
+.backButtonContainer{
+  display: flex;
+  justify-content: space-between;
+  top: 18px;
+left: 18px;
+right: 18px;
+position: absolute;
+z-index: 2;
+}
+
+.wishlistButton{
+  backdrop-filter: blur(9.399999618530273px);
+  width: 38px;
+  height: 38px;
+  border-radius: 25px;
+  background-color: #0202020D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .productGallery {
   margin: 0 0 20px 0;
-
+position: relative;
   @media (--viewportMedium) {
     margin: 24px 0 20px 0;
   }
@@ -901,6 +968,9 @@
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
+  @media screen and (max-width: 768px) {
+  padding: 0 20px;
+  }
 
   &>li {
     background: #FBA6F933;
@@ -950,6 +1020,15 @@
   outline: none;
   position: relative;
   transition: color 0.2s;
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.descriptionContainer{
+  @media screen and (max-width: 768px) {
+    padding: 0 20px;
+  }
 }
 
 .tab.activeTab,
@@ -998,4 +1077,211 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.amenitiesContainer {
+  border-top: 1px solid #F2F2F2;
+
+}
+
+.amenitiesTitle,
+.servicesTitle,
+.propertyDetailsTitle {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+}
+
+.servicesTitle,
+.propertyDetailsTitle {
+  font-size: 18px;
+}
+
+.amenitiesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 24px;
+  @media screen and (max-width: 768px) {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+}
+
+.amenityItem {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-basis: calc(33.33% - 20px);
+  @media screen and (max-width: 768px) {
+    gap: 10px;
+  }
+  & svg {
+    fill: transparent;
+    @media screen and (max-width: 768px) {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (--viewportMedium) {
+   
+  }
+}
+
+.amenityLabel {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  } 
+}
+
+.serviceItem {
+  border: 2px solid var(--Light-2, #C4C4C4);
+  background-color: #FAFAFA;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & svg {
+    fill: transparent;
+  }
+  @media screen and (max-width: 768px) {
+    padding: 5px 10px;
+    margin-bottom: 10px;
+  }
+}
+
+.serviceIcon {
+  margin-right: 10px;
+  @media screen and (max-width: 768px) {
+    margin-right: 5px;
+  & svg{
+    width: 20px;
+    height: 20px;
+  }
+  }
+}
+
+.serviceLabel,
+.serviceValue {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.serviceValueContainer{
+  @media screen and (max-width: 768px) {
+   & svg{
+    width: 18px;
+    height: 18px;
+   }
+  }
+}
+
+.serviceValue {
+  margin-right: 10px;
+}
+
+.active {
+  border-color: #D1F5D3;
+  background-color: #F7FFF6;
+
+  & .serviceValue {
+    color: #149A12;
+  }
+}
+
+.servicesContainerWrapper {
+  margin-top: 68px;
+  @media screen and (max-width: 768px) {
+    margin-top: 40px;
+  }
+}
+
+.propertyDetailsContainer {
+  margin-top: 68px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #F2F2F2;
+  margin-bottom: 30px;
+  @media screen and (max-width: 768px) {
+    margin-top: 40px;
+  }
+}
+
+.propertyDetailItem {
+  padding: 20px;
+  background-color: #FAFAFA;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @media screen and (max-width: 768px) {
+    padding: 5px 10px;
+    margin-bottom: 10px;
+    & svg{
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.propertyDetailLabelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  @media screen and (max-width: 768px) {
+    gap: 5px;
+  }
+}
+
+.propertyDetailLabel {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
+  margin-left: 12px;
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.propertyDetailValue {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: right;
+  color: #4D4D4D;
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.sectionAuthorContainer{
+  padding-top: 30px;
+  @media screen and (max-width: 768px) {
+    padding: 20px;
+  }
 }
