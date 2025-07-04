@@ -539,28 +539,36 @@ const IconCollection = ({ name }) => {
         </svg>
 
       );
-      case "icon-back":
-        return (
-          <svg style={{fill:"transparent"}} width="10" height="17" viewBox="0 0 10 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M8.95074 15.5746L1.70312 8.32696L8.95074 1.07935" stroke="#353535" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          
+    case "icon-back":
+      return (
+        <svg style={{ fill: "transparent" }} width="10" height="17" viewBox="0 0 10 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.95074 15.5746L1.70312 8.32696L8.95074 1.07935" stroke="#353535" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
 
-        )
-        case "icon-waislist":
-          return (
-            <svg style={{fill:"transparent"}} width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M14.75 4.1875C14.75 2.32375 13.1758 0.8125 11.234 0.8125C9.78275 0.8125 8.53625 1.657 8 2.86225C7.46375 1.657 6.21725 0.8125 4.76525 0.8125C2.825 0.8125 1.25 2.32375 1.25 4.1875C1.25 9.6025 8 13.1875 8 13.1875C8 13.1875 14.75 9.6025 14.75 4.1875Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
 
-          )
-          case "icon-waislist-active":
-            return (
-              <svg style={{fill:"#F74DF4"}} width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M14.75 4.1875C14.75 2.32375 13.1758 0.8125 11.234 0.8125C9.78275 0.8125 8.53625 1.657 8 2.86225C7.46375 1.657 6.21725 0.8125 4.76525 0.8125C2.825 0.8125 1.25 2.32375 1.25 4.1875C1.25 9.6025 8 13.1875 8 13.1875C8 13.1875 14.75 9.6025 14.75 4.1875Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+      )
+    case "icon-waislist":
+      return (
+        <svg style={{ fill: "transparent" }} width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14.75 4.1875C14.75 2.32375 13.1758 0.8125 11.234 0.8125C9.78275 0.8125 8.53625 1.657 8 2.86225C7.46375 1.657 6.21725 0.8125 4.76525 0.8125C2.825 0.8125 1.25 2.32375 1.25 4.1875C1.25 9.6025 8 13.1875 8 13.1875C8 13.1875 14.75 9.6025 14.75 4.1875Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
 
-            )
+      )
+    case "icon-waislist-active":
+      return (
+        <svg style={{ fill: "#F74DF4" }} width="16" height="14" viewBox="0 0 16 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14.75 4.1875C14.75 2.32375 13.1758 0.8125 11.234 0.8125C9.78275 0.8125 8.53625 1.657 8 2.86225C7.46375 1.657 6.21725 0.8125 4.76525 0.8125C2.825 0.8125 1.25 2.32375 1.25 4.1875C1.25 9.6025 8 13.1875 8 13.1875C8 13.1875 14.75 9.6025 14.75 4.1875Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+      )
+    case "icon_profile_badge":
+      return (
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="30" height="30" rx="15" fill="#EB2BE8" />
+          <path d="M11.25 15.9375L14.0625 18.75L18.75 12.1875M26.25 15C26.25 16.585 25.4625 17.9875 24.2588 18.835C24.3884 19.576 24.3377 20.3373 24.1107 21.0544C23.8838 21.7716 23.4873 22.4235 22.955 22.955C22.4235 23.4873 21.7716 23.8838 21.0544 24.1107C20.3373 24.3377 19.576 24.3884 18.835 24.2588C18.4028 24.8743 17.8286 25.3767 17.161 25.7233C16.4934 26.07 15.7522 26.2506 15 26.25C13.415 26.25 12.0125 25.4625 11.165 24.2588C10.424 24.3883 9.66277 24.3375 8.94561 24.1106C8.22845 23.8836 7.57653 23.4873 7.045 22.955C6.51266 22.4235 6.11622 21.7716 5.88928 21.0544C5.66233 20.3373 5.61156 19.576 5.74125 18.835C5.12565 18.4028 4.62328 17.8286 4.27666 17.161C3.93004 16.4934 3.74939 15.7522 3.75 15C3.75 13.415 4.5375 12.0125 5.74125 11.165C5.61156 10.424 5.66233 9.66274 5.88928 8.94556C6.11622 8.22839 6.51266 7.57646 7.045 7.045C7.57653 6.51274 8.22845 6.11637 8.94561 5.88943C9.66277 5.66249 10.424 5.61166 11.165 5.74125C11.5973 5.12573 12.1715 4.62341 12.8391 4.2768C13.5066 3.93019 14.2478 3.74949 15 3.75C16.585 3.75 17.9875 4.5375 18.835 5.74125C19.576 5.61166 20.3372 5.66249 21.0544 5.88943C21.7716 6.11637 22.4235 6.51274 22.955 7.045C23.4873 7.57652 23.8836 8.22845 24.1106 8.94561C24.3375 9.66277 24.3883 10.424 24.2588 11.165C24.8744 11.5972 25.3767 12.1714 25.7233 12.839C26.07 13.5066 26.2506 14.2478 26.25 15Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+
+      )
     default:
       return <></>;
   }

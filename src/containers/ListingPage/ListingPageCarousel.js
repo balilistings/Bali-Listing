@@ -85,6 +85,7 @@ import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
+import SectionTerms from './SectionTerms';
 
 import css from './ListingPage.module.css';
 
@@ -96,7 +97,7 @@ const SECTIONS = [
   { id: 'description', label: 'Description' },
   { id: 'amenities', label: 'Amenities' },
   { id: 'location', label: 'Location' },
-  //{ id: 'rentalTerms', label: 'Rental Terms' },
+  { id: 'rentalTerms', label: 'Rental Terms' },
   { id: 'listedBy', label: 'Listed By' },
 ];
 
@@ -322,8 +323,8 @@ export const ListingPageComponent = props => {
   const schemaAvailability = !currentListing.currentStock
     ? null
     : currentStock > 0
-    ? 'https://schema.org/InStock'
-    : 'https://schema.org/OutOfStock';
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock';
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
@@ -482,6 +483,11 @@ export const ListingPageComponent = props => {
             {reviews.length > 0 && (
               <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
             )}
+
+            <div className={css.sectionTermsWrapper} id="rentalTerms">
+              <SectionTerms />
+            </div>
+
             <SectionAuthorMaybe
               title={title}
               listing={currentListing}

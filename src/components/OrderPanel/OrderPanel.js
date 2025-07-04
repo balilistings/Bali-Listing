@@ -232,7 +232,7 @@ const preparePriceTabs = (publicData, marketplaceCurrency) => {
 
   // Filter and sort based on correct order, then map to include pricing
   return correctOrder
-    .filter(item => pricee.includes(item))
+    .filter(item => pricee?.includes(item))
     .map(item => {
       const priceKey =
         item === 'weekly' ? 'weekprice' : item === 'monthly' ? 'monthprice' : 'yearprice';
