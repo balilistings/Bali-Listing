@@ -101,6 +101,19 @@ const SECTIONS = [
   { id: 'listedBy', label: 'Listed By' },
 ];
 
+const prepareSections = isLandforsale => {
+  if (isLandforsale) {
+    return SECTIONS.map(section => {
+      if (section.id === 'amenities') {
+        return { id: 'propertyDetails', label: 'Property Details' };
+      }
+      return section;
+    });
+  }
+
+  return SECTIONS;
+};
+
 export const ListingPageComponent = props => {
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
@@ -239,7 +252,9 @@ export const ListingPageComponent = props => {
   const isOwnListing =
     userAndListingAuthorAvailable && currentListing.author.id.uuid === currentUser.id.uuid;
 
-  const { listingType, transactionProcessAlias, unitType } = publicData;
+  const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
+  const isLandforsale = categoryLevel1 === 'landforsale';
+
   if (!(listingType && transactionProcessAlias && unitType)) {
     // Listing should always contain listingType, transactionProcessAlias and unitType)
     return (
@@ -323,8 +338,8 @@ export const ListingPageComponent = props => {
   const schemaAvailability = !currentListing.currentStock
     ? null
     : currentStock > 0
-      ? 'https://schema.org/InStock'
-      : 'https://schema.org/OutOfStock';
+    ? 'https://schema.org/InStock'
+    : 'https://schema.org/OutOfStock';
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
@@ -439,11 +454,12 @@ export const ListingPageComponent = props => {
                 categoryConfiguration={config.categoryConfiguration}
                 intl={intl}
                 location={publicData?.location?.address}
+                isLandforsale={isLandforsale}
               />
             </div>
 
             <div className={css.tabsConrainer}>
-              {SECTIONS.map(section => (
+              {prepareSections(isLandforsale).map(section => (
                 <button
                   key={section.id}
                   className={classNames(css.tab, { [css.activeTab]: activeTab === section.id })}
@@ -467,6 +483,7 @@ export const ListingPageComponent = props => {
                   listingFieldConfigs={listingConfig.listingFields}
                   categoryConfiguration={config.categoryConfiguration}
                   intl={intl}
+                  isLandforsale={isLandforsale}
                 />
               </div>
             </div>
@@ -485,7 +502,7 @@ export const ListingPageComponent = props => {
             )}
 
             <div id="rentalTerms">
-              <SectionTerms />
+              <SectionTerms publicData={publicData} />
             </div>
 
             <SectionAuthorMaybe

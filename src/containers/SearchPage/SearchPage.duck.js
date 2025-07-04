@@ -371,6 +371,12 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         'publicData.priceVariants',
         'publicData.categoryLevel1',
         'publicData.pricee',
+        'publicData.weekprice',
+        'publicData.monthprice',
+        'publicData.yearprice',
+        'publicData.Freehold',
+        'publicData.availableper',
+        'publicData.priceperare',
       ],
       'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
       'fields.image': [

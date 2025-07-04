@@ -20,6 +20,7 @@ const SectionHeading = props => {
     intl,
     categoryConfiguration,
     location,
+    isLandforsale,
   } = props;
 
   if (!publicData || !listingFieldConfigs) {
@@ -169,25 +170,28 @@ const SectionHeading = props => {
           {location}
         </div>
       </div>
-      <section className={css.sectionDetails}>
-        <ul className={css.detailsType}>
-          {existingListingFields.map(detail =>
-            detail.key === 'bedrooms' || detail.key === 'bathrooms' ? (
-              <li key={detail.key} className={css.detailsTypeRow}>
-                {detail.key === 'bedrooms' ? (
-                  <IconCollection name="bed_icon" />
-                ) : (
-                  <IconCollection name="bathroom_icon" />
-                )}
-                <span>
-                  <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
-                  <span className={css.detailTypeLabel}>{detail.label}</span>
-                </span>
-              </li>
-            ) : null
-          )}
-        </ul>
-      </section>
+
+      {!isLandforsale && (
+        <section className={css.sectionDetails}>
+          <ul className={css.detailsType}>
+            {existingListingFields.map(detail =>
+              detail.key === 'bedrooms' || detail.key === 'bathrooms' ? (
+                <li key={detail.key} className={css.detailsTypeRow}>
+                  {detail.key === 'bedrooms' ? (
+                    <IconCollection name="bed_icon" />
+                  ) : (
+                    <IconCollection name="bathroom_icon" />
+                  )}
+                  <span>
+                    <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
+                    <span className={css.detailTypeLabel}>{detail.label}</span>
+                  </span>
+                </li>
+              ) : null
+            )}
+          </ul>
+        </section>
+      )}
     </>
   ) : null;
 };

@@ -225,7 +225,7 @@ const hasValidPriceVariants = priceVariants => {
 };
 
 const preparePriceTabs = (publicData, marketplaceCurrency) => {
-  if (publicData.categoryLevel1 === 'villaforsale') {
+  if (publicData.categoryLevel1 === 'villaforsale' || publicData.categoryLevel1 === 'landforsale') {
     return [];
   }
 
@@ -342,10 +342,13 @@ const OrderPanel = props => {
     startTimeInterval,
     availableper,
     categoryLevel1,
+    priceperare,
   } = publicData || {};
 
   const isVillaforsale = categoryLevel1 === 'villaforsale';
-  const hideTabs = isVillaforsale;
+  const isLandforsale = categoryLevel1 === 'landforsale';
+
+  const hideTabs = isVillaforsale || isLandforsale;
 
   const processName = resolveLatestProcessName(transactionProcessAlias.split('/')[0]);
   const lineItemUnitType = lineItemUnitTypeMaybe || `line-item/${unitType}`;
@@ -455,7 +458,6 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
-  console.log('publicData', publicData);
   return (
     <div className={classes}>
       {availableper === 'yes' && (
@@ -498,14 +500,20 @@ const OrderPanel = props => {
         )}
         <h4 className={css.priceHeading}>Price</h4>
         <PriceMaybe
-          price={isVillaforsale ? price : selectedTab?.price}
+          price={hideTabs ? price : selectedTab?.price}
           publicData={publicData}
           validListingTypes={validListingTypes}
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-        {availableper !== 'yes' && !isVillaforsale && (
+        {availableper !== 'yes' && !hideTabs && (
           <div className={css.availableFrom}>Available soon!</div>
+        )}
+        {priceperare && (
+          <div className={css.availableFrom}>
+            Price per are:{' '}
+            {formatMoneyIfSupportedCurrency(new Money(priceperare, marketplaceCurrency), intl)}
+          </div>
         )}
         {/* <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
@@ -613,14 +621,14 @@ const OrderPanel = props => {
               <div>
                 <h4 className={css.priceHeading}>Price</h4>
                 <PriceMaybe
-                  price={isVillaforsale ? price : selectedTab?.price}
+                  price={hideTabs ? price : selectedTab?.price}
                   publicData={publicData}
                   validListingTypes={validListingTypes}
                   intl={intl}
                   marketplaceCurrency={marketplaceCurrency}
                   showCurrencyMismatch
                 />
-                {availableper !== 'yes' && !isVillaforsale && (
+                {availableper !== 'yes' && !hideTabs && (
                   <div className={css.availableFrom}>Available soon!</div>
                 )}
               </div>

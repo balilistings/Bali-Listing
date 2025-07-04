@@ -58,11 +58,15 @@ const RentalPeriod = props => {
         ) : null;
       })}
 
-      {publicData.Freehold === 'leasehold' && (
+      {(publicData.Freehold === 'leasehold' || publicData.Freehold === 'freehold') && (
         <PropertyGroup
           id="ListingPage.amenities"
-          options={[{ key: 'leasehold', label: 'Leasehold' }]}
-          selectedOptions={['leasehold']}
+          options={
+            publicData.Freehold === 'leasehold'
+              ? [{ key: 'leasehold', label: 'Leasehold' }]
+              : [{ key: 'freehold', label: 'Freehold' }]
+          }
+          selectedOptions={publicData.Freehold === 'leasehold' ? ['leasehold'] : ['freehold']}
           twoColumns={false}
           showUnselectedOptions={false}
           rootClassName={css.rentalPeriod}
