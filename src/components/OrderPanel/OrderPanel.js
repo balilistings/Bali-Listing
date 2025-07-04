@@ -225,6 +225,10 @@ const hasValidPriceVariants = priceVariants => {
 };
 
 const preparePriceTabs = (publicData, marketplaceCurrency) => {
+  if (publicData.categoryLevel1 === 'villaforsale') {
+    return [];
+  }
+
   const pricee = publicData?.pricee;
 
   // Define the correct order
@@ -337,7 +341,11 @@ const OrderPanel = props => {
     priceVariants,
     startTimeInterval,
     availableper,
+    categoryLevel1,
   } = publicData || {};
+
+  const isVillaforsale = categoryLevel1 === 'villaforsale';
+  const hideTabs = isVillaforsale;
 
   const processName = resolveLatestProcessName(transactionProcessAlias.split('/')[0]);
   const lineItemUnitType = lineItemUnitTypeMaybe || `line-item/${unitType}`;
@@ -447,8 +455,7 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
-
-
+  console.log('publicData', publicData);
   return (
     <div className={classes}>
       {availableper === 'yes' && (
@@ -473,29 +480,33 @@ const OrderPanel = props => {
           {/* {titleDesktop ? titleDesktop : <H2 className={titleClasses}>{title}</H2>} */}
           {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
         </div>
-        <div className={css.tabsContainer}>
-          {tabs.map(elm => (
-            <button
-              key={elm.key}
-              type="button"
-              className={classNames(css.tabButton, {
-                [css.tabButtonSelected]: selectedTab.key === elm.key,
-              })}
-              onClick={() => setSelectedTab(elm)}
-            >
-              {elm.label}
-            </button>
-          ))}
-        </div>
+        {!hideTabs && (
+          <div className={css.tabsContainer}>
+            {tabs.map(elm => (
+              <button
+                key={elm.key}
+                type="button"
+                className={classNames(css.tabButton, {
+                  [css.tabButtonSelected]: selectedTab.key === elm.key,
+                })}
+                onClick={() => setSelectedTab(elm)}
+              >
+                {elm.label}
+              </button>
+            ))}
+          </div>
+        )}
         <h4 className={css.priceHeading}>Price</h4>
         <PriceMaybe
-          price={selectedTab?.price}
+          price={isVillaforsale ? price : selectedTab?.price}
           publicData={publicData}
           validListingTypes={validListingTypes}
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-        {availableper !== 'yes' && <div className={css.availableFrom}>Available soon!</div>}
+        {availableper !== 'yes' && !isVillaforsale && (
+          <div className={css.availableFrom}>Available soon!</div>
+        )}
         {/* <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>
@@ -581,33 +592,37 @@ const OrderPanel = props => {
                 Available Now!
               </Button>
             )}
-            <div className={css.tabsContainer}>
-              {tabs.map(elm => (
-                <button
-                  key={elm.key}
-                  type="button"
-                  className={classNames(css.tabButton, {
-                    [css.tabButtonSelected]: selectedTab.key === elm.key,
-                  })}
-                  onClick={() => setSelectedTab(elm)}
-                >
-                  {elm.label}
-                </button>
-              ))}
-            </div>
+            {!hideTabs && (
+              <div className={css.tabsContainer}>
+                {tabs.map(elm => (
+                  <button
+                    key={elm.key}
+                    type="button"
+                    className={classNames(css.tabButton, {
+                      [css.tabButtonSelected]: selectedTab.key === elm.key,
+                    })}
+                    onClick={() => setSelectedTab(elm)}
+                  >
+                    {elm.label}
+                  </button>
+                ))}
+              </div>
+            )}
 
             <div className={css.priceContainerWrapper}>
               <div>
                 <h4 className={css.priceHeading}>Price</h4>
                 <PriceMaybe
-                  price={selectedTab?.price}
+                  price={isVillaforsale ? price : selectedTab?.price}
                   publicData={publicData}
                   validListingTypes={validListingTypes}
                   intl={intl}
                   marketplaceCurrency={marketplaceCurrency}
                   showCurrencyMismatch
                 />
-                {availableper !== 'yes' && <div className={css.availableFrom}>Available soon!</div>}
+                {availableper !== 'yes' && !isVillaforsale && (
+                  <div className={css.availableFrom}>Available soon!</div>
+                )}
               </div>
               {isClosed ? (
                 <div className={css.closedListingButton}>
