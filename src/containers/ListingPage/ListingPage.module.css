@@ -851,6 +851,7 @@
 
   @media (--viewportMedium) {
     height: 275px;
+    max-height: 275px;
   }
 
   @media (--viewportLarge) {
