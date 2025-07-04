@@ -484,7 +484,7 @@ export const ListingPageComponent = props => {
               <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
             )}
 
-            <div className={css.sectionTermsWrapper} id="rentalTerms">
+            <div id="rentalTerms">
               <SectionTerms />
             </div>
 
