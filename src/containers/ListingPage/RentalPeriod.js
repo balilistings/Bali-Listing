@@ -1,7 +1,7 @@
 import React from 'react';
 
 // Utils
-import { SCHEMA_TYPE_MULTI_ENUM, } from '../../util/types';
+import { SCHEMA_TYPE_MULTI_ENUM } from '../../util/types';
 import {
   isFieldForCategory,
   pickCategoryFields,
@@ -44,18 +44,18 @@ const RentalPeriod = props => {
 
   return (
     <>
-
       {propsForCustomFields.map(customFieldProps => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
+
         return schemaType === SCHEMA_TYPE_MULTI_ENUM ? (
-            <PropertyGroup
-        id="ListingPage.amenities"
-        options={fieldProps.options}
-        selectedOptions={fieldProps.selectedOptions}
-        twoColumns={fieldProps.options.length > 5}
-        showUnselectedOptions={fieldProps.showUnselectedOptions}
-        rootClassName={css.rentalPeriod}
-      />
+          <PropertyGroup
+            id="ListingPage.amenities"
+            options={fieldProps.options}
+            selectedOptions={fieldProps.selectedOptions}
+            twoColumns={fieldProps.options.length > 5}
+            showUnselectedOptions={fieldProps.showUnselectedOptions}
+            rootClassName={css.rentalPeriod}
+          />
         ) : null;
       })}
     </>
