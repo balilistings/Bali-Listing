@@ -321,6 +321,7 @@
   padding: 4px;
   width: fit-content;
   margin-bottom: 1.4rem;
+  width: 100%;
   @media screen and (max-width: 768px) {
     width: 100%;
   }
@@ -339,11 +340,12 @@
   letter-spacing: 0%;
   color: #231F20;
   cursor: pointer;
+  flex: 1;
   transition: background 0.2s, box-shadow 0.2s;
   @media screen and (max-width: 768px) {
     padding: 10px 20px;
     font-size: 10px;
-    flex: 1;
+  
   }
 }
 
