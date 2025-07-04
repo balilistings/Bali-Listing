@@ -1,10 +1,10 @@
 @import '../../styles/customMediaQueries.css';
 
-.root {
-}
+.root {}
 
 .pageRoot {
-  padding-bottom: 90px;
+  padding-bottom: 190px;
+  background-color: #fff;
 
   @media (--viewportLarge) {
     padding-bottom: 0;
@@ -29,6 +29,19 @@
   }
 }
 
+.descriptionHeading {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
 .heroHeight {
   @media (--viewportMedium) {
     height: calc(0.41 * 100vw);
@@ -39,7 +52,8 @@
 
 .imageWrapperForSectionHero {
   composes: heroHeight;
-  background-color: var(--colorGrey100); /* Loading BG color */
+  background-color: var(--colorGrey100);
+  /* Loading BG color */
 
   /* Image carousel can be opened from the image, therefore we should show a pointer */
   cursor: pointer;
@@ -58,7 +72,8 @@
   width: 100%;
   color: var(--colorGrey100);
   background-color: var(--colorGrey700);
-  z-index: 1; /* bring on top of mobile image */
+  z-index: 1;
+  /* bring on top of mobile image */
   padding: 0 24px;
 
   /* Action bar prevents the image click events going to the parent and
@@ -266,25 +281,28 @@
 }
 
 .mainColumnForProductLayout {
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
+
   @media (--viewportLarge) {
     /* contentContainer's full width - (orderColumn + paddings + margin) */
-    max-width: calc(100% - 360px);
-    flex-basis: calc(100% - 360px);
+    max-width: calc(100% - 416px);
+    flex-basis: calc(100% - 416px);
     flex-shrink: 0;
     flex-grow: 1;
   }
 }
 
 .orderColumnForProductLayout {
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
+
   @media (--viewportLarge) {
     display: block;
-    margin-left: 48px;
-    flex-basis: 312px;
+    margin-left: 29px;
+    flex-basis: 386px;
     flex-shrink: 0;
+    height: 100%;
+    position: sticky;
+    top: 108px;
   }
 }
 
@@ -302,9 +320,39 @@
     display: flex;
     flex-direction: row;
     max-width: unset;
-    width: min(calc(var(--contentMaxWidth) + 72px), 100vw);
-    padding: 64px 36px 0 36px;
+    width: min(1292px, 100vw);
+    padding: 20px 36px 0 36px;
     margin: 0 auto 117px auto;
+  }
+}
+
+.breadCrumb {
+  padding-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #C4C4C4;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+
+  & a {
+    font-family: Mulish;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #C4C4C4;
+  }
+
+  & .breadCrumbLinkActive {
+    color: #F74DF4;
   }
 }
 
@@ -330,8 +378,8 @@
 }
 
 .orderColumnForHeroLayout {
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
+
   @media (--viewportLarge) {
     display: block;
     margin-top: 80px;
@@ -344,6 +392,7 @@
 }
 
 .orderPanel {
+
   /* Note: panel height might be too much on small viewport - hence min-height */
   @media (--viewportLarge) and (min-height: 950px) {
     position: sticky;
@@ -356,21 +405,41 @@
     display: block;
     margin-top: 24px;
   }
+
   /* Note: panel height might be too much on small viewport - hence min-height */
   @media (--viewportLarge) and (min-height: 950px) {
     position: sticky;
     top: 108px;
   }
+
+  &>div {
+    box-shadow: 0px 4px 20px 0px #00000033;
+    padding: 20px;
+    border-radius: 20px;
+
+    @media screen and (max-width: 768px) {
+      padding-top: 30px;
+      border-radius: 0;
+    }
+  }
 }
 
 .orderPanelTitle {
   /* Font */
-  font-weight: var(--fontWeightBold);
-
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
   /* Layout */
   width: 100%;
   margin-top: 0;
   margin-bottom: 0;
+
+  @media screen and (max-width: 768px) {
+    font-size: 14px;
+  }
 }
 
 .sectionAvatar {
@@ -396,12 +465,14 @@
   display: flex;
 
   @media (--viewportMedium) {
-    display: none; /* Hide the medium avatar from the bigger screens */
+    display: none;
+    /* Hide the medium avatar from the bigger screens */
   }
 }
 
 .avatarDesktop {
-  display: none; /* Hide the large avatar from the smaller screens */
+  display: none;
+  /* Hide the large avatar from the smaller screens */
 
   @media (--viewportMedium) {
     display: flex;
@@ -446,7 +517,7 @@
 
 .heading {
   margin-bottom: 33px;
-  padding: 0 24px;
+  padding: 0 20px;
 
   @media (--viewportMedium) {
     margin-bottom: 0;
@@ -463,6 +534,7 @@
   width: 100%;
   margin-top: 0;
   margin-bottom: 0;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 2px;
@@ -531,7 +603,7 @@
 }
 
 .sectionText {
-  padding: 0 24px;
+  padding: 0 0px;
   margin-bottom: 36px;
 
   @media (--viewportMedium) {
@@ -543,7 +615,12 @@
 .sectionHeading,
 .sectionHeadingWithExtraMargin {
   /* Font for sections titles */
-  composes: p from global;
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
   padding: 0;
   font-weight: var(--fontWeightBold);
 
@@ -553,6 +630,23 @@
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 8px;
+  }
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.sectionHeading {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
   }
 }
 
@@ -576,8 +670,66 @@
   }
 }
 
+.readMoreButton {
+  background: none;
+  border: none;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+
+  cursor: pointer;
+  padding: 0;
+  margin-left: 8px;
+
+  transition: color 0.2s ease;
+  display: block;
+  margin-left: auto;
+  width: max-content;
+  border: 1px solid #F74DF4;
+  width: 134px;
+  height: 38px;
+  color: #F74DF4;
+  border-radius: 10px;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--colorGrey700);
+
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+}
+
+.tabsConrainer {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 30px;
+  position: sticky;
+  top: 70px;
+  background-color: #fff;
+  z-index: 1;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 20px;
+    top: 56px;
+  }
+}
+
 .ingress {
-  composes: p from global;
+  font-family: Mulish;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #8D8D8D;
   margin: 0;
 
   /* Preserve newlines, but collapse other whitespace */
@@ -596,17 +748,38 @@
 
   @media (--viewportMedium) {
     padding: 0;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
+  }
+}
+
+.sectionDetails {
+  @media screen and (max-width: 768px) {
+    padding: 0 0px;
   }
 }
 
 .sectionMap {
   padding: 0 24px;
   margin-bottom: 35px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #F2F2F2;
 
   @media (--viewportMedium) {
-    padding: 0;
+    padding: 0 0 30px;
     margin-bottom: 0;
+  }
+}
+
+.address {
+  margin-top: 20px;
+  font-family: Mulish;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
   }
 }
 
@@ -621,8 +794,23 @@
     margin-top: 40px;
     scroll-margin-top: calc(var(--topbarHeightDesktop) + 24px);
   }
+
   @media (--viewportLarge) {
     padding: 8px 0;
+  }
+}
+
+.sectionAuthor {
+  margin-top: 20px;
+}
+
+.sectionAuthor {
+  box-shadow: 0px 4px 20px 0px #0000001A;
+  border-radius: 20px;
+  padding: 26px;
+
+  @media screen and (max-width: 768px) {
+    padding: 10px;
   }
 }
 
@@ -636,24 +824,32 @@
   justify-content: space-between;
   width: 100%;
   list-style: none;
-  font-weight: var(--fontWeightRegular);
-  line-height: 24px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
   padding: 7px 0px 10px;
   gap: 8px;
+  background: var(--light-4-bakcground-4-opsi-2, #FAFAFA);
+  border-radius: 12px;
 
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--colorGrey100);
-  }
+  margin-bottom: 12px;
 
   @media (--viewportMedium) {
-    padding: 5px 0 2px 0;
-    line-height: 32px;
+    padding: 26px 52px 26px 19px;
+
   }
 }
 
 .detailLabel {
-  font-weight: var(--fontWeightSemiBold);
-  letter-spacing: -0.09px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
 }
 
 .inquiryModalContent {
@@ -688,26 +884,60 @@
   }
 }
 
+.sectionLocationHeading {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 12px;
+  margin-top: 8px;
+
+  & * {
+    font-family: Mulish;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #818181;
+
+    @media screen and (max-width: 768px) {
+      font-size: 10px;
+    }
+  }
+}
+
+.location {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
 .map {
   /* Dimensions: Map takes all available space from viewport (excludes action button and section title) */
-  height: calc(100vh - 193px);
+  height: 120px;
   width: 100%;
 
   /* Static map: dimensions are 640px */
-  max-width: 640px;
-  max-height: 640px;
+  max-width: 804px;
+  max-height: 120px;
   background-color: #eee;
   padding: 0;
   border: 0;
   cursor: pointer;
+  border-radius: 20px;
+  overflow: hidden;
 
   @media (--viewportMedium) {
-    height: 75vh;
+    height: 275px;
+    max-height: 275px;
   }
 
   @media (--viewportLarge) {
-    height: 417px;
+    height: 275px;
     margin-bottom: 7px;
+  }
+
+  &>div {
+    max-width: 100% !important;
   }
 }
 
@@ -716,14 +946,53 @@
   hyphens: auto;
 }
 
+.backButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 25px;
+
+
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+}
+
+.backButtonContainer {
+  display: flex;
+  justify-content: space-between;
+  top: 18px;
+  left: 18px;
+  right: 18px;
+  position: absolute;
+  z-index: 2;
+}
+
+.wishlistButton {
+  backdrop-filter: blur(9.399999618530273px);
+  width: 38px;
+  height: 38px;
+  border-radius: 25px;
+  background-color: #0202020D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .productGallery {
-  margin: 0 0 36px 0;
+  margin: 0 0 20px 0;
+  position: relative;
 
   @media (--viewportMedium) {
-    margin: 24px 0 48px 0;
+    margin: 24px 0 20px 0;
   }
+
   @media (--viewportLarge) {
-    margin: 0 0 40px 0;
+    margin: 0 0 20px 0;
     padding-bottom: 4px;
   }
 }
@@ -742,13 +1011,13 @@
 
 .productDesktopHeading {
   display: none;
+
   @media (--viewportLarge) {
     display: block;
   }
 }
 
-.productSideContent {
-}
+.productSideContent {}
 
 .productBookingPanel {
   @media (--viewportLarge) {
@@ -766,6 +1035,7 @@
   overflow: hidden;
   border-radius: 8px;
 }
+
 .iframe {
   position: absolute;
   top: 0;
@@ -774,4 +1044,438 @@
   right: 0;
   width: 100%;
   height: 100%;
+}
+
+
+.rentalPeriod {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+
+  @media screen and (max-width: 768px) {
+    padding: 0 20px;
+  }
+
+  &>li {
+    background: #FBA6F933;
+    border-radius: 12px;
+    padding: 5px 15px;
+    font-family: Mulish;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #EB2BE8;
+
+    & span {
+      padding: 0;
+      font-family: Mulish;
+      font-weight: 700;
+      font-size: 12px;
+      line-height: 130%;
+      letter-spacing: 0%;
+      color: #EB2BE8;
+    }
+
+    &>span {
+      display: none;
+    }
+  }
+}
+
+.tabsContainer {
+  display: flex;
+  border-bottom: 1px dotted #B3B3B3;
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1;
+  background: none;
+  border: none;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+  padding: 10px 0 10px 0;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  transition: color 0.2s;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.descriptionContainer {
+  @media screen and (max-width: 768px) {
+    padding: 0 20px;
+  }
+}
+
+.tab.activeTab,
+.tab:focus {
+  color: #F74DF4;
+}
+
+.tab.activeTab::after {
+  content: '';
+  display: block;
+  height: 2px;
+  background: #F74DF4;
+  border-radius: 2px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+}
+
+.detailsType {
+  border: 0.5px solid var(--Light-2, #C4C4C4);
+  padding: 6px;
+  border-radius: 10px;
+  display: flex;
+  gap: 20px;
+  width: max-content;
+
+  & li {
+    margin: 0;
+    padding: 0;
+    line-height: 130%;
+  }
+}
+
+.detailTypeValue,
+.detailTypeLabel {
+  font-family: Mulish;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+}
+
+.detailsTypeRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.amenitiesContainer {
+  border-top: 1px solid #F2F2F2;
+
+}
+
+.amenitiesTitle,
+.servicesTitle,
+.propertyDetailsTitle {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.servicesTitle,
+.propertyDetailsTitle {
+  font-size: 18px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.amenitiesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 24px;
+
+  @media screen and (max-width: 768px) {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+}
+
+.amenityItem {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-basis: calc(33.33% - 20px);
+
+  @media screen and (max-width: 768px) {
+    gap: 10px;
+  }
+
+  & svg {
+    fill: transparent;
+
+    @media screen and (max-width: 768px) {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  @media (--viewportMedium) {}
+}
+
+.amenityLabel {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
+
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.serviceItem {
+  border: 2px solid var(--Light-2, #C4C4C4);
+  background-color: #FAFAFA;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & svg {
+    fill: transparent;
+  }
+
+  @media screen and (max-width: 768px) {
+    padding: 5px 10px;
+    margin-bottom: 10px;
+  }
+}
+
+.serviceIcon {
+  margin-right: 10px;
+
+  @media screen and (max-width: 768px) {
+    margin-right: 5px;
+
+    & svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.serviceLabel,
+.serviceValue {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
+
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.serviceValueContainer {
+  @media screen and (max-width: 768px) {
+    & svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.serviceValue {
+  margin-right: 10px;
+}
+
+.active {
+  border-color: #D1F5D3;
+  background-color: #F7FFF6;
+
+  & .serviceValue {
+    color: #149A12;
+  }
+}
+
+.servicesContainerWrapper {
+  margin-top: 68px;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 40px;
+  }
+}
+
+.propertyDetailsContainer {
+  margin-top: 68px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #F2F2F2;
+  margin-bottom: 30px;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 40px;
+  }
+}
+
+.propertyDetailItem {
+  padding: 20px;
+  background-color: #FAFAFA;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  @media screen and (max-width: 768px) {
+    padding: 5px 10px;
+    margin-bottom: 10px;
+
+    & svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.propertyDetailLabelWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media screen and (max-width: 768px) {
+    gap: 5px;
+  }
+}
+
+.propertyDetailLabel {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
+  margin-left: 12px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.propertyDetailValue {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: right;
+  color: #4D4D4D;
+
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.sectionAuthorContainer {
+  padding-top: 30px;
+
+  @media screen and (max-width: 768px) {
+    padding: 20px;
+  }
+}
+
+.sectionTermsWrapper {
+  margin: 32px 0;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #F2F2F2;
+
+  @media screen and (max-width: 768px) {
+    margin: 20px 0;
+    padding: 0 20px 20px;
+  }
+}
+
+.sectionTitle {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  margin-bottom: 20px;
+  color: #231F20;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+    margin-bottom: 10px;
+  }
+}
+
+.termsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.termRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  border-radius: 8px;
+  padding: 32px 30px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #4D4D4D;
+
+  &:nth-child(odd) {
+    background-color: #F2F2F2;
+  }
+  @media screen and (max-width: 768px) {
+    border-radius: ;
+  }
+}
+
+.termLabel {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: right;
+  color: #4D4D4D;
+}
+
+.termValue {
+  font-family: Mulish;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: right;
+  color: #353535;
+}
+
+@media (max-width: 600px) {
+  .termRow {
+    padding: 8px 10px;
+    border-radius: 0px;
+  }
+
+  .termLabel, .termValue {
+    font-size: 10px;
+  }
 }

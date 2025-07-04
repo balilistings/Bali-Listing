@@ -490,7 +490,7 @@
   "ListingPage.addPayoutDetailsMessage": "Please add your payout details to start accepting orders.",
   "ListingPage.closedListing": "This listing is not available right now.",
   "ListingPage.contactUser": "Contact",
-  "ListingPage.detailsTitle": "Details",
+  "ListingPage.detailsTitle": "Property Details",
   "ListingPage.editListing": "Edit listing",
   "ListingPage.editProfileLink": "Edit profile",
   "ListingPage.errorInvalidListingMessage": "The listing contained invalid data. Please contact the marketplace operator.",

@@ -359,7 +359,7 @@
 
 .image-gallery-thumbnail {
   display: inline-block;
-  border: 4px solid transparent;
+  border: 2px solid transparent;
   transition: border .3s ease-out;
   width: 100px;
   background: transparent;
@@ -368,7 +368,7 @@
 
 @media(max-width: 768px) {
   .image-gallery-thumbnail {
-    border: 3px solid transparent;
+    border: 2px solid transparent;
     width: 81px
   }
 }
@@ -390,19 +390,19 @@
 
 .image-gallery-thumbnail.active, .image-gallery-thumbnail:focus {
   outline: none;
-  border: 4px solid #337ab7
+  border: 2px solid #337ab7
 }
 
 @media(max-width: 768px) {
   .image-gallery-thumbnail.active, .image-gallery-thumbnail:focus {
-    border: 3px solid #337ab7
+    border: 2px solid #337ab7
   }
 }
 
 @media(hover: hover)and (pointer: fine) {
   .image-gallery-thumbnail:hover {
     outline: none;
-    border: 4px solid #337ab7
+    border: 2px solid #337ab7
   }
 }
 

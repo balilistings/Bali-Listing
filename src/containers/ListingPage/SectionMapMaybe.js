@@ -57,6 +57,7 @@ class SectionMapMaybe extends Component {
         ) : (
           <div className={css.map}>{map}</div>
         )}
+        {address && <div className={css.address}>{address}</div>}
       </section>
     );
   }

@@ -1,7 +1,6 @@
 @import '../../styles/customMediaQueries.css';
 
-.root {
-}
+.root {}
 
 /* Order form inside modalContainer needs special handling */
 /* since "inMobile" breakpoint is actually --viewportLarge */
@@ -49,6 +48,7 @@
   width: 100%;
   margin-top: 0;
   margin-bottom: 0;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 5px;
@@ -56,8 +56,12 @@
 }
 
 .price {
-  composes: h4 from global;
-  font-weight: var(--fontWeightBold);
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
   margin: 0 0 0 24px;
 
   @media (--viewportMedium) {
@@ -65,12 +69,13 @@
     padding: 0;
   }
 }
+
 .priceValue {
-  color: var(--marketplaceColor);
+  color: #231F20;
 }
 
 .perUnit {
-  color: var(--marketplaceColor);
+  color: #231F20;
 }
 
 .author {
@@ -169,7 +174,7 @@
   bottom: 0;
   left: 0;
   width: 100vw;
-  padding: 18px 24px 18px 16px;
+  padding: 30px 24px 18px 16px;
   background-color: var(--colorWhite);
   box-shadow: var(--boxShadowTop);
   display: flex;
@@ -179,7 +184,7 @@
   transform: translate3d(0, 0, 0);
 
   @media (--viewportMedium) {
-    padding: 18px 60px 18px 60px;
+    padding: 30px 60px 18px 60px;
   }
 
   @media (--viewportLarge) {
@@ -207,12 +212,19 @@
     margin-right: unset;
     padding: 0;
   }
+  @media screen and (max-width: 768px) {
+    padding: 0;
+  }
 }
+
 .priceContainerInCTA {
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: unset;
+  @media screen and (max-width: 768px) {
+   display: block;
+  }
 }
 
 .priceValueInCTA {
@@ -222,9 +234,18 @@
 
   margin-top: 0;
   margin-bottom: 0px;
+
   @media (--viewportMedium) {
     margin-top: 0;
     margin-bottom: 0;
+  }
+  @media screen and (max-width: 768px) {
+    font-family: Istok Web;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #231F20;
   }
 }
 
@@ -243,8 +264,7 @@
     margin-bottom: 0;
   }
 
-  @media (--viewportLarge) {
-  }
+  @media (--viewportLarge) {}
 }
 
 .closedListingButton {
@@ -268,11 +288,140 @@
     padding: 0;
   }
 }
+
 .errorSidebar {
   color: var(--colorFail);
   padding: 0 24px;
 
   @media (--viewportMedium) {
     padding: 0;
+  }
+}
+
+
+.priceHeading {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #F74DF4;
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.tabsContainer {
+  display: flex;
+  background: #fff;
+  border-radius: 999px;
+  border: 1px solid #F2F2F2;
+  padding: 4px;
+  width: fit-content;
+  margin-bottom: 1.4rem;
+  width: 100%;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
+}
+
+.tabButton {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 12px 32px;
+  border-radius: 999px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+  cursor: pointer;
+  flex: 1;
+  transition: background 0.2s, box-shadow 0.2s;
+  @media screen and (max-width: 768px) {
+    padding: 10px 20px;
+    font-size: 10px;
+  
+  }
+}
+
+.tabButtonSelected {
+  background: #FBA6F933;
+  border: 1px solid #F74DF4;
+  color: #222;
+
+}
+
+.availableFrom {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #6B7280;
+}
+
+.availableNowButton {
+  min-height: 39px;
+  background-color: #06C270;
+  border-radius: 12px;
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+.availableNowButtonDesktop{
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+}
+
+.availableNowButtonMobile{
+  position: absolute;
+  width: max-content;
+  left: 20px;
+  top: -15px;
+  font-size: 10px;
+  min-height: 29px;
+  padding: 0 12px;
+}
+
+.openOrderFormContainer{
+  width: 100%;
+}
+
+.priceContainerWrapper{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.openOrderFormButton{
+  min-height: 49px;
+  background: #F74DF4;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  border-radius: 5px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  min-height: 41px;
+  width: max-content;
+  padding: 0 14px;
+  & svg{
+    width: 20px;
   }
 }

@@ -212,15 +212,17 @@ const PropertyCards = () => {
   console.log('listings', listings);
 
   useEffect(() => {
-    const idx = tabList.findIndex(tab => tab.id === activeTab);
-    if (tabRefs.current[idx]) {
-      const node = tabRefs.current[idx];
-      setUnderlineStyle({
-        left: node.offsetLeft,
-        width: node.offsetWidth,
-      });
-    }
-  }, [activeTab]);
+    setTimeout(() => {
+      const idx = tabList.findIndex(tab => tab.id === activeTab);
+      if (tabRefs.current[idx]) {
+        const node = tabRefs.current[idx];
+        setUnderlineStyle({
+          left: node.offsetLeft,
+          width: node.offsetWidth,
+        });
+      }
+    }, 10);
+  }, [activeTab,listings]);
 
   // const handleLike = idx => {
   //   setLikedCards(likedCards => likedCards.map((liked, i) => (i === idx ? !liked : liked)));

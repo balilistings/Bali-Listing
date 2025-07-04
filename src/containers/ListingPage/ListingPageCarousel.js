@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
+import classNames from 'classnames';
 
 // Contexts
 import { useConfiguration } from '../../context/configurationContext';
@@ -37,6 +38,7 @@ import {
   isPurchaseProcess,
   resolveLatestProcessName,
 } from '../../transactions/transaction';
+import RentalPeriod from './RentalPeriod';
 
 // Global ducks (for Redux actions and thunks)
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
@@ -52,6 +54,7 @@ import {
   OrderPanel,
   LayoutSingleColumn,
 } from '../../components';
+import SectionHeading from './SectionHeading';
 
 // Related components and modules
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
@@ -82,6 +85,7 @@ import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
+import SectionTerms from './SectionTerms';
 
 import css from './ListingPage.module.css';
 
@@ -89,14 +93,64 @@ const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 const { UUID } = sdkTypes;
 
+const SECTIONS = [
+  { id: 'description', label: 'Description' },
+  { id: 'amenities', label: 'Amenities' },
+  { id: 'location', label: 'Location' },
+  { id: 'rentalTerms', label: 'Rental Terms' },
+  { id: 'listedBy', label: 'Listed By' },
+];
+
+const prepareSections = isLandforsale => {
+  if (isLandforsale) {
+    return SECTIONS.map(section => {
+      if (section.id === 'amenities') {
+        return { id: 'propertyDetails', label: 'Property Details' };
+      }
+      return section;
+    });
+  }
+
+  return SECTIONS;
+};
+
 export const ListingPageComponent = props => {
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
   );
   const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState(SECTIONS[0].id);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Scroll to section on tab click
+  const handleTabClick = id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Scrollspy: update active tab on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      let found = SECTIONS[0].id;
+      for (const section of SECTIONS) {
+        const el = document.getElementById(section.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 120) {
+            // adjust offset for sticky header if needed
+            found = section.id;
+          }
+        }
+      }
+      setActiveTab(found);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const {
@@ -198,7 +252,9 @@ export const ListingPageComponent = props => {
   const isOwnListing =
     userAndListingAuthorAvailable && currentListing.author.id.uuid === currentUser.id.uuid;
 
-  const { listingType, transactionProcessAlias, unitType } = publicData;
+  const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
+  const isLandforsale = categoryLevel1 === 'landforsale';
+
   if (!(listingType && transactionProcessAlias && unitType)) {
     // Listing should always contain listingType, transactionProcessAlias and unitType)
     return (
@@ -312,6 +368,47 @@ export const ListingPageComponent = props => {
       <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
         <div className={css.contentWrapperForProductLayout}>
           <div className={css.mainColumnForProductLayout}>
+            <div className={css.breadCrumb}>
+              <NamedLink name="LandingPage" className={css.breadCrumbLink}>
+                Home
+              </NamedLink>
+              <span className={css.breadCrumbSeparator}>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z"
+                    fill="#C4C4C4"
+                  />
+                </svg>
+              </span>
+              <NamedLink name="SearchPage" params={params} className={css.breadCrumbLink}>
+                Rental
+              </NamedLink>
+              <span className={css.breadCrumbSeparator}>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z"
+                    fill="#F74DF4"
+                  />
+                </svg>
+              </span>
+              <span className={css.breadCrumbLinkActive}>Details Page</span>
+            </div>
             {mounted && currentListing.id && noPayoutDetailsSetWithOwnListing ? (
               <ActionBarMaybe
                 className={css.actionBarForProductLayout}
@@ -339,28 +436,75 @@ export const ListingPageComponent = props => {
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
             />
-            <div className={css.mobileHeading}>
-              <H4 as="h1" className={css.orderPanelTitle}>
-                <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-              </H4>
-            </div>
-            <SectionTextMaybe text={description} showAsIngress />
-
-            <CustomListingFields
+            <RentalPeriod
               publicData={publicData}
               metadata={metadata}
               listingFieldConfigs={listingConfig.listingFields}
               categoryConfiguration={config.categoryConfiguration}
               intl={intl}
             />
+            <div className={css.heading}>
+              <H4 as="h1" className={css.orderPanelTitle}>
+                <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+              </H4>
+              <SectionHeading
+                publicData={publicData}
+                metadata={metadata}
+                listingFieldConfigs={listingConfig.listingFields}
+                categoryConfiguration={config.categoryConfiguration}
+                intl={intl}
+                location={publicData?.location?.address}
+                isLandforsale={isLandforsale}
+              />
+            </div>
 
-            <SectionMapMaybe
-              geolocation={geolocation}
-              publicData={publicData}
-              listingId={currentListing.id}
-              mapsConfig={config.maps}
-            />
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
+            <div className={css.tabsConrainer}>
+              {prepareSections(isLandforsale).map(section => (
+                <button
+                  key={section.id}
+                  className={classNames(css.tab, { [css.activeTab]: activeTab === section.id })}
+                  onClick={() => handleTabClick(section.id)}
+                  type="button"
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+            <div className={css.descriptionContainer}>
+              <div id="description">
+                <h4 className={css.descriptionHeading}>Description</h4>
+                <SectionTextMaybe text={description} showAsIngress />
+              </div>
+
+              <div>
+                <CustomListingFields
+                  publicData={publicData}
+                  metadata={metadata}
+                  listingFieldConfigs={listingConfig.listingFields}
+                  categoryConfiguration={config.categoryConfiguration}
+                  intl={intl}
+                  isLandforsale={isLandforsale}
+                />
+              </div>
+            </div>
+
+            <div id="location">
+              <SectionMapMaybe
+                geolocation={geolocation}
+                publicData={publicData}
+                listingId={currentListing.id}
+                mapsConfig={config.maps}
+              />
+            </div>
+
+            {reviews.length > 0 && (
+              <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
+            )}
+
+            <div id="rentalTerms">
+              <SectionTerms publicData={publicData} />
+            </div>
+
             <SectionAuthorMaybe
               title={title}
               listing={currentListing}

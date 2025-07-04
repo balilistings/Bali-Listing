@@ -156,12 +156,22 @@ const ListingImageGallery = props => {
         <IconClose rootClassName={css.closeIcon} />
       </Button>
     ) : (
-      <button className={css.openFullscreen} onClick={onClick}>
-        <FormattedMessage
-          id="ListingImageGallery.viewImagesButton"
-          values={{ count: images.length }}
-        />
-      </button>
+      <div
+        className={css.openFullscreenWrapper}
+        style={{
+          backgroundImage: images?.[0]?.attributes?.variants?.[thumbVariants[0]]?.url
+            ? `url(${images[0].attributes.variants[thumbVariants[0]].url})`
+            : 'none',
+        }}
+      >
+        <button className={css.openFullscreen} onClick={onClick}>
+          {/* <FormattedMessage
+            id="ListingImageGallery.viewImagesButton"
+            values={{ count: images.length }}
+          /> */}
+          All Photos
+        </button>
+      </div>
     );
   };
 
