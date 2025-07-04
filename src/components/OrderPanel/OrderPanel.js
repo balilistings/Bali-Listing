@@ -38,6 +38,10 @@ import PriceVariantPicker from './PriceVariantPicker/PriceVariantPicker';
 
 import css from './OrderPanel.module.css';
 
+import { types as sdkTypes } from '../../util/sdkLoader';
+
+const { Money } = sdkTypes;
+
 const BookingTimeForm = loadable(() =>
   import(/* webpackChunkName: "BookingTimeForm" */ './BookingTimeForm/BookingTimeForm')
 );
@@ -220,6 +224,28 @@ const hasValidPriceVariants = priceVariants => {
   return variantsHaveNames && namesAreUnique;
 };
 
+const preparePriceTabs = (publicData, marketplaceCurrency) => {
+  const pricee = publicData?.pricee;
+
+  // Define the correct order
+  const correctOrder = ['weekly', 'monthly', 'yearly'];
+
+  // Filter and sort based on correct order, then map to include pricing
+  return correctOrder
+    .filter(item => pricee.includes(item))
+    .map(item => {
+      const priceKey =
+        item === 'weekly' ? 'weekprice' : item === 'monthly' ? 'monthprice' : 'yearprice';
+      const price = publicData?.[priceKey] || null;
+
+      return {
+        key: item,
+        label: item.charAt(0).toUpperCase() + item.slice(1).toLowerCase(),
+        price: price ? new Money(price * 100, marketplaceCurrency) : null,
+      };
+    });
+};
+
 /**
  * @typedef {Object} ListingTypeConfig
  * @property {string} listingType - The type of the listing
@@ -266,10 +292,15 @@ const OrderPanel = props => {
   const intl = useIntl();
   const location = useLocation();
   const history = useHistory();
+  const [tabs, setTabs] = useState(
+    preparePriceTabs(props.listing?.attributes?.publicData, props.marketplaceCurrency)
+  );
+  const [selectedTab, setSelectedTab] = useState(tabs[tabs.length - 1]);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
   const {
     rootClassName,
     className,
@@ -416,10 +447,7 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
-  const [selectedTab, setSelectedTab] = useState('Yearly');
-  const tabOptions = ['Weakly', 'Monthly', 'Yearly'];
 
-  console.log(publicData);
 
   return (
     <div className={classes}>
@@ -446,28 +474,28 @@ const OrderPanel = props => {
           {subTitleText ? <div className={css.orderHelp}>{subTitleText}</div> : null}
         </div>
         <div className={css.tabsContainer}>
-          {tabOptions.map(option => (
+          {tabs.map(elm => (
             <button
-              key={option}
+              key={elm.key}
               type="button"
               className={classNames(css.tabButton, {
-                [css.tabButtonSelected]: selectedTab === option,
+                [css.tabButtonSelected]: selectedTab.key === elm.key,
               })}
-              onClick={() => setSelectedTab(option)}
+              onClick={() => setSelectedTab(elm)}
             >
-              {option}
+              {elm.label}
             </button>
           ))}
         </div>
         <h4 className={css.priceHeading}>Price</h4>
         <PriceMaybe
-          price={price}
+          price={selectedTab?.price}
           publicData={publicData}
           validListingTypes={validListingTypes}
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-        <div className={css.availableFrom}>Available from June 1st</div>
+        {availableper !== 'yes' && <div className={css.availableFrom}>Available soon!</div>}
         {/* <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>
@@ -554,16 +582,16 @@ const OrderPanel = props => {
               </Button>
             )}
             <div className={css.tabsContainer}>
-              {tabOptions.map(option => (
+              {tabs.map(elm => (
                 <button
-                  key={option}
+                  key={elm.key}
                   type="button"
                   className={classNames(css.tabButton, {
-                    [css.tabButtonSelected]: selectedTab === option,
+                    [css.tabButtonSelected]: selectedTab.key === elm.key,
                   })}
-                  onClick={() => setSelectedTab(option)}
+                  onClick={() => setSelectedTab(elm)}
                 >
-                  {option}
+                  {elm.label}
                 </button>
               ))}
             </div>
@@ -572,14 +600,14 @@ const OrderPanel = props => {
               <div>
                 <h4 className={css.priceHeading}>Price</h4>
                 <PriceMaybe
-                  price={price}
+                  price={selectedTab?.price}
                   publicData={publicData}
                   validListingTypes={validListingTypes}
                   intl={intl}
                   marketplaceCurrency={marketplaceCurrency}
                   showCurrencyMismatch
                 />
-                <div className={css.availableFrom}>Available from June 1st</div>
+                {availableper !== 'yes' && <div className={css.availableFrom}>Available soon!</div>}
               </div>
               {isClosed ? (
                 <div className={css.closedListingButton}>
