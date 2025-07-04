@@ -384,6 +384,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
         'variants.scaled-medium',
         `variants.${variantPrefix}`,
         `variants.${variantPrefix}-2x`,
+        'variants.landscape-crop2x',
       ],
       ...createImageVariantConfig(`${variantPrefix}`, 400, aspectRatio),
       ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),

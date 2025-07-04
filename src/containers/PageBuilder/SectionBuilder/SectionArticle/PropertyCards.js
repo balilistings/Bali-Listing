@@ -209,8 +209,6 @@ const PropertyCards = () => {
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
 
-  console.log('listings', listings);
-
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       const idx = tabList.findIndex(tab => tab.id === activeTab);
@@ -328,7 +326,9 @@ const PropertyCards = () => {
           <>
             {listings?.map((card, idx) => {
               const { attributes, images, author } = card;
-              const imagesUrls = images.map(img => img.attributes.variants['landscape-crop2x'].url);
+              const imagesUrls = images.map(
+                img => img.attributes.variants['landscape-crop2x']?.url
+              );
               // Per-card slider settings
               const cardSliderSettings = {
                 ...sliderSettings,
@@ -393,7 +393,7 @@ const PropertyCards = () => {
                       <span className={styles.locationIcon}>
                         <IconCollection name="locationIcon" />
                       </span>
-                      {location.address}
+                      {location?.address}
                       <span className={styles.typeIcon}>
                         <IconCollection name="typeIcon" />
                       </span>
