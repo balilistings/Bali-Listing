@@ -125,12 +125,18 @@ export const ListingPageComponent = props => {
     setMounted(true);
   }, []);
 
-  // Scroll to section on tab click
+  // Scroll to section on tab click with offset from top
   const handleTabClick = id => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: elementPosition - 120, // Offset by 200px from top
+        behavior: 'smooth'
+      });
+      setActiveTab(id);
     }
+    
   };
 
   // Scrollspy: update active tab on scroll
@@ -141,7 +147,7 @@ export const ListingPageComponent = props => {
         const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 120) {
+          if (rect.top <= 330) {
             // adjust offset for sticky header if needed
             found = section.id;
           }
@@ -471,7 +477,7 @@ export const ListingPageComponent = props => {
               ))}
             </div>
             <div className={css.descriptionContainer}>
-              <div id="description">
+              <div id="description" >
                 <h4 className={css.descriptionHeading}>Description</h4>
                 <SectionTextMaybe text={description} showAsIngress />
               </div>
