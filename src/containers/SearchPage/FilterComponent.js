@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { parseSelectFilterOptions } from '../../util/search';
 
 // utils
 import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_LONG } from '../../util/types';
@@ -17,6 +18,7 @@ import SeatsFilter from './SeatsFilter/SeatsFilter';
  * FilterComponent is used to map configured filter types
  * to actual filter components
  */
+var value = [];
 const FilterComponent = props => {
   const {
     idPrefix,
@@ -178,7 +180,11 @@ const FilterComponent = props => {
           name={name}
           queryParamNames={queryParamNames}
           initialValues={initialValues(queryParamNames, liveEdit)}
-          onSubmit={getHandleChangedValueFn(useHistoryPush)}
+          onSubmit={(formattedQueryParam, usedValue) => {
+            getHandleChangedValueFn(useHistoryPush)(formattedQueryParam);
+            value = [];
+            value.push(usedValue);
+          }}
           options={enumOptions}
           schemaType={schemaType}
           searchMode={'has_any'}
@@ -190,20 +196,55 @@ const FilterComponent = props => {
       const { minimum, maximum, scope, step, filterConfig = {} } = config;
       const { label } = filterConfig;
       const queryParamNames = [constructQueryParamName(key, scope)];
-      return (
-        <IntegerRangeFilter
-          id={componentId}
-          label={label}
-          name={name}
-          queryParamNames={queryParamNames}
-          initialValues={initialValues(queryParamNames, liveEdit)}
-          onSubmit={getHandleChangedValueFn(useHistoryPush)}
-          min={minimum}
-          max={maximum}
-          step={step}
-          {...rest}
-        />
-      );
+
+      if (value[0]?.includes('weekly') && name === 'weekprice') {
+        return (
+          <IntegerRangeFilter
+            id={componentId}
+            label={label}
+            name={name}
+            queryParamNames={queryParamNames}
+            initialValues={initialValues(queryParamNames, liveEdit)}
+            onSubmit={getHandleChangedValueFn(useHistoryPush)}
+            min={minimum}
+            max={maximum}
+            step={step}
+            {...rest}
+          />
+        );
+      }
+      if (value[0]?.includes('monthly') && name === 'monthprice') {
+        return (
+          <IntegerRangeFilter
+            id={componentId}
+            label={label}
+            name={name}
+            queryParamNames={queryParamNames}
+            initialValues={initialValues(queryParamNames, liveEdit)}
+            onSubmit={getHandleChangedValueFn(useHistoryPush)}
+            min={minimum}
+            max={maximum}
+            step={step}
+            {...rest}
+          />
+        );
+      }
+      if (value[0]?.includes('yearly') && name === 'yearprice') {
+        return (
+          <IntegerRangeFilter
+            id={componentId}
+            label={label}
+            name={name}
+            queryParamNames={queryParamNames}
+            initialValues={initialValues(queryParamNames, liveEdit)}
+            onSubmit={getHandleChangedValueFn(useHistoryPush)}
+            min={minimum}
+            max={maximum}
+            step={step}
+            {...rest}
+          />
+        );
+      }
     }
     default:
       return null;
