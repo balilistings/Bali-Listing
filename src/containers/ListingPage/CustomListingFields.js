@@ -62,6 +62,7 @@ const preparePropertyDetails = publicData => {
     });
 };
 
+console.log('')
 const services = [
   {
     icon: <IconCollection name="cleaning" />,
