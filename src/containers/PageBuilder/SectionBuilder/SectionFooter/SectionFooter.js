@@ -103,7 +103,6 @@ const SectionFooter = props => {
   const logoLayout = isMobileLayout ? 'mobile' : 'desktop';
 
   // use block builder instead of mapping blocks manually
-
   return (
     <SectionContainer
       as="footer"
@@ -114,32 +113,56 @@ const SectionFooter = props => {
       options={fieldOptions}
     >
       <div className={css.footer}>
-        <div className={classNames(css.content, getContentCss(numberOfColumns))}>
-          <div>
-            <LinkedLogo
-              rootClassName={css.logoLink}
-              logoClassName={css.logoWrapper}
-              logoImageClassName={css.logoImage}
-              linkToExternalSite={linkLogoToExternalSite}
-              layout={logoLayout}
-            />
-          </div>
-          <div className={css.sloganMobile}>
-            <Field data={slogan} className={css.slogan} />
-          </div>
-          <div className={css.detailsInfo}>
-            <div className={css.sloganDesktop}>
+        <div className={css.footerInner}>
+          <div className={classNames(css.content, getContentCss(numberOfColumns))}>
+            <div>
+              <LinkedLogo
+                rootClassName={css.logoLink}
+                logoClassName={css.logoWrapper}
+                logoImageClassName={css.logoImage}
+                linkToExternalSite={linkLogoToExternalSite}
+                layout={logoLayout}
+              />
+            </div>
+            <div className={css.sloganMobile}>
               <Field data={slogan} className={css.slogan} />
             </div>
-            {showSocialMediaLinks ? (
-              <div className={css.icons}>
-                <BlockBuilder blocks={linksWithBlockId} sectionId={sectionId} options={options} />
+            <div className={css.detailsInfo}>
+              <div className={css.sloganDesktop}>
+                <Field data={slogan} className={css.slogan} />
               </div>
-            ) : null}
-            <Field data={copyright} className={css.copyright} />
+              {showSocialMediaLinks ? (
+                <div className={css.icons}>
+                  <BlockBuilder blocks={linksWithBlockId} sectionId={sectionId} options={options} />
+                </div>
+              ) : null}
+            </div>
+            <div className={classNames(css.grid, getGridCss(numberOfColumns))}>
+              <BlockBuilder
+                blocks={blocks.filter(b => b.blockId !== 'last_privacy_block')}
+                sectionId={sectionId}
+                options={options}
+              />
+            </div>
           </div>
-          <div className={classNames(css.grid, getGridCss(numberOfColumns))}>
-            <BlockBuilder blocks={blocks} sectionId={sectionId} options={options} />
+          <div className={css.mobilContact}>
+            <div>
+              <BlockBuilder
+                blocks={blocks.filter(b => b.blockId === 'contact_block')}
+                sectionId={sectionId}
+                options={options}
+              />
+            </div>
+          </div>
+          <div className={css.footerBottom}>
+            <Field data={copyright} className={css.copyright} />
+            <div>
+              <BlockBuilder
+                blocks={blocks.filter(b => b.blockId === 'last_privacy_block')}
+                sectionId={sectionId}
+                options={options}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -1,11 +1,12 @@
 @import '../../../styles/customMediaQueries.css';
 
 :global(.image-gallery-thumbnails-container) {
-  text-align: left !important;
+  text-align: right !important;
 }
+
 :global(.image-gallery-thumbnails) {
   padding-top: 24px;
-  padding-bottom: 0;
+  padding-bottom: 18px;
 
   /*
    By default, the gallery controls the scroll position of the thumbnails when
@@ -15,19 +16,26 @@
    */
   width: 100vw;
   overflow: auto;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 128px;
 
   @media (--viewportMedium) {
     width: calc(100vw - 48px);
   }
+
   @media (--viewportLarge) {
     width: unset;
   }
 }
+
 :global(.image-gallery-thumbnail) {
   width: auto;
   border-radius: 8px;
 
   text-align: left !important;
+  margin-right: 8px;
 
   &:first-child {
     margin-left: 24px;
@@ -36,6 +44,7 @@
       margin-left: 0;
     }
   }
+
   &:last-child {
     margin-right: 24px;
 
@@ -51,12 +60,12 @@
 }
 
 :global(.image-gallery-slide-wrapper) {
-  background-color: var(--colorWhite);
-  border-bottom: 1px solid var(--colorGrey100);
+  background-color: var(--colorGrey100);
+
 
   @media (--viewportMedium) {
-    border-radius: var(--borderRadiusMedium);
-    border: 1px solid var(--colorGrey100);
+    border-radius: 10px;
+
     overflow: hidden;
   }
 }
@@ -75,8 +84,7 @@
   }
 }
 
-.root {
-}
+.root {}
 
 .itemWrapper,
 .itemWrapperFullscreen {
@@ -85,8 +93,7 @@
   justify-content: center;
 }
 
-.itemWrapper {
-}
+.itemWrapper {}
 
 .noImage {
   border: 1px solid var(--colorGrey100);
@@ -108,24 +115,28 @@
 .item {
   max-width: 100%;
   max-height: 100%;
+  width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
 
 .thumb {
   /* With the active thumbnail border (default 4px), make the result
    height a multiple of the baseline. */
-  max-width: 88px;
-  max-height: 88px;
-  border-radius: var(--borderRadiusMedium);
+  max-width: 97px;
+  max-height: 70px;
+  border-radius: 10px;
 }
 
 .navLeft,
 .navRight {
   position: absolute;
   width: 60px;
-  height: 100%;
+
   border: 0;
   padding: 0;
   z-index: 1;
+  top: 18px;
 
   /* center content */
   display: flex;
@@ -135,9 +146,7 @@
   &:hover {
     cursor: pointer;
 
-    & .navArrowWrapper {
-      background-color: rgba(255, 255, 255, 1);
-    }
+
   }
 }
 
@@ -174,23 +183,61 @@
   }
 }
 
-.openFullscreen {
+.openFullscreenWrapper {
   /* Hide on mobile. Currently react-image-gallery fullscreen mode is broken on
      mobile, and mobile doesn't really benefit from fullscreen anyways. */
   display: none;
 
-  composes: buttonSmall from global;
-
   /* Position and dimensions */
   position: absolute;
-  bottom: 19px;
-  right: 24px;
+  bottom: 18px;
+  right: 18px;
+  width: 97px;
+  height: 70px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
 
-  /* Ensure the button is on top of the navRight area */
+  /* Ensure the wrapper is on top of the navRight area */
   z-index: 1;
 
   @media (--viewportLarge) {
     display: block;
+  }
+}
+
+.openFullscreen {
+  composes: buttonSmall from global;
+
+  /* Position and dimensions */
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-family: Mulish;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  text-decoration: underline;
+  text-decoration-style: solid;
+  text-decoration-offset: 0%;
+  text-decoration-thickness: 0%;
+  text-decoration-skip-ink: auto;
+  
+  /* Background overlay for better text readability */
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  
+  /* Ensure the button is on top of the navRight area */
+  z-index: 1;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.5);
   }
 }
 

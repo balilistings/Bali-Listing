@@ -16,6 +16,7 @@ import {
   LinkedLogo,
   Modal,
   ModalMissingInformation,
+  NamedLink,
 } from '../../../components';
 import { getSearchPageResourceLocatorStringParams } from '../../SearchPage/SearchPage.shared';
 
@@ -26,6 +27,7 @@ import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
 
 import css from './Topbar.module.css';
+import { getCurrentUserTypeRoles, showCreateListingLinkForUser } from '../../../util/userHelpers';
 
 const MAX_MOBILE_SCREEN_WIDTH = 1024;
 
@@ -204,6 +206,26 @@ const TopbarComponent = props => {
     });
   };
 
+  const showCreateListingsLink = showCreateListingLinkForUser(config, currentUser);
+  const { customer: isCustomer, provider: isProvider } = getCurrentUserTypeRoles(
+    config,
+    currentUser
+  );
+
+  /**
+   * Determine which tab to use in the inbox link:
+   * - if only provider role – sales
+   * - if only customer role – orders
+   * - if both roles – determine by currentUserHasListings value
+   */
+  const topbarInboxTab = !isCustomer
+    ? 'sales'
+    : !isProvider
+    ? 'orders'
+    : currentUserHasListings
+    ? 'sales'
+    : 'orders';
+
   const { mobilemenu, mobilesearch, keywords, address, origin, bounds } = parse(location.search, {
     latlng: ['origin'],
     latlngBounds: ['bounds'],
@@ -226,12 +248,13 @@ const TopbarComponent = props => {
   const mobileMenu = (
     <TopbarMobileMenu
       isAuthenticated={isAuthenticated}
-      currentUserHasListings={currentUserHasListings}
       currentUser={currentUser}
       onLogout={handleLogout}
       notificationCount={notificationCount}
       currentPage={resolvedCurrentPage}
       customLinks={customLinks}
+      showCreateListingsLink={showCreateListingsLink}
+      inboxTab={topbarInboxTab}
     />
   );
 
@@ -293,22 +316,29 @@ const TopbarComponent = props => {
         onLogout={handleLogout}
         currentPage={resolvedCurrentPage}
       />
+
       <div className={classNames(mobileRootClassName || css.container, mobileClassName)}>
-        <Button
-          rootClassName={css.menu}
-          onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
-          title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
-        >
-          <MenuIcon className={css.menuIcon} />
-          {notificationDot}
-        </Button>
         <LinkedLogo
+          className={css.logoMobile}
           layout={'mobile'}
           alt={intl.formatMessage({ id: 'Topbar.logoIcon' })}
           linkToExternalSite={config?.topbar?.logoLink}
         />
-        {mobileSearchButtonMaybe}
+        <div className={css.mobileContent}>
+          <NamedLink name="SignupPage" className={css.addListing}>
+            <FormattedMessage id="TopbarDesktop.addListing" />
+          </NamedLink>
+          <Button
+            rootClassName={css.menu}
+            onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
+            title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
+          >
+            <MenuIcon className={css.menuIcon} />
+            {notificationDot}
+          </Button>
+        </div>
       </div>
+
       <div className={css.desktop}>
         <TopbarDesktop
           className={desktopClassName}
@@ -324,6 +354,8 @@ const TopbarComponent = props => {
           config={config}
           customLinks={customLinks}
           showSearchForm={showSearchForm}
+          showCreateListingsLink={showCreateListingsLink}
+          inboxTab={topbarInboxTab}
         />
       </div>
       <Modal

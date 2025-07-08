@@ -7,11 +7,21 @@
   z-index: var(--zIndexTopbar);
   position: relative;
 }
-
+.logoMobile {
+  & > div {
+    @media (max-width: 767px) {
+      height: 56px;
+      & img {
+        width: 70px;
+        height: 30px;
+      }
+    }
+  }
+}
 .container {
   /* Size */
   width: 100%;
-  height: var(--topbarHeight);
+  height: 56px;
 
   /* Layout for child components */
   display: flex;
@@ -24,6 +34,7 @@
 
   /* shadows */
   box-shadow: var(--boxShadow);
+  padding-left: 21px;
 
   @media (--viewportMedium) {
     height: var(--topbarHeightDesktop);
@@ -47,7 +58,7 @@
 
   /* Layout */
   display: flex;
-  width: 66px;
+  width: 58px;
   margin: 0;
   border-width: 0px;
   background-color: transparent;
@@ -66,11 +77,27 @@
     cursor: auto;
   }
 }
-
+.mobileContent {
+  display: flex;
+  align-items: center;
+}
+.addListing {
+  background-color: #f74df4;
+  box-shadow: 0px 4px 10px 0px #0000001a;
+  border-radius: 5px;
+  height: 28px;
+  padding: 8px 11px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 9px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #fff;
+}
 .menu {
   padding: 15px 24px;
   position: relative;
-
+  padding-left: 15px;
   @media (--viewportMedium) {
     padding: 21px 24px;
   }

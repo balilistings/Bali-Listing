@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
+import classNames from 'classnames';
 
 // Contexts
 import { useConfiguration } from '../../context/configurationContext';
@@ -37,6 +38,7 @@ import {
   isPurchaseProcess,
   resolveLatestProcessName,
 } from '../../transactions/transaction';
+import RentalPeriod from './RentalPeriod';
 
 // Global ducks (for Redux actions and thunks)
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
@@ -52,6 +54,7 @@ import {
   OrderPanel,
   LayoutSingleColumn,
 } from '../../components';
+import SectionHeading from './SectionHeading';
 
 // Related components and modules
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
@@ -89,14 +92,50 @@ const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 const { UUID } = sdkTypes;
 
+const SECTIONS = [
+  { id: 'description', label: 'Description' },
+  { id: 'amenities', label: 'Amenities' },
+  { id: 'location', label: 'Location' },
+  { id: 'rentalTerms', label: 'Rental Terms' },
+  { id: 'listedBy', label: 'Listed By' },
+];
+
 export const ListingPageComponent = props => {
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
   );
   const [mounted, setMounted] = useState(false);
+  const [activeTab, setActiveTab] = useState(SECTIONS[0].id);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Scroll to section on tab click
+  const handleTabClick = id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  // Scrollspy: update active tab on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      let found = SECTIONS[0].id;
+      for (const section of SECTIONS) {
+        const el = document.getElementById(section.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 120) { // adjust offset for sticky header if needed
+            found = section.id;
+          }
+        }
+      }
+      setActiveTab(found);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const {
@@ -282,8 +321,8 @@ export const ListingPageComponent = props => {
   const schemaAvailability = !currentListing.currentStock
     ? null
     : currentStock > 0
-    ? 'https://schema.org/InStock'
-    : 'https://schema.org/OutOfStock';
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock';
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
@@ -312,6 +351,27 @@ export const ListingPageComponent = props => {
       <LayoutSingleColumn className={css.pageRoot} topbar={topbar} footer={<FooterContainer />}>
         <div className={css.contentWrapperForProductLayout}>
           <div className={css.mainColumnForProductLayout}>
+            <div className={css.breadCrumb}>
+              <NamedLink name="LandingPage" className={css.breadCrumbLink}>
+                Home
+              </NamedLink>
+              <span className={css.breadCrumbSeparator}>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z" fill="#C4C4C4" />
+                </svg>
+
+              </span>
+              <NamedLink name="SearchPage" params={params} className={css.breadCrumbLink}>
+                Rental
+              </NamedLink>
+              <span className={css.breadCrumbSeparator}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z" fill="#F74DF4" />
+              </svg>
+              </span>
+              <span className={css.breadCrumbLinkActive}>
+                Details Page
+              </span>
+            </div>
             {mounted && currentListing.id && noPayoutDetailsSetWithOwnListing ? (
               <ActionBarMaybe
                 className={css.actionBarForProductLayout}
@@ -339,27 +399,66 @@ export const ListingPageComponent = props => {
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
             />
-            <div className={css.mobileHeading}>
-              <H4 as="h1" className={css.orderPanelTitle}>
-                <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
-              </H4>
-            </div>
-            <SectionTextMaybe text={description} showAsIngress />
-
-            <CustomListingFields
+            <RentalPeriod
               publicData={publicData}
               metadata={metadata}
               listingFieldConfigs={listingConfig.listingFields}
               categoryConfiguration={config.categoryConfiguration}
               intl={intl}
             />
+            <div className={css.heading}>
+              <H4 as="h1" className={css.orderPanelTitle}>
+                <FormattedMessage id="ListingPage.orderTitle" values={{ title: richTitle }} />
+              </H4>
+              <SectionHeading
+                publicData={publicData}
+                metadata={metadata}
+                listingFieldConfigs={listingConfig.listingFields}
+                categoryConfiguration={config.categoryConfiguration}
+                intl={intl}
+                location={publicData?.location?.address}
+              />
+            </div>
 
-            <SectionMapMaybe
-              geolocation={geolocation}
-              publicData={publicData}
-              listingId={currentListing.id}
-              mapsConfig={config.maps}
-            />
+
+
+            <div className={css.tabsConrainer}>
+              {SECTIONS.map(section => (
+                <button
+                  key={section.id}
+                  className={classNames(css.tab, { [css.activeTab]: activeTab === section.id })}
+                  onClick={() => handleTabClick(section.id)}
+                  type="button"
+                >
+                  {section.label}
+                </button>
+              ))}
+            </div>
+            <div id="description">
+              <h4 className={css.descriptionHeading}>Description</h4>
+              <SectionTextMaybe text={description} showAsIngress />
+            </div>
+
+            <div id="amenities">
+              <CustomListingFields
+                publicData={publicData}
+                metadata={metadata}
+                listingFieldConfigs={listingConfig.listingFields}
+                categoryConfiguration={config.categoryConfiguration}
+                intl={intl}
+              />
+            </div>
+
+            <div id="location">
+              <SectionMapMaybe
+                geolocation={geolocation}
+                publicData={publicData}
+                listingId={currentListing.id}
+                mapsConfig={config.maps}
+              />
+            </div>
+      
+
             <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
             <SectionAuthorMaybe
               title={title}
