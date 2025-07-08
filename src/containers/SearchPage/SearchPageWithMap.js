@@ -574,7 +574,9 @@ export class SearchPageComponent extends Component {
                   const key = `SearchFiltersPrimary.${filterConfig.scope || 'built-in'}.${
                     filterConfig.key
                   }`;
+
                   return (
+                    // <div>teeeeeeeeeeest</div>
                     <FilterComponent
                       key={key}
                       idPrefix="SearchFiltersPrimary"
