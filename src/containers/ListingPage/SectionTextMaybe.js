@@ -30,6 +30,9 @@ const SectionTextMaybe = props => {
     urlWA = `https://wa.me/${numberWA}`;
   }
 
+  if (!text || heading === 'Link to Facebook post') {
+    return null;
+  }
   return text ? (
     <section className={css.sectionText}>
       {heading ? (

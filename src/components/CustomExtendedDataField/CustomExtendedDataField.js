@@ -128,8 +128,8 @@ const CustomFieldText = props => {
         return 'Add your phone number with country code (e.g., +62 812-3456-7890); it’ll be hidden behind a WhatsApp button.';
       case 'Payment terms':
         return 'Describe your payment terms (e.g., “50% deposit, balance on arrival”).';
-      case 'Link to Facebook post':
-        return 'Paste the link to your FB post about this property (if applicable).';
+      // case 'Link to Facebook post':
+      //   return 'Paste the link to your FB post about this property (if applicable).';
       case 'Number of years for leasehold':
         return 'Specify remaining lease years (e.g., “20 years”); leave blank if freehold.';
       case 'Minimum rental period':
@@ -138,23 +138,25 @@ const CustomFieldText = props => {
         return '';
     }
   };
-
+  // console.log('label', label);
   const textInput = getTextInput(label);
   return (
-    <div style={{ marginTop: '1rem' }}>
-      {/* fieldTextInput */}
-      <FieldTextInput
-        className={css.customField}
-        id={formId ? `${formId}.${name}` : name}
-        name={name}
-        type="textarea"
-        label={label}
-        placeholder={placeholder}
-        textInput={textInput}
-        showGuideIcon={true}
-        {...validateMaybe}
-      />
-    </div>
+    label !== 'Link to Facebook post' && (
+      <div style={{ marginTop: '1rem' }}>
+        {/* fieldTextInput */}
+        <FieldTextInput
+          className={css.customField}
+          id={formId ? `${formId}.${name}` : name}
+          name={name}
+          type="textarea"
+          label={label}
+          placeholder={placeholder}
+          textInput={textInput}
+          showGuideIcon={true}
+          {...validateMaybe}
+        />
+      </div>
+    )
   );
 };
 

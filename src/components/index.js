@@ -145,6 +145,3 @@ export { default as ModalMissingInformation } from './ModalMissingInformation/Mo
 
 export { default as IconCollection } from './IconCollection/IconCollection';
 export { default as TestmonialSlider } from './TestmonialSlider/TestmonialSlider';
-
-export { default as IconCollection } from './IconCollection/IconCollection';
-export { default as TestmonialSlider } from './TestmonialSlider/TestmonialSlider';

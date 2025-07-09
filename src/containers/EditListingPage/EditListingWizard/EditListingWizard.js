@@ -629,9 +629,12 @@ class EditListingWizard extends Component {
     if (returnedNormallyFromStripe && stripeConnected && !requirementsMissing) {
       return <NamedRedirect name="EditListingPage" params={pathParams} />;
     }
-
+    console.log('tabs', tabs);
+    console.log('isPriceDisabled', isPriceDisabled);
+    // tabs.remove('pricing');
     return (
       <div className={classes}>
+        test
         <Tabs
           rootClassName={css.tabsContainer}
           navRootClassName={css.nav}

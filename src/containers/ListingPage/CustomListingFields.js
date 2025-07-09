@@ -41,13 +41,14 @@ const CustomListingFields = props => {
       'listingType',
       isFieldForSelectedCategories
     ) || [];
-    console.log(isFieldForSelectedCategories)
+  console.log(isFieldForSelectedCategories);
+  console.log('propsForCustomFields', propsForCustomFields);
   return (
     <>
       <SectionDetailsMaybe {...props} isFieldForCategory={isFieldForSelectedCategories} />
       {propsForCustomFields.map(customFieldProps => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
-        
+
         return schemaType === SCHEMA_TYPE_TEXT ? (
           <SectionTextMaybe key={key} {...fieldProps} />
         ) : schemaType === SCHEMA_TYPE_YOUTUBE ? (

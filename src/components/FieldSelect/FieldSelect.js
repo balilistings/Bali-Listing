@@ -105,6 +105,7 @@ const FieldSelectComponent = props => {
         'Select the zone (e.g., Green, Pink); informs buyers about usage and investment potential.';
       break;
   }
+  console.log('label', label);
   return (
     <div className={classes}>
       {label ? (

@@ -45,7 +45,7 @@ const SectionDetailsMaybe = props => {
   };
 
   const existingListingFields = listingFieldConfigs.reduce(pickListingFields, []);
-console.log(existingListingFields)
+  console.log(existingListingFields);
   return existingListingFields.length > 0 ? (
     <section className={css.sectionDetails}>
       <Heading as="h2" rootClassName={css.sectionHeading}>

@@ -367,19 +367,19 @@ const OrderPanel = props => {
 
   const priceVariantsMaybe = isPriceVariationsInUse
     ? {
-      isPriceVariationsInUse,
-      priceVariants,
-      priceVariantFieldComponent: PriceVariantPicker,
-      preselectedPriceVariant,
-      isPublishedListing: isPublishedListing(listing),
-    }
+        isPriceVariationsInUse,
+        priceVariants,
+        priceVariantFieldComponent: PriceVariantPicker,
+        preselectedPriceVariant,
+        isPublishedListing: isPublishedListing(listing),
+      }
     : !isPriceVariationsInUse && showBookingFixedDurationForm
-      ? {
+    ? {
         isPriceVariationsInUse: false,
         priceVariants: [getCheapestPriceVariant(priceVariants)],
         priceVariantFieldComponent: PriceVariantPicker,
       }
-      : {};
+    : {};
 
   const showInvalidPriceVariantsMessage =
     isPriceVariationsInUse && !hasValidPriceVariants(priceVariants);
@@ -415,9 +415,7 @@ const OrderPanel = props => {
 
   return (
     <div className={classes}>
-      <Button className={css.availableNowButton}>
-        Available Now!
-      </Button>
+      <Button className={css.availableNowButton}>Available Now!</Button>
       <ModalInMobile
         containerClassName={css.modalContainer}
         id="OrderFormInModal"
@@ -457,9 +455,7 @@ const OrderPanel = props => {
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-        <div className={css.availableFrom}>
-          Available from June 1st
-        </div>
+        <div className={css.availableFrom}>Available from June 1st</div>
         {/* <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>
