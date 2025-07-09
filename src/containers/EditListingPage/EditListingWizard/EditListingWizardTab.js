@@ -108,6 +108,7 @@ const EditListingWizardTab = props => {
     config,
     routeConfiguration,
   } = props;
+  // console.log('props', props);
 
   const { type } = params;
   const isNewURI = type === LISTING_PAGE_PARAM_TYPE_NEW;
@@ -220,28 +221,30 @@ const EditListingWizardTab = props => {
     }
     case AVAILABILITY: {
       return (
-        <EditListingAvailabilityPanel
-          allExceptions={allExceptions}
-          weeklyExceptionQueries={weeklyExceptionQueries}
-          monthlyExceptionQueries={monthlyExceptionQueries}
-          onFetchExceptions={onFetchExceptions}
-          onAddAvailabilityException={onAddAvailabilityException}
-          onDeleteAvailabilityException={onDeleteAvailabilityException}
-          onNextTab={() =>
-            redirectAfterDraftUpdate(
-              listing.id,
-              params,
-              tab,
-              marketplaceTabs,
-              history,
-              routeConfiguration
-            )
-          }
-          config={config}
-          history={history}
-          routeConfiguration={routeConfiguration}
-          {...panelProps(AVAILABILITY)}
-        />
+        <div>
+          <EditListingAvailabilityPanel
+            allExceptions={allExceptions}
+            weeklyExceptionQueries={weeklyExceptionQueries}
+            monthlyExceptionQueries={monthlyExceptionQueries}
+            onFetchExceptions={onFetchExceptions}
+            onAddAvailabilityException={onAddAvailabilityException}
+            onDeleteAvailabilityException={onDeleteAvailabilityException}
+            onNextTab={() =>
+              redirectAfterDraftUpdate(
+                listing.id,
+                params,
+                tab,
+                // marketplaceTabs,
+                history,
+                routeConfiguration
+              )
+            }
+            config={config}
+            history={history}
+            routeConfiguration={routeConfiguration}
+            {...panelProps(AVAILABILITY)}
+          />
+        </div>
       );
     }
     case PHOTOS: {

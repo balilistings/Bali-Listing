@@ -117,6 +117,7 @@ export const EditListingPricingForm = props => (
         initialValues: formInitialValues,
         values: formValues,
       } = formRenderProps;
+      console.log('formRenderProps', formRenderProps);
 
       const intl = useIntl();
       const priceValidators = getPriceValidators(
