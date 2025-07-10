@@ -258,15 +258,18 @@ const AddListingFields = props => {
     return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
       ? [
           ...pickedFields,
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-            formId={formId}
-          />,
+          <div>
+            {/* CustomExtendedDataField */}
+            <CustomExtendedDataField
+              key={namespacedKey}
+              name={namespacedKey}
+              fieldConfig={fieldConfig}
+              defaultRequiredMessage={intl.formatMessage({
+                id: 'EditListingDetailsForm.defaultRequiredMessage',
+              })}
+              formId={formId}
+            />
+          </div>,
         ]
       : pickedFields;
   }, []);
@@ -368,7 +371,7 @@ const EditListingDetailsForm = props => (
       const showTitle = hasCategories ? allCategoriesChosen : listingType;
       const showDescription = hasCategories ? allCategoriesChosen : listingType;
       const showListingFields = hasCategories ? allCategoriesChosen : listingType;
-
+      console.log('showListingFields', showListingFields);
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
@@ -441,13 +444,15 @@ const EditListingDetailsForm = props => (
           )}
 
           {showListingFields && isCompatibleCurrency && (
-            <AddListingFields
-              listingType={listingType}
-              listingFieldsConfig={listingFieldsConfig}
-              selectedCategories={pickSelectedCategories(values)}
-              formId={formId}
-              intl={intl}
-            />
+            <div>
+              <AddListingFields
+                listingType={listingType}
+                listingFieldsConfig={listingFieldsConfig}
+                selectedCategories={pickSelectedCategories(values)}
+                formId={formId}
+                intl={intl}
+              />
+            </div>
           )}
 
           {!isCompatibleCurrency && listingType && (
