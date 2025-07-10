@@ -42,6 +42,7 @@ const SignupFormComponent = props => (
       } = formRenderProps;
 
       const { userType } = values || {};
+      console.log('userType', userType);
 
       // email
       const emailRequired = validators.required(
@@ -115,11 +116,12 @@ const SignupFormComponent = props => (
         { value: 'company', label: 'I represent a registered company' },
       ];
 
+      const filteredUserTypes = userTypes.filter(user => user.label !== 'Guest');
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <FieldSelectUserType
             name="userType"
-            userTypes={userTypes}
+            userTypes={filteredUserTypes}
             hasExistingUserType={!!preselectedUserType}
             intl={intl}
           />

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, forwardRef } from 'react';
 
 // Import config and utils
 import { useIntl } from '../../util/reactIntl';
@@ -20,13 +20,53 @@ import {
 import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '../../components';
 // Import modules from this directory
 
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { Field } from 'react-final-form';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+
 import { useCheckboxContext } from '../../context/checkBoxContext';
 import css from './CustomExtendedDataField.module.css';
-import { useState } from 'react';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
 const getLabel = fieldConfig => fieldConfig?.saveConfig?.label || fieldConfig?.label;
+
+const CustomInput = forwardRef(({ value, onClick, label, name, required }, ref) => {
+  return (
+    <div className={css.customField1}>
+      {/* {label && <label htmlFor={name}>{label}</label>} */}
+      <div>
+        <button
+          type="button"
+          className={css.dateInputButton}
+          onClick={onClick}
+          ref={ref}
+          id={name}
+          name={name}
+          required={required}
+        >
+          <span className={classNames('dateInputValue', { placeholder: !value })}>
+            {value || 'Select a date'}
+          </span>
+        </button>
+      </div>
+      {/* {error && <div className="error">{error}</div>} */}
+    </div>
+  );
+});
+
+CustomInput.displayName = 'CustomInput';
+
+CustomInput.propTypes = {
+  value: PropTypes.string,
+  onClick: PropTypes.func,
+  label: PropTypes.string,
+  name: PropTypes.string,
+  required: PropTypes.bool,
+  error: PropTypes.string,
+};
 
 const CustomFieldEnum = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
@@ -42,30 +82,133 @@ const CustomFieldEnum = props => {
 
   const label = getLabel(fieldConfig);
 
-  return filterOptions ? (
+  const isAvailableNowField = label === 'Available now';
+
+  if (!filterOptions) return null;
+  return (
     <div style={{ marginTop: '1rem' }}>
-      {/* enum */}
-      <FieldSelect
-        className={css.customField}
-        name={name}
-        id={formId ? `${formId}.${name}` : name}
-        label={label}
-        {...validateMaybe}
-      >
-        <option disabled value="">
-          {placeholder}
-        </option>
-        {filterOptions.map(optionConfig => {
-          const key = optionConfig.key;
-          return (
-            <option key={key} value={key}>
+      {isAvailableNowField ? (
+        <Field name={name} {...validateMaybe}>
+          {({ input: enumInput }) => (
+            <>
+              <label htmlFor={name}>{label}</label>
+              <select
+                className={css.customField}
+                id={formId ? `${formId}.${name}` : name}
+                {...enumInput}
+              >
+                <option disabled value="">
+                  {placeholder}
+                </option>
+                {filterOptions.map(optionConfig => (
+                  <option key={optionConfig.key} value={optionConfig.key}>
+                    {optionConfig.label}
+                  </option>
+                ))}
+              </select>
+
+              {enumInput.value === 'no' && (
+                <Field name="availabilityDate">
+                  {({ input: dateInput, meta }) => (
+                    <div className={css.customField}>
+                      <label htmlFor="availabilityDate">Select availability date</label>
+                      <DatePicker
+                        id="availabilityDate"
+                        selected={dateInput.value}
+                        onChange={dateInput.onChange}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select a available date"
+                        minDate={new Date()}
+                        // customInput={<CustomInput label={label} name={name} required={required} />}
+                      />
+                      {meta.touched && meta.error && (
+                        <span style={{ color: 'red' }}>{meta.error}</span>
+                      )}
+                    </div>
+                  )}
+                </Field>
+              )}
+            </>
+          )}
+        </Field>
+      ) : (
+        <FieldSelect
+          className={css.customField}
+          name={name}
+          id={formId ? `${formId}.${name}` : name}
+          label={label}
+          {...validateMaybe}
+        >
+          <option disabled value="">
+            {placeholder}
+          </option>
+          {filterOptions.map(optionConfig => (
+            <option key={optionConfig.key} value={optionConfig.key}>
               {optionConfig.label}
             </option>
-          );
-        })}
-      </FieldSelect>
+          ))}
+        </FieldSelect>
+      )}
     </div>
-  ) : null;
+  );
+  // return (
+  //   <div style={{ marginTop: '1rem' }}>
+  //     {isAvailableNowField ? (
+  //       <Field name={name} {...validateMaybe}>
+  //         {({ input, meta }) => (
+  //           <>
+  //             <label htmlFor={name}>{label}</label>
+  //             <select
+  //               className={css.customField}
+  //               id={formId ? `${formId}.${name}` : name}
+  //               {...input}
+  //             >
+  //               <option disabled value="">
+  //                 {placeholder}
+  //               </option>
+  //               {filterOptions.map(optionConfig => (
+  //                 <option key={optionConfig.key} value={optionConfig.key}>
+  //                   {optionConfig.label}
+  //                 </option>
+  //               ))}
+  //             </select>
+
+  //             {input.value === 'no' && (
+  //               <div style={{ marginTop: '1rem' }}>
+  //                 <label htmlFor="availabilityDate">Select availability date</label>
+  //                 <DatePicker
+  //                   id="availabilityDate"
+  //                   selected={selectedDate}
+  //                   onChange={date => setSelectedDate(date)}
+  //                   dateFormat="yyyy-MM-dd"
+  //                   placeholderText="Select a date"
+  //                   minDate={new Date()}
+  //                 />
+  //               </div>
+  //             )}
+  //           </>
+  //         )}
+  //       </Field>
+  //     ) : (
+  //       <FieldSelect
+  //         className={css.customField}
+  //         name={name}
+  //         id={formId ? `${formId}.${name}` : name}
+  //         label={label}
+  //         {...validateMaybe}
+  //       >
+  //         <option disabled value="">
+  //           {placeholder}
+  //         </option>
+  //         {filterOptions.map(optionConfig => (
+  //           <option key={optionConfig.key} value={optionConfig.key}>
+  //             {optionConfig.label}
+  //           </option>
+  //         ))}
+  //       </FieldSelect>
+  //     )}
+  //   </div>
+  // );
 };
 
 const CustomFieldMultiEnum = props => {
@@ -138,7 +281,7 @@ const CustomFieldText = props => {
         return '';
     }
   };
-  // console.log('label', label);
+  console.log('props', props);
   const textInput = getTextInput(label);
   return (
     label !== 'Link to Facebook post' && (
