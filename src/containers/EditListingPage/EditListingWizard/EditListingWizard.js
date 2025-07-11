@@ -634,7 +634,7 @@ class EditListingWizard extends Component {
     // tabs.remove('pricing');
     return (
       <div className={classes}>
-        {/* Tab */}
+        {/* //Tab */}
         <Tabs
           rootClassName={css.tabsContainer}
           navRootClassName={css.nav}
