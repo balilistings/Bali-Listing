@@ -116,12 +116,11 @@ const SignupFormComponent = props => (
         { value: 'company', label: 'I represent a registered company' },
       ];
 
-      const filteredUserTypes = userTypes.filter(user => user.label !== 'Guest');
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <FieldSelectUserType
             name="userType"
-            userTypes={filteredUserTypes}
+            userTypes={userTypes}
             hasExistingUserType={!!preselectedUserType}
             intl={intl}
           />

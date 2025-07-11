@@ -127,7 +127,8 @@ export const ListingPageComponent = props => {
         const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 120) { // adjust offset for sticky header if needed
+          if (rect.top <= 120) {
+            // adjust offset for sticky header if needed
             found = section.id;
           }
         }
@@ -321,8 +322,8 @@ export const ListingPageComponent = props => {
   const schemaAvailability = !currentListing.currentStock
     ? null
     : currentStock > 0
-      ? 'https://schema.org/InStock'
-      : 'https://schema.org/OutOfStock';
+    ? 'https://schema.org/InStock'
+    : 'https://schema.org/OutOfStock';
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
@@ -356,21 +357,41 @@ export const ListingPageComponent = props => {
                 Home
               </NamedLink>
               <span className={css.breadCrumbSeparator}>
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z" fill="#C4C4C4" />
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z"
+                    fill="#C4C4C4"
+                  />
                 </svg>
-
               </span>
               <NamedLink name="SearchPage" params={params} className={css.breadCrumbLink}>
                 Rental
               </NamedLink>
-              <span className={css.breadCrumbSeparator}><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z" fill="#F74DF4" />
-              </svg>
+              <span className={css.breadCrumbSeparator}>
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 14 14"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M9.50138 6.69085C9.58331 6.77288 9.62933 6.88407 9.62933 7.00001C9.62933 7.11595 9.58331 7.22715 9.50138 7.30918L5.12638 11.6842C5.04344 11.7615 4.93375 11.8035 4.82041 11.8015C4.70706 11.7995 4.59892 11.7536 4.51877 11.6735C4.43861 11.5933 4.39269 11.4852 4.39069 11.3718C4.38869 11.2585 4.43077 11.1488 4.50805 11.0658L8.57388 7.00001L4.50805 2.93418C4.43077 2.85124 4.38869 2.74155 4.39069 2.62821C4.39269 2.51487 4.43861 2.40672 4.51877 2.32657C4.59892 2.24641 4.70706 2.20049 4.82041 2.19849C4.93375 2.19649 5.04344 2.23857 5.12638 2.31585L9.50138 6.69085Z"
+                    fill="#F74DF4"
+                  />
+                </svg>
               </span>
-              <span className={css.breadCrumbLinkActive}>
-                Details Page
-              </span>
+              <span className={css.breadCrumbLinkActive}>Details Page</span>
             </div>
             {mounted && currentListing.id && noPayoutDetailsSetWithOwnListing ? (
               <ActionBarMaybe
@@ -420,8 +441,6 @@ export const ListingPageComponent = props => {
               />
             </div>
 
-
-
             <div className={css.tabsConrainer}>
               {SECTIONS.map(section => (
                 <button
@@ -440,12 +459,14 @@ export const ListingPageComponent = props => {
             </div>
 
             <div id="amenities">
+              CustomListingFields
               <CustomListingFields
                 publicData={publicData}
                 metadata={metadata}
                 listingFieldConfigs={listingConfig.listingFields}
                 categoryConfiguration={config.categoryConfiguration}
                 intl={intl}
+                currentUser={currentUser}
               />
             </div>
 
@@ -457,7 +478,6 @@ export const ListingPageComponent = props => {
                 mapsConfig={config.maps}
               />
             </div>
-      
 
             <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
             <SectionAuthorMaybe
@@ -556,6 +576,8 @@ const EnhancedListingPage = props => {
   const showListingError = props.showListingError;
   const isVariant = props.params?.variant != null;
   const currentUser = props.currentUser;
+
+  // console.log('currentUser', currentUser);
   if (isForbiddenError(showListingError) && !isVariant && !currentUser) {
     // This can happen if private marketplace mode is active
     return (

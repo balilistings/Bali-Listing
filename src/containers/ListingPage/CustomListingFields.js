@@ -23,7 +23,7 @@ import SectionYoutubeVideoMaybe from './SectionYoutubeVideoMaybe';
  * @returns React.Fragment containing aforementioned components
  */
 const CustomListingFields = props => {
-  const { publicData, metadata, listingFieldConfigs, categoryConfiguration } = props;
+  const { publicData, metadata, listingFieldConfigs, categoryConfiguration, currentUser } = props;
 
   const { key: categoryPrefix, categories: listingCategoriesConfig } = categoryConfiguration;
   const categoriesObj = pickCategoryFields(publicData, categoryPrefix, 1, listingCategoriesConfig);
@@ -50,7 +50,7 @@ const CustomListingFields = props => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
 
         return schemaType === SCHEMA_TYPE_TEXT ? (
-          <SectionTextMaybe key={key} {...fieldProps} />
+          <SectionTextMaybe key={key} currentUser={currentUser} {...fieldProps} />
         ) : schemaType === SCHEMA_TYPE_YOUTUBE ? (
           <SectionYoutubeVideoMaybe key={key} {...fieldProps} />
         ) : null;

@@ -298,6 +298,7 @@ const OrderPanel = props => {
     payoutDetailsWarning,
   } = props;
 
+  console.log('props', props);
   const publicData = listing?.attributes?.publicData || {};
   const { listingType, unitType, transactionProcessAlias = '', priceVariants, startTimeInterval } =
     publicData || {};
@@ -534,6 +535,7 @@ const OrderPanel = props => {
         ) : null}
       </ModalInMobile>
       <div className={css.openOrderForm}>
+        <div>order panel</div>
         <PriceMaybe
           price={price}
           publicData={publicData}

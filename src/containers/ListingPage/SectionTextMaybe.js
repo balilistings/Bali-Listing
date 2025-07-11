@@ -6,10 +6,13 @@ import { richText } from '../../util/richText';
 import css from './ListingPage.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
+import { useHistory } from 'react-router-dom';
 
 const SectionTextMaybe = props => {
-  const { text, heading, showAsIngress = false } = props;
+  const { text, heading, showAsIngress = false, currentUser } = props;
+  const history = useHistory();
   const textClass = showAsIngress ? css.ingress : css.text;
+
   const content = richText(text, {
     linkify: true,
     longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
@@ -30,25 +33,43 @@ const SectionTextMaybe = props => {
     urlWA = `https://wa.me/${numberWA}`;
   }
 
+  const handleClick = () => {
+    if (currentUser) {
+      window.open(urlWA, '_blank');
+    } else {
+      const confirm = window.confirm(
+        'Please sign up or log in to contact this property owner on WhatsApp.'
+      );
+      if (confirm) {
+        history.push('/signup');
+      }
+    }
+  };
+
   if (!text || heading === 'Link to Facebook post') {
     return null;
   }
-  return text ? (
+
+  return (
     <section className={css.sectionText}>
       {heading ? (
         <Heading as="h2" rootClassName={css.sectionHeading}>
           {heading}
         </Heading>
       ) : null}
+
       {heading === 'Phone number' ? (
-        <a href={urlWA} target="_blank" rel="noopener noreferrer">
-          <img src={img} alt="Contact by Whatsapp" />
-        </a>
+        <img
+          src={img}
+          alt="Contact via WhatsApp"
+          style={{ cursor: 'pointer' }}
+          onClick={handleClick}
+        />
       ) : (
         <span>{content}</span>
       )}
     </section>
-  ) : null;
+  );
 };
 
 export default SectionTextMaybe;
