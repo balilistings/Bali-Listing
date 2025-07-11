@@ -31,7 +31,8 @@
 
 .browseAllButton {
   box-shadow: 0px 4px 10px 0px #0000001a;
-  background-color: #f74df4;
+  background-color: #fff;
+
   border-radius: 10px;
   font-family: Mulish;
   font-weight: 700;
@@ -40,17 +41,19 @@
   letter-spacing: 0%;
   height: 41px;
   border: none;
-  color: #fff;
+  border: 1px solid #f74df4;
+  color: #f74df4;
   padding: 10px 20px;
   margin: 0 auto;
   display: block;
+  box-shadow: none;
   @media (max-width: 1023px) {
     font-size: 9px;
     height: 28px;
     padding: 8px 20px;
   }
   &:hover {
-    background: #e14ed0;
+    background: #fff;
   }
 }
 
@@ -182,7 +185,7 @@
   color: #eb2be8;
   font-family: Mulish;
   font-weight: 700;
-  font-size: 8px;
+  font-size: 9px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -197,7 +200,7 @@
   margin-left: auto;
   font-family: Mulish;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 9px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -212,7 +215,7 @@
 .title {
   font-family: Mulish;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 20px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -229,7 +232,7 @@
   gap: 0px;
   font-family: Mulish;
   font-weight: 600;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 130%;
   letter-spacing: 0%;
   text-align: center;
@@ -304,7 +307,7 @@
 .iconItem {
   font-family: Istok Web;
   font-weight: 400;
-  font-size: 7px;
+  font-size: 8px;
   line-height: 130%;
   letter-spacing: 0%;
 
