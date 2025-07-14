@@ -135,7 +135,7 @@ export const SearchCTA = React.forwardRef((props, ref) => {
       isValid: () => price,
       render: alignLeft => (
         <div className={css.filterField} key="price">
-          <FilterPrice />
+          <FilterPrice activeTabKey={tabs[activeTab].key} />
         </div>
       ),
     },
@@ -208,7 +208,9 @@ export const SearchCTA = React.forwardRef((props, ref) => {
           queryParams[key] = convertNumberToText(value);
         } else if (key === 'pub_price') {
           let priceKey = '';
-          if (key.d === 'monthly') {
+          if (tabs[activeTab].key !== 'rentalvillas') {
+            priceKey = 'price';
+          } else if (key.d === 'monthly') {
             priceKey = 'pub_monthprice';
           } else if (key.d === 'yearly') {
             priceKey = 'pub_yearprice';
