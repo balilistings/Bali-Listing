@@ -152,7 +152,7 @@ const CustomListingFields = props => {
             ))}
           </div>
         </div> */}
-
+{/* 
       <div className={css.propertyDetailsContainer} id="propertyDetails">
         <h2 className={css.propertyDetailsTitle}>Property Details</h2>
         <div className={css.propertyDetailList}>
@@ -166,7 +166,7 @@ const CustomListingFields = props => {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

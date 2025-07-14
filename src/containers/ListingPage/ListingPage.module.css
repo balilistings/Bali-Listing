@@ -39,6 +39,7 @@
 
   @media screen and (max-width: 768px) {
     font-size: 12px;
+    margin-top: 0;
   }
 }
 
@@ -516,7 +517,7 @@
 }
 
 .heading {
-  margin-bottom: 33px;
+  margin-bottom: 20px;
   padding: 0 20px;
 
   @media (--viewportMedium) {
@@ -604,11 +605,19 @@
 
 .sectionText {
   padding: 0 0px;
-  margin-bottom: 36px;
+  margin-bottom: 0px;
 
   @media (--viewportMedium) {
     padding: 0;
     margin-bottom: 40px;
+  }
+}
+
+:global(#description){
+  @media screen and (max-width: 768px) {
+    padding: 20px;
+    border-top: 5px solid #F2F2F2;
+    border-bottom: 5px solid #F2F2F2;
   }
 }
 
@@ -694,7 +703,13 @@
   color: #F74DF4;
   border-radius: 10px;
   text-decoration: none;
-
+@media (max-width: 768px) {
+  margin-top: 16px;
+  width: 100%;
+  font-size: 10px;
+  height: 29px;
+  border-radius: 5px;
+}
   &:hover {
     color: var(--colorGrey700);
 
@@ -719,14 +734,26 @@
 
   @media screen and (max-width: 768px) {
     padding: 0 20px;
+    margin-bottom: 0;
     top: 56px;
+    overflow-x: scroll;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    max-width: calc(100vw - 20px);
+    & button{
+      white-space: nowrap;
+
+    }
   }
 }
 
 .ingress {
   font-family: Mulish;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 10px;
   line-height: 130%;
   letter-spacing: 0%;
   color: #8D8D8D;
@@ -737,6 +764,7 @@
 
   @media (--viewportMedium) {
     margin: 0;
+    font-size: 16px;
   }
 }
 
@@ -755,6 +783,7 @@
 .sectionDetails {
   @media screen and (max-width: 768px) {
     padding: 0 0px;
+    margin-bottom: 20px;
   }
 }
 
@@ -768,6 +797,11 @@
     padding: 0 0 30px;
     margin-bottom: 0;
   }
+  @media screen and (max-width: 768px) {
+    padding: 20px;
+       border-bottom: 5px solid #F2F2F2;
+       margin-bottom: 0;
+     }
 }
 
 .address {
@@ -891,6 +925,10 @@
   margin-bottom: 12px;
   margin-top: 8px;
 
+  @media screen and (max-width: 768px) {
+   gap: 8px;
+  }
+
   & * {
     font-family: Mulish;
     font-weight: 600;
@@ -900,7 +938,7 @@
     color: #818181;
 
     @media screen and (max-width: 768px) {
-      font-size: 10px;
+      font-size: 8px;
     }
   }
 }
@@ -1066,6 +1104,10 @@
     line-height: 130%;
     letter-spacing: 0%;
     color: #EB2BE8;
+    @media screen and (max-width: 768px) {
+      font-size: 9px;
+      padding: 3px 10px;
+    }
 
     & span {
       padding: 0;
@@ -1075,6 +1117,9 @@
       line-height: 130%;
       letter-spacing: 0%;
       color: #EB2BE8;
+      @media screen and (max-width: 768px) {
+        font-size: 9px;
+      }
     }
 
     &>span {
@@ -1112,9 +1157,11 @@
 
 .descriptionContainer {
   @media screen and (max-width: 768px) {
-    padding: 0 20px;
+    padding: 0 0px;
   }
 }
+
+
 
 .tab.activeTab,
 .tab:focus {
@@ -1140,11 +1187,16 @@
   display: flex;
   gap: 20px;
   width: max-content;
-
+@media (max-width: 768px) {
+  gap: 10px;
+}
   & li {
     margin: 0;
     padding: 0;
     line-height: 130%;
+    & > span{
+      display: flex;
+    }
   }
 }
 
@@ -1156,16 +1208,31 @@
   line-height: 130%;
   letter-spacing: 0%;
   color: #231F20;
+  @media screen and (max-width: 768px) {
+    font-size: 8px;
+    font-weight: 600;
+  }
 }
 
 .detailsTypeRow {
   display: flex;
   align-items: center;
   gap: 4px;
+  @media screen and (max-width: 768px) {
+    & svg{
+      width: 10px;
+      height: 10px;
+    }
+  }
 }
 
 .amenitiesContainer {
   border-top: 1px solid #F2F2F2;
+  @media screen and (max-width: 768px) {
+    border-top: none;
+    border-bottom:5px solid #F2F2F2;
+    padding: 20px;
+  }
 
 }
 
@@ -1181,6 +1248,7 @@
 
   @media screen and (max-width: 768px) {
     font-size: 12px;
+    margin-top: 0;
   }
 }
 
@@ -1325,6 +1393,9 @@
 
   @media screen and (max-width: 768px) {
     margin-top: 40px;
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
   }
 }
 
@@ -1391,6 +1462,7 @@
 
   @media screen and (max-width: 768px) {
     padding: 20px;
+    border-bottom: 5px solid #F2F2F2;
   }
 }
 
@@ -1401,7 +1473,12 @@
 
   @media screen and (max-width: 768px) {
     margin: 20px 0;
-    padding: 0 20px 20px;
+    padding: 20px;
+    border-bottom: 5px solid #F2F2F2;
+    margin: 0;
+    & .sectionTitle{
+     margin-top: 0;
+    }
   }
 }
 
