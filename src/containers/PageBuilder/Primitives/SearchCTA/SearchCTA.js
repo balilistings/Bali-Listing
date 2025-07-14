@@ -14,7 +14,7 @@ import { isOriginInUse } from '../../../../util/search';
 import { stringifyDateToISO8601 } from '../../../../util/dates';
 
 // Shared components
-import { Form, PrimaryButton } from '../../../../components';
+import { Form, IconCollection } from '../../../../components';
 
 import FilterCategories from './FilterCategories/FilterCategories';
 import FilterDateRange from './FilterDateRange/FilterDateRange';
@@ -22,12 +22,21 @@ import FilterLocation from './FilterLocation/FilterLocation';
 import FilterKeyword from './FilterKeyword/FilterKeyword';
 
 import css from './SearchCTA.module.css';
+import FilterBedrooms from './FilterBedrooms';
+import FilterPrice from './FilterPrice';
+import FilterLandSize from './FilterLandSize';
 
 const GRID_CONFIG = [
   { gridCss: css.gridCol1 },
   { gridCss: css.gridCol2 },
   { gridCss: css.gridCol3 },
   { gridCss: css.gridCol4 },
+];
+
+const tabs = [
+  { label: 'Rentals', key: 'rentalvillas' },
+  { label: 'For Sale', key: 'landforsale' },
+  { label: 'Land', key: 'villaforsale' },
 ];
 
 const getGridCount = numberOfFields => {
@@ -49,12 +58,27 @@ const formatDateValue = (dateRange, queryParamName) => {
   return { [queryParamName]: value };
 };
 
+const convertNumberToText = number => {
+  const numberToText = {
+    1: 'one',
+    2: 'two',
+    3: 'three',
+    4: 'four',
+    5: 'five',
+    6: 'six',
+  };
+  return numberToText[number] || number.toString();
+};
+
 export const SearchCTA = React.forwardRef((props, ref) => {
   const history = useHistory();
   const routeConfiguration = useRouteConfiguration();
   const config = useConfiguration();
+  const [activeTab, setActiveTab] = useState(0);
 
-  const { categories, dateRange, keywordSearch, locationSearch } = props.searchFields;
+  const { categories, dateRange, keywordSearch, locationSearch, price } = props.searchFields;
+  const bedrooms = tabs[activeTab].key !== 'villaforsale';
+  const landSize = tabs[activeTab].key === 'villaforsale';
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
@@ -88,13 +112,39 @@ export const SearchCTA = React.forwardRef((props, ref) => {
         </div>
       ),
     },
-
     dateRange: {
       enabled: dateRange,
       isValid: () => dateRange,
       render: alignLeft => (
         <div className={css.filterField} key="dateRange">
           <FilterDateRange config={config} alignLeft={alignLeft} />
+        </div>
+      ),
+    },
+    bedrooms: {
+      enabled: bedrooms,
+      isValid: () => bedrooms,
+      render: alignLeft => (
+        <div className={css.filterField} key="bedrooms">
+          <FilterBedrooms />
+        </div>
+      ),
+    },
+    price: {
+      enabled: price,
+      isValid: () => price,
+      render: alignLeft => (
+        <div className={css.filterField} key="price">
+          <FilterPrice />
+        </div>
+      ),
+    },
+    landSize: {
+      enabled: landSize,
+      isValid: () => landSize,
+      render: alignLeft => (
+        <div className={css.filterField} key="landSize">
+          <FilterLandSize />
         </div>
       ),
     },
@@ -127,7 +177,11 @@ export const SearchCTA = React.forwardRef((props, ref) => {
 
   const onSubmit = values => {
     // Convert form values to query parameters
-    let queryParams = {};
+    let queryParams = {
+      pub_categoryLevel1: tabs[activeTab].key,
+    };
+
+    console.log('values', values);
 
     Object.entries(values).forEach(([key, value]) => {
       if (!isEmpty(value)) {
@@ -147,6 +201,24 @@ export const SearchCTA = React.forwardRef((props, ref) => {
               queryParams.origin = `${origin.lat},${origin.lng}`;
             }
           }
+        } else if (key === 'pub_bedrooms') {
+          if (value === 0) {
+            return;
+          }
+          queryParams[key] = convertNumberToText(value);
+        } else if (key === 'pub_price') {
+          let priceKey = '';
+          if (key.d === 'monthly') {
+            priceKey = 'pub_monthprice';
+          } else if (key.d === 'yearly') {
+            priceKey = 'pub_yearprice';
+          } else {
+            priceKey = 'pub_weekprice';
+          }
+          queryParams[priceKey] = `${value.minPrice},${value.maxPrice}`;
+        } else if (key === 'pub_landsize') {
+          // queryParams[key] = `${value.minSize},${value.maxSize}`;
+          return;
         } else {
           queryParams[key] = value;
         }
@@ -154,32 +226,56 @@ export const SearchCTA = React.forwardRef((props, ref) => {
     });
 
     const to = createResourceLocatorString('SearchPage', routeConfiguration, {}, queryParams);
-    // Use history.push to navigate without page refresh
     history.push(to);
   };
 
   return (
-    <div className={classNames(css.searchBarContainer, getGridCount(fieldCountForGrid))}>
-      <FinalForm
-        onSubmit={onSubmit}
-        {...props}
-        render={({ fieldRenderProps, handleSubmit }) => {
-          return (
-            <Form
-              role="search"
-              onSubmit={handleSubmit}
-              className={classNames(css.gridContainer, getGridCount(fieldCountForGrid))}
-            >
-              {addFilters(['categories', 'keywordSearch', 'locationSearch', 'dateRange'])}
+    <>
+      <div className={css.heroTabs}>
+        {tabs.map((tab, idx) => (
+          <button
+            key={tab.label}
+            className={idx === activeTab ? `${css.heroTab} ${css.active}` : css.heroTab}
+            onClick={() => setActiveTab(idx)}
+            type="button"
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+      <div className={classNames(css.searchBarContainer, getGridCount(fieldCountForGrid))}>
+        <FinalForm
+          onSubmit={onSubmit}
+          {...props}
+          render={({ fieldRenderProps, handleSubmit }) => {
+            return (
+              <Form
+                role="search"
+                onSubmit={handleSubmit}
+                className={classNames(css.gridContainer, getGridCount(fieldCountForGrid))}
+              >
+                {addFilters([
+                  'locationSearch',
+                  'bedrooms',
+                  'landSize',
+                  'price',
+                  'categories',
+                  'keywordSearch',
+                  'dateRange',
+                ])}
 
-              <PrimaryButton disabled={submitDisabled} className={css.submitButton} type="submit">
-                <FormattedMessage id="PageBuilder.SearchCTA.buttonLabel" />
-              </PrimaryButton>
-            </Form>
-          );
-        }}
-      />
-    </div>
+                <button disabled={submitDisabled} className={css.submitButton} type="submit">
+                  <span className={css.searchIcon}>
+                    <IconCollection name="search_icon" />
+                  </span>
+                  <FormattedMessage id="PageBuilder.SearchCTA.buttonLabel" />
+                </button>
+              </Form>
+            );
+          }}
+        />
+      </div>
+    </>
   );
 });
 

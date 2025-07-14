@@ -99,17 +99,94 @@
 }
 
 .submitButton {
-  min-height: 40px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f74df4;
+  color: #fff;
+
+  font-family: Mulish;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0%;
+
+  border: none;
+  border-radius: 50px;
+  padding: 10px 25px 10px 15px;
+  height: 38px;
+  margin-left: 32px;
+  cursor: pointer;
+  transition: background 0.2s;
+
   min-width: 86px;
-  padding-left: 16px;
-  padding-right: 16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  &:hover {
+    background: #e14ed0;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   @media (--viewportMedium) {
     height: 48px;
   }
   @media (--viewportLarge) {
     max-width: 270px;
   }
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heroTabs {
+  display: flex;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: -40px;
+  @media (max-width: 767px) {
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+.heroTab {
+  padding: 9px 35px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+  background: #f7f7f7;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border: 1px solid #d3d3d3;
+
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  @media (max-width: 767px) {
+    padding: 9px 15px;
+    font-size: 10px;
+  }
+}
+
+.heroTab:first-child {
+  border: none;
+}
+
+.heroTab.active {
+  background: #ff5ce7;
+  color: #fff;
 }
