@@ -68,7 +68,7 @@ const SectionHero = props => {
     { label: 'Rentals' },
     { label: 'For Sale' },
     { label: 'Land' },
-    { label: 'Commercial' },
+    // { label: 'Commercial' },
   ];
   const [activeTab, setActiveTab] = useState(0);
 
