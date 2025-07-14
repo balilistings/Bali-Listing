@@ -65,6 +65,9 @@ import SearchResultsPanel from './SearchResultsPanel/SearchResultsPanel';
 import NoSearchResultsMaybe from './NoSearchResultsMaybe/NoSearchResultsMaybe';
 
 import css from './SearchPage.module.css';
+import { types as sdkTypes } from '../../util/sdkLoader';
+
+const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
 const SEARCH_WITH_MAP_DEBOUNCE = 300; // Little bit of debounce before search is initiated.
@@ -500,7 +503,13 @@ export class SearchPageComponent extends Component {
       />
     );
 
-    const { bounds, origin } = searchParamsInURL || {};
+    const {
+      bounds = new SDKLatLngBounds(
+        new SDKLatLng(-7.99722356, 115.56892379),
+        new SDKLatLng(-8.85119719, 114.87263779)
+      ),
+      origin,
+    } = searchParamsInURL || {};
     const { title, description, schema } = createSearchResultSchema(
       listings,
       searchParamsInURL || {},
