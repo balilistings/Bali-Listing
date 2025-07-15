@@ -1,0 +1,385 @@
+@import '../../../../../styles/customMediaQueries.css';
+
+.root {
+  width: 100%;
+  height: 100%;
+}
+
+.dropdownContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  user-select: none;
+  padding: 0 0px;
+
+  @media (--viewportMedium) {}
+
+  @media (--viewportLarge) {
+    padding: 0;
+  }
+}
+
+.toggleButton {
+  position: relative;
+  height: 36px;
+
+  text-align: left;
+  cursor: pointer;
+  color: var(--colorGrey700);
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 5px 17px;
+
+  @media (--viewportMedium) {
+    height: 56px;
+    padding: 10px 20px;
+    gap: 12px;
+  }
+
+  @media (--viewportLarge) {
+    display: flex;
+    margin: 0;
+    padding: 10px 20px;
+  }
+}
+
+.bedroomIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+
+  @media (--viewportMedium) {
+    width: 24px;
+    height: 24px;
+  }
+
+  color: var(--colorGrey600);
+  margin-top: 2px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+
+    @media (--viewportMedium) {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+.dropdownText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  line-height: 1.2;
+}
+
+.mainLabel {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+
+  @media (--viewportMedium) {
+    font-size: 14px;
+  }
+}
+
+.subLabel {
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #D3D3D3;
+
+  @media (--viewportMedium) {
+    font-size: 14px;
+  }
+}
+
+.toggleButton.unselected .subLabel {
+  color: #D3D3D3;
+}
+
+.toggleButton.selected .subLabel {
+  color: #F74DF4;
+  font-weight: 700;
+}
+
+.toggleButton:hover .bedroomIcon {
+  color: var(--colorGrey700);
+}
+
+.chevron {
+  position: absolute;
+  right: 0px;
+  top: 14px;
+  width: 15px;
+  transition: transform 0.4s;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--colorGrey400);
+    border-bottom: 2px solid var(--colorGrey400);
+    transform: rotate(45deg);
+  }
+
+  @media (--viewportMedium) {
+    top: 18px;
+  }
+
+  @media (--viewportLarge) {
+    right: 8px;
+  }
+}
+
+.chevron.isOpen::before {
+  transform: rotate(-135deg);
+  top: 2px;
+}
+
+.dropdownContent {
+  position: absolute;
+  left: 50%;
+  top: 110%;
+  transform: translateX(-50%);
+  width: calc(100% + 16px);
+  min-width: 320px;
+  padding: 0;
+  margin-top: 0;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: var(--boxShadowPopup);
+  z-index: 1;
+
+  @media (--viewportLarge) {
+    top: 68px;
+    left: -40px;
+
+    transform: none;
+    width: 100%;
+    min-width: 396px;
+
+    &.alignLeft {
+      left: -8px;
+      right: auto;
+    }
+  }
+}
+
+.priceValues {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.priceValue {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.priceLabel {
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 9px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: rgba(77, 77, 77, 1);
+
+  @media (--viewportMedium) {
+    font-size: 12px;
+  }
+}
+
+.priceAmount {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  border-radius: 5px;
+  color: #231F20;
+  padding: 5px 10px;
+  border: 1px solid rgba(196, 196, 196, 1);
+  min-width: 99px;
+
+  @media (--viewportMedium) {
+    font-size: 14px;
+  }
+}
+
+.landSizeIcon{
+  & svg{
+    width: 18px;
+    height: 18px;
+    @media (--viewportMedium) {
+      width: 24px;
+      height: 24px;
+    }
+  }
+}
+
+
+.landSizeModal {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.counterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.counterTitle {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+
+  @media (--viewportMedium) {}
+}
+
+.counterControls {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  justify-content: flex-end;
+}
+
+.counterButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #F2F2F2;
+  border-radius: 50%;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--marketplaceColor);
+    background-color: var(--colorGrey50);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--colorGrey200);
+  }
+}
+
+.counterButtonIcon {}
+
+.counterButton:hover:not(:disabled) .counterButtonIcon {
+  color: var(--marketplaceColor);
+}
+
+.counterValue {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+  min-width: 32px;
+  text-align: center;
+}
+
+.nextButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.nextButton {
+  background-color: var(--marketplaceColor);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  max-width: 78px;
+  width: 100%;
+  height: 38px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  &:hover {
+    background-color: var(--marketplaceColorDark);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @media (--viewportMedium) {}
+}
+
+.unselected {
+  color: var(--colorGrey300);
+
+  &:hover {
+    color: var(--colorGrey700);
+  }
+}
+
+.opened {
+  color: var(--colorGrey700);
+  border-radius: 10px;
+  background-color: #FFFFFF;
+
+  @media (--viewportMedium) {
+    border-radius: 50px;
+  }
+}

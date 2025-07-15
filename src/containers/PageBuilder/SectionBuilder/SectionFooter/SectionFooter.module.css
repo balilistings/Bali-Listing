@@ -233,6 +233,7 @@
   line-height: 130%;
   letter-spacing: -2.3%;
   color: #8d8d8d;
+  display: block;
   @media (max-width: 767px) {
     font-size: 9px;
     line-height: 12px;

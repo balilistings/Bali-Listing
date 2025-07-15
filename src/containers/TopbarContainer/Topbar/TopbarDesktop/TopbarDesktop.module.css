@@ -400,7 +400,8 @@ margin-top: 20px;
   border-top-width: 1px;
   border-top-style: solid;
   border-top-color: var(--colorGrey100);
-
+margin-top: 10px;
+padding-bottom: 0;
   &:hover {
     cursor: pointer;
     color: var(--colorBlack);

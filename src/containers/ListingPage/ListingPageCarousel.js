@@ -85,6 +85,7 @@ import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
+import SectionTerms from './SectionTerms';
 
 import css from './ListingPage.module.css';
 
@@ -100,6 +101,19 @@ const SECTIONS = [
   { id: 'listedBy', label: 'Listed By' },
 ];
 
+const prepareSections = isLandforsale => {
+  if (isLandforsale) {
+    return SECTIONS.map(section => {
+      if (section.id === 'amenities') {
+        return { id: 'propertyDetails', label: 'Property Details' };
+      }
+      return section;
+    });
+  }
+
+  return SECTIONS;
+};
+
 export const ListingPageComponent = props => {
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
@@ -111,12 +125,18 @@ export const ListingPageComponent = props => {
     setMounted(true);
   }, []);
 
-  // Scroll to section on tab click
+  // Scroll to section on tab click with offset from top
   const handleTabClick = id => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: elementPosition - 120, // Offset by 200px from top
+        behavior: 'smooth'
+      });
+      setActiveTab(id);
     }
+    
   };
 
   // Scrollspy: update active tab on scroll
@@ -127,7 +147,7 @@ export const ListingPageComponent = props => {
         const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 120) {
+          if (rect.top <= 330) {
             // adjust offset for sticky header if needed
             found = section.id;
           }
@@ -238,7 +258,9 @@ export const ListingPageComponent = props => {
   const isOwnListing =
     userAndListingAuthorAvailable && currentListing.author.id.uuid === currentUser.id.uuid;
 
-  const { listingType, transactionProcessAlias, unitType } = publicData;
+  const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
+  const isLandforsale = categoryLevel1 === 'landforsale';
+
   if (!(listingType && transactionProcessAlias && unitType)) {
     // Listing should always contain listingType, transactionProcessAlias and unitType)
     return (
@@ -419,7 +441,6 @@ export const ListingPageComponent = props => {
             <SectionGallery
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
-              currentUser={currentUser}
             />
             <RentalPeriod
               publicData={publicData}
@@ -439,11 +460,12 @@ export const ListingPageComponent = props => {
                 categoryConfiguration={config.categoryConfiguration}
                 intl={intl}
                 location={publicData?.location?.address}
+                isLandforsale={isLandforsale}
               />
             </div>
 
             <div className={css.tabsConrainer}>
-              {SECTIONS.map(section => (
+              {prepareSections(isLandforsale).map(section => (
                 <button
                   key={section.id}
                   className={classNames(css.tab, { [css.activeTab]: activeTab === section.id })}
@@ -454,20 +476,22 @@ export const ListingPageComponent = props => {
                 </button>
               ))}
             </div>
-            <div id="description">
-              <h4 className={css.descriptionHeading}>Description</h4>
-              <SectionTextMaybe text={description} showAsIngress />
-            </div>
+            <div className={css.descriptionContainer}>
+              <div id="description" >
+                <h4 className={css.descriptionHeading}>Description</h4>
+                <SectionTextMaybe text={description} showAsIngress />
+              </div>
 
-            <div id="amenities">
-              <CustomListingFields
-                publicData={publicData}
-                metadata={metadata}
-                listingFieldConfigs={listingConfig.listingFields}
-                categoryConfiguration={config.categoryConfiguration}
-                intl={intl}
-                currentUser={currentUser}
-              />
+              <div>
+                <CustomListingFields
+                  publicData={publicData}
+                  metadata={metadata}
+                  listingFieldConfigs={listingConfig.listingFields}
+                  categoryConfiguration={config.categoryConfiguration}
+                  intl={intl}
+                  isLandforsale={isLandforsale}
+                />
+              </div>
             </div>
 
             <div id="location">
@@ -479,7 +503,14 @@ export const ListingPageComponent = props => {
               />
             </div>
 
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
+            {reviews.length > 0 && (
+              <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
+            )}
+
+            <div id="rentalTerms">
+              <SectionTerms publicData={publicData} />
+            </div>
+
             <SectionAuthorMaybe
               title={title}
               listing={currentListing}
@@ -576,8 +607,6 @@ const EnhancedListingPage = props => {
   const showListingError = props.showListingError;
   const isVariant = props.params?.variant != null;
   const currentUser = props.currentUser;
-
-  // console.log('currentUser', currentUser);
   if (isForbiddenError(showListingError) && !isVariant && !currentUser) {
     // This can happen if private marketplace mode is active
     return (
@@ -615,22 +644,19 @@ const EnhancedListingPage = props => {
   }
 
   return (
-    <>
-      <ListingPageComponent
-        config={config}
-        routeConfiguration={routeConfiguration}
-        intl={intl}
-        history={history}
-        location={location}
-        showOwnListingsOnly={hasNoViewingRights}
-        {...props}
-      />
-    </>
+    <ListingPageComponent
+      config={config}
+      routeConfiguration={routeConfiguration}
+      intl={intl}
+      history={history}
+      location={location}
+      showOwnListingsOnly={hasNoViewingRights}
+      {...props}
+    />
   );
 };
 
 const mapStateToProps = state => {
-  console.log('state', state);
   const { isAuthenticated } = state.auth;
   const {
     showListingError,

@@ -90,12 +90,25 @@ const LocationPredictionsList = props => {
         }}
       >
         {predictionId === currentLocationId ? (
-          <span className={css.currentLocation}>
+          <div className={css.currentLocation}>
             <IconCurrentLocation />
-            <FormattedMessage id="LocationAutocompleteInput.currentLocation" />
-          </span>
+            <div>
+              <div className={css.currentLocationText}>
+                <FormattedMessage id="LocationAutocompleteInput.currentLocation" />
+              </div>
+              <div className={css.currentLocationSubtext}>
+                Discover listings near you
+              </div>
+            </div>
+          </div>
         ) : (
-          geocoder.getPredictionAddress(prediction)
+          <>
+            <svg width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M10 6.09717C7.79086 6.09717 6 7.91704 6 10.162C6 12.4069 7.79086 14.2268 10 14.2268C12.2091 14.2268 14 12.4069 14 10.162C14 7.91704 12.2091 6.09717 10 6.09717ZM8 10.162C8 9.0395 8.89543 8.12957 10 8.12957C11.1046 8.12957 12 9.0395 12 10.162C12 11.2844 11.1046 12.1944 10 12.1944C8.89543 12.1944 8 11.2844 8 10.162Z" fill="#6B7280" />
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M17.0711 2.97637C13.1658 -0.992124 6.83417 -0.992124 2.92893 2.97637C-0.97631 6.94487 -0.97631 13.3791 2.92893 17.3476L9.10433 23.623C9.59899 24.1257 10.401 24.1257 10.8957 23.623L17.0711 17.3476C20.9763 13.3791 20.9763 6.94487 17.0711 2.97637ZM4.34315 4.41349C7.46734 1.2387 12.5327 1.2387 15.6569 4.41349C18.781 7.58829 18.781 12.7357 15.6569 15.9105L10 21.6589L4.34315 15.9105C1.21895 12.7357 1.21895 7.58829 4.34315 4.41349Z" fill="#6B7280" />
+            </svg>
+            {geocoder.getPredictionAddress(prediction)}
+          </>
         )}
       </li>
     );
@@ -462,7 +475,7 @@ class LocationAutocompleteInputImplementation extends Component {
       onFocus(e);
     };
 
-    const rootClass = classNames(rootClassName || css.root, className);
+    const rootClass = classNames(rootClassName || css.root, className, this.state.inputHasFocus && css.inputHasFocus);
     const iconClass = classNames(iconClassName || css.icon);
     const inputClass = classNames(inputClassName || css.input, { [validClassName]: isValid });
     const predictionsClass = classNames(predictionsClassName);
@@ -479,16 +492,16 @@ class LocationAutocompleteInputImplementation extends Component {
     const refMaybe =
       typeof inputRef === 'function'
         ? {
-            ref: node => {
-              this.input = node;
-              if (inputRef) {
-                inputRef(node);
-              }
-            },
-          }
+          ref: node => {
+            this.input = node;
+            if (inputRef) {
+              inputRef(node);
+            }
+          },
+        }
         : inputRef
-        ? { ref: inputRef }
-        : {};
+          ? { ref: inputRef }
+          : {};
 
     return (
       <div className={rootClass}>
@@ -501,23 +514,31 @@ class LocationAutocompleteInputImplementation extends Component {
             <IconHourGlass />
           )}
         </div> */}
-        <input
-          className={inputClass}
-          type="search"
-          autoComplete="off"
-          autoFocus={autoFocus}
-          placeholder={placeholder}
-          name={name}
-          value={search}
-          disabled={disabled || this.state.fetchingPlaceDetails}
-          onFocus={handleOnFocus}
-          onBlur={this.handleOnBlur}
-          onChange={this.onChange}
-          onKeyDown={this.onKeyDown}
-          {...refMaybe}
-          title={search}
-          data-testid="location-search"
-        />
+        <div>
+          <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.54 20.351L8.61 20.391L8.638 20.407C8.74903 20.467 8.87327 20.4985 8.9995 20.4985C9.12573 20.4985 9.24997 20.467 9.361 20.407L9.389 20.392L9.46 20.351C9.85112 20.1191 10.2328 19.8716 10.604 19.609C11.5651 18.9305 12.463 18.1667 13.287 17.327C15.231 15.337 17.25 12.347 17.25 8.5C17.25 6.31196 16.3808 4.21354 14.8336 2.66637C13.2865 1.11919 11.188 0.25 9 0.25C6.81196 0.25 4.71354 1.11919 3.16637 2.66637C1.61919 4.21354 0.75 6.31196 0.75 8.5C0.75 12.346 2.77 15.337 4.713 17.327C5.53664 18.1667 6.43427 18.9304 7.395 19.609C7.76657 19.8716 8.14854 20.1191 8.54 20.351ZM9 11.5C9.79565 11.5 10.5587 11.1839 11.1213 10.6213C11.6839 10.0587 12 9.29565 12 8.5C12 7.70435 11.6839 6.94129 11.1213 6.37868C10.5587 5.81607 9.79565 5.5 9 5.5C8.20435 5.5 7.44129 5.81607 6.87868 6.37868C6.31607 6.94129 6 7.70435 6 8.5C6 9.29565 6.31607 10.0587 6.87868 10.6213C7.44129 11.1839 8.20435 11.5 9 11.5Z" fill="#231F20" />
+          </svg>
+        </div>
+        <div>
+          <label className={css.label}>Location</label>
+          <input
+            className={inputClass}
+            type="search"
+            autoComplete="off"
+            autoFocus={autoFocus}
+            placeholder={placeholder}
+            name={name}
+            value={search}
+            disabled={disabled || this.state.fetchingPlaceDetails}
+            onFocus={handleOnFocus}
+            onBlur={this.handleOnBlur}
+            onChange={this.onChange}
+            onKeyDown={this.onKeyDown}
+            {...refMaybe}
+            title={search}
+            data-testid="location-search"
+          />
+        </div>
         {renderPredictions ? (
           <LocationPredictionsList
             rootClassName={predictionsClass}

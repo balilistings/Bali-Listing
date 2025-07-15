@@ -2,28 +2,50 @@
 
 .input {
   border: 0;
-  padding-left: 8px;
+  padding-left: 0px;
   text-overflow: ellipsis;
   cursor: pointer;
+  background: transparent;
+  padding: 0;
+  height: auto;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Regular;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #F74DF4;
+  @media (--viewportMedium) {
+    font-size: 14px;
+  }
+
   &:hover,
   &:focus {
     border: none;
     outline: none;
     box-shadow: none;
   }
+
   &:hover::placeholder,
   &:focus::placeholder {
-    color: var(--colorGrey700);
+    color: #D3D3D3;
     transition: 0.1s all;
+    font-weight: 400;
   }
 
-  @media (--viewportMedium) {
-    font-size: inherit;
+  &::placeholder {
+    color: #D3D3D3;
+    transition: 0.1s all;
+    font-weight: 400;
   }
+
+  @media (--viewportMedium) {}
 }
 
 .inputWithCurrentLocation {
   composes: input;
+
   &::placeholder {
     color: var(--colorGrey700);
   }
@@ -42,22 +64,26 @@
 }
 
 .root {
-  display: flex;
-  align-items: center;
-  height: 40px;
+
+  height: 36px;
+
   @media (--viewportMedium) {
-    height: 48px;
+    height: 56px;
   }
 }
 
 .customField {
   flex: 1;
   color: var(--colorGrey800);
-  padding-left: 12px;
+  padding: 5px 17px;
+  height: 36px;
+  align-items: center;
+  gap: 18px;
 
   @media (--viewportMedium) {
     margin-bottom: 0;
-    padding-left: 16px;
+    padding:0 0 0 16px;
+    height: 56px;
   }
 }
 
@@ -70,12 +96,12 @@
   min-width: 288px;
   margin-top: 0;
   background-color: var(--colorWhite);
-  border-radius: var(--borderRadiusMedium);
+  border-radius: 10px;
   box-shadow: var(--boxShadowPopup);
   z-index: calc(var(--zIndexPopup) + 1);
 
   @media (--viewportLarge) {
-    top: 50px;
+    top: 68px;
     right: 0;
     left: auto;
     transform: none;

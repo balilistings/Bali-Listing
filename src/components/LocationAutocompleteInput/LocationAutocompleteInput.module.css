@@ -3,6 +3,8 @@
 .root {
   position: relative;
   display: flex;
+  align-items: center;
+gap: 18px;
 }
 
 .icon {
@@ -34,11 +36,19 @@
 .input {
   flex-grow: 1;
   height: 50px;
-  padding-left: 10px;
+  padding-left: 0px;
   margin: 0;
   line-height: unset;
   border-bottom-width: 2px;
-
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  padding: 0;
   /* Safari bugfix: without this Safari will print placeholder to a wrong place */
   &::-webkit-input-placeholder {
     line-height: normal;
@@ -103,20 +113,20 @@ bottom of the container.
   composes: marketplaceBodyFontStyles from global;
 
   margin: 0;
-  padding: 14px 0;
+  padding: 10px 0;
 
   & li {
     transition: var(--transitionStyleButton);
     margin: 0; /* Remove the double white space */
     line-height: 24px;
     /* keep horizontal space stable when hovering */
-    border-left: 6px solid transparent;
+    border-left: 0px solid transparent;
 
     /* Assign enough vertical padding to make the element at least 44px high */
-    padding: 9px 24px;
+    padding: 9px 20px;
 
     @media (--viewportMedium) {
-      padding: 10px 36px;
+      padding: 10px 20px;
       margin: 0;
     }
 
@@ -128,10 +138,31 @@ bottom of the container.
     }
   }
   .listItemBlackText {
-    color: var(--colorGrey700);
+    color: #231F20;
+    font-family: Mulish;
+    font-weight: 700;
+    font-style: Regular;
+    font-size: 10px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    display: flex;
+    gap: 13px;
+    & svg{
+      width: 12px;
+    height: 12px;
+      @media (--viewportMedium) {
+        width: 20px;
+        height: 24px;
+      
+      }
+    }
+    @media (--viewportMedium) {
+      font-size: 14px;
+    }
     &:hover,
     &.highlighted {
-      border-left: 6px solid var(--colorGrey900);
+      border-left: 0px solid var(--colorGrey900);
       color: var(--colorBlack);
     }
   }
@@ -142,21 +173,84 @@ bottom of the container.
     }
     &:hover,
     &.highlighted {
-      border-left: 6px solid var(--colorWhite);
+      border-left: 0px solid var(--colorWhite);
       color: var(--colorWhite);
     }
   }
 }
 
 .currentLocation {
-  composes: p from global;
+
+  display: flex;
+  align-items: center;
+  gap: 0px;
 }
 
+
+
 .currentLocationIcon {
-  margin-right: 10px;
+  margin-right: 8px;
   margin-bottom: 1px;
+}
+.currentLocationText{
+  font-family: Mulish;
+font-weight: 700;
+font-style: Bold;
+font-size: 10px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+color: #231F20;
+@media (--viewportMedium) {
+  font-size: 14px;
+}
+}
+
+.currentLocationSubtext{
+  font-family: Mulish;
+font-weight: 400;
+font-style: Regular;
+font-size: 9px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+color: #8D8D8D;
+@media (--viewportMedium) {
+  font-size: 10px;
+}
 }
 
 .invert {
   filter: invert(80%);
+}
+
+.inputHasFocus{
+  background: #fff;
+  border-radius: 10px;
+  & input{
+    background: #fff;
+    border-radius: 10px;
+    @media (--viewportMedium) {
+      border-radius: 50px;
+    }
+  }
+  @media (--viewportMedium) {
+    border-radius: 50px;
+  }
+}
+
+.label{
+  font-family: Mulish;
+font-weight: 700;
+font-style: Bold;
+font-size: 10px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+color: #231F20;
+padding: 0;
+margin: 0;
+@media (--viewportMedium) {
+  font-size: 14px;
+}
 }
