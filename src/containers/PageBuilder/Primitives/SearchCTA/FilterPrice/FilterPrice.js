@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../../../../util/reactIntl';
@@ -26,10 +26,22 @@ const getRangeConfig = tabId => {
   return configs[tabId] || configs.monthly;
 };
 
-const PriceDropdown = ({ input, className, rootClassName, alignLeft }) => {
+const PriceDropdown = ({ input, className, rootClassName, alignLeft, activeTabKey }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('monthly');
-  const [priceRange, setPriceRange] = useState([0, 500]); // Default monthly range: 0-500M
+  const showTabsInPrice = activeTabKey === 'rentalvillas';
+  const [priceRange, setPriceRange] = useState(
+    showTabsInPrice ? [0, 500] : [1000000, 10000000000]
+  );
+
+  console.log('priceRange', priceRange);
+  useEffect(() => {
+    if (showTabsInPrice) {
+      // setActiveTab('monthly');
+    } else {
+      setPriceRange([1000000, 10000000000]);
+    }
+  }, [showTabsInPrice]);
 
   const toggleDropdown = () => {
     setIsOpen(prev => !prev);
@@ -108,36 +120,42 @@ const PriceDropdown = ({ input, className, rootClassName, alignLeft }) => {
             })}
           >
             <div className={css.priceModal}>
-              <div className={css.tabsContainer}>
-                <div className={css.tabsWrapper}>
-                  {tabs.map(tab => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => handleTabChange(tab.id)}
-                      className={classNames(css.tab, {
-                        [css.activeTab]: activeTab === tab.id,
-                      })}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                  <div
-                    className={css.tabIndicator}
-                    style={{
-                      transform: `translateX(${tabs.findIndex(t => t.id === activeTab) * 100}%)`,
-                    }}
-                  />
+              {showTabsInPrice && (
+                <div className={css.tabsContainer}>
+                  <div className={css.tabsWrapper}>
+                    {tabs.map(tab => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => handleTabChange(tab.id)}
+                        className={classNames(css.tab, {
+                          [css.activeTab]: activeTab === tab.id,
+                        })}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                    <div
+                      className={css.tabIndicator}
+                      style={{
+                        transform: `translateX(${tabs.findIndex(t => t.id === activeTab) * 100}%)`,
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Price Range Slider */}
-              <div className={css.sliderSection}>
+              <div
+                className={classNames(css.sliderSection, {
+                  [css.sliderSectionNoTabs]: !showTabsInPrice,
+                })}
+              >
                 <div className={css.sliderWrapper}>
                   <RangeSlider
-                    min={getRangeConfig(activeTab).min}
-                    max={getRangeConfig(activeTab).max}
-                    step={getRangeConfig(activeTab).step}
+                    min={showTabsInPrice ? getRangeConfig(activeTab).min : 1000000}
+                    max={showTabsInPrice ? getRangeConfig(activeTab).max : 10000000000}
+                    step={showTabsInPrice ? getRangeConfig(activeTab).step : 1000000}
                     handles={priceRange}
                     onChange={handleRangeChange}
                   />
