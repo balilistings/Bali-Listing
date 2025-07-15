@@ -63,6 +63,7 @@ export { default as ValidationError } from './ValidationError/ValidationError';
 export {default as ImageUploader} from '../components/ImageUploader/ImageUploader';
 export { default as WhatsAppButton } from '../components/WhatsAppButton/WhatsAppButton';
 export { default as Dropdown } from '../components/Dropdown/Dropdown';
+export { default as MessageBox} from '../components/MessageBox/MessageBox';
 /**
  * Composite components
  * These components include other components

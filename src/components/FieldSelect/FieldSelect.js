@@ -104,6 +104,8 @@ const FieldSelectComponent = props => {
       textEnum =
         'Select the zone (e.g., Green, Pink); informs buyers about usage and investment potential.';
       break;
+    case 'Wifi':
+      textEnum = 'Select “Yes” if there’s a wifi, or “No” if there isn’t.';
   }
   return (
     <div className={classes}>
@@ -134,6 +136,7 @@ const FieldSelectComponent = props => {
               'Freehold or leasehold',
               'Land Title',
               'Land zone',
+              'Wifi',
             ].includes(label) ? (
               <div className={css.imgWrapper}>
                 <img src={iconGuide} alt="instruction" className={css.img} />

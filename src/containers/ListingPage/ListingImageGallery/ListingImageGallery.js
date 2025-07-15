@@ -10,10 +10,12 @@ import {
   IconClose,
   IconArrowHead,
   ResponsiveImage,
+  MessageBox,
 } from '../../../components';
 
 import IconHeart from '../../../assets/favicon.svg';
 import IconShare from '../../../assets/ShareIcon.svg';
+import { useHistory } from 'react-router-dom';
 // Copied directly from
 // `node_modules/react-image-gallery/styles/css/image-gallery.css`. The
 // copied file is left unedited, and all the overrides are defined in
@@ -66,7 +68,9 @@ const getFirstImageAspectRatio = (firstImage, scaledVariant) => {
 const ListingImageGallery = props => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const intl = useIntl();
-  const { rootClassName, className, images, imageVariants, thumbnailVariants } = props;
+  const { rootClassName, className, images, imageVariants, thumbnailVariants, currentUser } = props;
+  const history = useHistory();
+
   const thumbVariants = thumbnailVariants || imageVariants;
   // imageVariants are scaled variants.
   const { aspectWidth, aspectHeight } = getFirstImageAspectRatio(images?.[0], imageVariants[0]);
@@ -94,6 +98,7 @@ const ListingImageGallery = props => {
   const [copyError, setCopyError] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
   const [animateHeart, setAnimateHeart] = useState(false);
+  const [showMessageBox, setShowMessageBox] = useState(false);
 
   const renderItem = item => {
     const handleShareClick = () => {
@@ -119,15 +124,26 @@ const ListingImageGallery = props => {
         });
     };
     const handleFavoriteClick = () => {
-      setIsFavorited(!isFavorited);
-      setAnimateHeart(true);
+      if (currentUser) {
+        setIsFavorited(!isFavorited);
+        setAnimateHeart(true);
 
-      // Reset animasi setelah selesai (sesuai durasi animasi CSS)
-      setTimeout(() => {
-        setAnimateHeart(false);
-      }, 400); // harus sama dengan durasi animasi di CSS
+        // Reset animasi setelah selesai (sesuai durasi animasi CSS)
+        setTimeout(() => {
+          setAnimateHeart(false);
+        }, 400); // harus sama dengan durasi animasi di CSS
+      } else {
+        setShowMessageBox(true);
+      }
+    };
+    const handleConfirm = () => {
+      setShowMessageBox(false);
+      history.push('/signup');
     };
 
+    const handleCancel = () => {
+      setShowMessageBox(false);
+    };
     return (
       <AspectRatioWrapper
         width={aspectWidth || 1}
@@ -168,6 +184,13 @@ const ListingImageGallery = props => {
             {...imageSizesMaybe}
           />
         </div>
+        {showMessageBox && (
+          <MessageBox
+            message="Please sign up or log in to add this listing to favorite."
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+          />
+        )}
       </AspectRatioWrapper>
     );
   };

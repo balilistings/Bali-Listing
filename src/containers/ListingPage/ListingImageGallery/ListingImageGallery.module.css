@@ -321,12 +321,12 @@
 }
 
 .successTooltip {
-  background-color: #FF4FF7; /* hijau */
+  background-color: #FF4FF7; 
   color: white;
 }
 
 .errorTooltip {
-  background-color: #f44336; /* merah */
+  background-color: #f44336; 
 }
 
 .iconButton {
