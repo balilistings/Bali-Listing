@@ -80,7 +80,7 @@ const BedroomDropdown = ({ input, className, rootClassName, alignLeft }) => {
             </span>
             <span className={css.subLabel}>{labelText}</span>
           </div>
-          <span className={classNames(css.chevron, isOpen && css.isOpen)} />
+          {/* <span className={classNames(css.chevron, isOpen && css.isOpen)} /> */}
         </div>
 
         {isOpen && (
@@ -103,7 +103,10 @@ const BedroomDropdown = ({ input, className, rootClassName, alignLeft }) => {
                     disabled={displayValue <= 0}
                     aria-label="Decrease bedrooms"
                   >
-                    <span className={css.counterButtonIcon}>−</span>
+                    <svg width="12" height="2" viewBox="0 0 12 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M10.375 1H1.625" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+
                   </button>
 
                   <span className={css.counterValue}>{displayValue}</span>
@@ -115,7 +118,10 @@ const BedroomDropdown = ({ input, className, rootClassName, alignLeft }) => {
                     disabled={displayValue >= 6}
                     aria-label="Increase bedrooms"
                   >
-                    <span className={css.counterButtonIcon}>+</span>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 1.625V10.375M10.375 6H1.625" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+
                   </button>
                 </div>
               </div>

@@ -98,7 +98,7 @@ const PriceDropdown = ({ input, className, rootClassName, alignLeft }) => {
             </span>
             <span className={css.subLabel}>{labelText}</span>
           </div>
-          <span className={classNames(css.chevron, isOpen && css.isOpen)} />
+          {/* <span className={classNames(css.chevron, isOpen && css.isOpen)} /> */}
         </div>
 
         {isOpen && (

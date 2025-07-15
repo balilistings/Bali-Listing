@@ -11,10 +11,10 @@
   height: 100%;
   display: grid;
   user-select: none;
-  padding: 0 12px;
-  @media (--viewportMedium) {
-    padding: 0 16px;
-  }
+  padding: 0 0px;
+
+  @media (--viewportMedium) {}
+
   @media (--viewportLarge) {
     padding: 0;
   }
@@ -22,8 +22,8 @@
 
 .toggleButton {
   position: relative;
-  height: 40px;
-  padding: 8px 30px 0px 0px;
+  height: 36px;
+
   text-align: left;
   cursor: pointer;
   color: var(--colorGrey700);
@@ -32,17 +32,20 @@
   text-overflow: ellipsis;
   transition: all 0.1s;
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: 15px;
+  padding: 5px 17px;
 
   @media (--viewportMedium) {
-    height: 48px;
-    padding-top: 12px;
+    height: 56px;
+    padding: 10px 20px;
+    gap: 12px;
   }
+
   @media (--viewportLarge) {
     display: flex;
     margin: 0;
-    padding: 12px 30px 10px 16px;
+    padding: 10px 20px;
   }
 }
 
@@ -50,14 +53,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
+
+  @media (--viewportMedium) {
+    width: 24px;
+    height: 24px;
+  }
+
   color: var(--colorGrey600);
   margin-top: 2px;
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+
+    @media (--viewportMedium) {
+      width: 24px;
+      height: 24px;
+    }
   }
 }
 
@@ -70,19 +84,29 @@
 }
 
 .mainLabel {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--colorGrey900);
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
 
   @media (--viewportMedium) {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
 .subLabel {
-  font-size: 12px;
+  font-family: Mulish;
   font-weight: 400;
-  color: var(--colorGrey500);
+  font-style: Regular;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #D3D3D3;
 
   @media (--viewportMedium) {
     font-size: 14px;
@@ -90,11 +114,12 @@
 }
 
 .toggleButton.unselected .subLabel {
-  color: var(--colorGrey400);
+  color: #D3D3D3;
 }
 
 .toggleButton.selected .subLabel {
-  color: var(--colorGrey700);
+  color: #F74DF4;
+  font-weight: 700;
 }
 
 .toggleButton:hover .bedroomIcon {
@@ -121,6 +146,7 @@
   @media (--viewportMedium) {
     top: 18px;
   }
+
   @media (--viewportLarge) {
     right: 8px;
   }
@@ -146,11 +172,12 @@
   z-index: 1;
 
   @media (--viewportLarge) {
-    top: 51px;
-    left: auto;
-    right: 0;
+    top: 68px;
+    left: -40px;
+
     transform: none;
     width: 100%;
+    min-width: 396px;
 
     &.alignLeft {
       left: -8px;
@@ -160,7 +187,7 @@
 }
 
 .counterModal {
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -174,30 +201,37 @@
 }
 
 .counterTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--colorGrey900);
-  text-align: left;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
 
   @media (--viewportMedium) {
-    font-size: 18px;
+    font-size: 14px;
   }
 }
 
 .counterControls {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   justify-content: flex-end;
+  @media (--viewportMedium) {
+    gap: 30px;
+  }
 }
 
 .counterButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border: 2px solid var(--colorGrey300);
+  width: 34px;
+  height: 34px;
+  border: 1px solid #F2F2F2;
   border-radius: 50%;
   background-color: white;
   cursor: pointer;
@@ -217,23 +251,31 @@
     cursor: not-allowed;
     border-color: var(--colorGrey200);
   }
+  & svg{
+    width: 10px;
+  
+    @media (--viewportMedium) {
+      width: 12px;
+     
+    }
+  }
 }
 
-.counterButtonIcon {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--colorGrey700);
-  line-height: 1;
-}
+.counterButtonIcon {}
 
 .counterButton:hover:not(:disabled) .counterButtonIcon {
   color: var(--marketplaceColor);
 }
 
 .counterValue {
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--colorGrey900);
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
   min-width: 32px;
   text-align: center;
 }
@@ -248,12 +290,22 @@
   background-color: var(--marketplaceColor);
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
+  border-radius: 5px;
+  padding: 6px 24px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  max-width: 78px;
+  width: 100%;
+  height: 38px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
 
   &:hover {
     background-color: var(--marketplaceColorDark);
@@ -264,8 +316,7 @@
   }
 
   @media (--viewportMedium) {
-    padding: 14px 28px;
-    font-size: 18px;
+    font-size: 12px
   }
 }
 
@@ -279,4 +330,10 @@
 
 .opened {
   color: var(--colorGrey700);
+  border-radius: 10px;
+  background-color: #FFFFFF;
+
+  @media (--viewportMedium) {
+    border-radius: 50px;
+  }
 }

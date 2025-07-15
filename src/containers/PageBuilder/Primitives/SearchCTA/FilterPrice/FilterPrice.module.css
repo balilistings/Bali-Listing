@@ -11,10 +11,12 @@
   height: 100%;
   display: grid;
   user-select: none;
-  padding: 0 12px;
+  padding: 0px;
+
   @media (--viewportMedium) {
-    padding: 0 16px;
+    padding: 0 0px;
   }
+
   @media (--viewportLarge) {
     padding: 0;
   }
@@ -22,8 +24,8 @@
 
 .toggleButton {
   position: relative;
-  height: 40px;
-  padding: 8px 30px 0px 0px;
+  height: 36px;
+  padding: 5px 17px;
   text-align: left;
   cursor: pointer;
   color: var(--colorGrey700);
@@ -32,17 +34,19 @@
   text-overflow: ellipsis;
   transition: all 0.1s;
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: 15px;
 
   @media (--viewportMedium) {
-    height: 48px;
-    padding-top: 12px;
+    height: 56px;
+    padding: 10px 20px;
+    gap: 12px;
   }
+
   @media (--viewportLarge) {
     display: flex;
     margin: 0;
-    padding: 12px 30px 10px 16px;
+    padding: 10px 20px;
   }
 }
 
@@ -50,14 +54,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
+
+  @media (--viewportMedium) {
+    width: 24px;
+    height: 24px;
+  }
+
   color: var(--colorGrey600);
   margin-top: 2px;
 
   svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
+
+    @media (--viewportMedium) {
+      width: 24px;
+      height: 24px;
+    }
   }
 }
 
@@ -70,31 +85,43 @@
 }
 
 .mainLabel {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--colorGrey900);
-
-  @media (--viewportMedium) {
-    font-size: 16px;
-  }
-}
-
-.subLabel {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--colorGrey500);
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
 
   @media (--viewportMedium) {
     font-size: 14px;
   }
 }
 
+.subLabel {
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #D3D3D3;
+
+  @media (--viewportMedium) {
+    font-size: 14px;
+  }
+}
+
+
 .toggleButton.unselected .subLabel {
-  color: var(--colorGrey400);
+  color: #D3D3D3;
 }
 
 .toggleButton.selected .subLabel {
-  color: var(--colorGrey700);
+  color: #F74DF4;
+  font-weight: 700;
 }
 
 .toggleButton:hover .priceIcon {
@@ -121,6 +148,7 @@
   @media (--viewportMedium) {
     top: 18px;
   }
+
   @media (--viewportLarge) {
     right: 8px;
   }
@@ -137,7 +165,7 @@
   top: 110%;
   transform: translateX(-50%);
   width: calc(100% + 16px);
-  min-width: 360px;
+  min-width: 320px;
   padding: 0;
   margin-top: 0;
   background-color: white;
@@ -146,11 +174,12 @@
   z-index: 10;
 
   @media (--viewportLarge) {
-    top: 51px;
-    left: auto;
-    right: 0;
+    top: 68px;
+    left: -40px;
+
     transform: none;
     width: 100%;
+    min-width: 386px;
 
     &.alignLeft {
       left: -8px;
@@ -160,10 +189,10 @@
 }
 
 .priceModal {
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 40px;
 }
 
 /* Tabs */
@@ -176,24 +205,27 @@
 .tabsWrapper {
   position: relative;
   display: flex;
-  background-color: var(--colorGrey100);
-  border-radius: 25px;
+
+  border-radius: 50px;
+  border: 1px solid #F2F2F2;
   padding: 4px;
-  width: fit-content;
+  width: 100%;
 }
 
 .tab {
   position: relative;
-  padding: 8px 20px;
+  padding: 9px 20px;
   border: none;
   background: transparent;
-  color: var(--colorGrey600);
-  font-size: 14px;
-  font-weight: 500;
+  color: #231F20;
+  font-size: 10px;
+  font-weight: 700;
   cursor: pointer;
   border-radius: 20px;
   transition: color 0.3s ease;
   z-index: 2;
+
+  flex: 1;
 
   &:hover {
     color: var(--colorGrey900);
@@ -201,12 +233,13 @@
 
   @media (--viewportMedium) {
     padding: 10px 24px;
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
 .tab.activeTab {
-  color: white;
+  color: #231F20;
+
 }
 
 .tabIndicator {
@@ -215,8 +248,10 @@
   left: 4px;
   width: calc(33.333% - 4px);
   height: calc(100% - 8px);
-  background-color: var(--marketplaceColor);
-  border-radius: 20px;
+  background-color: rgba(251, 166, 249, 0.2) !important;
+  background: #FBA6F933 !important;
+  border: 1px solid #F74DF4;
+  border-radius: 50px;
   transition: transform 0.3s ease;
   z-index: 1;
 }
@@ -229,7 +264,7 @@
 }
 
 .sliderWrapper {
-  padding: 0 20px;
+  padding: 0 0px;
 }
 
 .priceValues {
@@ -245,22 +280,38 @@
 }
 
 .priceLabel {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--colorGrey500);
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 9px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: rgba(77, 77, 77, 1);
 
   @media (--viewportMedium) {
-    font-size: 14px;
+    font-size: 12px;
   }
 }
 
 .priceAmount {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--colorGrey900);
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  border-radius: 5px;
+  color: #231F20;
+  padding: 5px 10px;
+  border: 1px solid rgba(196, 196, 196, 1);
+  min-width: 99px;
 
   @media (--viewportMedium) {
-    font-size: 18px;
+    font-size: 14px;
   }
 }
 
@@ -275,12 +326,20 @@
   background-color: var(--marketplaceColor);
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
   cursor: pointer;
   transition: all 0.2s ease;
+  height: 30px;
+  min-width: 122px;
 
   &:hover {
     background-color: var(--marketplaceColorDark);
@@ -291,8 +350,9 @@
   }
 
   @media (--viewportMedium) {
-    padding: 14px 28px;
-    font-size: 18px;
+    font-size: 12px;
+    height: 38px;
+    padding: 11px 10px;
   }
 }
 
@@ -306,4 +366,10 @@
 
 .opened {
   color: var(--colorGrey700);
+  border-radius: 10px;
+  background-color: #FFFFFF;
+
+  @media (--viewportMedium) {
+    border-radius: 50px;
+  }
 }

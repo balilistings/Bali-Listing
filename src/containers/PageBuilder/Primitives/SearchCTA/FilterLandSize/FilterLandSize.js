@@ -74,7 +74,7 @@ const LandSizeDropdown = ({ input, className, rootClassName, alignLeft }) => {
             </span>
             <span className={css.subLabel}>{labelText}</span>
           </div>
-          <span className={classNames(css.chevron, isOpen && css.isOpen)} />
+          {/* <span className={classNames(css.chevron, isOpen && css.isOpen)} /> */}
         </div>
 
         {isOpen && (
@@ -97,18 +97,18 @@ const LandSizeDropdown = ({ input, className, rootClassName, alignLeft }) => {
                 </div>
 
                 {/* Min/Max Values */}
-                <div className={css.landSizeValues}>
-                  <div className={css.landSizeValue}>
-                    <span className={css.landSizeLabel}>
+                <div className={css.priceValues}>
+                  <div className={css.priceValue}>
+                    <span className={css.priceLabel}>
                       <FormattedMessage id="PageBuilder.SearchCTA.LandSizeFilter.minimum" />
                     </span>
-                    <span className={css.landSizeAmount}>{formatLandSize(landSizeRange[0])}</span>
+                    <span className={css.priceAmount}>{formatLandSize(landSizeRange[0])}</span>
                   </div>
-                  <div className={css.landSizeValue}>
-                    <span className={css.landSizeLabel}>
+                  <div className={css.priceValue}>
+                    <span className={css.priceLabel}>
                       <FormattedMessage id="PageBuilder.SearchCTA.LandSizeFilter.maximum" />
                     </span>
-                    <span className={css.landSizeAmount}>{formatLandSize(landSizeRange[1])}</span>
+                    <span className={css.priceAmount}>{formatLandSize(landSizeRange[1])}</span>
                   </div>
                 </div>
               </div>
