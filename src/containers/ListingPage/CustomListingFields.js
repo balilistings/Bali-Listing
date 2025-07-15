@@ -41,8 +41,6 @@ const CustomListingFields = props => {
       'listingType',
       isFieldForSelectedCategories
     ) || [];
-  console.log(isFieldForSelectedCategories);
-  console.log('propsForCustomFields', propsForCustomFields);
   return (
     <>
       <SectionDetailsMaybe {...props} isFieldForCategory={isFieldForSelectedCategories} />

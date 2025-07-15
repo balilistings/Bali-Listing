@@ -1,5 +1,5 @@
-import React from 'react';
-import { Heading } from '../../components';
+import React, { useState } from 'react';
+import { Heading, MessageBox } from '../../components';
 import img from '../../assets/Button WhatsApp.svg';
 import { richText } from '../../util/richText';
 
@@ -9,6 +9,7 @@ const MIN_LENGTH_FOR_LONG_WORDS = 20;
 import { useHistory } from 'react-router-dom';
 
 const SectionTextMaybe = props => {
+  const [showMessageBox, setShowMessageBox] = useState(false);
   const { text, heading, showAsIngress = false, currentUser } = props;
   const history = useHistory();
   const textClass = showAsIngress ? css.ingress : css.text;
@@ -33,16 +34,20 @@ const SectionTextMaybe = props => {
     urlWA = `https://wa.me/${numberWA}`;
   }
 
+  const handleConfirm = () => {
+    setShowMessageBox(false);
+    history.push('/signup');
+  };
+
+  const handleCancel = () => {
+    setShowMessageBox(false);
+  };
+
   const handleClick = () => {
     if (currentUser) {
       window.open(urlWA, '_blank');
     } else {
-      const confirm = window.confirm(
-        'Please sign up or log in to contact this property owner on WhatsApp.'
-      );
-      if (confirm) {
-        history.push('/signup');
-      }
+      setShowMessageBox(true);
     }
   };
 
@@ -67,6 +72,13 @@ const SectionTextMaybe = props => {
         />
       ) : (
         <span>{content}</span>
+      )}
+      {showMessageBox && (
+        <MessageBox
+          message="Please sign up or log in to chat owner."
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
       )}
     </section>
   );

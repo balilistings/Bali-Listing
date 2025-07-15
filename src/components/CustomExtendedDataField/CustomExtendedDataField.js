@@ -28,45 +28,39 @@ import classNames from 'classnames';
 
 import { useCheckboxContext } from '../../context/checkBoxContext';
 import css from './CustomExtendedDataField.module.css';
+import calendarIcon from '../../assets/CalendarIcon.svg';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
 const getLabel = fieldConfig => fieldConfig?.saveConfig?.label || fieldConfig?.label;
 
-const CustomInput = forwardRef(({ value, onClick, label, name, required }, ref) => {
+const CustomInput = forwardRef(({ value, onClick }, ref) => {
   return (
-    <div className={css.customField1}>
-      {/* {label && <label htmlFor={name}>{label}</label>} */}
-      <div>
-        <button
-          type="button"
-          className={css.dateInputButton}
-          onClick={onClick}
-          ref={ref}
-          id={name}
-          name={name}
-          required={required}
-        >
-          <span className={classNames('dateInputValue', { placeholder: !value })}>
-            {value || 'Select a date'}
-          </span>
-        </button>
-      </div>
-      {/* {error && <div className="error">{error}</div>} */}
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      ref={ref}
+      style={{
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        fontSize: '16px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: 0,
+      }}
+    >
+      {value ? (
+        <span>{value}</span>
+      ) : (
+        <img src={calendarIcon} alt="Select date" style={{ width: 72, height: 72 }} />
+      )}
+    </button>
   );
 });
 
 CustomInput.displayName = 'CustomInput';
-
-CustomInput.propTypes = {
-  value: PropTypes.string,
-  onClick: PropTypes.func,
-  label: PropTypes.string,
-  name: PropTypes.string,
-  required: PropTypes.bool,
-  error: PropTypes.string,
-};
 
 const CustomFieldEnum = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
@@ -119,7 +113,7 @@ const CustomFieldEnum = props => {
                         dateFormat="yyyy-MM-dd"
                         placeholderText="Select a available date"
                         minDate={new Date()}
-                        // customInput={<CustomInput label={label} name={name} required={required} />}
+                        customInput={<CustomInput />}
                       />
                       {meta.touched && meta.error && (
                         <span style={{ color: 'red' }}>{meta.error}</span>
@@ -151,64 +145,6 @@ const CustomFieldEnum = props => {
       )}
     </div>
   );
-  // return (
-  //   <div style={{ marginTop: '1rem' }}>
-  //     {isAvailableNowField ? (
-  //       <Field name={name} {...validateMaybe}>
-  //         {({ input, meta }) => (
-  //           <>
-  //             <label htmlFor={name}>{label}</label>
-  //             <select
-  //               className={css.customField}
-  //               id={formId ? `${formId}.${name}` : name}
-  //               {...input}
-  //             >
-  //               <option disabled value="">
-  //                 {placeholder}
-  //               </option>
-  //               {filterOptions.map(optionConfig => (
-  //                 <option key={optionConfig.key} value={optionConfig.key}>
-  //                   {optionConfig.label}
-  //                 </option>
-  //               ))}
-  //             </select>
-
-  //             {input.value === 'no' && (
-  //               <div style={{ marginTop: '1rem' }}>
-  //                 <label htmlFor="availabilityDate">Select availability date</label>
-  //                 <DatePicker
-  //                   id="availabilityDate"
-  //                   selected={selectedDate}
-  //                   onChange={date => setSelectedDate(date)}
-  //                   dateFormat="yyyy-MM-dd"
-  //                   placeholderText="Select a date"
-  //                   minDate={new Date()}
-  //                 />
-  //               </div>
-  //             )}
-  //           </>
-  //         )}
-  //       </Field>
-  //     ) : (
-  //       <FieldSelect
-  //         className={css.customField}
-  //         name={name}
-  //         id={formId ? `${formId}.${name}` : name}
-  //         label={label}
-  //         {...validateMaybe}
-  //       >
-  //         <option disabled value="">
-  //           {placeholder}
-  //         </option>
-  //         {filterOptions.map(optionConfig => (
-  //           <option key={optionConfig.key} value={optionConfig.key}>
-  //             {optionConfig.label}
-  //           </option>
-  //         ))}
-  //       </FieldSelect>
-  //     )}
-  //   </div>
-  // );
 };
 
 const CustomFieldMultiEnum = props => {

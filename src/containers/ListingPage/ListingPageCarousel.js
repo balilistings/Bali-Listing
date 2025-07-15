@@ -419,6 +419,7 @@ export const ListingPageComponent = props => {
             <SectionGallery
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
+              currentUser={currentUser}
             />
             <RentalPeriod
               publicData={publicData}
@@ -459,7 +460,6 @@ export const ListingPageComponent = props => {
             </div>
 
             <div id="amenities">
-              CustomListingFields
               <CustomListingFields
                 publicData={publicData}
                 metadata={metadata}
@@ -615,19 +615,22 @@ const EnhancedListingPage = props => {
   }
 
   return (
-    <ListingPageComponent
-      config={config}
-      routeConfiguration={routeConfiguration}
-      intl={intl}
-      history={history}
-      location={location}
-      showOwnListingsOnly={hasNoViewingRights}
-      {...props}
-    />
+    <>
+      <ListingPageComponent
+        config={config}
+        routeConfiguration={routeConfiguration}
+        intl={intl}
+        history={history}
+        location={location}
+        showOwnListingsOnly={hasNoViewingRights}
+        {...props}
+      />
+    </>
   );
 };
 
 const mapStateToProps = state => {
+  console.log('state', state);
   const { isAuthenticated } = state.auth;
   const {
     showListingError,

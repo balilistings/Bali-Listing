@@ -9,6 +9,7 @@ import css from './ListingPage.module.css';
 
 const SectionDetailsMaybe = props => {
   const { publicData, metadata = {}, listingFieldConfigs, isFieldForCategory, intl } = props;
+  console.log('listingFieldConfig on SectionDetailMaybe', listingFieldConfigs);
 
   if (!publicData || !listingFieldConfigs) {
     return null;
@@ -45,7 +46,7 @@ const SectionDetailsMaybe = props => {
   };
 
   const existingListingFields = listingFieldConfigs.reduce(pickListingFields, []);
-  console.log(existingListingFields);
+  console.log('existListingField on SectionDetails ', existingListingFields);
   return existingListingFields.length > 0 ? (
     <section className={css.sectionDetails}>
       <Heading as="h2" rootClassName={css.sectionHeading}>

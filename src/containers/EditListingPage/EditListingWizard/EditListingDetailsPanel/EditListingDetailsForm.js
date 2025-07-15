@@ -371,7 +371,6 @@ const EditListingDetailsForm = props => (
       const showTitle = hasCategories ? allCategoriesChosen : listingType;
       const showDescription = hasCategories ? allCategoriesChosen : listingType;
       const showListingFields = hasCategories ? allCategoriesChosen : listingType;
-      console.log('showListingFields', showListingFields);
       const classes = classNames(css.root, className);
       const submitReady = (updated && pristine) || ready;
       const submitInProgress = updateInProgress;
