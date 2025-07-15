@@ -13,6 +13,7 @@ import Field, { hasDataInFields } from '../../Field';
 import { IconCollection } from '../../../../components';
 import SectionContainer from '../SectionContainer';
 import css from './SectionHero.module.css';
+import { SearchCTA } from '../../Primitives/SearchCTA/SearchCTA';
 
 /**
  * @typedef {Object} FieldComponentConfig
@@ -63,47 +64,6 @@ const SectionHero = props => {
 
   const hasHeaderFields = hasDataInFields([title, description, callToAction], fieldOptions);
 
-  // Tabs for hero section
-  const tabs = [
-    { label: 'Rentals' },
-    { label: 'For Sale' },
-    { label: 'Land' },
-    // { label: 'Commercial' },
-  ];
-  const [activeTab, setActiveTab] = useState(0);
-
-  const config = useConfiguration();
-  const routeConfiguration = useRouteConfiguration();
-  const history = useHistory();
-  const routerLocation = useLocation();
-
-  // Handler for search form submit
-  const handleHeroSearchSubmit = values => {
-    // Build search params similar to Topbar
-    const topbarSearchParams = () => {
-      if (config && config.mainSearchType === 'keywords') {
-        return { keywords: values?.keywords };
-      }
-      // location search
-      const { search, selectedPlace } = values?.location || {};
-      const { origin, bounds } = selectedPlace || {};
-      const originMaybe = origin ? { origin } : {};
-      return {
-        ...originMaybe,
-        address: search,
-        bounds,
-      };
-    };
-    const searchParams = topbarSearchParams();
-    const { routeName, pathParams } = getSearchPageResourceLocatorStringParams(
-      routeConfiguration,
-      routerLocation
-    );
-    history.push(
-      createResourceLocatorString(routeName, routeConfiguration, pathParams, searchParams)
-    );
-  };
-
   return (
     <SectionContainer
       id={sectionId}
@@ -120,19 +80,13 @@ const SectionHero = props => {
         </header>
       ) : null}
       <div className={css.heroSearchWrapper}>
-        <div className={css.heroTabs}>
-          {tabs.map((tab, idx) => (
-            <button
-              key={tab.label}
-              className={idx === activeTab ? `${css.heroTab} ${css.active}` : css.heroTab}
-              onClick={() => setActiveTab(idx)}
-              type="button"
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-        <FinalForm
+        <SearchCTA
+          searchFields={{
+            locationSearch: true,
+            price: true,
+          }}
+        />
+        {/* <FinalForm
           onSubmit={values => {
             // Build search params
             const { location, bedrooms, price } = values;
@@ -232,7 +186,7 @@ const SectionHero = props => {
               </button>
             </Form>
           )}
-        />
+        /> */}
       </div>
     </SectionContainer>
   );
