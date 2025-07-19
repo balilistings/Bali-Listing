@@ -235,7 +235,7 @@
   color: #8d8d8d;
   display: block;
   @media (max-width: 767px) {
-    font-size: 9px;
+    font-size: 10px;
     line-height: 12px;
   }
 }
@@ -460,8 +460,10 @@
       @media (max-width: 767px) {
         display: flex;
         gap: 20px;
+        flex-direction: column;
         & p {
           margin: 0;
+          width: 166px;
           padding: 10px 24px 10px 40px;
         }
       }

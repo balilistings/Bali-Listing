@@ -368,6 +368,8 @@
     scrollbar-width: none;
     -ms-overflow-style: none;
     justify-content: flex-start;
+    margin: 0 auto;
+    width: max-content;
     &::-webkit-scrollbar {
       display: none;
       

@@ -74,7 +74,14 @@ const SectionHero = props => {
     >
       {hasHeaderFields ? (
         <header className={defaultClasses.sectionDetails}>
-          <Field data={title} className={defaultClasses.title} options={fieldOptions} />
+          {sectionId !== "hero_section" ? <Field data={title} className={defaultClasses.title} options={fieldOptions} /> : <div className={css.heroTitle}>
+            <h1>
+            Connecting Bali <span className={css.heroTitleSpan}>
+           
+              </span>Properties – Free, Direct, Simple & Safe
+            </h1>
+         
+            </div>}
           <Field data={description} className={defaultClasses.description} options={fieldOptions} />
           <Field data={callToAction} className={defaultClasses.ctaButton} options={fieldOptions} />
         </header>
