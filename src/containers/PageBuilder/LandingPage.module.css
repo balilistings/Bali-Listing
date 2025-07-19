@@ -626,7 +626,7 @@ padding: 0;
 
             color: #231f20;
             @media (max-width: 1023px) {
-              font-size: 9px;
+              font-size: 11px;
             }
           }
         }
