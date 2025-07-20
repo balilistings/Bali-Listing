@@ -390,10 +390,12 @@ const PropertyCards = () => {
                     </div>
                     <div className={styles.title}>{title}</div>
                     <div className={styles.location}>
-                      <span className={styles.locationIcon}>
+                     <span className={styles.locationWrapper}>
+                     <span className={styles.locationIcon}>
                         <IconCollection name="locationIcon" />
                       </span>
                       {location?.address}
+                     </span>
                       <span className={styles.typeIcon}>
                         <IconCollection name="typeIcon" />
                       </span>

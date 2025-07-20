@@ -66,7 +66,7 @@ const LandSizeDropdown = ({ input, className, rootClassName, alignLeft }) => {
           })}
         >
           <span className={css.landSizeIcon}>
-            <IconCollection name="area_icon" />
+            <IconCollection name="land_icon" />
           </span>
           <div className={css.dropdownText}>
             <span className={css.mainLabel}>
