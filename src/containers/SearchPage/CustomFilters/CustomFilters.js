@@ -16,6 +16,7 @@ import TenureSelector from './TenureSelector/TenureSelector';
 import LandTitleSelector from './LandTitleSelector/LandTitleSelector';
 import LandZoneSelector from './LandZoneSelector/LandZoneSelector';
 import { useHistory } from 'react-router-dom';
+import { IconCollection } from '../../../components';
 
 // Configuration for which filters each category needs
 const categoryFilterConfig = {
@@ -45,8 +46,8 @@ const categoryFilterConfig = {
 
 function CustomFilters({
   onClose,
-  onReset = () => {},
-  onShowListings = () => {},
+  onReset = () => { },
+  onShowListings = () => { },
   listingCount = 574,
 }) {
   const [selectedCategory, setSelectedCategory] = useState('rentalvillas');
@@ -256,155 +257,162 @@ function CustomFilters({
 
   return (
     <div className={css.container}>
-      <div className={css.header}>
-        <div className={css.spacer}></div>
-        <h2 className={css.title}>Filter</h2>
-        <button onClick={onClose} className={css.closeButton}>
-          ×
-        </button>
-      </div>
+      <div className={css.contentWrapper}>
+        <div className={css.header}>
+          <div className={css.spacer}></div>
+          <h2 className={css.title}>
+           <span className={css.filterIcon}>
+           <IconCollection name="filter_icon" />
+           </span>
+            Filter</h2>
+          <button onClick={onClose} className={css.closeButton}>
+              <IconCollection name="close_icon" />
 
-      <div className={css.content}>
-        {/* Always visible filters */}
-        <CategorySelector
-          selectedCategory={selectedCategory}
-          onCategoryChange={handleCategoryChange}
-          history={history}
-        />
-        <LocationSelector
-          selectedLocation={selectedLocation}
-          onLocationChange={handleLocationChange}
-          onReset={handleLocationReset}
-        />
+          </button>
+        </div>
 
-        {/* Dynamic filters based on category configuration */}
-        {availableFilters.includes('price') && (
-          <PriceSelector
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={handlePeriodChange}
-            priceRange={priceRange}
-            onPriceRangeChange={handlePriceRangeChange}
+        <div className={css.content}>
+          {/* Always visible filters */}
+          <CategorySelector
+            selectedCategory={selectedCategory}
+            onCategoryChange={handleCategoryChange}
+            history={history}
           />
-        )}
-
-        {availableFilters.includes('tenure') && (
-          <TenureSelector
-            selectedTenure={selectedTenure}
-            onTenureChange={handleTenureChange}
-            onReset={handleTenureReset}
+          <LocationSelector
+            selectedLocation={selectedLocation}
+            onLocationChange={handleLocationChange}
+            onReset={handleLocationReset}
           />
-        )}
 
-        {availableFilters.includes('landSize') && (
-          <SimplePriceSelector
-            priceRange={landSizeRange}
-            onPriceRangeChange={handleLandSizeRangeChange}
-            onReset={() => setLandSizeRange([100, 1000])}
-            title="Land size"
-            description="Choose your preferred range in square meters"
-            formatValue={value => `${value} m²`}
-            min={50}
-            max={5000}
-            step={50}
-          />
-        )}
+          {/* Dynamic filters based on category configuration */}
+          {availableFilters.includes('price') && (
+            <PriceSelector
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={handlePeriodChange}
+              priceRange={priceRange}
+              onPriceRangeChange={handlePriceRangeChange}
+            />
+          )}
 
-        {availableFilters.includes('simplePrice') && (
-          <SimplePriceSelector
-            priceRange={simplePriceRange}
-            onPriceRangeChange={handleSimplePriceRangeChange}
-            onReset={() => setSimplePriceRange([0, 1000])}
-          />
-        )}
+          {availableFilters.includes('tenure') && (
+            <TenureSelector
+              selectedTenure={selectedTenure}
+              onTenureChange={handleTenureChange}
+              onReset={handleTenureReset}
+            />
+          )}
 
-        {availableFilters.includes('bedrooms') && (
-          <BedroomsSelector
-            bedrooms={bedrooms}
-            onBedroomsChange={handleBedroomsChange}
-            onReset={handleBedroomsReset}
-          />
-        )}
+          {availableFilters.includes('landSize') && (
+            <SimplePriceSelector
+              priceRange={landSizeRange}
+              onPriceRangeChange={handleLandSizeRangeChange}
+              onReset={() => setLandSizeRange([100, 1000])}
+              title="Land size"
+              description="Choose your preferred range in square meters"
+              formatValue={value => `${value} m²`}
+              min={50}
+              max={5000}
+              step={50}
+            />
+          )}
 
-        {availableFilters.includes('bathrooms') && (
-          <BathroomsSelector
-            bathrooms={bathrooms}
-            onBathroomsChange={handleBathroomsChange}
-            onReset={handleBathroomsReset}
-          />
-        )}
+          {availableFilters.includes('simplePrice') && (
+            <SimplePriceSelector
+              priceRange={simplePriceRange}
+              onPriceRangeChange={handleSimplePriceRangeChange}
+              onReset={() => setSimplePriceRange([0, 1000])}
+            />
+          )}
 
-        {availableFilters.includes('amenities') && (
-          <AmenitiesSelector
-            selectedAmenities={selectedAmenities}
-            onAmenitiesChange={handleAmenitiesChange}
-            onReset={handleAmenitiesReset}
-          />
-        )}
+          {availableFilters.includes('bedrooms') && (
+            <BedroomsSelector
+              bedrooms={bedrooms}
+              onBedroomsChange={handleBedroomsChange}
+              onReset={handleBedroomsReset}
+            />
+          )}
 
-        {availableFilters.includes('propertyType') && (
-          <PropertyTypeSelector
-            selectedPropertyType={selectedPropertyType}
-            onPropertyTypeChange={handlePropertyTypeChange}
-            onReset={handlePropertyTypeReset}
-          />
-        )}
+          {availableFilters.includes('bathrooms') && (
+            <BathroomsSelector
+              bathrooms={bathrooms}
+              onBathroomsChange={handleBathroomsChange}
+              onReset={handleBathroomsReset}
+            />
+          )}
 
-        {availableFilters.includes('availability') && (
-          <AvailabilitySelector
-            selectedAvailability={selectedAvailability}
-            onAvailabilityChange={handleAvailabilityChange}
-            onReset={handleAvailabilityReset}
-          />
-        )}
+          {availableFilters.includes('amenities') && (
+            <AmenitiesSelector
+              selectedAmenities={selectedAmenities}
+              onAmenitiesChange={handleAmenitiesChange}
+              onReset={handleAmenitiesReset}
+            />
+          )}
 
-        {availableFilters.includes('services') && (
-          <ServicesSelector
-            selectedService={selectedService}
-            onServiceChange={handleServiceChange}
-            onReset={handleServiceReset}
-          />
-        )}
+          {availableFilters.includes('propertyType') && (
+            <PropertyTypeSelector
+              selectedPropertyType={selectedPropertyType}
+              onPropertyTypeChange={handlePropertyTypeChange}
+              onReset={handlePropertyTypeReset}
+            />
+          )}
 
-        {availableFilters.includes('propertyDetails') && (
-          <PropertyDetailsSelector
-            selectedPropertyDetail={selectedPropertyDetail}
-            onPropertyDetailChange={handlePropertyDetailChange}
-            onReset={handlePropertyDetailReset}
-          />
-        )}
+          {availableFilters.includes('availability') && (
+            <AvailabilitySelector
+              selectedAvailability={selectedAvailability}
+              onAvailabilityChange={handleAvailabilityChange}
+              onReset={handleAvailabilityReset}
+            />
+          )}
 
-        {availableFilters.includes('landTitle') && (
-          <LandTitleSelector
-            selectedLandTitles={selectedLandTitles}
-            onLandTitlesChange={handleLandTitlesChange}
-            onReset={handleLandTitlesReset}
-          />
-        )}
+          {availableFilters.includes('services') && (
+            <ServicesSelector
+              selectedService={selectedService}
+              onServiceChange={handleServiceChange}
+              onReset={handleServiceReset}
+            />
+          )}
 
-        {availableFilters.includes('landZone') && (
-          <LandZoneSelector
-            selectedLandZones={selectedLandZones}
-            onLandZonesChange={handleLandZonesChange}
-            onReset={handleLandZonesReset}
-          />
-        )}
+          {availableFilters.includes('propertyDetails') && (
+            <PropertyDetailsSelector
+              selectedPropertyDetail={selectedPropertyDetail}
+              onPropertyDetailChange={handlePropertyDetailChange}
+              onReset={handlePropertyDetailReset}
+            />
+          )}
 
-        {availableFilters.includes('hostType') && (
-          <HostTypeSelector
-            selectedHostType={selectedHostType}
-            onHostTypeChange={handleHostTypeChange}
-            onReset={handleHostTypeReset}
-          />
-        )}
-      </div>
+          {availableFilters.includes('landTitle') && (
+            <LandTitleSelector
+              selectedLandTitles={selectedLandTitles}
+              onLandTitlesChange={handleLandTitlesChange}
+              onReset={handleLandTitlesReset}
+            />
+          )}
 
-      <div className={css.footer}>
-        <button onClick={handleReset} className={css.resetButton}>
-          Reset All
-        </button>
-        <button onClick={onShowListings} className={css.showListingsButton}>
-          Show {listingCount} listings
-        </button>
+          {availableFilters.includes('landZone') && (
+            <LandZoneSelector
+              selectedLandZones={selectedLandZones}
+              onLandZonesChange={handleLandZonesChange}
+              onReset={handleLandZonesReset}
+            />
+          )}
+
+          {availableFilters.includes('hostType') && (
+            <HostTypeSelector
+              selectedHostType={selectedHostType}
+              onHostTypeChange={handleHostTypeChange}
+              onReset={handleHostTypeReset}
+            />
+          )}
+        </div>
+
+        <div className={css.footer}>
+          <button onClick={handleReset} className={css.resetButton}>
+            Reset All
+          </button>
+          <button onClick={onShowListings} className={css.showListingsButton}>
+            Show {listingCount} listings
+          </button>
+        </div>
       </div>
     </div>
   );

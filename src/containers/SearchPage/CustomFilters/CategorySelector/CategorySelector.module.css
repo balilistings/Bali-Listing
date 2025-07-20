@@ -3,10 +3,18 @@
 }
 
 .title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 16px 0;
-  color: #333;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  margin-top: 0;
+  padding-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 0;
+
 }
 
 .categoryGrid {
@@ -19,12 +27,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   padding: 20px 12px;
   border: 2px solid #e5e5e5;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   background-color: white;
+  min-height: 120px;
 }
 
 .categoryCard:hover {
@@ -33,8 +43,21 @@
 }
 
 .categoryCard.selected {
-  border-color: #e91e63;
-  background-color: #fdf2f8;
+  border-color: #F74DF4;
+  /* background-color: #fdf2f8; */
+}
+
+.categoryName {
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  margin-top: 12px;
+  display: block;
 }
 
 .iconContainer {
@@ -49,7 +72,7 @@
 }
 
 .selected .iconContainer {
-  background-color: #e91e63;
+  /* background-color: #e91e63; */
 }
 
 .icon {
@@ -57,7 +80,7 @@
 }
 
 .selected .icon {
-  filter: brightness(0) invert(1);
+  /* filter: brightness(0) invert(1); */
 }
 
 .categoryName {

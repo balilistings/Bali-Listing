@@ -12,7 +12,7 @@ import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { isBookingProcessAlias } from '../../transactions/transaction';
 
-import { AspectRatioWrapper, NamedLink, ResponsiveImage } from '../../components';
+import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '../../components';
 
 import css from './ListingCard.module.css';
 
@@ -123,10 +123,13 @@ export const ListingCard = props => {
 
   const setActivePropsMaybe = setActiveListing
     ? {
-        onMouseEnter: () => setActiveListing(currentListing.id),
-        onMouseLeave: () => setActiveListing(null),
-      }
+      onMouseEnter: () => setActiveListing(currentListing.id),
+      onMouseLeave: () => setActiveListing(null),
+    }
     : null;
+
+    console.log(author)
+
 
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
@@ -145,7 +148,23 @@ export const ListingCard = props => {
         />
       </AspectRatioWrapper>
       <div className={css.info}>
-        <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
+        <div className={css.tags}>
+          {/* {pricee?.map(tag => (
+                        <span className={css.tag} key={tag}>
+                          {tag}
+                        </span>
+                      ))} */}
+          <span className={css.tag}>
+
+          </span>
+          <span className={css.listedBy}>
+            Listed by:{' '}
+            <span className={css.listedByName}>
+              {author.attributes.profile.displayName}
+            </span>
+          </span>
+        </div>
+
         <div className={css.mainInfo}>
           <div className={css.title}>
             {richText(title, {
@@ -153,11 +172,32 @@ export const ListingCard = props => {
               longWordClass: css.longWord,
             })}
           </div>
-          {showAuthorInfo ? (
+          <div className={css.location}>
+            <span className={css.locationWrapper}>
+              <span className={css.locationIcon}>
+                <IconCollection name="locationIcon" />
+              </span>
+              {/* {location?.address} */}
+            </span>
+            <span className={css.typeIcon}>
+              <IconCollection name="typeIcon" />
+            </span>
+            {/* <span className={css.type}>{propertytype}</span> */}
+          </div>
+          {/* {showAuthorInfo ? (
             <div className={css.authorInfo}>
               <FormattedMessage id="ListingCard.author" values={{ authorName }} />
             </div>
-          ) : null}
+          ) : null} */}
+          <div className={css.bottomContent}>
+            <div className={css.icons}>
+              <span className={css.iconItem}>
+              </span>
+            </div>
+            <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
+
+          </div>
+
         </div>
       </div>
     </NamedLink>

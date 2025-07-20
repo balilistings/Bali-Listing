@@ -39,13 +39,13 @@ const SortBy = props => {
   const mobileClassesMaybe =
     mode === 'mobile'
       ? {
-          rootClassName: css.sortBy,
-          menuLabelRootClassName: css.sortByMenuLabel,
-        }
+        rootClassName: css.sortBy,
+        menuLabelRootClassName: css.sortByMenuLabel,
+      }
       : {
-          className: css.sortByDesktop,
-          menuLabelRootClassName: css.sortByMenuLabel,
-        };
+        className: css.sortByDesktop,
+        menuLabelRootClassName: css.sortByMenuLabel,
+      };
 
   // Ensure that keywords is included to activeFilter list when needed
   const isMainSearchKeywords = isMainSearchTypeKeywords(config);
@@ -68,24 +68,24 @@ const SortBy = props => {
       : {};
     const translatedOption = option?.labelTranslationKey
       ? {
-          key: option.key,
-          label: intl.formatMessage({ id: option.labelTranslationKey }),
-          ...translationKeyLongMaybe,
-        }
+        key: option.key,
+        label: intl.formatMessage({ id: option.labelTranslationKey }),
+        ...translationKeyLongMaybe,
+      }
       : option;
     // Omit relevance option if mainSearchType is not 'keywords'
     // Note: We might change this in the future, if multiple transaction types are allowed
     return isRelevance && !isKeywordsFilterEnabled
       ? selected
       : [
-          ...selected,
-          {
-            ...translatedOption,
-            disabled:
-              (isRelevance && (!isRelevanceOptionActive || isConflictingFilterSetAndActive)) ||
-              (!isRelevance && isConflictingFilterActive),
-          },
-        ];
+        ...selected,
+        {
+          ...translatedOption,
+          disabled:
+            (isRelevance && (!isRelevanceOptionActive || isConflictingFilterSetAndActive)) ||
+            (!isRelevance && isConflictingFilterActive),
+        },
+      ];
   }, []);
   const defaultValue = 'createdAt';
   const isRelevanceSortActive = isRelevanceOptionActive && !sort;
@@ -103,7 +103,7 @@ const SortBy = props => {
     ...mobileClassesMaybe,
     ...rest,
   };
-  return showAsPopup ? <SortByPopup {...componentProps} /> : <SortByPlain {...componentProps} />;
+  return showAsPopup ? <SortByPopup {...componentProps} mode={mode} /> : <SortByPlain {...componentProps} />;
 };
 
 export default SortBy;

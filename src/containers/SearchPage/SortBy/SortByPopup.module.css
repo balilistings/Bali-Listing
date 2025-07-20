@@ -19,31 +19,71 @@
 
 .menuContent {
   margin-top: 7px;
-  padding-top: 24px;
-  padding-bottom: 24px;
-  min-width: 300px;
-  border-radius: var(--borderRadiusMedium);
+  padding-top: 15px;
+  padding-bottom: 15px;
+  min-width: 218px;
+  border-radius: 12px;
+  border: 1px solid #D3D3D3;
+  box-shadow: 0px 4px 10px 0px #0000001A;
+  @media (max-width: 768px) {
+    position: fixed;
+    top: 0;
+    left: 0 !important; 
+    
+    height: 100%;
+    background: #0000004D;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  
+    padding: 0px;
+    align-items: flex-end;
+    justify-content: flex-end;
+    width: 100% !important;
+    & >ul{
+      background-color: white;
+      max-width: 574px;
+      max-height: 95vh;
+      width: 100% !important;
+      overflow: hidden;
+      border-radius: 12px;
+      overflow: visible;
+      max-width: 100%;
+      max-height: 85vh;
+      border-radius: 12px 12px 0px 0px;
+    }
+  }
+
 }
 
 /* left animated "border" like hover element */
 .menuItemBorder {
-  position: absolute;
-  top: 2px;
-  left: 0px;
-  height: calc(100% - 4px);
-  width: 0;
-  background-color: var(--marketplaceColor);
-  transition: width var(--transitionStyleButton);
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid #C4C4C4;
+  margin-left: 12px;
+  background-color: var(--colorWhite);
+ 
 }
 
 /* left static border for selected element */
 .menuItemBorderSelected {
-  position: absolute;
-  top: 2px;
-  left: 0px;
-  height: calc(100% - 7px);
-  width: 6px;
-  background-color: var(--colorBlack);
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid #FBA6F9;
+  margin-left: 12px;
+ 
+  padding: 1px;
+  & .menuItemBorderIcon{
+    background-color: var(--marketplaceColor);
+    height: 100%;
+    width: 100%;
+    border-radius: 4px;
+    display: block;
+  }
 }
 
 .menuHeading {
@@ -55,14 +95,20 @@
 }
 
 .menuItem {
-  composes: marketplaceListingAttributeFontStyles from global;
-  color: var(--colorGrey700);
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+color: #231F20;  
 
   /* Layout */
   position: relative;
-  min-width: 300px;
+  min-width: 218px;
   margin: 0;
-  padding: 4px 30px;
+  padding: 6px 20px;
 
   /* Override button styles */
   outline: none;
@@ -70,23 +116,22 @@
   border: none;
 
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
   &:focus,
   &:hover {
     color: var(--colorBlack);
   }
 
-  &:hover .menuItemBorder {
-    width: 6px;
-  }
+
 
   &:disabled {
     color: var(--colorGrey300);
     cursor: default;
   }
-  &:disabled:hover .menuItemBorder {
-    width: 0;
-  }
+
 }
 
 .clearMenuItem {

@@ -1,5 +1,7 @@
 .container {
   margin-bottom: 24px;
+  padding-top: 28px;
+  border-top: 1px solid #F2F2F2;
 }
 
 .header {
@@ -10,20 +12,34 @@
 }
 
 .title {
-  font-size: 16px;
-  font-weight: 600;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
   margin: 0;
-  color: #333;
+  padding: 0;
+  color: #231F20;
 }
 
 .resetButton {
   background: none;
   border: none;
-  color: #e91e63;
+  color: #F74DF4;
   font-size: 14px;
   cursor: pointer;
   padding: 0;
   font-weight: 500;
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
 }
 
 .resetButton:hover {
@@ -42,7 +58,7 @@
 }
 
 .sliderWrapper {
-  margin-bottom: 16px;
+  margin-bottom: 40px;
 }
 
 .priceValues {
@@ -52,25 +68,40 @@
 }
 
 .priceValue {
-  flex: 1;
+  
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px;
-  background-color: white;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
+
 }
 
 .priceLabel {
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
   font-size: 12px;
-  color: #666;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+color: #4D4D4D;  
   margin-bottom: 4px;
   text-transform: lowercase;
 }
 
 .priceAmount {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  padding: 5px 10px;
+  background-color: white;
+  border: 1px solid #C4C4C4;
+  border-radius: 5px;
+  font-family: Mulish;
+font-weight: 700;
+font-style: Bold;
+font-size: 14px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+text-align: center;
+min-width: 99px;
+
 }
