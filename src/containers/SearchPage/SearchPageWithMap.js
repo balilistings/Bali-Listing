@@ -66,6 +66,7 @@ import NoSearchResultsMaybe from './NoSearchResultsMaybe/NoSearchResultsMaybe';
 
 import css from './SearchPage.module.css';
 import { types as sdkTypes } from '../../util/sdkLoader';
+import CustomFilters from './CustomFilters/CustomFilters';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -106,6 +107,7 @@ export class SearchPageComponent extends Component {
       isMobileModalOpen: false,
       currentQueryParams: validUrlQueryParamsFromProps(props),
       isSecondaryFiltersOpen: false,
+      openCustomFilters: true,
     };
 
     this.onMapMoveEnd = debounce(this.onMapMoveEnd.bind(this), SEARCH_WITH_MAP_DEBOUNCE);
@@ -120,6 +122,10 @@ export class SearchPageComponent extends Component {
 
     // SortBy
     this.handleSortBy = this.handleSortBy.bind(this);
+
+    // Custom filters
+    this.openCustomFilters = this.openCustomFilters.bind(this);
+    this.closeCustomFilters = this.closeCustomFilters.bind(this);
   }
 
   // Callback to determine if new search is needed
@@ -334,6 +340,14 @@ export class SearchPageComponent extends Component {
     history.push(
       createResourceLocatorString(routeName, routeConfiguration, pathParams, queryParams)
     );
+  }
+
+  openCustomFilters() {
+    this.setState({ openCustomFilters: true });
+  }
+
+  closeCustomFilters() {
+    this.setState({ openCustomFilters: false });
   }
 
   render() {
@@ -668,6 +682,14 @@ export class SearchPageComponent extends Component {
               </div>
             )}
           </div>
+
+          {this.state.openCustomFilters && (
+            <CustomFilters
+              onClose={this.closeCustomFilters}
+              onReset={this.resetAll}
+              onShowListings={this.applyFilters}
+            />
+          )}
           <ModalInMobile
             className={css.mapPanel}
             id="SearchPage_map"
