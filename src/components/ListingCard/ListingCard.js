@@ -209,22 +209,12 @@ export const ListingCard = props => {
             <div className={css.icons}>
               {!!bedrooms && (
                 <span className={css.iconItem}>
-                  <Icon type="bed" /> {bedrooms}
+                  <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
                 </span>
               )}
               {!!bathrooms && (
                 <span className={css.iconItem}>
-                  <Icon type="bath" /> {bathrooms}
-                </span>
-              )}
-              {kitchen === 'yes' && (
-                <span className={css.iconItem}>
-                  <Icon type="area" />
-                </span>
-              )}
-              {pool === 'yes' && (
-                <span className={css.iconItem}>
-                  <Icon type="pool" />
+                  <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
                 </span>
               )}
             </div>
