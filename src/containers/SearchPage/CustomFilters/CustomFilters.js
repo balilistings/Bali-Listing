@@ -44,26 +44,112 @@ const categoryFilterConfig = {
   landforsale: ['tenure', 'simplePrice', 'landSize', 'hostType', 'landTitle', 'landZone'],
 };
 
+const initialiseCategory = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_categoryLevel1') || 'rentalvillas';
+  }
+};
+
+const initialisePropertyType = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_propertytype') || null;
+  }
+};
+
+const initialiseHostType = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_hosttype') || null;
+  }
+};
+
+const initialiseAvailability = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_availableper') || null;
+  }
+};
+
+const initialisePropertyDetail = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const living = urlParams.get('pub_living') || null;
+    const furnished = urlParams.get('pub_furnished') || null;
+    if (living) {
+      return living === 'open' ? 'open-livingroom' : 'closed-livingroom';
+    } else if (furnished) {
+      return furnished === 'yes' ? 'furnished' : 'unfurnished';
+    }
+  }
+};
+
+const initialiseAmenities = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    const amenities = [];
+
+    allPubAmentiesKeys.forEach(elm => {
+      if (urlParams.get(elm)) {
+        if (elm === 'pub_pool') {
+          amenities.push('pool');
+        } else if (elm === 'pub_wifi') {
+          amenities.push('wifi');
+        } else if (elm === 'pub_gym') {
+          amenities.push('gym');
+        } else if (elm === 'pub_workingdesk') {
+          amenities.push('workingdesk');
+        } else if (elm === 'pub_carparking') {
+          amenities.push('carparking');
+        } else if (elm === 'pub_airco') {
+          amenities.push('airco');
+        } else if (elm === 'pub_kitchen') {
+          amenities.push('kitchen');
+        } else if (elm === 'pub_petfriendly') {
+          amenities.push('petfriendly');
+        }
+      }
+    });
+
+    return amenities;
+  }
+};
+
+const allPubAmentiesKeys = [
+  'pub_pool',
+  'pub_wifi',
+  'pub_gym',
+  'pub_workingdesk',
+  'pub_carparking',
+  'pub_airco',
+  'pub_kitchen',
+  'pub_petfriendly',
+];
+
 function CustomFilters({
   onClose,
-  onReset = () => { },
-  onShowListings = () => { },
-  listingCount = 574,
+  onReset = () => {},
+  onShowListings = () => {},
+  resultsCount,
+  onUpdateCurrentQueryParams,
+  currentQueryParams,
 }) {
-  const [selectedCategory, setSelectedCategory] = useState('rentalvillas');
+  const [selectedCategory, setSelectedCategory] = useState(initialiseCategory);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState('weekly');
-  const [priceRange, setPriceRange] = useState([0, 50]);
+  const [priceRange, setPriceRange] = useState([0, 99]);
   const [simplePriceRange, setSimplePriceRange] = useState([0, 1000]);
   const [landSizeRange, setLandSizeRange] = useState([100, 1000]);
   const [bedrooms, setBedrooms] = useState(0);
   const [bathrooms, setBathrooms] = useState(0);
-  const [selectedAmenities, setSelectedAmenities] = useState([]);
-  const [selectedPropertyType, setSelectedPropertyType] = useState(null);
-  const [selectedAvailability, setSelectedAvailability] = useState(null);
+  const [selectedAmenities, setSelectedAmenities] = useState(initialiseAmenities);
+  const [selectedPropertyType, setSelectedPropertyType] = useState(initialisePropertyType);
+  const [selectedAvailability, setSelectedAvailability] = useState(initialiseAvailability);
   const [selectedService, setSelectedService] = useState(null);
-  const [selectedPropertyDetail, setSelectedPropertyDetail] = useState(null);
-  const [selectedHostType, setSelectedHostType] = useState(null);
+  const [selectedPropertyDetail, setSelectedPropertyDetail] = useState(initialisePropertyDetail);
+  const [selectedHostType, setSelectedHostType] = useState(initialiseHostType);
   const [selectedTenure, setSelectedTenure] = useState(null);
   const [selectedLandTitles, setSelectedLandTitles] = useState([]);
   const [selectedLandZones, setSelectedLandZones] = useState([]);
@@ -147,42 +233,82 @@ function CustomFilters({
   };
 
   const handleBedroomsChange = value => {
+    onUpdateCurrentQueryParams({
+      pub_bedrooms: value,
+    });
     setBedrooms(value);
   };
 
   const handleBathroomsChange = value => {
+    onUpdateCurrentQueryParams({
+      pub_bathrooms: value,
+    });
     setBathrooms(value);
   };
 
   const handleBedroomsReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_bedrooms: null,
+    });
     setBedrooms(0);
   };
 
   const handleBathroomsReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_bathrooms: null,
+    });
     setBathrooms(0);
   };
 
   const handleAmenitiesChange = amenities => {
+    const params = {};
+    const addPub = amenities.map(elm => `pub_${elm}`);
+
+    addPub.forEach(elm => {
+      params[elm] = 'yes';
+    });
+
+    const removePub = allPubAmentiesKeys.filter(elm => !addPub.includes(elm));
+
+    removePub.forEach(elm => (params[elm] = null));
+
+    onUpdateCurrentQueryParams(params);
+
     setSelectedAmenities(amenities);
   };
 
   const handleAmenitiesReset = () => {
+    const params = {};
+    allPubAmentiesKeys.forEach(elm => (params[elm] = null));
+    onUpdateCurrentQueryParams(params);
     setSelectedAmenities([]);
   };
 
   const handlePropertyTypeChange = propertyType => {
+    onUpdateCurrentQueryParams({
+      pub_propertytype: propertyType,
+    });
     setSelectedPropertyType(propertyType);
   };
 
   const handlePropertyTypeReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_propertytype: null,
+    });
     setSelectedPropertyType(null);
   };
 
   const handleAvailabilityChange = availability => {
+    onUpdateCurrentQueryParams({
+      pub_availableper: availability,
+    });
     setSelectedAvailability(availability);
   };
 
   const handleAvailabilityReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_availableper: null,
+    });
     setSelectedAvailability(null);
   };
 
@@ -195,6 +321,23 @@ function CustomFilters({
   };
 
   const handlePropertyDetailChange = propertyDetail => {
+    const param = {
+      pub_living: null,
+      pub_furnished: null,
+    };
+
+    if (propertyDetail === 'open-livingroom') {
+      param.pub_living = 'open';
+    } else if (propertyDetail === 'closed-livingroom') {
+      param.pub_living = 'closed';
+    } else if (propertyDetail === 'furnished') {
+      param.pub_furnished = 'yes';
+    } else if (propertyDetail === 'unfurnished') {
+      param.pub_furnished = 'no';
+    }
+
+    onUpdateCurrentQueryParams(param);
+
     setSelectedPropertyDetail(propertyDetail);
   };
 
@@ -203,10 +346,16 @@ function CustomFilters({
   };
 
   const handleHostTypeChange = hostType => {
+    onUpdateCurrentQueryParams({
+      pub_hosttype: hostType,
+    });
     setSelectedHostType(hostType);
   };
 
   const handleHostTypeReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_hosttype: null,
+    });
     setSelectedHostType(null);
   };
 
@@ -261,13 +410,13 @@ function CustomFilters({
         <div className={css.header}>
           <div className={css.spacer}></div>
           <h2 className={css.title}>
-           <span className={css.filterIcon}>
-           <IconCollection name="filter_icon" />
-           </span>
-            Filter</h2>
+            <span className={css.filterIcon}>
+              <IconCollection name="filter_icon" />
+            </span>
+            Filter
+          </h2>
           <button onClick={onClose} className={css.closeButton}>
-              <IconCollection name="close_icon" />
-
+            <IconCollection name="close_icon" />
           </button>
         </div>
 
@@ -410,7 +559,7 @@ function CustomFilters({
             Reset All
           </button>
           <button onClick={onShowListings} className={css.showListingsButton}>
-            Show {listingCount} listings
+            Show {resultsCount} listings
           </button>
         </div>
       </div>

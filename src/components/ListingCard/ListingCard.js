@@ -15,6 +15,7 @@ import { isBookingProcessAlias } from '../../transactions/transaction';
 import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '../../components';
 
 import css from './ListingCard.module.css';
+import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -49,33 +50,57 @@ const PriceMaybe = props => {
     return null;
   }
 
-  const isPriceVariationsInUse = isPriceVariationsEnabled(publicData, foundListingTypeConfig);
-  const hasMultiplePriceVariants = isPriceVariationsInUse && publicData?.priceVariants?.length > 1;
+  // Format price in millions if appropriate
+  const formatPriceInMillions = priceAmount => {
+    if (!priceAmount) return null;
 
-  const isBookable = isBookingProcessAlias(publicData?.transactionProcessAlias);
-  const { formattedPrice, priceTitle } = priceData(price, config.currency, intl);
+    // First divide by 100 to get the actual price (prices are stored in subunits)
+    const actualPrice = priceAmount / 100;
 
-  const priceValue = <span className={css.priceValue}>{formattedPrice}</span>;
-  const pricePerUnit = isBookable ? (
-    <span className={css.perUnit}>
-      <FormattedMessage id="ListingCard.perUnit" values={{ unitType: publicData?.unitType }} />
-    </span>
-  ) : (
-    ''
-  );
+    // Check if the price is in millions (1,000,000 or more)
+    if (actualPrice >= 1000000) {
+      const millions = actualPrice / 1000000;
+      // If it's a whole number, show without decimal
+      if (millions % 1 === 0) {
+        return `${millions}M`;
+      } else {
+        // Show with one decimal place for partial millions
+        return `${millions.toFixed(1)}M`;
+      }
+    }
+
+    // For smaller amounts, show the actual price
+    return `${actualPrice.toLocaleString()}`;
+  };
+
+  const formattedPrice = price ? formatPriceInMillions(price.amount) : null;
 
   return (
-    <div className={css.price} title={priceTitle}>
-      {hasMultiplePriceVariants ? (
-        <FormattedMessage
-          id="ListingCard.priceStartingFrom"
-          values={{ priceValue, pricePerUnit }}
-        />
-      ) : (
-        <FormattedMessage id="ListingCard.price" values={{ priceValue, pricePerUnit }} />
-      )}
+    <div className={css.price}>
+      <span className={css.priceValue}>
+        {formattedPrice} IDR<span>/night</span>
+      </span>
     </div>
   );
+};
+
+const capitaliseFirstLetter = str => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const sortTags = (tags = []) => {
+  const sortArr = ['weekly', 'monthly', 'yearly'];
+
+  const sortedTags = tags.sort((a, b) => {
+    const aIndex = sortArr.indexOf(a);
+    const bIndex = sortArr.indexOf(b);
+    return aIndex - bIndex;
+  });
+
+  const capitalizedTags = sortedTags.map(capitaliseFirstLetter);
+
+  return capitalizedTags;
 };
 
 /**
@@ -109,6 +134,8 @@ export const ListingCard = props => {
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
   const authorName = author.attributes.profile.displayName;
+  const { pricee, location, propertytype, bedrooms, bathrooms, kitchen, pool } = publicData;
+  const tags = sortTags(pricee);
   const firstImage =
     currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
 
@@ -123,13 +150,10 @@ export const ListingCard = props => {
 
   const setActivePropsMaybe = setActiveListing
     ? {
-      onMouseEnter: () => setActiveListing(currentListing.id),
-      onMouseLeave: () => setActiveListing(null),
-    }
+        onMouseEnter: () => setActiveListing(currentListing.id),
+        onMouseLeave: () => setActiveListing(null),
+      }
     : null;
-
-    console.log(author)
-
 
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
@@ -149,19 +173,15 @@ export const ListingCard = props => {
       </AspectRatioWrapper>
       <div className={css.info}>
         <div className={css.tags}>
-          {/* {pricee?.map(tag => (
-                        <span className={css.tag} key={tag}>
-                          {tag}
-                        </span>
-                      ))} */}
-          <span className={css.tag}>
-
-          </span>
+          {tags?.map(tag => (
+            <span className={css.tag} key={tag}>
+              {tag}
+            </span>
+          ))}
+          {/* <span className={css.tag}></span> */}
           <span className={css.listedBy}>
             Listed by:{' '}
-            <span className={css.listedByName}>
-              {author.attributes.profile.displayName}
-            </span>
+            <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
           </span>
         </div>
 
@@ -173,31 +193,43 @@ export const ListingCard = props => {
             })}
           </div>
           <div className={css.location}>
+            <span className={css.typeIcon}>
+              <IconCollection name="typeIcon" />
+            </span>
+            <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
+
             <span className={css.locationWrapper}>
               <span className={css.locationIcon}>
                 <IconCollection name="locationIcon" />
               </span>
-              {/* {location?.address} */}
+              {location?.address}
             </span>
-            <span className={css.typeIcon}>
-              <IconCollection name="typeIcon" />
-            </span>
-            {/* <span className={css.type}>{propertytype}</span> */}
           </div>
-          {/* {showAuthorInfo ? (
-            <div className={css.authorInfo}>
-              <FormattedMessage id="ListingCard.author" values={{ authorName }} />
-            </div>
-          ) : null} */}
           <div className={css.bottomContent}>
             <div className={css.icons}>
-              <span className={css.iconItem}>
-              </span>
+              {!!bedrooms && (
+                <span className={css.iconItem}>
+                  <Icon type="bed" /> {bedrooms}
+                </span>
+              )}
+              {!!bathrooms && (
+                <span className={css.iconItem}>
+                  <Icon type="bath" /> {bathrooms}
+                </span>
+              )}
+              {kitchen === 'yes' && (
+                <span className={css.iconItem}>
+                  <Icon type="area" />
+                </span>
+              )}
+              {pool === 'yes' && (
+                <span className={css.iconItem}>
+                  <Icon type="pool" />
+                </span>
+              )}
             </div>
             <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
-
           </div>
-
         </div>
       </div>
     </NamedLink>

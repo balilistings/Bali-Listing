@@ -1,47 +1,16 @@
 import React from 'react';
 import css from './AmenitiesSelector.module.css';
+import { IconCollection } from '../../../../components';
 
 const amenities = [
-  {
-    id: 'wifi',
-    name: 'Wifi',
-    icon: '📶',
-  },
-  {
-    id: 'pool',
-    name: 'Pool',
-    icon: '🏊',
-  },
-  {
-    id: 'gym',
-    name: 'Gym',
-    icon: '🏋️',
-  },
-  {
-    id: 'pet-friendly',
-    name: 'Pet Friendly',
-    icon: '🐕',
-  },
-  {
-    id: 'working-desk',
-    name: 'Working desk',
-    icon: '💻',
-  },
-  {
-    id: 'car-parking',
-    name: 'Car parking',
-    icon: '🚗',
-  },
-  {
-    id: 'kitchen',
-    name: 'Kitchen',
-    icon: '🍳',
-  },
-  {
-    id: 'airconditioning',
-    name: 'Airconditioning',
-    icon: '❄️',
-  },
+  { icon: <IconCollection name="wifi" />, name: 'Wifi', id: 'wifi' },
+  { icon: <IconCollection name="pool" />, name: 'Pool', id: 'pool' },
+  { icon: <IconCollection name="gym" />, name: 'Gym', id: 'gym' },
+  { icon: <IconCollection name="pet" />, name: 'Pet Friendly', id: 'petfriendly' },
+  { icon: <IconCollection name="desk" />, name: 'Working desk', id: 'workingdesk' },
+  { icon: <IconCollection name="parking" />, name: 'Car parking', id: 'carparking' },
+  { icon: <IconCollection name="kitchen" />, name: 'Kitchen', id: 'kitchen' },
+  { icon: <IconCollection name="aircondition" />, name: 'Airconditioning', id: 'airco' },
 ];
 
 function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset }) {
@@ -60,7 +29,6 @@ function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset 
 
   return (
     <div className={css.container}>
-      {/* Header */}
       <div className={css.header}>
         <h3 className={css.title}>Amenities</h3>
         <button onClick={handleReset} className={css.resetButton}>
@@ -68,7 +36,6 @@ function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset 
         </button>
       </div>
 
-      {/* Amenities Grid */}
       <div className={css.amenitiesGrid}>
         {amenities.map(amenity => (
           <button

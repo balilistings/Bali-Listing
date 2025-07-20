@@ -11,7 +11,7 @@ function BedroomsSelector({ bedrooms, onBedroomsChange, onReset }) {
       onValueChange={onBedroomsChange}
       onReset={onReset}
       min={0}
-      max={10}
+      max={6}
     />
   );
 }

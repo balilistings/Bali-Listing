@@ -11,7 +11,7 @@ function BathroomsSelector({ bathrooms, onBathroomsChange, onReset }) {
       onValueChange={onBathroomsChange}
       onReset={onReset}
       min={0}
-      max={10}
+      max={6}
     />
   );
 }

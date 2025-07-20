@@ -23,12 +23,12 @@ const formatPrice = price => {
 
 function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRangeChange }) {
   const [activeTab, setActiveTab] = useState(selectedPeriod || 'weekly');
-  const [range, setRange] = useState(priceRange || [0, 50]);
+  const [range, setRange] = useState(priceRange || [0, 99]);
 
   const handleTabChange = tabId => {
     setActiveTab(tabId);
     const config = getRangeConfig(tabId);
-    const newRange = [config.min, Math.min(config.max / 2, range[1])];
+    const newRange = [config.min, config.max];
     setRange(newRange);
     onPeriodChange(tabId);
     onPriceRangeChange(newRange);

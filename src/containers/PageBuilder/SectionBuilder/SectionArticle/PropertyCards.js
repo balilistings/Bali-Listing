@@ -9,7 +9,7 @@ import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
-function Icon({ type }) {
+export const Icon = ({ type }) => {
   // Use emoji for demo, replace with SVG/icon in real app
   switch (type) {
     case 'bed':
@@ -147,7 +147,7 @@ function Icon({ type }) {
     default:
       return null;
   }
-}
+};
 
 const tabList = [
   { id: 'denpasar', label: 'Denpasar' },
@@ -390,12 +390,12 @@ const PropertyCards = () => {
                     </div>
                     <div className={styles.title}>{title}</div>
                     <div className={styles.location}>
-                     <span className={styles.locationWrapper}>
-                     <span className={styles.locationIcon}>
-                        <IconCollection name="locationIcon" />
+                      <span className={styles.locationWrapper}>
+                        <span className={styles.locationIcon}>
+                          <IconCollection name="locationIcon" />
+                        </span>
+                        {location?.address}
                       </span>
-                      {location?.address}
-                     </span>
                       <span className={styles.typeIcon}>
                         <IconCollection name="typeIcon" />
                       </span>

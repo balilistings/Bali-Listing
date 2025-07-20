@@ -270,7 +270,7 @@
 }
 
 .typeIcon {
-  margin-left: 15px;
+  /* margin-left: 15px; */
   margin-right: 3px;
 }
 
@@ -295,6 +295,7 @@
   line-height: 130%;
   letter-spacing: 0%;
   text-align: center;
+  margin-left: 15px;
 
   color: #818181;
   @media (max-width: 767px) {

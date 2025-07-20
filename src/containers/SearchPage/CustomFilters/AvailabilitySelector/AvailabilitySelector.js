@@ -2,8 +2,8 @@ import React from 'react';
 import PillSelector from '../PillSelector/PillSelector';
 
 const availabilityOptions = [
-  { id: 'available-now', label: 'Available now' },
-  { id: 'all-availability', label: 'All availability' },
+  { id: 'yes', label: 'Available now' },
+  { id: 'no', label: 'All availability' },
 ];
 
 function AvailabilitySelector({ selectedAvailability, onAvailabilityChange, onReset }) {
