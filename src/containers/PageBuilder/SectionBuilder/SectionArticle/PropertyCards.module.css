@@ -228,25 +228,33 @@
 
 .location {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0px;
   font-family: Mulish;
   font-weight: 600;
   font-size: 11px;
   line-height: 130%;
   letter-spacing: 0%;
-  text-align: center;
+  text-align: left;
 
   color: #818181;
   margin: 0px;
   @media (max-width: 767px) {
-    font-size: 8px;
+    font-size: 11px;
   }
 }
 
 .locationIcon {
   min-width: 10px;
   margin-right: 3px;
+  @media (max-width: 767px) {
+    width: 11px;
+    height: 11px;
+    & svg{
+      width: 11px;
+      height: 11px;
+    }
+  }
 }
 
 .typeIcon {
@@ -264,7 +272,21 @@
 
   color: #818181;
   @media (max-width: 767px) {
-    font-size: 8px;
+    font-size:11px;
+  }
+}
+
+.locationWrapper{
+  font-family: Mulish;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+
+  color: #818181;
+  @media (max-width: 767px) {
+    font-size:8px;
   }
 }
 

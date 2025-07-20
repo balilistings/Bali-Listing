@@ -1,21 +1,22 @@
 import React from 'react';
 import css from './CategorySelector.module.css';
+import { IconCollection } from '../../../../components';
 
 const categories = [
   {
     id: 'rentalvillas',
     name: 'Rentals',
-    icon: '🏠',
+    icon: <IconCollection name="rentals_icon" />,
   },
   {
     id: 'villaforsale',
     name: 'For Sale',
-    icon: '🏷️',
+    icon: <IconCollection name="sale_icon" />,
   },
   {
     id: 'landforsale',
     name: 'Land',
-    icon: '🌱',
+    icon: <IconCollection name="icon_Land" />,
   },
 ];
 
@@ -25,7 +26,8 @@ function CategorySelector({ selectedCategory, onCategoryChange, history }) {
       <h3 className={css.title}>Categories</h3>
       <div className={css.categoryGrid}>
         {categories.map(category => (
-          <div
+         <div>
+           <div
             key={category.id}
             className={`${css.categoryCard} ${
               selectedCategory === category.id ? css.selected : ''
@@ -38,7 +40,9 @@ function CategorySelector({ selectedCategory, onCategoryChange, history }) {
             <div className={css.iconContainer}>
               <span className={css.icon}>{category.icon}</span>
             </div>
-            <span className={css.categoryName}>{category.name}</span>
+
+          </div>
+          <span className={css.categoryName}>{category.name}</span>
           </div>
         ))}
       </div>

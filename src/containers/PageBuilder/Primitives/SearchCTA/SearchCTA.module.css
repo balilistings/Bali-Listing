@@ -212,6 +212,7 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   border: 1px solid #d3d3d3;
+  border-right: 0;
 
   font-family: Mulish;
   font-weight: 700;

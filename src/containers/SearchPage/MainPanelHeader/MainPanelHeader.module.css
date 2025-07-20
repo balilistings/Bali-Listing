@@ -38,6 +38,14 @@
 
 .resultsFound {
   white-space: nowrap;
+  font-family: Mulish;
+font-weight: 700;
+font-style: Bold;
+font-size: 12px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+color: #4D4D4D;
 }
 
 .sortyByWrapper {
@@ -46,7 +54,13 @@
 }
 
 .sortyBy {
-  composes: marketplaceSmallFontStyles from global;
-  font-weight: var(--fontWeightRegular);
-  padding: 8px 8px 8px 0;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+color: #231F20;  
+  padding: 8px 8px 0px 0;
 }

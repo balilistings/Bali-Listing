@@ -1,5 +1,7 @@
 .container {
   margin-bottom: 24px;
+  padding-top: 28px;
+  border-top: 1px solid #F2F2F2;
 }
 
 .header {
@@ -10,20 +12,34 @@
 }
 
 .title {
-  font-size: 16px;
-  font-weight: 600;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
   margin: 0;
-  color: #333;
+  padding: 0;
+  color: #231F20;
 }
 
 .resetButton {
   background: none;
   border: none;
-  color: #e91e63;
+  color: #F74DF4;
   font-size: 14px;
   cursor: pointer;
   padding: 0;
   font-weight: 500;
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
 }
 
 .resetButton:hover {
@@ -31,22 +47,31 @@
 }
 
 .amenitiesGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+ display: flex;
+ flex-wrap: wrap;
+  gap: 16px;
 }
 
 .amenityPill {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  padding: 12px 8px;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
+  gap: 8px;
   background: white;
+  border: 1px solid #D3D3D3;
+  border-radius: 20px;
+  padding: 13px 20px;
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  color: #231F20;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 80px;
 }
 
 .amenityPill:hover {
@@ -55,13 +80,13 @@
 }
 
 .amenityPill.selected {
-  border-color: #e91e63;
-  background-color: #fdf2f8;
+  border-color: #F74DF4;
+  background-color: #FBA6F933;
 }
 
 .amenityIcon {
-  font-size: 20px;
-  margin-bottom: 6px;
+
+  margin-bottom: 0px;
   display: block;
 }
 

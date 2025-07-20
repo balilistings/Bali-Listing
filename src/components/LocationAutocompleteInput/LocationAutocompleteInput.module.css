@@ -151,9 +151,11 @@ bottom of the container.
     & svg{
       width: 12px;
     height: 12px;
+    min-width: 12px;
       @media (--viewportMedium) {
         width: 20px;
         height: 24px;
+        min-width: 20px;
       
       }
     }

@@ -28,6 +28,18 @@
 
 .buttons {
   display: flex;
+  align-items: center;
+  border: 1px solid var(--light-3-background-opsi-1, #F0F0F0);
+  border-radius: 20px;
+  padding: 5px 20px;
+  margin: 0px;
+  & > *{
+    flex: 1;
+    padding: 3px 0;
+    &:not(:last-child){
+      border-right: 1px solid var(--light-3-background-opsi-1, #F0F0F0) !important;
+    }
+  }
 }
 
 .mapIcon {
@@ -36,20 +48,38 @@
   font-weight: var(--fontWeightMedium);
 
   /* background map image */
-  background-image: url(./images/map_icon216x105.png);
-  background-size: cover;
+  /* background-image: url(./images/map_icon216x105.png);
+  background-size: cover; */
 
   border-radius: 3px;
-  width: 72px;
-  height: 35px;
-  padding: 9px 22px;
+  width: max-content;
+  height: auto;
+  padding: 0;
   margin: 0;
+  font-family: Mulish;
+font-weight: 700;
+font-style: Bold;
+font-size: 10px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+display: flex;
+justify-content: center;
+align-items: center;
+gap: 0px;
+  & svg{
+    fill: transparent;
+  }
 }
 
 .modalContainer {
   width: 100%;
   padding: 94px 0;
   margin: 0 24px;
+}
+
+.filterIcon{
+  margin-right: 10px;
 }
 
 .modalHeadingWrapper {

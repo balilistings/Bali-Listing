@@ -37,7 +37,7 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
               // className={classNames(css.gridContainer, getGridCount(fieldCountForGrid))}
             >
               <div className={css.filterField} key="locationSearch">
-                <FilterLocation setSubmitDisabled={() => {}} />
+                <FilterLocation setSubmitDisabled={() => {}} Searchicon={true}/>
               </div>
             </Form>
           );

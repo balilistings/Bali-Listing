@@ -10,7 +10,7 @@ const identity = v => v;
 
 const LocationSearchField = props => {
   const [isCurrentLocation, setIsCurrentLocation] = useState(false);
-  const { inputRootClass, intl, inputRef, onLocationChange, alignLeft } = props;
+  const { inputRootClass, intl, inputRef, onLocationChange, alignLeft, Searchicon } = props;
   return (
     <Field
       name="location"
@@ -47,6 +47,7 @@ const LocationSearchField = props => {
             inputRef={inputRef}
             input={{ ...restInput, onChange: searchOnChange }}
             meta={meta}
+            Searchicon={Searchicon}
           />
         );
       }}
@@ -65,6 +66,7 @@ const FilterLocation = props => {
     rootClassName,
     alignLeft,
     isCurrentLocation,
+    Searchicon,
     ...restOfProps
   } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -85,6 +87,7 @@ const FilterLocation = props => {
         inputRef={searchInpuRef}
         onLocationChange={onChange}
         alignLeft={alignLeft}
+        Searchicon={Searchicon}
       />
     </div>
   );

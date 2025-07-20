@@ -1,5 +1,7 @@
 .container {
   margin-bottom: 24px;
+  padding-top: 28px;
+  border-top: 1px solid #F2F2F2;
 }
 
 .header {
@@ -10,20 +12,59 @@
 }
 
 .title {
-  font-size: 16px;
-  font-weight: 600;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
   margin: 0;
-  color: #333;
+  padding: 0;
+  color: #231F20;
 }
 
 .resetButton {
   background: none;
   border: none;
-  color: #e91e63;
+  color: #F74DF4;
   font-size: 14px;
   cursor: pointer;
   padding: 0;
   font-weight: 500;
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+}
+
+.filterField {
+  border: 0.5px solid var(--main-50, #FBA6F9);
+  border-radius: 10px;
+  background-color: #FAFAFA;
+  margin-bottom: 20px;
+
+  &>div {
+    height: 36px;
+
+    &>div {
+      height: 36px;
+      gap: 10px;
+
+      &>div:nth-child(3) {
+        top: 110% !important;
+      }
+
+      & label {
+        display: none;
+      }
+    }
+  }
 }
 
 .resetButton:hover {
@@ -33,19 +74,26 @@
 .locationGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 16px;
 }
 
 .locationPill {
   background: white;
-  border: 1px solid #e5e5e5;
+  border: 1px solid #D3D3D3;
   border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 14px;
-  color: #374151;
+  padding: 13px 20px;
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  color: #231F20;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-weight: 500;
+
 }
 
 .locationPill:hover {
@@ -54,12 +102,11 @@
 }
 
 .locationPill.selected {
-  background-color: #e91e63;
-  color: white;
-  border-color: #e91e63;
+  background-color: #FBA6F933;
+  border-color: #F74DF4;
 }
 
 .locationPill.selected:hover {
-  background-color: #d81b60;
-  border-color: #d81b60;
+  background-color: #FBA6F933;
+  border-color: #F74DF4;
 }

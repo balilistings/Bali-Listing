@@ -603,7 +603,9 @@ padding: 0;
         color: #231f20;
         &::marker{
           margin-top: 2px;
-          font-size: 11px;
+       @media (max-width: 767px) {
+        font-size: 11px;
+       }
         }
         & p {
           font-family: Mulish;

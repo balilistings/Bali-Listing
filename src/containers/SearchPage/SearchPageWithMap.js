@@ -36,7 +36,7 @@ import {
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 
-import { H3, H5, ModalInMobile, NamedRedirect, Page } from '../../components';
+import { Button, H3, H5, IconCollection, ModalInMobile, NamedRedirect, Page } from '../../components';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 
 import { setActiveListing } from './SearchPage.duck';
@@ -85,9 +85,9 @@ const getSelectedSecondaryFiltersCount = (
   const hasSecondaryFilters = !!(customSecondaryFilters && customSecondaryFilters.length > 0);
   const potentialSecondaryFilters = hasSecondaryFilters
     ? validFilterParams(validQueryParams, {
-        ...filterConfigs,
-        listingFieldsConfig: customSecondaryFilters,
-      })
+      ...filterConfigs,
+      listingFieldsConfig: customSecondaryFilters,
+    })
     : {};
 
   const relevantQueryParamNames = customSecondaryFilters.map(f => {
@@ -426,8 +426,8 @@ export class SearchPageComponent extends Component {
     );
     const builtInFilters = isKeywordSearch
       ? defaultFiltersConfig.filter(
-          f => !['keywords', 'categoryLevel', 'listingType'].includes(f.key)
-        )
+        f => !['keywords', 'categoryLevel', 'listingType'].includes(f.key)
+      )
       : defaultFiltersConfig.filter(f => !['categoryLevel', 'listingType'].includes(f.key));
     const [customPrimaryFilters, customSecondaryFilters] = groupListingFieldConfigs(
       listingFieldsConfig,
@@ -466,12 +466,12 @@ export class SearchPageComponent extends Component {
     const isSecondaryFiltersOpen = !!hasSecondaryFilters && this.state.isSecondaryFiltersOpen;
     const propsForSecondaryFiltersToggle = hasSecondaryFilters
       ? {
-          isSecondaryFiltersOpen: this.state.isSecondaryFiltersOpen,
-          toggleSecondaryFiltersOpen: isOpen => {
-            this.setState({ isSecondaryFiltersOpen: isOpen, currentQueryParams: {} });
-          },
-          selectedSecondaryFiltersCount,
-        }
+        isSecondaryFiltersOpen: this.state.isSecondaryFiltersOpen,
+        toggleSecondaryFiltersOpen: isOpen => {
+          this.setState({ isSecondaryFiltersOpen: isOpen, currentQueryParams: {} });
+        },
+        selectedSecondaryFiltersCount,
+      }
       : {};
 
     const hasPaginationInfo = !!pagination && pagination.totalItems != null;
@@ -479,8 +479,8 @@ export class SearchPageComponent extends Component {
       searchParamsAreInSync && hasPaginationInfo
         ? pagination.totalItems
         : pagination?.paginationUnsupported
-        ? listings.length
-        : 0;
+          ? listings.length
+          : 0;
     const listingsAreLoaded =
       !searchInProgress &&
       searchParamsAreInSync &&
@@ -547,7 +547,7 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer currentPage="search" rootClassName={topbarClasses} currentSearchParams={validQueryParams} openCustomFilters={this.openCustomFilters}/>
         <div className={css.container}>
           <div className={css.searchResultContainer}>
             <SearchFiltersMobile
@@ -568,11 +568,11 @@ export class SearchPageComponent extends Component {
               noResultsInfo={noResultsInfo}
               location={location}
               isMapVariant
+              openCustomFilters={this.openCustomFilters}
             >
-              {availableFilters.map(filterConfig => {
-                const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
-                  filterConfig.key
-                }`;
+              {/* {availableFilters.map(filterConfig => {
+                const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${filterConfig.key
+                  }`;
                 return (
                   <FilterComponent
                     key={key}
@@ -588,8 +588,9 @@ export class SearchPageComponent extends Component {
                     showAsPopup={false}
                   />
                 );
-              })}
+              })} */}
             </SearchFiltersMobile>
+           
             <MainPanelHeader
               className={css.mainPanelMapVariant}
               sortByComponent={sortBy('desktop')}
@@ -600,11 +601,10 @@ export class SearchPageComponent extends Component {
               searchListingsError={searchListingsError}
               noResultsInfo={noResultsInfo}
             >
-              <SearchFiltersPrimary {...propsForSecondaryFiltersToggle}>
+              {/* <SearchFiltersPrimary {...propsForSecondaryFiltersToggle}>
                 {availablePrimaryFilters.map(filterConfig => {
-                  const key = `SearchFiltersPrimary.${filterConfig.scope || 'built-in'}.${
-                    filterConfig.key
-                  }`;
+                  const key = `SearchFiltersPrimary.${filterConfig.scope || 'built-in'}.${filterConfig.key
+                    }`;
                   return (
                     <FilterComponent
                       key={key}
@@ -621,7 +621,7 @@ export class SearchPageComponent extends Component {
                     />
                   );
                 })}
-              </SearchFiltersPrimary>
+              </SearchFiltersPrimary> */}
             </MainPanelHeader>
             {isSecondaryFiltersOpen ? (
               <div className={classNames(css.searchFiltersPanel)}>
@@ -634,9 +634,8 @@ export class SearchPageComponent extends Component {
                   onClosePanel={() => this.setState({ isSecondaryFiltersOpen: false })}
                 >
                   {customSecondaryFilters.map(filterConfig => {
-                    const key = `SearchFiltersSecondary.${filterConfig.scope || 'built-in'}.${
-                      filterConfig.key
-                    }`;
+                    const key = `SearchFiltersSecondary.${filterConfig.scope || 'built-in'}.${filterConfig.key
+                      }`;
                     return (
                       <FilterComponent
                         key={key}
