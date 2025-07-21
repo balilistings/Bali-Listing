@@ -54,8 +54,8 @@ const SectionDetailsMaybe = props => {
       </Heading>
       <ul className={css.details}>
         {existingListingFields.map(detail => (
-          <li key={detail.key} className={css.detailsRow}>
-            <span className={css.detailLabel}>{detail.label}</span>
+          <li key={detail.key} className={css.row}>
+            <span className={css.label}>{detail.label}</span>
             <span>{detail.value}</span>
           </li>
         ))}

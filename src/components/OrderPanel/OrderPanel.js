@@ -456,7 +456,7 @@ const OrderPanel = props => {
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-        <div className={css.availableFrom}>Available from June 1st</div>
+        {/* <div className={css.availableFrom}>Available from June 1st</div> */}
         {/* <div className={css.author}>
           <AvatarSmall user={author} className={css.providerAvatar} />
           <span className={css.providerNameLinked}>

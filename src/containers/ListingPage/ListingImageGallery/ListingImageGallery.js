@@ -128,10 +128,9 @@ const ListingImageGallery = props => {
         setIsFavorited(!isFavorited);
         setAnimateHeart(true);
 
-        // Reset animasi setelah selesai (sesuai durasi animasi CSS)
         setTimeout(() => {
           setAnimateHeart(false);
-        }, 400); // harus sama dengan durasi animasi di CSS
+        }, 400);
       } else {
         setShowMessageBox(true);
       }
