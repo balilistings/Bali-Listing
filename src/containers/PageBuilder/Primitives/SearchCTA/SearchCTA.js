@@ -84,6 +84,8 @@ export const SearchCTA = React.forwardRef((props, ref) => {
 
   const categoryConfig = config.categoryConfiguration;
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   const filters = {
     categories: {
       enabled: categories,
