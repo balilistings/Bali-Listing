@@ -14,7 +14,9 @@
   padding-top: 0;
   margin-bottom: 20px;
   padding-bottom: 0;
-
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
 }
 
 .categoryGrid {
@@ -29,12 +31,17 @@
   align-items: center;
   justify-content: center;
   padding: 20px 12px;
-  border: 2px solid #e5e5e5;
+  border: 1px solid #D3D3D3;
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   background-color: white;
   min-height: 120px;
+  @media (max-width: 767px) {
+    min-height: 80px;
+    padding: 10px 12px;
+  
+  }
 }
 
 .categoryCard:hover {
@@ -66,9 +73,17 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
   background-color: #f8fafc;
   border-radius: 8px;
+  @media (max-width: 767px) {
+    width: 30px;
+    height: 30px;
+    & svg{
+      width: 30px;
+      height: 30px;
+    }
+  }
 }
 
 .selected .iconContainer {
@@ -88,6 +103,9 @@
   font-weight: 500;
   color: #374151;
   text-align: center;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 }
 
 .selected .categoryName {

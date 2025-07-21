@@ -2,6 +2,9 @@
   margin-bottom: 24px;
   padding-top: 28px;
   border-top: 1px solid #F2F2F2;
+  @media (max-width: 768px) {
+    padding-top: 24px;
+  }
 }
 
 .header {
@@ -23,6 +26,9 @@
   margin: 0;
   padding: 0;
   color: #231F20;
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 
 .resetButton {
@@ -40,6 +46,9 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
 }
 
 .resetButton:hover {
@@ -51,6 +60,9 @@
   color: #666;
   margin: 0 0 16px 0;
   line-height: 1.4;
+  @media (max-width: 768px) {
+    font-size: 9px;
+  }
 }
 
 .sliderSection {
@@ -59,6 +71,9 @@
 
 .sliderWrapper {
   margin-bottom: 40px;
+  @media (max-width: 768px) {
+    margin-bottom: 24px;
+  }
 }
 
 .priceValues {
@@ -87,6 +102,9 @@
 color: #4D4D4D;  
   margin-bottom: 4px;
   text-transform: lowercase;
+  @media (max-width: 768px) {
+    font-size: 8px;
+  }
 }
 
 .priceAmount {
@@ -103,5 +121,8 @@ line-height: 130%;
 letter-spacing: 0%;
 text-align: center;
 min-width: 99px;
-
+@media (max-width: 767px) {
+  font-size: 10px;
+  min-width: 92px;
+}
 }

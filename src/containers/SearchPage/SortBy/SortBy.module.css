@@ -78,6 +78,9 @@ letter-spacing: 0%;
     box-shadow: none;
     text-decoration: none;
     border: 1px solid#C4C4C4 !important;
+    @media (max-width: 768px) {
+      border: none !important;
+    }
   
   }
 

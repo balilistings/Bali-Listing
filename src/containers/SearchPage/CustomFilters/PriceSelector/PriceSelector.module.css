@@ -2,6 +2,10 @@
   margin-bottom: 24px;
   padding-top: 28px;
   border-top: 1px solid #F2F2F2;
+
+  @media (max-width: 767px) {
+    padding-top: 24px;
+  }
 }
 
 .header {
@@ -20,6 +24,10 @@
   margin: 0;
   padding: 0;
   color: #231F20;
+
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
 }
 
 .description {
@@ -30,10 +38,14 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-  
+
   color: #8D8D8D;
   margin: 0;
   line-height: 1.4;
+
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 }
 
 .tabsContainer {
@@ -52,7 +64,7 @@
 
 .tab {
   position: relative;
-  padding: 9px 20px;
+  padding: 4px 20px;
   border: none;
   background: transparent;
   color: #231F20;
@@ -122,7 +134,7 @@
 }
 
 .priceValue {
-  
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,9 +150,13 @@
   line-height: 130%;
   letter-spacing: 0%;
   text-align: center;
-color: #4D4D4D;  
+  color: #4D4D4D;
   margin-bottom: 4px;
   text-transform: lowercase;
+
+  @media (max-width: 767px) {
+    font-size: 8px;
+  }
 }
 
 .priceAmount {
@@ -149,13 +165,17 @@ color: #4D4D4D;
   border: 1px solid #C4C4C4;
   border-radius: 5px;
   font-family: Mulish;
-font-weight: 700;
-font-style: Bold;
-font-size: 14px;
-leading-trim: NONE;
-line-height: 130%;
-letter-spacing: 0%;
-text-align: center;
-min-width: 99px;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  min-width: 99px;
 
+  @media (max-width: 767px) {
+    font-size: 10px;
+    min-width: 92px;
+  }
 }

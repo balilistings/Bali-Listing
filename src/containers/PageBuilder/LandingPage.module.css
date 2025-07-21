@@ -140,6 +140,35 @@
 :global(#different_from) {
   & > div {
     padding: 100px 0;
+    & :global(#different_from-block-1){
+      overflow: hidden;
+      padding-bottom: 75px;
+      @media (max-width: 767px) {
+        padding-bottom: 0px;
+      }
+      & img{
+        text-align: right;
+        transform: translateX(50px) translateY(50px) scale(3.2);
+      
+        object-fit: contain;
+        @media (max-width: 767px) {
+          transform: translateX(20px) translateY(10px) scale(3.2);
+        }
+      }
+    }
+    & :global(#different_from-block-2){ 
+      overflow: hidden;
+      & img{
+        text-align: right;
+        transform: translateX(100px) scale(2.4);
+      
+        object-fit: contain;
+        @media (max-width: 767px) {
+          transform: translateX(50px) translateY(10px) scale(2.2);
+        }
+      }
+    }
+    
     @media (max-width: 767px) {
       padding: 35px 0;
     }
@@ -170,12 +199,12 @@
           background-color: #fff;
           box-shadow: 0px 3.05px 15.24px 0px #0000001a;
           border-radius: 15.24px;
-          padding: 11px 11px 11px 61px;
+          padding: 11px 44px 11px 61px;
           position: absolute;
           right: 16px;
           bottom: 43px;
           @media (max-width: 1023px) {
-            padding: 6px 6px 6px 32px;
+            padding: 6px 44px 6px 32px;
             font-size: 6px;
             border-radius: 8.62px;
             right: 25px;

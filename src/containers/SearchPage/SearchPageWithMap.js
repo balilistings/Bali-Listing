@@ -593,6 +593,8 @@ export class SearchPageComponent extends Component {
               location={location}
               isMapVariant
               openCustomFilters={this.openCustomFilters}
+              isMapOpen={this.state.isSearchMapOpenOnMobile}
+              onMapClose={() => this.setState({ isSearchMapOpenOnMobile: false })}
             >
               {/* {availableFilters.map(filterConfig => {
                 const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${filterConfig.key

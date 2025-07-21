@@ -2,6 +2,9 @@
   margin-bottom: 24px;
   padding-top: 28px;
   border-top: 1px solid #F2F2F2;
+  @media (max-width: 767px) {
+    padding-top: 24px;
+  }
 }
 
 .header {
@@ -23,6 +26,9 @@
   margin: 0;
   padding: 0;
   color: #231F20;
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
 }
 
 .resetButton {
@@ -40,6 +46,9 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 }
 
 .resetButton:hover {
@@ -68,6 +77,9 @@
   letter-spacing: 0%;
   
   color: #231F20;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 }
 
 .counter {
@@ -110,6 +122,10 @@
   color: #333;
   min-width: 20px;
   text-align: center;
+  @media (max-width: 767px) {
+    font-size: 14px;
+    min-width: auto;
+  }
 }
 
 .description {
@@ -124,5 +140,8 @@ color: #8D8D8D;
   margin: 0;
   line-height: 1.4;
   padding: 0;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 }
 

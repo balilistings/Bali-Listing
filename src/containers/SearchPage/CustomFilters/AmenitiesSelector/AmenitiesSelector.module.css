@@ -2,6 +2,9 @@
   margin-bottom: 24px;
   padding-top: 28px;
   border-top: 1px solid #F2F2F2;
+  @media (max-width: 767px) {
+    padding-top: 24px;
+  }
 }
 
 .header {
@@ -23,6 +26,9 @@
   margin: 0;
   padding: 0;
   color: #231F20;
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
 }
 
 .resetButton {
@@ -40,6 +46,9 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 }
 
 .resetButton:hover {
@@ -50,6 +59,9 @@
  display: flex;
  flex-wrap: wrap;
   gap: 16px;
+  @media (max-width: 767px) {
+    gap: 8px 4px;
+  }
 }
 
 .amenityPill {
@@ -60,7 +72,7 @@
   background: white;
   border: 1px solid #D3D3D3;
   border-radius: 20px;
-  padding: 13px 20px;
+  padding: 8px 20px;
   font-family: Mulish;
   font-weight: 600;
   font-style: SemiBold;
@@ -72,6 +84,10 @@
   color: #231F20;
   cursor: pointer;
   transition: all 0.2s ease;
+  @media (max-width: 767px) {
+    padding: 9px 12px;
+    font-size: 10px;
+  }
 }
 
 .amenityPill:hover {
@@ -88,6 +104,15 @@
 
   margin-bottom: 0px;
   display: block;
+  & svg{
+    width: 24px;
+    height: 24px;
+    fill: transparent;
+    @media (max-width: 767px) {
+      width: 16px;
+      height: 16px;
+    }
+  }
 }
 
 .amenityName {
@@ -99,8 +124,8 @@
 }
 
 .selected .amenityName {
-  color: #e91e63;
-  font-weight: 600;
+  /* color: #e91e63;
+  font-weight: 600; */
 }
 
 /* Responsive design for smaller screens */

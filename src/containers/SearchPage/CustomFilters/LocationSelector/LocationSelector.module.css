@@ -2,6 +2,9 @@
   margin-bottom: 24px;
   padding-top: 28px;
   border-top: 1px solid #F2F2F2;
+  @media (max-width: 767px) {
+    padding-top: 24px;
+  }
 }
 
 .header {
@@ -23,6 +26,9 @@
   margin: 0;
   padding: 0;
   color: #231F20;
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
 }
 
 .resetButton {
@@ -41,6 +47,9 @@
   line-height: 130%;
   letter-spacing: 0%;
 
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
 }
 
 .filterField {
@@ -48,7 +57,12 @@
   border-radius: 10px;
   background-color: #FAFAFA;
   margin-bottom: 20px;
+@media (max-width: 767px) {
+border-radius: 5px;
+margin-bottom: 16px;
 
+
+}
   &>div {
     height: 36px;
 
@@ -75,6 +89,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
+
+  @media (max-width: 767px) {
+    gap: 8px 4px;
+  }
 }
 
 .locationPill {
@@ -93,6 +111,10 @@
   color: #231F20;
   cursor: pointer;
   transition: all 0.2s ease;
+  @media (max-width: 767px) {
+    padding: 9px 12px;
+   font-size: 10px;
+  }
 
 }
 

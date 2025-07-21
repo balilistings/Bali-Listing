@@ -10,14 +10,14 @@
 
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  gap: 10px 20px;
+  gap: 20px 3px;
   width: 100%;
 
   @media (--viewportLarge) {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: 1430px) {
+  @media (min-width: 1240px) {
     grid-template-columns: repeat(3, 1fr);
   }
 }

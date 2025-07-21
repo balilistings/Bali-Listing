@@ -27,7 +27,7 @@
   width: 100%;
   flex-grow: 1;
   display: flex;
-
+  background-color: #fff;
   @media (--viewportMedium) {
     position: relative;
     padding-top: var(--topbarHeightDesktop);
@@ -184,7 +184,8 @@
   }
 
   @media (--viewportLarge) {
-    flex-basis: 57%;
+    flex-basis: 57.5%;
+    max-width: 57.5vw;
   }
 }
 
@@ -256,7 +257,7 @@
 
 .listingsForMapVariant {
   composes: listings;
-  padding: 0 24px;
+  padding: 0 10px;
 
   @media (--viewportLarge) {
     padding: 0 23px;
@@ -285,7 +286,7 @@
   }
 
   @media (--viewportLarge) {
-    flex-basis: 43%;
+    flex-basis: 42.5%;
   }
 }
 

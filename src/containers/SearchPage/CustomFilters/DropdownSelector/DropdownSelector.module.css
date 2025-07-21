@@ -2,6 +2,9 @@
   margin-bottom: 24px;
   padding-top: 28px;
   border-top: 1px solid #F2F2F2;
+  @media (max-width: 768px) {
+    padding-top: 24px;
+  }
 }
 
 .header {
@@ -23,6 +26,9 @@
   margin: 0;
   padding: 0;
   color: #231F20;
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
 }
 
 .resetButton {
@@ -40,6 +46,9 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
 }
 
 .resetButton:hover {
@@ -57,6 +66,9 @@
   color: #8D8D8D;
   margin: 0 0 16px 0;
   line-height: 1.4;
+  @media (max-width: 768px) {
+    font-size: 9px;
+  }
 }
 
 .dropdownContainer {
@@ -87,6 +99,9 @@
 .dropdownText {
   font-size: 14px;
   color: #374151;
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
 }
 
 .dropdownInput.open .dropdownText {

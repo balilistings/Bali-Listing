@@ -122,6 +122,14 @@ margin-right: 10px;
   box-shadow: -4px 0px 10px 0px #0000001A;
 
   border-radius: 0 0 12px 12px;
+  @media (max-width: 768px) {
+    border-radius: 0px;
+    border-top: none;
+    gap: 22px;
+    & > button{
+flex: 1;
+    }
+  }
 
 }
 
@@ -138,6 +146,10 @@ margin-right: 10px;
   color: #F74DF4;
   cursor: pointer;
   padding: 0;
+  @media (max-width: 768px) {
+    font-size: 10px;
+    text-decoration: underline;
+  }
 }
 
 .showListingsButton {
@@ -145,7 +157,7 @@ margin-right: 10px;
   color: white;
   border: none;
   border-radius: 5px;
-  padding: 11px 24px;
+  padding: 11px 42px;
   font-family: Mulish;
   font-weight: 700;
   font-style: Bold;
@@ -158,4 +170,10 @@ margin-right: 10px;
   cursor: pointer;
   height: 38px;
   min-height: 38px;
+  @media (max-width: 768px) {
+    height: 30px;
+    min-height: 30px;
+    padding: 8px 12px;
+    font-size: 10px;
+  }
 }
