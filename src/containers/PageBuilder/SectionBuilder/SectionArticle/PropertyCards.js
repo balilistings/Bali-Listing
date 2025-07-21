@@ -228,13 +228,16 @@ const PropertyCards = () => {
     featuredListingsInProgress,
     featuredListingsError,
   } = state.LandingPage;
-  const listings = getListingsById(state, featuredListingIds);
+  const l = getListingsById(state, featuredListingIds);
   const [activeTab, setActiveTab] = useState('denpasar');
   // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const listings = isMobile ? l.slice(0, 2) : l;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
