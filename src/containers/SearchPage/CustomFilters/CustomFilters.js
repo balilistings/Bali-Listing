@@ -558,7 +558,7 @@ function CustomFilters({
           <button onClick={handleReset} className={css.resetButton}>
             Reset All
           </button>
-          <button onClick={onShowListings} className={css.showListingsButton}>
+          <button onClick={onClose} className={css.showListingsButton}>
             Show {resultsCount} listings
           </button>
         </div>
