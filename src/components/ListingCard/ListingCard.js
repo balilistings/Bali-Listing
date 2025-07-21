@@ -16,6 +16,7 @@ import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '
 
 import css from './ListingCard.module.css';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
+import { sortTags, capitaliseFirstLetter } from '../../util/helper';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -94,6 +95,29 @@ const priceData = (price, currency, intl) => {
 
 const LazyImage = lazyLoadWithDimensions(ResponsiveImage, { loadAfterInitialRendering: 3000 });
 
+// Format price in millions if appropriate
+export const formatPriceInMillions = priceAmount => {
+  if (!priceAmount) return null;
+
+  // First divide by 100 to get the actual price (prices are stored in subunits)
+  const actualPrice = priceAmount / 100;
+
+  // Check if the price is in millions (1,000,000 or more)
+  if (actualPrice >= 1000000) {
+    const millions = actualPrice / 1000000;
+    // If it's a whole number, show without decimal
+    if (millions % 1 === 0) {
+      return `${millions}M`;
+    } else {
+      // Show with one decimal place for partial millions
+      return `${millions.toFixed(1)}M`;
+    }
+  }
+
+  // For smaller amounts, show the actual price
+  return `${actualPrice.toLocaleString()}`;
+};
+
 const PriceMaybe = props => {
   const { price, publicData, config, intl } = props;
   const { listingType } = publicData || {};
@@ -104,29 +128,6 @@ const PriceMaybe = props => {
     return null;
   }
 
-  // Format price in millions if appropriate
-  const formatPriceInMillions = priceAmount => {
-    if (!priceAmount) return null;
-
-    // First divide by 100 to get the actual price (prices are stored in subunits)
-    const actualPrice = priceAmount / 100;
-
-    // Check if the price is in millions (1,000,000 or more)
-    if (actualPrice >= 1000000) {
-      const millions = actualPrice / 1000000;
-      // If it's a whole number, show without decimal
-      if (millions % 1 === 0) {
-        return `${millions}M`;
-      } else {
-        // Show with one decimal place for partial millions
-        return `${millions.toFixed(1)}M`;
-      }
-    }
-
-    // For smaller amounts, show the actual price
-    return `${actualPrice.toLocaleString()}`;
-  };
-
   const formattedPrice = price ? formatPriceInMillions(price.amount) : null;
 
   return (
@@ -136,25 +137,6 @@ const PriceMaybe = props => {
       </span>
     </div>
   );
-};
-
-const capitaliseFirstLetter = str => {
-  if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-const sortTags = (tags = []) => {
-  const sortArr = ['weekly', 'monthly', 'yearly'];
-
-  const sortedTags = tags.sort((a, b) => {
-    const aIndex = sortArr.indexOf(a);
-    const bIndex = sortArr.indexOf(b);
-    return aIndex - bIndex;
-  });
-
-  const capitalizedTags = sortedTags.map(capitaliseFirstLetter);
-
-  return capitalizedTags;
 };
 
 /**
@@ -204,9 +186,9 @@ export const ListingCard = props => {
 
   const setActivePropsMaybe = setActiveListing
     ? {
-      onMouseEnter: () => setActiveListing(currentListing.id),
-      onMouseLeave: () => setActiveListing(null),
-    }
+        onMouseEnter: () => setActiveListing(currentListing.id),
+        onMouseLeave: () => setActiveListing(null),
+      }
     : null;
 
   const imagesUrls = currentListing.images.map(
@@ -237,12 +219,7 @@ export const ListingCard = props => {
       <div className={css.imageWrapper}>
         <Slider {...cardSliderSettings} className={css.slider}>
           {imagesUrls.map((img, imgIdx) => (
-            <img
-              src={img}
-              alt={title}
-              className={css.image + ' ' + css.imageFade}
-              key={imgIdx}
-            />
+            <img src={img} alt={title} className={css.image + ' ' + css.imageFade} key={imgIdx} />
           ))}
         </Slider>
       </div>
@@ -254,10 +231,12 @@ export const ListingCard = props => {
             </span>
           ))}
           {/* <span className={css.tag}></span> */}
-          <span className={css.listedBy}>
-            Listed by:{' '}
-            <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
-          </span>
+          <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
+            <span className={css.listedBy}>
+              Listed by:{' '}
+              <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
+            </span>
+          </NamedLink>
         </div>
 
         <div className={css.mainInfo}>
