@@ -1,0 +1,102 @@
+.container {
+  margin-bottom: 24px;
+  padding-top: 28px;
+  border-top: 1px solid #F2F2F2;
+  @media (max-width: 767px) {
+    padding-top: 24px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  margin: 0;
+  padding: 0;
+  color: #231F20;
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
+}
+
+.resetButton {
+  background: none;
+  border: none;
+  color: #F74DF4;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 500;
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
+}
+
+.resetButton:hover {
+  text-decoration: underline;
+}
+
+.pillsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  @media (max-width: 767px) {
+    gap: 8px 4px;
+  }
+}
+
+.pill {
+  background: white;
+  border: 1px solid #D3D3D3;
+  border-radius: 20px;
+  padding: 13px 20px;
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  color: #231F20;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  @media (max-width: 767px) {
+    padding: 9px 12px;
+    font-size: 10px;
+  }
+}
+
+.pill:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+.pill.selected {
+  background-color: #FBA6F933;
+  border-color: #F74DF4;
+}
+
+.pill.selected:hover {
+  background-color: #FBA6F933;
+  border-color: #F74DF4;
+}

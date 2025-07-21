@@ -5,12 +5,14 @@
   align-items: center;
   height: 100%;
   width: 100%;
-  min-height: 40px;
-  padding-bottom: 8px;
-  padding-top: 8px;
+
+  padding-bottom: 0px;
+  padding-top: 0px;
   font-size: 16px;
+
   @media (--viewportLarge) {
     padding-bottom: 0;
+    min-height: 40px;
     padding: 0;
     color: var(--colorGrey300);
   }
@@ -18,6 +20,7 @@
 
 .align {
   justify-self: start;
+
   @media (--viewportMedium) {
     justify-self: center;
   }
@@ -25,33 +28,41 @@
 
 .searchBarContainer {
   composes: align;
-  background-color: var(--colorWhite);
+  background-color: #f2f2f2;
   border-color: var(--colorGrey800);
   border-width: 1px;
   color: var(--colorGrey500);
-  border-radius: 8px;
+  border-radius: 10px;
   box-shadow: var(--boxShadowPopup);
   width: calc(100vw - 83px);
-  padding: 0 8px 8px 8px;
+  padding: 11px;
   margin-top: 40px;
+
   @media (--viewportMedium) {
     width: 576px;
+    border-radius: 50px;
   }
+
   @media (--viewportLarge) {
     width: 100%;
-    padding: 8px;
+    padding: 6px 25px 6px 10px;
+    min-height: 68px;
+
     &.gridCol1 {
       width: 576px;
     }
+
     &.gridCol2 {
       width: 768px;
     }
+
     &.gridCol3 {
-      width: 960px;
+      width: 841px;
     }
+
     &.gridCol4 {
-      max-width: 1056px;
-      min-width: 960px;
+      max-width: 841px;
+      min-width: 841px;
     }
   }
 }
@@ -61,29 +72,45 @@
   display: grid;
   justify-content: center;
   align-items: center;
-  & > *:not(:last-child):not(:nth-last-child(2)) {
-    border-bottom: 1px solid var(--colorGrey200);
+  gap: 5px;
+
+  & > * {
+    border: 1px solid #c4c4c4;
+    border-radius: 5px;
   }
+
   @media (--viewportLarge) {
     padding-top: 0;
+
+    & > * {
+      border: 0;
+      border-radius: 0;
+    }
+
     &.gridCol1 {
       grid-template-columns: minmax(0, 1fr) auto;
     }
+
     &.gridCol2 {
       grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
     }
+
     &.gridCol3 {
       grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
     }
+
     &.gridCol4 {
       /* we force the last column to be a fixed width in order to force the form to take the max width it is allowed to take (see .searchBarContainer) */
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(239px, 1fr) auto;
     }
+
     & > *:not(:last-child):not(:nth-last-child(2)) {
-      border-right: 1px solid var(--colorGrey200);
-      border-bottom: none;
-      padding-bottom: 0;
+      /* border-right: 1px solid var(--colorGrey200);
+      border-bottom: none; */
+      border: 0;
+      padding: 0;
     }
+
     > *:last-child {
       justify-self: end;
     }
@@ -99,17 +126,112 @@
 }
 
 .submitButton {
-  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #f74df4;
+  color: #fff;
+
+  font-family: Mulish;
+  font-weight: 600;
+  font-size: 10px;
+  line-height: 22px;
+  letter-spacing: 0%;
+
+  border: none;
+  border-radius: 5px;
+  padding: 10px 25px 10px 15px;
+  height: 30px;
+  margin-left: 0px;
+  cursor: pointer;
+  transition: background 0.2s;
+
   min-width: 86px;
-  padding-left: 16px;
-  padding-right: 16px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  @media (--viewportMedium) {
-    height: 48px;
+  width: 100%;
+
+  &:hover {
+    background: #e14ed0;
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (--viewportMedium) {
+    height: 38px;
+    border-radius: 50px;
+  }
+
   @media (--viewportLarge) {
     max-width: 270px;
+    font-size: 14px;
   }
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & svg {
+    width: 11px;
+    height: 11px;
+    @media (--viewportMedium) {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+.heroTabs {
+  display: flex;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  margin-bottom: -40px;
+
+  @media (max-width: 767px) {
+    border-radius: 8px 8px 0 0;
+    width: 86%;
+  }
+}
+
+.heroTab {
+  padding: 9px 35px;
+  font-size: 22px;
+  font-weight: 600;
+  color: #222;
+  background: #f7f7f7;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border: 1px solid #d3d3d3;
+  border-right: 0;
+
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  @media (max-width: 767px) {
+    padding: 9px 15px;
+    font-size: 10px;
+    flex: 1;
+  }
+}
+
+.heroTab:first-child {
+  border: none;
+}
+
+.heroTab.active {
+  background: #ff5ce7;
+  color: #fff;
 }

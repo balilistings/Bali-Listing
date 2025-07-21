@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
+import { parse } from '../../../../util/urlHelpers';
 
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
@@ -12,6 +13,8 @@ import {
   MenuContent,
   MenuItem,
   NamedLink,
+  IconCollection,
+  Button,
 } from '../../../../components';
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
@@ -149,13 +152,11 @@ const NotSignedInProfileMenu = ({
         </MenuItem>
         <MenuItem key="login">
           <NamedLink className={classNames(css.menuLink, css.loginLink)} name="LoginPage">
-            
             <FormattedMessage id="TopbarDesktop.login" />
           </NamedLink>
         </MenuItem>
         <MenuItem key="signup">
           <NamedLink className={classNames(css.menuLink, css.signupLink)} name="SignupPage">
-       
             <FormattedMessage id="TopbarDesktop.signup" />
           </NamedLink>
         </MenuItem>
@@ -183,6 +184,8 @@ const NotSignedInProfileMenu = ({
  * @param {boolean} props.showSearchForm
  * @param {boolean} props.showCreateListingsLink
  * @param {string} props.inboxTab
+ * @param {Object} props.location
+ * @param {Object} props.history
  * @returns {JSX.Element} search icon
  */
 const TopbarDesktop = props => {
@@ -202,11 +205,49 @@ const TopbarDesktop = props => {
     showSearchForm,
     showCreateListingsLink,
     inboxTab,
+    openCustomFilters,
+    location,
+    history,
   } = props;
   const [mounted, setMounted] = useState(false);
   const [scrollToBottom, setScrollToBottom] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(null);
   const lastScrollState = useRef(false);
   const debounceTimeout = useRef(null);
+
+  // Parse URL parameters to determine active tab
+  const urlParams = parse(location?.search || '');
+  const currentCategoryFromURL = urlParams.pub_categoryLevel1;
+
+  // Update active category when URL changes
+  useEffect(() => {
+    setActiveCategory(currentCategoryFromURL);
+  }, [currentCategoryFromURL]);
+
+  // Define tab categories and their corresponding category IDs
+  const tabCategories = [
+    {
+      id: 'rentalvillas',
+      name: 'Rentals',
+      icon: 'rentals_icon',
+    },
+    {
+      id: 'villaforsale',
+      name: 'For Sale',
+      icon: 'sale_icon',
+    },
+    {
+      id: 'landforsale',
+      name: 'Land',
+      icon: 'icon_Land',
+    },
+  ];
+
+  // Handle tab click to navigate to the appropriate URL
+  const handleTabClick = categoryId => {
+    const newUrl = `/s?pub_categoryLevel1=${categoryId}`;
+    history.push(newUrl);
+  };
 
   // check if user is proffesional and has created a listing already
   // const listingLength = useSelector(state => state.user.totalListingsLength);
@@ -317,7 +358,47 @@ const TopbarDesktop = props => {
           alt={intl.formatMessage({ id: 'TopbarDesktop.logo' }, { marketplaceName })}
           linkToExternalSite={config?.topbar?.logoLink}
         />
-
+        {currentPage == 'search' && (
+          <div className={css.filtersWrapper}>
+            <div className={css.tabs}>
+              {tabCategories.map(category => (
+                <div
+                  key={category.id}
+                  className={classNames(css.tab, {
+                    [css.activeTab]: activeCategory === category.id,
+                  })}
+                  onClick={() => handleTabClick(category.id)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {activeCategory === category.id ? (
+                    <div className={css.tabIcon}>
+                      <IconCollection name={category.icon} />
+                    </div>
+                  ) : null}
+                  <div className={css.tabText}>{category.name}</div>
+                </div>
+              ))}
+            </div>
+            <Button className={css.filtersButton} onClick={openCustomFilters}>
+              <svg
+                width="15"
+                height="14"
+                viewBox="0 0 15 14"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M6.03125 2.50098H13.3438M6.03125 2.50098C6.03125 2.79935 5.91272 3.08549 5.70175 3.29647C5.49077 3.50745 5.20462 3.62598 4.90625 3.62598C4.60788 3.62598 4.32173 3.50745 4.11075 3.29647C3.89978 3.08549 3.78125 2.79935 3.78125 2.50098M6.03125 2.50098C6.03125 2.20261 5.91272 1.91646 5.70175 1.70548C5.49077 1.4945 5.20462 1.37598 4.90625 1.37598C4.60788 1.37598 4.32173 1.4945 4.11075 1.70548C3.89978 1.91646 3.78125 2.20261 3.78125 2.50098M3.78125 2.50098H0.96875M6.03125 11.501H13.3438M6.03125 11.501C6.03125 11.7993 5.91272 12.0855 5.70175 12.2965C5.49077 12.5074 5.20462 12.626 4.90625 12.626C4.60788 12.626 4.32173 12.5074 4.11075 12.2965C3.89978 12.0855 3.78125 11.7993 3.78125 11.501M6.03125 11.501C6.03125 11.2026 5.91272 10.9165 5.70175 10.7055C5.49077 10.4945 5.20462 10.376 4.90625 10.376C4.60788 10.376 4.32173 10.4945 4.11075 10.7055C3.89978 10.9165 3.78125 11.2026 3.78125 11.501M3.78125 11.501H0.96875M10.5312 7.00098H13.3438M10.5312 7.00098C10.5312 7.29935 10.4127 7.58549 10.2017 7.79647C9.99077 8.00745 9.70462 8.12598 9.40625 8.12598C9.10788 8.12598 8.82173 8.00745 8.61075 7.79647C8.39978 7.58549 8.28125 7.29935 8.28125 7.00098M10.5312 7.00098C10.5312 6.70261 10.4127 6.41646 10.2017 6.20548C9.99077 5.9945 9.70462 5.87598 9.40625 5.87598C9.10788 5.87598 8.82173 5.9945 8.61075 6.20548C8.39978 6.41646 8.28125 6.70261 8.28125 7.00098M8.28125 7.00098H0.96875"
+                  stroke="white"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              Filters
+            </Button>
+          </div>
+        )}
         <div className={css.rightMenus}>
           <CustomLinksMenu
             currentPage={currentPage}

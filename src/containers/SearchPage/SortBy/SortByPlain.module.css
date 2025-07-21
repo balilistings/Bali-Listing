@@ -6,16 +6,24 @@
 
 .filterLabel,
 .filterLabelSelected {
-  composes: h3 from global;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  
 
   /* Baseline adjustment for label text */
   margin-top: 0;
-  margin-bottom: 12px;
-  padding: 4px 0 2px 0;
+  margin-bottom: 0px;
+  padding: 0;
 }
 
 .filterLabel {
-  color: var(--colorBlack);
+  color: #231F20;
+ 
 }
 
 .filterLabelSelected {
@@ -29,6 +37,13 @@
   border: none;
   padding: 0;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  & svg{
+    fill: transparent;
+  }
 }
 
 .optionsContainerOpen {

@@ -8,7 +8,7 @@ import { ensureUser, ensureCurrentUser } from '../../../util/data';
 import { propTypes } from '../../../util/types';
 
 import { AvatarLarge, NamedLink, InlineTextButton } from '../../../components';
-
+import IconCollection from '../../../components/IconCollection/IconCollection';
 import css from './UserCard.module.css';
 
 // Approximated collapsed size so that there are ~three lines of text
@@ -145,16 +145,23 @@ const UserCard = props => {
   return (
     <div className={classes}>
       <div className={css.content}>
-        <AvatarLarge className={css.avatar} user={user} />
+        <div className={css.avatarWrapper}>
+          <AvatarLarge className={css.avatar} user={user} />
+          <span className={css.profileBadge}>
+            <IconCollection name="icon_profile_badge" />
+          </span>
+        </div>
         <div className={css.info}>
           <div className={css.headingRow}>
             <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
             {editProfileDesktop}
           </div>
-          {hasBio ? <ExpandableBio className={css.desktopBio} bio={bio} /> : null}
-          {links}
+
+          {/* {links} */}
+          <p className={css.owner}>Owner</p>
         </div>
       </div>
+      {hasBio ? <h5 className={css.aboutTitle}>About:</h5> : null}
       {hasBio ? <ExpandableBio className={css.mobileBio} bio={bio} /> : null}
     </div>
   );

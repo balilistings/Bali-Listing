@@ -86,7 +86,7 @@ import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
-import PropertyDetails from './PropertyDetails.js';
+import SectionTerms from './SectionTerms';
 
 import CleaningIcon from '../../assets/icons/Cleaning.svg';
 import ElectricityIcon from '../../assets/icons/Electricity.svg';
@@ -122,6 +122,19 @@ const SECTIONS = [
   { id: 'listedBy', label: 'Listed By' },
 ];
 
+const prepareSections = isLandforsale => {
+  if (isLandforsale) {
+    return SECTIONS.map(section => {
+      if (section.id === 'amenities') {
+        return { id: 'propertyDetails', label: 'Property Details' };
+      }
+      return section;
+    });
+  }
+
+  return SECTIONS;
+};
+
 export const ListingPageComponent = props => {
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
@@ -133,11 +146,16 @@ export const ListingPageComponent = props => {
     setMounted(true);
   }, []);
 
-  // Scroll to section on tab click
+  // Scroll to section on tab click with offset from top
   const handleTabClick = id => {
     const el = document.getElementById(id);
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({
+        top: elementPosition - 120, // Offset by 200px from top
+        behavior: 'smooth',
+      });
+      setActiveTab(id);
     }
   };
 
@@ -149,7 +167,7 @@ export const ListingPageComponent = props => {
         const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 120) {
+          if (rect.top <= 330) {
             // adjust offset for sticky header if needed
             found = section.id;
           }
@@ -262,7 +280,9 @@ export const ListingPageComponent = props => {
   const isOwnListing =
     userAndListingAuthorAvailable && currentListing.author.id.uuid === currentUser.id.uuid;
 
-  const { listingType, transactionProcessAlias, unitType } = publicData;
+  const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
+  const isLandforsale = categoryLevel1 === 'landforsale';
+
   if (!(listingType && transactionProcessAlias && unitType)) {
     // Listing should always contain listingType, transactionProcessAlias and unitType)
     return (
@@ -552,11 +572,12 @@ export const ListingPageComponent = props => {
                 categoryConfiguration={config.categoryConfiguration}
                 intl={intl}
                 location={publicData?.location?.address}
+                isLandforsale={isLandforsale}
               />
             </div>
 
             <div className={css.tabsConrainer}>
-              {SECTIONS.map(section => (
+              {prepareSections(isLandforsale).map(section => (
                 <button
                   key={section.id}
                   className={classNames(css.tab, { [css.activeTab]: activeTab === section.id })}
@@ -567,36 +588,22 @@ export const ListingPageComponent = props => {
                 </button>
               ))}
             </div>
-            <div id="description">
-              <h4 className={css.descriptionHeading}>Description</h4>
-              <SectionTextMaybe text={description} showAsIngress />
-            </div>
-
-            {/* <div id="amenities">
-              <CustomListingFields
-                publicData={publicData}
-                metadata={metadata}
-                listingFieldConfigs={listingConfig.listingFields}
-                categoryConfiguration={config.categoryConfiguration}
-                intl={intl}
-                currentUser={currentUser}
-              />
-            </div> */}
-
-            {listingCategory !== 'landforsale' && (
-              <div id="amenities">
-                <Amenities title="Amenities" amenitiesData={amenitiesData} />
+            <div className={css.descriptionContainer}>
+              <div id="description">
+                <h4 className={css.descriptionHeading}>Description</h4>
+                <SectionTextMaybe text={description} showAsIngress />
               </div>
-            )}
 
-            {listingCategory == 'rentalvillas' && (
-              <div id="serviceIncluded">
-                <SectionService title="Service Included" services={services} />
+              <div>
+                <CustomListingFields
+                  publicData={publicData}
+                  metadata={metadata}
+                  listingFieldConfigs={listingConfig.listingFields}
+                  categoryConfiguration={config.categoryConfiguration}
+                  intl={intl}
+                  isLandforsale={isLandforsale}
+                />
               </div>
-            )}
-
-            <div id="propertyDetails">
-              <PropertyDetails title={'Property Detail'} details={propertyDetailData} />
             </div>
 
             <div id="location">
@@ -615,7 +622,21 @@ export const ListingPageComponent = props => {
               />
             </div>
 
-            <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
+            <div id={listingCategory !== 'rentalvillas' ? 'saleDetails' : 'rentalTerms'}>
+              <SectionDetails
+                title={listingCategory !== 'rentalvillas' ? 'Sale Details' : 'Rental Terms'}
+                data={listingDetailData}
+              />
+            </div>
+
+            {reviews.length > 0 && (
+              <SectionReviews reviews={reviews} fetchReviewsError={fetchReviewsError} />
+            )}
+
+            <div id="rentalTerms">
+              <SectionTerms publicData={publicData} />
+            </div>
+
             <SectionAuthorMaybe
               title={title}
               listing={currentListing}

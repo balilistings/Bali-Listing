@@ -79,6 +79,7 @@ const PropertyGroup = props => {
     twoColumns,
     showUnselectedOptions,
   } = props;
+
   const classes = classNames(rootClassName || css.root, className);
   const listClasses = twoColumns ? classNames(classes, css.twoColumns) : classes;
 

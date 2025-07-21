@@ -1,16 +1,54 @@
 @import '../../../styles/customMediaQueries.css';
 
-.root {
-}
+.root {}
 
 .content {
   display: flex;
   flex-direction: row;
+  align-items: center;
+}
+
+.avatarWrapper {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  margin-right: 29px;
+
+  @media screen and (max-width: 768px) {
+    width: 41px;
+    height: 41px;
+    margin-right: 10px;
+  }
+}
+
+.profileBadge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+
+  & svg {
+    fill: transparent;
+
+    @media screen and (max-width: 768px) {
+      width: 12px;
+      height: 12px;
+    }
+  }
 }
 
 .avatar {
   flex-shrink: 0;
-  margin-right: 36px;
+  border: 4px solid #FBA6F9;
+  background-color: #ddd;
+  background-image: none;
+
+  @media screen and (max-width: 768px) {
+    width: 41px;
+    height: 41px;
+    border: 2px solid #FBA6F9;
+
+  }
 }
 
 .info {
@@ -23,6 +61,21 @@
 
   @media (--viewportMedium) {
     margin: 0;
+  }
+}
+
+.aboutTitle {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #231F20;
+  margin-top: 40px;
+
+  @media screen and (max-width: 768px) {
+    margin-top: 15px;
+    font-size: 10px;
   }
 }
 
@@ -43,8 +96,30 @@
 }
 
 .mobileBio {
-  @media (--viewportMedium) {
-    display: none;
+  font-family: Mulish;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: #8D8D8D;
+
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.owner {
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  margin: 4px 0 0 0;
+  color: #8D8D8D;
+  padding: 0;
+
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
   }
 }
 
@@ -105,12 +180,17 @@
   @media (--viewportMedium) {
     margin: 16px 0 0 0;
   }
+
+  @media screen and (max-width: 768px) {
+    margin-top: 0px;
+    margin-bottom: 0;
+  }
 }
 
 .withBioMissingAbove {
   @media (--viewportMedium) {
     /* Fix baseline alignment if bio is missing from above */
-    margin-top: 16px;
+    margin-top: 0px;
   }
 }
 
@@ -122,11 +202,21 @@
 .headingRow {
   display: flex;
   flex-direction: column;
+  font-family: Istok Web;
+  font-weight: 700;
+  font-size: 28px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
 
   @media (--viewportMedium) {
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
+  }
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
   }
 }
 

@@ -2,6 +2,9 @@
 
 :global(.image-gallery-thumbnails-container) {
   text-align: right !important;
+  @media screen and (max-width: 768px) {
+    text-align: center !important;
+  }
 }
 
 :global(.image-gallery-thumbnails) {
@@ -38,7 +41,7 @@
   margin-right: 8px;
 
   &:first-child {
-    margin-left: 24px;
+    margin-left: 0px;
 
     @media (--viewportMedium) {
       margin-left: 0;
@@ -46,7 +49,7 @@
   }
 
   &:last-child {
-    margin-right: 24px;
+    margin-right: 0px;
 
     @media (--viewportMedium) {
       margin-right: 0;
@@ -56,6 +59,16 @@
   &:hover,
   &:global(.active) {
     border-color: var(--marketplaceColor);
+  }
+  @media screen and (max-width: 768px) {
+    width: 7px;
+    height: 7px;
+    border: 1px solid #fff !important;
+    background-color: #fff;
+    &:global(.active) {
+
+      background-color: #F74DF4;
+    }
   }
 }
 
@@ -82,6 +95,29 @@
   & :global(.image-gallery-thumbnail) {
     text-align: center !important;
   }
+
+
+& .navLeft,
+& .navRight {
+  position: absolute;
+  width: 60px;
+
+  border: 0;
+  padding: 0;
+  z-index: 1;
+  top: 40%;
+
+  /* center content */
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    cursor: pointer;
+
+
+  }
+}
 }
 
 .root {}
@@ -101,7 +137,7 @@
 }
 
 .itemWrapperFullscreen {
-  height: calc(100vh - 130px);
+  height: calc(100vh - 0px);
 }
 
 .itemCentering {
@@ -126,6 +162,10 @@
   max-width: 97px;
   max-height: 70px;
   border-radius: 10px;
+  @media screen and (max-width: 768px) {
+  display: none;
+    max-height: 56px;
+  }
 }
 
 .navLeft,
@@ -142,7 +182,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
+display: none;
   &:hover {
     cursor: pointer;
 

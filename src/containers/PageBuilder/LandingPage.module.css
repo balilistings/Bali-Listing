@@ -57,7 +57,10 @@
   max-width: 1440px;
   margin: 0 auto;
   & > div {
-    padding: 26px 0 80px;
+    padding: 100px 0 80px;
+    @media (max-width: 767px) {
+      padding: 75px 0;
+    }
   }
   & header {
     @media (max-width: 767px) {
@@ -72,17 +75,17 @@
       text-align: center;
       color: #231f20;
       padding: 0;
-      margin: 30px 0 10px;
+      margin: 0px 0 10px;
       @media (max-width: 767px) {
         font-family: Istok Web;
         font-weight: 700;
-        font-size: 16px;
+        font-size: 18px;
         line-height: 130%;
         letter-spacing: 0%;
         text-align: center;
         max-width: 100%;
         width: 100%;
-        margin: 40px 0 5px;
+        margin: 0px 0 5px;
       }
     }
     & p {
@@ -100,7 +103,7 @@
       @media (max-width: 767px) {
         font-family: Mulish;
         font-weight: 400;
-        font-size: 10px;
+        font-size: 11px;
         line-height: 130%;
         letter-spacing: 0%;
         text-align: center;
@@ -137,6 +140,35 @@
 :global(#different_from) {
   & > div {
     padding: 100px 0;
+    & :global(#different_from-block-1){
+      overflow: hidden;
+      padding-bottom: 75px;
+      @media (max-width: 767px) {
+        padding-bottom: 0px;
+      }
+      & img{
+        text-align: right;
+        transform: translateX(50px) translateY(50px) scale(3.2);
+      
+        object-fit: contain;
+        @media (max-width: 767px) {
+          transform: translateX(20px) translateY(10px) scale(3.2);
+        }
+      }
+    }
+    & :global(#different_from-block-2){ 
+      overflow: hidden;
+      & img{
+        text-align: right;
+        transform: translateX(100px) scale(2.4);
+      
+        object-fit: contain;
+        @media (max-width: 767px) {
+          transform: translateX(50px) translateY(10px) scale(2.2);
+        }
+      }
+    }
+    
     @media (max-width: 767px) {
       padding: 35px 0;
     }
@@ -167,12 +199,12 @@
           background-color: #fff;
           box-shadow: 0px 3.05px 15.24px 0px #0000001a;
           border-radius: 15.24px;
-          padding: 11px 11px 11px 61px;
+          padding: 11px 44px 11px 61px;
           position: absolute;
           right: 16px;
           bottom: 43px;
           @media (max-width: 1023px) {
-            padding: 6px 6px 6px 32px;
+            padding: 6px 44px 6px 32px;
             font-size: 6px;
             border-radius: 8.62px;
             right: 25px;
@@ -199,7 +231,7 @@
           letter-spacing: 0%;
           padding: 0 0 20px;
           @media (max-width: 1200px) {
-            font-size: 14px;
+            font-size: 15px;
             padding: 0 0 8px;
           }
         }
@@ -328,11 +360,29 @@
       line-height: 130%;
       letter-spacing: 0%;
       text-align: center;
-      margin: 0 0 30px;
+      margin: 0 0 10px;
       padding: 0;
+      width: 100%;
+      max-width: 100%;
       @media (max-width: 1023px) {
-        font-size: 16px;
+        font-size: 18px;
+        margin-bottom: 8px;
       }
+    }
+    & p{
+      margin: 0 0 30px;
+      font-family: Mulish;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+letter-spacing: 0%;
+text-align: center;
+color: #8D8D8D;
+padding: 0;
+@media (max-width: 1023px) {
+  font-size: 11px;
+ 
+}
     }
   }
 }
@@ -351,40 +401,37 @@
     padding: 0 20px;
     display: flex;
     flex-direction: column;
-    text-align: left;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
     & h2 {
-      font-family: Mulish;
-      font-weight: 700;
-      font-size: 20px;
-      line-height: 100%;
-      letter-spacing: 0%;
-      text-align: left;
-
-      color: #f74df4;
-      padding: 0;
-      margin: 0px 0 10px;
-      @media (max-width: 1023px) {
-        font-size: 8px;
-        margin: 0px 0 5px;
-      }
-    }
-    & p {
       font-family: Istok Web;
       font-weight: 700;
-      font-size: 30px;
+      font-size: 40px;
       line-height: 130%;
       letter-spacing: 0%;
-
-      text-align: left;
-
-      color: #231f20;
+      text-align: center;
+      margin: 0 0 10px;
       padding: 0;
-      margin: 0px 0 50px;
       @media (max-width: 1023px) {
-        font-size: 16px;
-        margin: 0px 0 0px;
+        font-size: 18px;
       }
     }
+    & p{
+      margin: 0 0 30px;
+      font-family: Mulish;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+letter-spacing: 0%;
+text-align: center;
+color: #8D8D8D;
+padding: 0;
+@media (max-width: 1023px) {
+  font-size: 11px;
+}
+    }
+
   }
 }
 :global(#our_services) {
@@ -431,7 +478,7 @@
           color: #231f20;
           padding: 30px 25px 15px;
           @media (max-width: 1023px) {
-            font-size: 12px;
+            font-size: 14px;
             line-height: 130%;
             padding: 15px 15px 8px;
           }
@@ -447,11 +494,19 @@
           margin: 0;
           padding: 0 25px 6px;
           @media (max-width: 1023px) {
-            font-size: 8px;
+            font-size: 9px;
             padding: 0 15px 6px;
           }
         }
       }
+    }
+  }
+  & img{
+    max-height: 217px;
+    min-height: 217px;
+    @media (max-width: 1023px) {
+      max-height: 133px;
+      min-height: 133px;
     }
   }
   & header {
@@ -469,7 +524,7 @@
       padding: 0;
       margin: 0px auto 10px;
       @media (max-width: 1023px) {
-        font-size: 16px;
+        font-size: 18px;
         margin: 0px auto 5px;
       }
     }
@@ -486,7 +541,7 @@
       margin: 0px 0 50px;
       text-wrap: auto;
       @media (max-width: 1023px) {
-        font-size: 10px;
+        font-size: 11px;
         margin: 0px auto 30px;
       }
     }
@@ -511,11 +566,12 @@
       margin: 0 auto;
       display: block;
       @media (max-width: 1023px) {
-        font-size: 9px;
+        font-size: 10px;
         height: 28px;
         padding: 8px 20px;
         bottom: 75px;
         width: max-content;
+        border-radius: 5px;
       }
       &:hover {
         background: #e14ed0;
@@ -564,7 +620,8 @@
       color: #231f20;
       padding: 0 0 30px;
       @media (max-width: 1023px) {
-        font-size: 14px;
+        font-size: 18px;
+        padding: 0 0 15px;
       }
     }
     & ul {
@@ -573,6 +630,12 @@
       padding-left: 24px;
       & li {
         color: #231f20;
+        &::marker{
+          margin-top: 2px;
+       @media (max-width: 767px) {
+        font-size: 11px;
+       }
+        }
         & p {
           font-family: Mulish;
           font-weight: 400;
@@ -581,8 +644,10 @@
           letter-spacing: 0%;
           color: #8d8d8d;
           @media (max-width: 1023px) {
-            font-size: 9px;
+            font-size: 11px;
+          
           }
+      
           & strong {
             font-family: Mulish;
             font-weight: 700;
@@ -592,7 +657,7 @@
 
             color: #231f20;
             @media (max-width: 1023px) {
-              font-size: 9px;
+              font-size: 11px;
             }
           }
         }

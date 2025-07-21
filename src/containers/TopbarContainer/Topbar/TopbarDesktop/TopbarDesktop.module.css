@@ -27,7 +27,7 @@
   align-items: center;
   flex-direction: row;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .landingLogo {
@@ -50,6 +50,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
 
   100% {
     opacity: 1;
@@ -400,7 +401,8 @@ margin-top: 20px;
   border-top-width: 1px;
   border-top-style: solid;
   border-top-color: var(--colorGrey100);
-
+margin-top: 10px;
+padding-bottom: 0;
   &:hover {
     cursor: pointer;
     color: var(--colorBlack);
@@ -467,6 +469,99 @@ margin-top: 20px;
       & span {
         margin: 0;
       }
+    }
+  }
+}
+
+
+.filtersWrapper{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+width: 100%;
+ 
+  background-color: var(--colorWhite);
+  z-index: 10;
+  margin-top: 0px;
+}
+
+.filtersButton{
+  width: max-content;
+  height: 38px;
+  min-height: 38px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 50px;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  
+}
+
+.tabs{
+  display: flex;
+  /* box-shadow: 0px 4px 10px 0px #0000000D; */
+padding: 5px;
+  border: 1px solid  #F2F2F2;
+
+  border-radius: 20px;
+
+  
+}
+
+.tab{
+padding: 3px 25px;
+display: flex;
+gap: 8px;
+align-items: center;
+&:not(:last-child){
+  border-right: 1px solid #F0F0F0;
+}
+
+}
+
+.tabText{
+  font-family: Mulish;
+font-weight: 700;
+font-style: Bold;
+font-size: 14px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+color: #C4C4C4;
+
+}
+
+.tabIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  & svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.activeTab {
+  
+  & .tabText {
+    color: #231F20;
+  }
+  
+  & .tabIcon {
+    & svg {
+     width: 30px;
+     height: 30px;
     }
   }
 }

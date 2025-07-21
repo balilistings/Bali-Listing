@@ -103,7 +103,11 @@ const SortBy = props => {
     ...mobileClassesMaybe,
     ...rest,
   };
-  return showAsPopup ? <SortByPopup {...componentProps} /> : <SortByPlain {...componentProps} />;
+  return showAsPopup ? (
+    <SortByPopup {...componentProps} mode={mode} />
+  ) : (
+    <SortByPlain {...componentProps} />
+  );
 };
 
 export default SortBy;

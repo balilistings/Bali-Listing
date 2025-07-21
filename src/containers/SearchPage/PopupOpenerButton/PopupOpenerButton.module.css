@@ -4,8 +4,8 @@
 .labelSelected {
   display: inline-block;
   width: auto;
-  height: 35px;
-  min-height: 35px;
+  height: auto;
+  min-height: auto;
 
   padding: 0 18px;
   margin: 0 9px 0 0;
@@ -50,20 +50,31 @@
 
 .label {
   /* Button borders */
-  border: 1px solid var(--colorGrey100);
-  border-radius: var(--borderRadiusMedium);
+  /* border: 1px solid var(--colorGrey100);
+  border-radius: var(--borderRadiusMedium); */
 
   background-color: var(--colorWhite);
+  border: 0 !important;
+  padding: 0;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
 
   &:hover,
   &:focus {
-    border-color: var(--colorGrey300);
+    /* border-color: var(--colorGrey300); */
   }
+
   &:disabled {
-    border-color: var(--colorGrey100);
+    /* border-color: var(--colorGrey100); */
   }
 
   @media (--viewportMedium) {
+
     &:hover,
     &:focus {
       border-color: transparent;
@@ -73,17 +84,27 @@
 
 .labelSelected {
   /* Button borders */
-  border-radius: var(--borderRadiusMedium);
-  border: 1px solid var(--marketplaceColor);
+  /* border-radius: var(--borderRadiusMedium);
+  border: 1px solid var(--marketplaceColor); */
+  border: 0 !important;
+  padding: 0;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
 
   /* Button colors: secondary */
-  background-color: var(--marketplaceColor);
-  color: var(--colorWhite);
+  /* background-color: var(--marketplaceColor); */
+  color: var(--marketplaceColor);
 
   &:hover,
   &:focus {
     border: 1px solid var(--marketplaceColorDark);
   }
+
   &:disabled {
     background-color: var(--colorGrey100);
     color: var(--colorWhite);

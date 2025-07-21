@@ -4,22 +4,54 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: var(--colorGrey50);
+  background-color: #fff;
 
   /* sticky result summary in mobile */
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 3;
+}
+
+.isMapOpen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  z-index: 1000;
+  background-color: #fff;
+
+  & .buttons>*:nth-child(2) {
+    border-right: 0 !important;
+  }
+
+  & .mapIcon {
+    background-color: #FBA6F933;
+    border: 1px solid #F74DF4;
+    border-radius: 20px;
+    height: 34px;
+
+  }
+
 }
 
 .searchResultSummary {
-  composes: h3 from global;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
   margin-top: 6px;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 21px;
 
-  background-color: var(--colorGrey50);
+
 
   @media (--viewportMedium) {
     margin-top: 8px;
@@ -28,6 +60,25 @@
 
 .buttons {
   display: flex;
+  align-items: center;
+  border: 1px solid var(--light-3-background-opsi-1, #F0F0F0);
+  border-radius: 20px;
+  padding: 5px 20px;
+  margin: 0px;
+
+  &>* {
+    flex: 1;
+    padding: 3px 0;
+    @media (max-width: 768px) {
+ 
+      border-radius: 20px;
+      height: 34px;
+    }
+
+    &:not(:last-child) {
+      border-right: 1px solid var(--light-3-background-opsi-1, #F0F0F0) !important;
+    }
+  }
 }
 
 .mapIcon {
@@ -36,20 +87,39 @@
   font-weight: var(--fontWeightMedium);
 
   /* background map image */
-  background-image: url(./images/map_icon216x105.png);
-  background-size: cover;
+  /* background-image: url(./images/map_icon216x105.png);
+  background-size: cover; */
 
   border-radius: 3px;
-  width: 72px;
-  height: 35px;
-  padding: 9px 22px;
+  width: max-content;
+  height: auto;
+  padding: 0;
   margin: 0;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0px;
+
+  & svg {
+    fill: transparent;
+  }
 }
 
 .modalContainer {
   width: 100%;
   padding: 94px 0;
   margin: 0 24px;
+}
+
+.filterIcon {
+  margin-right: 10px;
 }
 
 .modalHeadingWrapper {

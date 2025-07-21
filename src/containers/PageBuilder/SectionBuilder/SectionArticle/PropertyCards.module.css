@@ -31,7 +31,8 @@
 
 .browseAllButton {
   box-shadow: 0px 4px 10px 0px #0000001a;
-  background-color: #f74df4;
+  background-color: #fff;
+
   border-radius: 10px;
   font-family: Mulish;
   font-weight: 700;
@@ -40,17 +41,19 @@
   letter-spacing: 0%;
   height: 41px;
   border: none;
-  color: #fff;
+  border: 1px solid #f74df4;
+  color: #f74df4;
   padding: 10px 20px;
   margin: 0 auto;
   display: block;
+  box-shadow: none;
   @media (max-width: 1023px) {
     font-size: 9px;
     height: 28px;
     padding: 8px 20px;
   }
   &:hover {
-    background: #e14ed0;
+    background: #fff;
   }
 }
 
@@ -182,7 +185,7 @@
   color: #eb2be8;
   font-family: Mulish;
   font-weight: 700;
-  font-size: 8px;
+  font-size: 9px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -197,7 +200,7 @@
   margin-left: auto;
   font-family: Mulish;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 9px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -212,7 +215,7 @@
 .title {
   font-family: Mulish;
   font-weight: 700;
-  font-size: 12px;
+  font-size: 20px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -225,25 +228,33 @@
 
 .location {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0px;
   font-family: Mulish;
   font-weight: 600;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 130%;
   letter-spacing: 0%;
-  text-align: center;
+  text-align: left;
 
   color: #818181;
   margin: 0px;
   @media (max-width: 767px) {
-    font-size: 8px;
+    font-size: 11px;
   }
 }
 
 .locationIcon {
   min-width: 10px;
   margin-right: 3px;
+  @media (max-width: 767px) {
+    width: 11px;
+    height: 11px;
+    & svg{
+      width: 11px;
+      height: 11px;
+    }
+  }
 }
 
 .typeIcon {
@@ -261,7 +272,21 @@
 
   color: #818181;
   @media (max-width: 767px) {
-    font-size: 8px;
+    font-size:11px;
+  }
+}
+
+.locationWrapper{
+  font-family: Mulish;
+  font-weight: 600;
+  font-size: 11px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+
+  color: #818181;
+  @media (max-width: 767px) {
+    font-size:8px;
   }
 }
 
@@ -304,7 +329,7 @@
 .iconItem {
   font-family: Istok Web;
   font-weight: 400;
-  font-size: 7px;
+  font-size: 8px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -360,6 +385,17 @@
     gap: 10px;
     overflow-x: hidden;
     padding: 2px 0;
+    overflow-x: auto;
+    max-width: calc(100vw - 40px);
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    justify-content: flex-start;
+    margin: 0 auto;
+    width: max-content;
+    &::-webkit-scrollbar {
+      display: none;
+      
+    }
   }
 }
 
@@ -384,7 +420,9 @@
   z-index: 1;
   @media (max-width: 767px) {
     padding: 8px;
-    font-size: 9px;
+    font-size:10px;
+    white-space: nowrap;
+ 
   }
 }
 
@@ -406,6 +444,8 @@
   transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   @media (max-width: 767px) {
     height: 30px;
+    bottom: 2px;
+    border-radius: 5px;
   }
 }
 

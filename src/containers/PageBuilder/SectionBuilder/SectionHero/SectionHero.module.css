@@ -19,6 +19,13 @@
     border-radius: 20px;
   }
 }
+
+.heroTitleSpan{
+  @media (max-width: 767px) {
+    display: block;
+  }
+}
+
 .heroLocationInput {
   position: relative;
   & > div {
@@ -52,9 +59,10 @@
   border-radius: 20px 20px 0 0;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  margin-bottom: 0;
+  margin-bottom: -40px;
   @media (max-width: 767px) {
     border-radius: 8px 8px 0 0;
+   
   }
 }
 

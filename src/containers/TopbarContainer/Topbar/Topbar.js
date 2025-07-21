@@ -154,6 +154,7 @@ const TopbarComponent = props => {
     showGenericError,
     config,
     routeConfiguration,
+    openCustomFilters,
   } = props;
 
   const handleSubmit = values => {
@@ -356,6 +357,9 @@ const TopbarComponent = props => {
           showSearchForm={showSearchForm}
           showCreateListingsLink={showCreateListingsLink}
           inboxTab={topbarInboxTab}
+          openCustomFilters={openCustomFilters}
+          location={location}
+          history={history}
         />
       </div>
       <Modal
@@ -432,7 +436,6 @@ const TopbarComponent = props => {
  * @param {Object} props.history
  * @param {Function} props.history.push
  * @param {Object} props.location
- * @param {string} props.location.search '?foo=bar'
  * @returns {JSX.Element} topbar component
  */
 const Topbar = props => {

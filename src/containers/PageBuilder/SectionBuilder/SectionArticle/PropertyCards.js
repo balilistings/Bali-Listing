@@ -9,7 +9,7 @@ import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
-function Icon({ type }) {
+export const Icon = ({ type }) => {
   // Use emoji for demo, replace with SVG/icon in real app
   switch (type) {
     case 'bed':
@@ -147,7 +147,7 @@ function Icon({ type }) {
     default:
       return null;
   }
-}
+};
 
 const tabList = [
   { id: 'denpasar', label: 'Denpasar' },
@@ -209,10 +209,8 @@ const PropertyCards = () => {
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
 
-  console.log('listings', listings);
-
   useEffect(() => {
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       const idx = tabList.findIndex(tab => tab.id === activeTab);
       if (tabRefs.current[idx]) {
         const node = tabRefs.current[idx];
@@ -222,6 +220,8 @@ const PropertyCards = () => {
         });
       }
     }, 10);
+
+    return () => clearTimeout(timeoutId);
   }, [activeTab]);
 
   // const handleLike = idx => {
@@ -326,7 +326,9 @@ const PropertyCards = () => {
           <>
             {listings?.map((card, idx) => {
               const { attributes, images, author } = card;
-              const imagesUrls = images.map(img => img.attributes.variants['landscape-crop2x'].url);
+              const imagesUrls = images.map(
+                img => img.attributes.variants['landscape-crop2x']?.url
+              );
               // Per-card slider settings
               const cardSliderSettings = {
                 ...sliderSettings,
@@ -339,7 +341,7 @@ const PropertyCards = () => {
                 publicData: { pricee, location, propertytype, bedrooms, bathrooms, kitchen, pool },
               } = attributes;
               return (
-                <div className={styles.card} key={card.id}>
+                <div className={styles.card} key={card.id.uuid}>
                   <div className={styles.imageWrapper}>
                     <Slider {...cardSliderSettings} className={styles.slider}>
                       {imagesUrls.map((img, imgIdx) => (
@@ -388,10 +390,12 @@ const PropertyCards = () => {
                     </div>
                     <div className={styles.title}>{title}</div>
                     <div className={styles.location}>
-                      <span className={styles.locationIcon}>
-                        <IconCollection name="locationIcon" />
+                      <span className={styles.locationWrapper}>
+                        <span className={styles.locationIcon}>
+                          <IconCollection name="locationIcon" />
+                        </span>
+                        {location?.address}
                       </span>
-                      {location.address}
                       <span className={styles.typeIcon}>
                         <IconCollection name="typeIcon" />
                       </span>
