@@ -53,6 +53,7 @@ import {
   NamedRedirect,
   OrderPanel,
   LayoutSingleColumn,
+  Amenities,
 } from '../../components';
 import SectionHeading from './SectionHeading';
 
@@ -85,8 +86,29 @@ import SectionAuthorMaybe from './SectionAuthorMaybe';
 import SectionMapMaybe from './SectionMapMaybe';
 import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
+import PropertyDetails from './PropertyDetails.js';
 
+import CleaningIcon from '../../assets/icons/Cleaning.svg';
+import ElectricityIcon from '../../assets/icons/Electricity.svg';
+import PoolIcon from '../../assets/icons/PoolMaintenance.svg';
 import css from './ListingPage.module.css';
+import SectionDetails from './SectionDetails.js';
+import SectionService from './SectionService.js';
+
+import livingIcon from '../../assets/icons/Living.svg';
+import furnishedIcon from '../../assets/icons/Furnished.svg';
+import landSize from '../../assets/icons/landSize.svg';
+import landTitle from '../../assets/icons/landTitle.svg';
+import buidingSize from '../../assets/icons/buidingSize.svg';
+
+import Wifi from '../../assets/Wifi.svg';
+import PetFriendly from '../../assets/petFriendly.svg';
+import Kitchen from '../../assets/kitchen.svg';
+import Pool from '../../assets/pool.svg';
+import WorkingDesk from '../../assets/workingDesk.svg';
+import AirConditioner from '../../assets/airConditioning.svg';
+import CarParking from '../../assets/carParking.svg';
+import Gym from '../../assets/Gym.svg';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -163,6 +185,8 @@ export const ListingPageComponent = props => {
     showOwnListingsOnly,
     ...restOfProps
   } = props;
+
+  console.log('props in ListingPageCarousel', props);
 
   const listingConfig = config.listing;
   const listingId = new UUID(rawParams.id);
@@ -327,6 +351,95 @@ export const ListingPageComponent = props => {
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
+  const listingCategory = publicData.categoryLevel1;
+  const services = [
+    {
+      icon: CleaningIcon,
+      label: 'Cleaning',
+      description: '2x Weekly cleaning',
+      included: true,
+    },
+    {
+      icon: ElectricityIcon,
+      label: 'Electricity',
+      included: true,
+    },
+    {
+      icon: PoolIcon,
+      label: 'Pool maintenance',
+      included: false,
+    },
+  ];
+
+  const propertyRental = [
+    { label: 'Living', value: 'Open', icon: livingIcon },
+    { label: 'Furnished', value: 'Yes', icon: furnishedIcon },
+  ];
+  const propertySale = [
+    { label: 'Living', value: 'Open', icon: livingIcon },
+    { label: 'Furnished', value: 'Yes', icon: furnishedIcon },
+    { label: 'Buiding Size', value: '1000 m2', icon: buidingSize },
+    { label: 'Land Size', value: '1000 m2', icon: landSize },
+  ];
+  const propertyLand = [
+    { label: 'Land Size', value: '1000 m2', icon: landSize },
+    {
+      label: 'Land Title',
+      value: `Right to Ownership over Stacked Units\n 
+    (Hak Milik Atas Satuan Rumah Susun)`,
+      icon: landTitle,
+    },
+  ];
+
+  const propertyDetailData =
+    listingCategory === 'villaforsale'
+      ? propertySale
+      : listingCategory === 'landforsale'
+      ? propertyLand
+      : listingCategory === 'rentalvillas'
+      ? propertyRental
+      : null;
+
+  const rentalData = [
+    {
+      label: 'Minimum rental period:',
+      value: '3 months Minimum stay',
+    },
+    {
+      label: 'Payment terms:',
+      value: '3 months upfront + 1 month deposit',
+    },
+    {
+      label: 'Cancellation policy:',
+      value: '1-month notice required',
+    },
+  ];
+
+  const saleDataProperty = [
+    { label: 'Lease duration', value: '30 years' },
+    { label: 'Payment terms:', value: '3 months upfront + 1 month deposit' },
+  ];
+
+  const saleDataLand = [{ label: 'Payment terms', value: '3 months upfront + 1 month deposit' }];
+  const amenitiesData = [
+    { id: 1, icon: Wifi },
+    { id: 2, icon: Pool },
+    { id: 3, icon: Gym },
+    { id: 4, icon: PetFriendly },
+    { id: 5, icon: WorkingDesk },
+    { id: 6, icon: CarParking },
+    { id: 7, icon: Kitchen },
+    { id: 8, icon: AirConditioner },
+  ];
+  const listingDetailData =
+    listingCategory === 'villaforsale'
+      ? saleDataProperty
+      : listingCategory === 'landforsale'
+      ? saleDataLand
+      : listingCategory === 'rentalvillas'
+      ? rentalData
+      : null;
+
   return (
     <Page
       title={schemaTitle}
@@ -459,7 +572,7 @@ export const ListingPageComponent = props => {
               <SectionTextMaybe text={description} showAsIngress />
             </div>
 
-            <div id="amenities">
+            {/* <div id="amenities">
               <CustomListingFields
                 publicData={publicData}
                 metadata={metadata}
@@ -468,6 +581,22 @@ export const ListingPageComponent = props => {
                 intl={intl}
                 currentUser={currentUser}
               />
+            </div> */}
+
+            {listingCategory !== 'landforsale' && (
+              <div id="amenities">
+                <Amenities title="Amenities" amenitiesData={amenitiesData} />
+              </div>
+            )}
+
+            {listingCategory == 'rentalvillas' && (
+              <div id="serviceIncluded">
+                <SectionService title="Service Included" services={services} />
+              </div>
+            )}
+
+            <div id="propertyDetails">
+              <PropertyDetails title={'Property Detail'} details={propertyDetailData} />
             </div>
 
             <div id="location">
@@ -476,6 +605,13 @@ export const ListingPageComponent = props => {
                 publicData={publicData}
                 listingId={currentListing.id}
                 mapsConfig={config.maps}
+              />
+            </div>
+
+            <div id={listingCategory !== 'rentalvillas' ? 'saleDetails' : 'rentalTerms'}>
+              <SectionDetails
+                title={listingCategory !== 'rentalvillas' ? 'Sale Details' : 'Rental Terms'}
+                data={listingDetailData}
               />
             </div>
 
@@ -577,7 +713,6 @@ const EnhancedListingPage = props => {
   const isVariant = props.params?.variant != null;
   const currentUser = props.currentUser;
 
-  // console.log('currentUser', currentUser);
   if (isForbiddenError(showListingError) && !isVariant && !currentUser) {
     // This can happen if private marketplace mode is active
     return (

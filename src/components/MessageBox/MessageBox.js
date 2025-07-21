@@ -1,5 +1,5 @@
 import React from 'react';
-import css from './MessageBox.module.css'; // CSS opsional untuk gaya
+import css from './MessageBox.module.css';
 import { PrimaryButton } from '../Button/Button';
 
 const MessageBox = ({ message, onConfirm, onCancel }) => {

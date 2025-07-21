@@ -64,6 +64,8 @@ export {default as ImageUploader} from '../components/ImageUploader/ImageUploade
 export { default as WhatsAppButton } from '../components/WhatsAppButton/WhatsAppButton';
 export { default as Dropdown } from '../components/Dropdown/Dropdown';
 export { default as MessageBox} from '../components/MessageBox/MessageBox';
+export { default as ShareOptions } from '../components/ShareOptions/ShareOptions';
+export {default as Amenities} from './Amenities/Amenities';
 /**
  * Composite components
  * These components include other components

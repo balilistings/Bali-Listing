@@ -24,6 +24,153 @@
   }
 }
 
+/* Wrapper untuk tombol Favorite + Share */
+.iconButtonsWrapper {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 99;
+}
+
+/* Tombol Favorite */
+.favoriteButton {
+  background: rgba(250, 235, 215, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: scale(1);
+  color: white;
+}
+
+/* Tombol Share */
+.shareButton {
+  background: rgba(255, 255, 255, 0.5);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect */
+.favoriteButton:hover,
+.shareButton:hover {
+  background: white;
+  transform: scale(1.1);
+  color: white;
+}
+
+/* Ikon Share */
+.shareIcon {
+  width: 32px;
+  height: 32px;
+}
+
+/* Ikon Favorite */
+.favoriteIcon {
+  width: 32px;
+  height: 32px;
+}
+
+/* State ketika diklik/like */
+.favoriteButton.liked {
+  background: rgba(255, 105, 180, 0.8) !important;
+}
+
+.favoriteButton.liked:hover {
+  background: rgba(255, 105, 180, 0.9) !important;
+}
+
+/* Efek klik */
+.favoriteButton.clicked {
+  animation: clickPulse 0.6s ease;
+}
+
+@keyframes clickPulse {
+  0% {
+    transform: scale(1);
+    background: white;
+  }
+  50% {
+    transform: scale(1.2);
+    background: white;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.shareWrapper {
+  position: relative;
+}
+
+.shareMenu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.shareMenu a,
+.shareMenu button {
+  font-size: 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  padding: 4px 8px;
+  color: #333;
+}
+
+.successTooltip,
+.errorTooltip {
+  position: absolute;
+  top: 0%;
+  margin-bottom: 6px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 3;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+}
+
+.successTooltip {
+  background-color: #FF4FF7; 
+  color: white;
+}
+
+
+.shareMenu a:hover,
+.shareMenu button:hover {
+  background: #f3f3f3;
+  border-radius: 4px;
+}
+
+.shareOptions{
+  position: absolute;
+}
+
 .rootForImage {
   border: solid 1px var(--colorGrey100);
   border-radius: var(--borderRadiusMedium);

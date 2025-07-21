@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
+import FaviconIcon from '../../assets/favicon.svg';
+import ShareIcon from '../../assets/ShareIcon.svg';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -12,7 +14,7 @@ import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { isBookingProcessAlias } from '../../transactions/transaction';
 
-import { AspectRatioWrapper, NamedLink, ResponsiveImage } from '../../components';
+import { AspectRatioWrapper, NamedLink, ResponsiveImage, ShareOptions } from '../../components';
 
 import css from './ListingCard.module.css';
 
@@ -128,6 +130,38 @@ export const ListingCard = props => {
       }
     : null;
 
+  const [clicked, setClicked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+
+  const handleEditClick = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLiked(!isLiked);
+    setClicked(true);
+    setAnimateHeart(true);
+
+    setTimeout(() => {
+      setAnimateHeart(false);
+    }, 400);
+    if (onEditClick) {
+      onEditClick(currentListing);
+    }
+  };
+
+  const handleShareClick = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowShareOptions(true);
+    const url = window.location.origin + `/l/${createSlug(title)}/${listing.id.uuid}`;
+    setShareUrl(url);
+  };
+
+  const handleCloseShare = () => {
+    setShowShareOptions(false);
+  };
+
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
       <AspectRatioWrapper
@@ -136,6 +170,38 @@ export const ListingCard = props => {
         height={aspectHeight}
         {...setActivePropsMaybe}
       >
+        <div className={css.iconButtonsWrapper}>
+          {/* Share Button */}
+          <div className={css.shareWrapper}>
+            <button
+              className={css.shareButton}
+              onClick={handleShareClick}
+              type="button"
+              aria-label="Share listing"
+            >
+              <img src={ShareIcon} alt="Share" width="20" height="20" className={css.shareIcon} />
+            </button>
+          </div>
+
+          {/* Favorite Button */}
+          <button
+            className={`${css.favoriteButton} ${clicked ? css.clicked : ''} ${
+              isLiked ? css.liked : ''
+            }`}
+            onClick={handleEditClick}
+            type="button"
+            aria-label="Favorite listing"
+          >
+            <img
+              src={FaviconIcon}
+              alt="Favorite"
+              width="20"
+              height="20"
+              className={css.favoriteIcon}
+            />
+          </button>
+        </div>
+
         <LazyImage
           rootClassName={css.rootForImage}
           alt={title}
@@ -160,6 +226,14 @@ export const ListingCard = props => {
           ) : null}
         </div>
       </div>
+      {/* ShareOptions positioned at center of screen */}
+      {showShareOptions && (
+        <ShareOptions
+          className={css.shareOptionsModal}
+          shareUrl={shareUrl}
+          onClose={handleCloseShare}
+        />
+      )}
     </NamedLink>
   );
 };
