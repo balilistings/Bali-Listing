@@ -15,8 +15,12 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
+<<<<<<< HEAD
   color: #F74DF4;
 
+=======
+  color: #f74df4;
+>>>>>>> fcf48ec88585dbc24bd0684db2d9276e5a81a28f
   @media (--viewportMedium) {
     font-size: 14px;
   }
@@ -28,20 +32,26 @@
     box-shadow: none;
   }
 
-  &:hover::placeholder,
+  &:hover::placeholder  {
+    color: #d3d3d3;
+    transition: 0.1s all;
+    font-weight: 400;
+  }
+
   &:focus::placeholder {
-    color: #D3D3D3;
+    color: #f74df4;
     transition: 0.1s all;
     font-weight: 400;
   }
 
   &::placeholder {
-    color: #D3D3D3;
+    color: #d3d3d3;
     transition: 0.1s all;
     font-weight: 400;
   }
 
-  @media (--viewportMedium) {}
+  @media (--viewportMedium) {
+  }
 }
 
 .inputWithCurrentLocation {
@@ -76,7 +86,6 @@
 }
 
 .root {
-
   height: 36px;
 
   @media (--viewportMedium) {
@@ -131,7 +140,7 @@
     left: 0 !important;
     right: 0 !important;
     height: 100%;
-    background: #0000004D;
+    background: #0000004d;
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -143,8 +152,12 @@
     width: 100% !important;
     transform: unset;
     padding-bottom: 0 !important;
+<<<<<<< HEAD
 
     &>ul {
+=======
+    & > ul {
+>>>>>>> fcf48ec88585dbc24bd0684db2d9276e5a81a28f
       background-color: white;
       max-width: 574px;
       max-height: 95vh;
@@ -159,7 +172,10 @@
       min-height: 65vh;
       display: flex;
       flex-direction: column;
+<<<<<<< HEAD
 
+=======
+>>>>>>> fcf48ec88585dbc24bd0684db2d9276e5a81a28f
     }
   }
 }
