@@ -15,12 +15,8 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-<<<<<<< HEAD
   color: #F74DF4;
 
-=======
-  color: #f74df4;
->>>>>>> fcf48ec88585dbc24bd0684db2d9276e5a81a28f
   @media (--viewportMedium) {
     font-size: 14px;
   }
