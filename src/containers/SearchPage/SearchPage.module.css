@@ -257,7 +257,7 @@
 
 .listingsForMapVariant {
   composes: listings;
-  padding: 0 10px;
+  padding: 0 0px;
 
   @media (--viewportLarge) {
     padding: 0 23px;
