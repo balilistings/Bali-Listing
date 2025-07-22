@@ -240,10 +240,7 @@ const PriceDropdown = ({
               {isMobile && (
                 <div className={css.showButtonContainer}>
                   <button type="button" className={css.showButton} onClick={closeDropdown}>
-                    <FormattedMessage
-                      id="PageBuilder.SearchCTA.PriceFilter.showButton"
-                      values={{ count: 574 }}
-                    />
+                    Save
                   </button>
                 </div>
               )}
