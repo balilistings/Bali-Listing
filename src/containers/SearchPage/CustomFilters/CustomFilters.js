@@ -80,6 +80,13 @@ const initialiseHostType = () => {
   }
 };
 
+const initialiseTenure = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_Freehold') || null;
+  }
+};
+
 const initialiseAvailability = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
@@ -165,7 +172,7 @@ function CustomFilters({
   const [selectedService, setSelectedService] = useState(null);
   const [selectedPropertyDetail, setSelectedPropertyDetail] = useState(initialisePropertyDetail);
   const [selectedHostType, setSelectedHostType] = useState(initialiseHostType);
-  const [selectedTenure, setSelectedTenure] = useState(null);
+  const [selectedTenure, setSelectedTenure] = useState(initialiseTenure);
   const [selectedLandTitles, setSelectedLandTitles] = useState([]);
   const [selectedLandZones, setSelectedLandZones] = useState([]);
   const history = useHistory();
@@ -375,10 +382,16 @@ function CustomFilters({
   };
 
   const handleTenureChange = tenure => {
+    onUpdateCurrentQueryParams({
+      pub_Freehold: tenure,
+    });
     setSelectedTenure(tenure);
   };
 
   const handleTenureReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_Freehold: null,
+    });
     setSelectedTenure(null);
   };
 
