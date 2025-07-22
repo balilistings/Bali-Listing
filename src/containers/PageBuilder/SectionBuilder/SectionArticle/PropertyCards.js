@@ -459,7 +459,7 @@ const PropertyCards = () => {
                         {location?.address}
                       </span>
                     </div>
-                    <div className={styles.description}>{description}</div>
+                    {/* <div className={styles.description}>{description}</div> */}
                     <div className={styles.bottomContent}>
                     <div className={styles.icons}>
                       {showPills && (

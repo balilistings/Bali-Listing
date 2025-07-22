@@ -99,16 +99,30 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
               <div className={css.currentLocationText}>
                 <FormattedMessage id="LocationAutocompleteInput.currentLocation" />
               </div>
-              <div className={css.currentLocationSubtext}>
-                Discover listings near you
-              </div>
+              <div className={css.currentLocationSubtext}>Discover listings near you</div>
             </div>
           </div>
         ) : (
           <>
-            <svg width="20" height="24" viewBox="0 0 20 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fillRule="evenodd" clipRule="evenodd" d="M10 6.09717C7.79086 6.09717 6 7.91704 6 10.162C6 12.4069 7.79086 14.2268 10 14.2268C12.2091 14.2268 14 12.4069 14 10.162C14 7.91704 12.2091 6.09717 10 6.09717ZM8 10.162C8 9.0395 8.89543 8.12957 10 8.12957C11.1046 8.12957 12 9.0395 12 10.162C12 11.2844 11.1046 12.1944 10 12.1944C8.89543 12.1944 8 11.2844 8 10.162Z" fill="#6B7280" />
-              <path fillRule="evenodd" clipRule="evenodd" d="M17.0711 2.97637C13.1658 -0.992124 6.83417 -0.992124 2.92893 2.97637C-0.97631 6.94487 -0.97631 13.3791 2.92893 17.3476L9.10433 23.623C9.59899 24.1257 10.401 24.1257 10.8957 23.623L17.0711 17.3476C20.9763 13.3791 20.9763 6.94487 17.0711 2.97637ZM4.34315 4.41349C7.46734 1.2387 12.5327 1.2387 15.6569 4.41349C18.781 7.58829 18.781 12.7357 15.6569 15.9105L10 21.6589L4.34315 15.9105C1.21895 12.7357 1.21895 7.58829 4.34315 4.41349Z" fill="#6B7280" />
+            <svg
+              width="20"
+              height="24"
+              viewBox="0 0 20 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M10 6.09717C7.79086 6.09717 6 7.91704 6 10.162C6 12.4069 7.79086 14.2268 10 14.2268C12.2091 14.2268 14 12.4069 14 10.162C14 7.91704 12.2091 6.09717 10 6.09717ZM8 10.162C8 9.0395 8.89543 8.12957 10 8.12957C11.1046 8.12957 12 9.0395 12 10.162C12 11.2844 11.1046 12.1944 10 12.1944C8.89543 12.1944 8 11.2844 8 10.162Z"
+                fill="#6B7280"
+              />
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M17.0711 2.97637C13.1658 -0.992124 6.83417 -0.992124 2.92893 2.97637C-0.97631 6.94487 -0.97631 13.3791 2.92893 17.3476L9.10433 23.623C9.59899 24.1257 10.401 24.1257 10.8957 23.623L17.0711 17.3476C20.9763 13.3791 20.9763 6.94487 17.0711 2.97637ZM4.34315 4.41349C7.46734 1.2387 12.5327 1.2387 15.6569 4.41349C18.781 7.58829 18.781 12.7357 15.6569 15.9105L10 21.6589L4.34315 15.9105C1.21895 12.7357 1.21895 7.58829 4.34315 4.41349Z"
+                fill="#6B7280"
+              />
             </svg>
             {geocoder.getPredictionAddress(prediction)}
           </>
@@ -129,12 +143,29 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
   return (
     <div className={classes} ref={ref}>
       <ul className={css.predictions}>
-        <li className={css.menuItemMobile} >
+        <li className={css.menuItemMobile}>
           <h2 className={css.menuItemMobileTitle}>
             <span className={css.menuItemMobileTitleIcon}>
-              <svg width="14" height="16" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.655 15.2633L6.7075 15.2933L6.7285 15.3053C6.81177 15.3503 6.90495 15.3739 6.99963 15.3739C7.0943 15.3739 7.18748 15.3503 7.27075 15.3053L7.29175 15.294L7.345 15.2633C7.63834 15.0893 7.92457 14.9037 8.203 14.7067C8.92381 14.1979 9.59728 13.625 10.2153 12.9952C11.6733 11.5027 13.1875 9.26025 13.1875 6.375C13.1875 4.73397 12.5356 3.16016 11.3752 1.99978C10.2148 0.839395 8.64103 0.1875 7 0.1875C5.35897 0.1875 3.78516 0.839395 2.62478 1.99978C1.4644 3.16016 0.8125 4.73397 0.8125 6.375C0.8125 9.2595 2.3275 11.5027 3.78475 12.9952C4.40248 13.625 5.07571 14.1978 5.79625 14.7067C6.07493 14.9037 6.36141 15.0893 6.655 15.2633ZM7 8.625C7.59674 8.625 8.16903 8.38795 8.59099 7.96599C9.01295 7.54403 9.25 6.97174 9.25 6.375C9.25 5.77826 9.01295 5.20597 8.59099 4.78401C8.16903 4.36205 7.59674 4.125 7 4.125C6.40326 4.125 5.83097 4.36205 5.40901 4.78401C4.98705 5.20597 4.75 5.77826 4.75 6.375C4.75 6.97174 4.98705 7.54403 5.40901 7.96599C5.83097 8.38795 6.40326 8.625 7 8.625Z" fill="#4D4D4D" />
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M6.655 15.2633L6.7075 15.2933L6.7285 15.3053C6.81177 15.3503 6.90495 15.3739 6.99963 15.3739C7.0943 15.3739 7.18748 15.3503 7.27075 15.3053L7.29175 15.294L7.345 15.2633C7.63834 15.0893 7.92457 14.9037 8.203 14.7067C8.92381 14.1979 9.59728 13.625 10.2153 12.9952C11.6733 11.5027 13.1875 9.26025 13.1875 6.375C13.1875 4.73397 12.5356 3.16016 11.3752 1.99978C10.2148 0.839395 8.64103 0.1875 7 0.1875C5.35897 0.1875 3.78516 0.839395 2.62478 1.99978C1.4644 3.16016 0.8125 4.73397 0.8125 6.375C0.8125 9.2595 2.3275 11.5027 3.78475 12.9952C4.40248 13.625 5.07571 14.1978 5.79625 14.7067C6.07493 14.9037 6.36141 15.0893 6.655 15.2633ZM7 8.625C7.59674 8.625 8.16903 8.38795 8.59099 7.96599C9.01295 7.54403 9.25 6.97174 9.25 6.375C9.25 5.77826 9.01295 5.20597 8.59099 4.78401C8.16903 4.36205 7.59674 4.125 7 4.125C6.40326 4.125 5.83097 4.36205 5.40901 4.78401C4.98705 5.20597 4.75 5.77826 4.75 6.375C4.75 6.97174 4.98705 7.54403 5.40901 7.96599C5.83097 8.38795 6.40326 8.625 7 8.625Z" fill="black" fill-opacity="0.2" />
+              <svg
+                width="14"
+                height="16"
+                viewBox="0 0 14 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M6.655 15.2633L6.7075 15.2933L6.7285 15.3053C6.81177 15.3503 6.90495 15.3739 6.99963 15.3739C7.0943 15.3739 7.18748 15.3503 7.27075 15.3053L7.29175 15.294L7.345 15.2633C7.63834 15.0893 7.92457 14.9037 8.203 14.7067C8.92381 14.1979 9.59728 13.625 10.2153 12.9952C11.6733 11.5027 13.1875 9.26025 13.1875 6.375C13.1875 4.73397 12.5356 3.16016 11.3752 1.99978C10.2148 0.839395 8.64103 0.1875 7 0.1875C5.35897 0.1875 3.78516 0.839395 2.62478 1.99978C1.4644 3.16016 0.8125 4.73397 0.8125 6.375C0.8125 9.2595 2.3275 11.5027 3.78475 12.9952C4.40248 13.625 5.07571 14.1978 5.79625 14.7067C6.07493 14.9037 6.36141 15.0893 6.655 15.2633ZM7 8.625C7.59674 8.625 8.16903 8.38795 8.59099 7.96599C9.01295 7.54403 9.25 6.97174 9.25 6.375C9.25 5.77826 9.01295 5.20597 8.59099 4.78401C8.16903 4.36205 7.59674 4.125 7 4.125C6.40326 4.125 5.83097 4.36205 5.40901 4.78401C4.98705 5.20597 4.75 5.77826 4.75 6.375C4.75 6.97174 4.98705 7.54403 5.40901 7.96599C5.83097 8.38795 6.40326 8.625 7 8.625Z"
+                  fill="#4D4D4D"
+                />
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M6.655 15.2633L6.7075 15.2933L6.7285 15.3053C6.81177 15.3503 6.90495 15.3739 6.99963 15.3739C7.0943 15.3739 7.18748 15.3503 7.27075 15.3053L7.29175 15.294L7.345 15.2633C7.63834 15.0893 7.92457 14.9037 8.203 14.7067C8.92381 14.1979 9.59728 13.625 10.2153 12.9952C11.6733 11.5027 13.1875 9.26025 13.1875 6.375C13.1875 4.73397 12.5356 3.16016 11.3752 1.99978C10.2148 0.839395 8.64103 0.1875 7 0.1875C5.35897 0.1875 3.78516 0.839395 2.62478 1.99978C1.4644 3.16016 0.8125 4.73397 0.8125 6.375C0.8125 9.2595 2.3275 11.5027 3.78475 12.9952C4.40248 13.625 5.07571 14.1978 5.79625 14.7067C6.07493 14.9037 6.36141 15.0893 6.655 15.2633ZM7 8.625C7.59674 8.625 8.16903 8.38795 8.59099 7.96599C9.01295 7.54403 9.25 6.97174 9.25 6.375C9.25 5.77826 9.01295 5.20597 8.59099 4.78401C8.16903 4.36205 7.59674 4.125 7 4.125C6.40326 4.125 5.83097 4.36205 5.40901 4.78401C4.98705 5.20597 4.75 5.77826 4.75 6.375C4.75 6.97174 4.98705 7.54403 5.40901 7.96599C5.83097 8.38795 6.40326 8.625 7 8.625Z"
+                  fill="black"
+                  fill-opacity="0.2"
+                />
               </svg>
             </span>
             Location
@@ -142,20 +173,16 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
           <span className={css.closeIcon} onClick={onCloseDropdown}>
             <IconCollection name="close_icon" />
           </span>
-
         </li>
-        <li className={css.searchInputMobile}>
-          {dropdownInput}
-        </li>
+        <li className={css.searchInputMobile}>{dropdownInput}</li>
         {predictions.map(item)}
-        <li className={classNames(css.menuItemMobile, css.footerWrapper)} style={{paddingBottom:0}}>
+        <li
+          className={classNames(css.menuItemMobile, css.footerWrapper)}
+          style={{ paddingBottom: 0 }}
+        >
           <div className={css.footer}>
-            <button className={css.resetButton}>
-              Reset All
-            </button>
-            <button className={css.showListingsButton}>
-              Next
-            </button>
+            <button className={css.resetButton}>Reset All</button>
+            <button className={css.showListingsButton}>Next</button>
           </div>
         </li>
       </ul>
@@ -206,6 +233,7 @@ class LocationAutocompleteInputImplementation extends Component {
     this.handlePredictionsSelectEnd = this.handlePredictionsSelectEnd.bind(this);
     this.finalizeSelection = this.finalizeSelection.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this); // NEW: bind
+    this.handleReset = this.handleReset.bind(this);
 
     // Debounce the method to avoid calling the API too many times
     // when the user is typing fast.
@@ -227,10 +255,7 @@ class LocationAutocompleteInputImplementation extends Component {
 
   handleClickOutside(event) {
     if (!this.state.dropdownOpen) return;
-    if (
-      this.dropdownRef.current &&
-      !this.dropdownRef.current.contains(event.target)
-    ) {
+    if (this.dropdownRef.current && !this.dropdownRef.current.contains(event.target)) {
       this.setState({ dropdownOpen: false, inputHasFocus: false });
     }
   }
@@ -291,6 +316,16 @@ class LocationAutocompleteInputImplementation extends Component {
     } else if (e.keyCode === KEY_CODE_ESC && this.input) {
       this.input.blur();
     }
+  }
+
+  handleReset() {
+    console.log('calleddddd');
+    this.props.input.onChange({
+      search: '',
+      predictions: [],
+      selectedPlace: null,
+    });
+    this.setState({ highlightedIndex: -1 });
   }
 
   // Handle input text change, fetch predictions if the value isn't empty
@@ -362,6 +397,7 @@ class LocationAutocompleteInputImplementation extends Component {
     this.props.input.onChange({
       ...this.props.input,
       selectedPlace: null,
+      predictions: this.props.input.value?.predictions || [],
     });
 
     this.setState({ fetchingPlaceDetails: true });
@@ -376,7 +412,7 @@ class LocationAutocompleteInputImplementation extends Component {
         this.setState({ fetchingPlaceDetails: false });
         this.props.input.onChange({
           search: place.address,
-          predictions: [],
+          predictions: this.props.input.value?.predictions || [],
           selectedPlace: place,
         });
       })
@@ -456,7 +492,8 @@ class LocationAutocompleteInputImplementation extends Component {
     if (
       this.dropdownRef &&
       this.dropdownRef.current &&
-      e && e.relatedTarget &&
+      e &&
+      e.relatedTarget &&
       this.dropdownRef.current.contains(e.relatedTarget)
     ) {
       return;
@@ -523,6 +560,7 @@ class LocationAutocompleteInputImplementation extends Component {
       disabled,
       config,
       Searchicon,
+      showCrossIcon,
     } = this.props;
     const { name, onFocus } = input;
     const { search } = currentValue(this.props);
@@ -542,7 +580,11 @@ class LocationAutocompleteInputImplementation extends Component {
       this.setState({ dropdownOpen: false, inputHasFocus: false });
     };
 
-    const rootClass = classNames(rootClassName || css.root, className, this.state.inputHasFocus && css.inputHasFocus);
+    const rootClass = classNames(
+      rootClassName || css.root,
+      className,
+      this.state.inputHasFocus && css.inputHasFocus
+    );
     const iconClass = classNames(iconClassName || css.icon);
     const inputClass = classNames(inputClassName || css.input, { [validClassName]: isValid });
     const predictionsClass = classNames(predictionsClassName);
@@ -556,16 +598,16 @@ class LocationAutocompleteInputImplementation extends Component {
     const refMaybe =
       typeof inputRef === 'function'
         ? {
-          ref: node => {
-            this.input = node;
-            if (inputRef) {
-              inputRef(node);
-            }
-          },
-        }
+            ref: node => {
+              this.input = node;
+              if (inputRef) {
+                inputRef(node);
+              }
+            },
+          }
         : inputRef
-          ? { ref: inputRef }
-          : {};
+        ? { ref: inputRef }
+        : {};
 
     return (
       <div className={rootClass} ref={this.dropdownRef}>
@@ -579,12 +621,37 @@ class LocationAutocompleteInputImplementation extends Component {
           )}
         </div> */}
         <div>
-          {Searchicon ? <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path fillRule="evenodd" clipRule="evenodd" d="M6.875 1.81242C6.21018 1.81242 5.55188 1.94336 4.93766 2.19778C4.32345 2.45219 3.76537 2.82509 3.29527 3.29519C2.82518 3.76529 2.45227 4.32337 2.19786 4.93758C1.94345 5.55179 1.8125 6.2101 1.8125 6.87492C1.8125 7.53973 1.94345 8.19804 2.19786 8.81225C2.45227 9.42646 2.82518 9.98455 3.29527 10.4546C3.76537 10.9247 4.32345 11.2976 4.93766 11.5521C5.55188 11.8065 6.21018 11.9374 6.875 11.9374C8.21766 11.9374 9.50533 11.404 10.4547 10.4546C11.4041 9.50524 11.9375 8.21758 11.9375 6.87492C11.9375 5.53226 11.4041 4.24459 10.4547 3.29519C9.50533 2.34579 8.21766 1.81242 6.875 1.81242ZM0.6875 6.87492C0.687631 5.88124 0.92708 4.90221 1.38559 4.02064C1.8441 3.13907 2.50819 2.3809 3.32168 1.81026C4.13516 1.23961 5.07412 0.873285 6.05912 0.74226C7.04412 0.611235 8.04619 0.719366 8.98057 1.05751C9.91494 1.39565 10.7541 1.95386 11.4272 2.68491C12.1002 3.41596 12.5872 4.29835 12.8471 5.25744C13.107 6.21653 13.1321 7.2241 12.9202 8.19493C12.7084 9.16576 12.2658 10.0713 11.63 10.8349L15.1475 14.3524C15.2028 14.4039 15.2471 14.466 15.2778 14.535C15.3086 14.604 15.3251 14.6785 15.3264 14.754C15.3278 14.8296 15.3139 14.9046 15.2856 14.9746C15.2573 15.0447 15.2152 15.1083 15.1618 15.1617C15.1084 15.2151 15.0447 15.2572 14.9747 15.2855C14.9047 15.3138 14.8296 15.3277 14.7541 15.3264C14.6786 15.325 14.6041 15.3085 14.5351 15.2778C14.4661 15.247 14.404 15.2027 14.3525 15.1474L10.835 11.6299C9.93142 12.3825 8.83207 12.8621 7.66574 13.0124C6.49942 13.1626 5.31441 12.9775 4.24956 12.4785C3.1847 11.9795 2.28409 11.1874 1.65322 10.195C1.02236 9.20254 0.687371 8.05089 0.6875 6.87492Z" fill="#F74DF4" />
-          </svg>
-            : <svg width="18" height="21" viewBox="0 0 18 21" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path fillRule="evenodd" clipRule="evenodd" d="M8.54 20.351L8.61 20.391L8.638 20.407C8.74903 20.467 8.87327 20.4985 8.9995 20.4985C9.12573 20.4985 9.24997 20.467 9.361 20.407L9.389 20.392L9.46 20.351C9.85112 20.1191 10.2328 19.8716 10.604 19.609C11.5651 18.9305 12.463 18.1667 13.287 17.327C15.231 15.337 17.25 12.347 17.25 8.5C17.25 6.31196 16.3808 4.21354 14.8336 2.66637C13.2865 1.11919 11.188 0.25 9 0.25C6.81196 0.25 4.71354 1.11919 3.16637 2.66637C1.61919 4.21354 0.75 6.31196 0.75 8.5C0.75 12.346 2.77 15.337 4.713 17.327C5.53664 18.1667 6.43427 18.9304 7.395 19.609C7.76657 19.8716 8.14854 20.1191 8.54 20.351ZM9 11.5C9.79565 11.5 10.5587 11.1839 11.1213 10.6213C11.6839 10.0587 12 9.29565 12 8.5C12 7.70435 11.6839 6.94129 11.1213 6.37868C10.5587 5.81607 9.79565 5.5 9 5.5C8.20435 5.5 7.44129 5.81607 6.87868 6.37868C6.31607 6.94129 6 7.70435 6 8.5C6 9.29565 6.31607 10.0587 6.87868 10.6213C7.44129 11.1839 8.20435 11.5 9 11.5Z" fill="#231F20" />
-            </svg>}
+          {Searchicon ? (
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M6.875 1.81242C6.21018 1.81242 5.55188 1.94336 4.93766 2.19778C4.32345 2.45219 3.76537 2.82509 3.29527 3.29519C2.82518 3.76529 2.45227 4.32337 2.19786 4.93758C1.94345 5.55179 1.8125 6.2101 1.8125 6.87492C1.8125 7.53973 1.94345 8.19804 2.19786 8.81225C2.45227 9.42646 2.82518 9.98455 3.29527 10.4546C3.76537 10.9247 4.32345 11.2976 4.93766 11.5521C5.55188 11.8065 6.21018 11.9374 6.875 11.9374C8.21766 11.9374 9.50533 11.404 10.4547 10.4546C11.4041 9.50524 11.9375 8.21758 11.9375 6.87492C11.9375 5.53226 11.4041 4.24459 10.4547 3.29519C9.50533 2.34579 8.21766 1.81242 6.875 1.81242ZM0.6875 6.87492C0.687631 5.88124 0.92708 4.90221 1.38559 4.02064C1.8441 3.13907 2.50819 2.3809 3.32168 1.81026C4.13516 1.23961 5.07412 0.873285 6.05912 0.74226C7.04412 0.611235 8.04619 0.719366 8.98057 1.05751C9.91494 1.39565 10.7541 1.95386 11.4272 2.68491C12.1002 3.41596 12.5872 4.29835 12.8471 5.25744C13.107 6.21653 13.1321 7.2241 12.9202 8.19493C12.7084 9.16576 12.2658 10.0713 11.63 10.8349L15.1475 14.3524C15.2028 14.4039 15.2471 14.466 15.2778 14.535C15.3086 14.604 15.3251 14.6785 15.3264 14.754C15.3278 14.8296 15.3139 14.9046 15.2856 14.9746C15.2573 15.0447 15.2152 15.1083 15.1618 15.1617C15.1084 15.2151 15.0447 15.2572 14.9747 15.2855C14.9047 15.3138 14.8296 15.3277 14.7541 15.3264C14.6786 15.325 14.6041 15.3085 14.5351 15.2778C14.4661 15.247 14.404 15.2027 14.3525 15.1474L10.835 11.6299C9.93142 12.3825 8.83207 12.8621 7.66574 13.0124C6.49942 13.1626 5.31441 12.9775 4.24956 12.4785C3.1847 11.9795 2.28409 11.1874 1.65322 10.195C1.02236 9.20254 0.687371 8.05089 0.6875 6.87492Z"
+                fill="#F74DF4"
+              />
+            </svg>
+          ) : (
+            <svg
+              width="18"
+              height="21"
+              viewBox="0 0 18 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fillRule="evenodd"
+                clipRule="evenodd"
+                d="M8.54 20.351L8.61 20.391L8.638 20.407C8.74903 20.467 8.87327 20.4985 8.9995 20.4985C9.12573 20.4985 9.24997 20.467 9.361 20.407L9.389 20.392L9.46 20.351C9.85112 20.1191 10.2328 19.8716 10.604 19.609C11.5651 18.9305 12.463 18.1667 13.287 17.327C15.231 15.337 17.25 12.347 17.25 8.5C17.25 6.31196 16.3808 4.21354 14.8336 2.66637C13.2865 1.11919 11.188 0.25 9 0.25C6.81196 0.25 4.71354 1.11919 3.16637 2.66637C1.61919 4.21354 0.75 6.31196 0.75 8.5C0.75 12.346 2.77 15.337 4.713 17.327C5.53664 18.1667 6.43427 18.9304 7.395 19.609C7.76657 19.8716 8.14854 20.1191 8.54 20.351ZM9 11.5C9.79565 11.5 10.5587 11.1839 11.1213 10.6213C11.6839 10.0587 12 9.29565 12 8.5C12 7.70435 11.6839 6.94129 11.1213 6.37868C10.5587 5.81607 9.79565 5.5 9 5.5C8.20435 5.5 7.44129 5.81607 6.87868 6.37868C6.31607 6.94129 6 7.70435 6 8.5C6 9.29565 6.31607 10.0587 6.87868 10.6213C7.44129 11.1839 8.20435 11.5 9 11.5Z"
+                fill="#231F20"
+              />
+            </svg>
+          )}
         </div>
         <div>
           <label className={css.label}>Location</label>
@@ -606,6 +673,23 @@ class LocationAutocompleteInputImplementation extends Component {
             data-testid="location-search"
           />
         </div>
+
+        {this.state.inputHasFocus && showCrossIcon && (
+          <div
+            onClick={this.handleReset}
+            style={{
+              backgroundColor: 'red',
+              zIndex: 9999,
+              position: 'absolute',
+              right: 0,
+              width: '20px',
+              height: '20px',
+            }}
+          >
+            X
+          </div>
+        )}
+
         {renderPredictions ? (
           <LocationPredictionsList
             rootClassName={predictionsClass}
@@ -618,23 +702,25 @@ class LocationAutocompleteInputImplementation extends Component {
             onSelectStart={this.handlePredictionsSelectStart}
             onSelectMove={this.handlePredictionsSelectMove}
             onSelectEnd={this.handlePredictionsSelectEnd}
-            dropdownInput={<input
-              className={inputClass}
-              type="search"
-              autoComplete="off"
-              autoFocus={autoFocus}
-              placeholder={placeholder}
-              name={name}
-              value={search}
-              disabled={disabled || this.state.fetchingPlaceDetails}
-              onFocus={handleOnFocus}
-              onBlur={this.handleOnBlur}
-              onChange={this.onChange}
-              onKeyDown={this.onKeyDown}
-              {...refMaybe}
-              title={search}
-              data-testid="location-search"
-            />}
+            dropdownInput={
+              <input
+                className={inputClass}
+                type="search"
+                autoComplete="off"
+                autoFocus={autoFocus}
+                placeholder={placeholder}
+                name={name}
+                value={search}
+                disabled={disabled || this.state.fetchingPlaceDetails}
+                onFocus={handleOnFocus}
+                onBlur={this.handleOnBlur}
+                onChange={this.onChange}
+                onKeyDown={this.onKeyDown}
+                {...refMaybe}
+                title={search}
+                data-testid="location-search"
+              />
+            }
             onCloseDropdown={handleCloseDropdown}
             isMobile={isMobile}
           >

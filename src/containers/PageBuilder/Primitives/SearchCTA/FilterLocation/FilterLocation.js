@@ -10,7 +10,15 @@ const identity = v => v;
 
 const LocationSearchField = props => {
   const [isCurrentLocation, setIsCurrentLocation] = useState(false);
-  const { inputRootClass, intl, inputRef, onLocationChange, alignLeft, Searchicon } = props;
+  const {
+    inputRootClass,
+    intl,
+    inputRef,
+    onLocationChange,
+    alignLeft,
+    Searchicon,
+    showCrossIcon,
+  } = props;
   return (
     <Field
       name="location"
@@ -48,6 +56,7 @@ const LocationSearchField = props => {
             input={{ ...restInput, onChange: searchOnChange }}
             meta={meta}
             Searchicon={Searchicon}
+            showCrossIcon={showCrossIcon}
           />
         );
       }}
@@ -67,6 +76,9 @@ const FilterLocation = props => {
     alignLeft,
     isCurrentLocation,
     Searchicon,
+    setIsOpenBedrooms,
+    setIsOpenLandSize,
+    landSize,
     ...restOfProps
   } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -74,8 +86,19 @@ const FilterLocation = props => {
   const onChange = location => {
     if (location?.search?.length > 0 && !location?.selectedPlace) {
       setSubmitDisabled(true);
+    } else if (location?.name === 'location') {
+      if (landSize) {
+        setIsOpenLandSize(true);
+      } else {
+        setIsOpenBedrooms(true);
+      }
     } else {
       setSubmitDisabled(false);
+      if (landSize) {
+        setIsOpenLandSize(true);
+      } else {
+        setIsOpenBedrooms(true);
+      }
     }
   };
 
@@ -88,6 +111,7 @@ const FilterLocation = props => {
         onLocationChange={onChange}
         alignLeft={alignLeft}
         Searchicon={Searchicon}
+        showCrossIcon={true}
       />
     </div>
   );

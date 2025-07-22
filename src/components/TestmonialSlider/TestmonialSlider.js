@@ -21,7 +21,7 @@ const testimonials = [
     text: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
     name: 'Name Text',
     title: 'Title',
-    avatar: 'https://randomuser.me/api/portraits/women/3.jpg',
+    avatar: '',
     linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
   },
   // ...add more testimonials as needed
@@ -40,7 +40,15 @@ const TestmonialSlider = () => {
             <div key={idx} className={styles.card}>
               <div className={styles.testimonialText}>{t.text}</div>
               <div className={styles.profile}>
-                <img src={t.avatar} alt={t.name} className={styles.avatar} />
+              {t.avatar ?
+                    <img src={t.avatar} alt={t.name} className={styles.avatar} />
+                    : <span className={styles.avatarPlaceholder}>
+                      <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.3278 24C20.9247 24 22.6262 21.2719 21.4731 18.9469C18.6841 13.3079 11.8497 11.0016 6.21062 13.7907C3.97469 14.8969 2.16062 16.711 1.05437 18.9469C-0.0987514 21.2719 1.6075 24 4.20437 24H18.3278Z" fill="#C4C4C4" />
+                        <path d="M11.2656 10.5469C14.1781 10.5469 16.5391 8.18588 16.5391 5.27344C16.5391 2.361 14.1781 0 11.2656 0C8.35319 0 5.99219 2.361 5.99219 5.27344C5.99219 8.18588 8.35319 10.5469 11.2656 10.5469Z" fill="#C4C4C4" />
+                      </svg>
+
+                    </span>}
                 <div>
                   <p className={styles.name}>{t.name}</p>
                   <p className={styles.title}>{t.title}</p>
@@ -71,7 +79,15 @@ const TestmonialSlider = () => {
               <div className={styles.testimonialText}>"{t.text}"</div>
               <div className={styles.profileContainer}>
                 <div className={styles.profile}>
-                  <img src={t.avatar} alt={t.name} className={styles.avatar} />
+                  {t.avatar ?
+                    <img src={t.avatar} alt={t.name} className={styles.avatar} />
+                    : <span className={styles.avatarPlaceholder}>
+                      <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.3278 24C20.9247 24 22.6262 21.2719 21.4731 18.9469C18.6841 13.3079 11.8497 11.0016 6.21062 13.7907C3.97469 14.8969 2.16062 16.711 1.05437 18.9469C-0.0987514 21.2719 1.6075 24 4.20437 24H18.3278Z" fill="#C4C4C4" />
+                        <path d="M11.2656 10.5469C14.1781 10.5469 16.5391 8.18588 16.5391 5.27344C16.5391 2.361 14.1781 0 11.2656 0C8.35319 0 5.99219 2.361 5.99219 5.27344C5.99219 8.18588 8.35319 10.5469 11.2656 10.5469Z" fill="#C4C4C4" />
+                      </svg>
+
+                    </span>}
                   <div>
                     <p className={styles.name}>{t.name}</p>
                     <p className={styles.title}>{t.title}</p>

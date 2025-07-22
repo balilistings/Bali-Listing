@@ -58,23 +58,14 @@ const formatDateValue = (dateRange, queryParamName) => {
   return { [queryParamName]: value };
 };
 
-const convertNumberToText = number => {
-  const numberToText = {
-    1: 'one',
-    2: 'two',
-    3: 'three',
-    4: 'four',
-    5: 'five',
-    6: 'six',
-  };
-  return numberToText[number] || number.toString();
-};
-
 export const SearchCTA = React.forwardRef((props, ref) => {
   const history = useHistory();
   const routeConfiguration = useRouteConfiguration();
   const config = useConfiguration();
   const [activeTab, setActiveTab] = useState(0);
+  const [isOpenBedrooms, setIsOpenBedrooms] = useState(false);
+  const [isOpenPrice, setIsOpenPrice] = useState(false);
+  const [isOpenLandSize, setIsOpenLandSize] = useState(false);
 
   const { categories, dateRange, keywordSearch, locationSearch, price } = props.searchFields;
   const bedrooms = tabs[activeTab].key !== 'villaforsale';
@@ -83,8 +74,6 @@ export const SearchCTA = React.forwardRef((props, ref) => {
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
   const categoryConfig = config.categoryConfiguration;
-
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   const filters = {
     categories: {
@@ -110,7 +99,13 @@ export const SearchCTA = React.forwardRef((props, ref) => {
       isValid: () => locationSearch,
       render: alignLeft => (
         <div className={css.filterField} key="locationSearch">
-          <FilterLocation setSubmitDisabled={setSubmitDisabled} alignLeft={alignLeft} />
+          <FilterLocation
+            setSubmitDisabled={setSubmitDisabled}
+            alignLeft={alignLeft}
+            setIsOpenBedrooms={setIsOpenBedrooms}
+            setIsOpenLandSize={setIsOpenLandSize}
+            landSize={landSize}
+          />
         </div>
       ),
     },
@@ -128,7 +123,11 @@ export const SearchCTA = React.forwardRef((props, ref) => {
       isValid: () => bedrooms,
       render: alignLeft => (
         <div className={css.filterField} key="bedrooms">
-          <FilterBedrooms />
+          <FilterBedrooms
+            isOpen={isOpenBedrooms}
+            setIsOpen={setIsOpenBedrooms}
+            setIsOpenPrice={setIsOpenPrice}
+          />
         </div>
       ),
     },
@@ -137,7 +136,11 @@ export const SearchCTA = React.forwardRef((props, ref) => {
       isValid: () => price,
       render: alignLeft => (
         <div className={css.filterField} key="price">
-          <FilterPrice activeTabKey={tabs[activeTab].key} />
+          <FilterPrice
+            activeTabKey={tabs[activeTab].key}
+            isOpen={isOpenPrice}
+            setIsOpen={setIsOpenPrice}
+          />
         </div>
       ),
     },
@@ -146,7 +149,11 @@ export const SearchCTA = React.forwardRef((props, ref) => {
       isValid: () => landSize,
       render: alignLeft => (
         <div className={css.filterField} key="landSize">
-          <FilterLandSize />
+          <FilterLandSize
+            isOpen={isOpenLandSize}
+            setIsOpen={setIsOpenLandSize}
+            setIsOpenPrice={setIsOpenPrice}
+          />
         </div>
       ),
     },
@@ -207,7 +214,7 @@ export const SearchCTA = React.forwardRef((props, ref) => {
           if (value === 0) {
             return;
           }
-          queryParams[key] = convertNumberToText(value);
+          queryParams[key] = value;
         } else if (key === 'pub_price') {
           let priceKey = '';
           if (tabs[activeTab].key !== 'rentalvillas') {

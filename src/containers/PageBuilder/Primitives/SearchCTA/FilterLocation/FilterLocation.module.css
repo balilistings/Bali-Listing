@@ -15,7 +15,8 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-  color: #f74df4;
+  color: #F74DF4;
+
   @media (--viewportMedium) {
     font-size: 14px;
   }
@@ -27,7 +28,7 @@
     box-shadow: none;
   }
 
-  &:hover::placeholder  {
+  &:hover::placeholder {
     color: #d3d3d3;
     transition: 0.1s all;
     font-weight: 400;
@@ -45,15 +46,25 @@
     font-weight: 400;
   }
 
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
 }
 
 .inputWithCurrentLocation {
   composes: input;
 
+  &:hover {
+    color: #F74DF4;
+    border: none;
+
+    &::placeholder {
+      color: #F74DF4;
+      font-weight: 700;
+    }
+  }
+
   &::placeholder {
-    color: #f74df4;
+    color: #F74DF4;
+    font-weight: 700;
   }
 }
 
@@ -90,6 +101,12 @@
     padding: 0 0 0 16px;
     height: 56px;
   }
+
+  &>div:last-child {
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
 }
 
 .predictions {
@@ -117,6 +134,7 @@
       right: auto;
     }
   }
+
   @media (max-width: 768px) {
     position: fixed;
     top: 0;
@@ -135,7 +153,8 @@
     width: 100% !important;
     transform: unset;
     padding-bottom: 0 !important;
-    & > ul {
+
+    &>ul {
       background-color: white;
       max-width: 574px;
       max-height: 95vh;

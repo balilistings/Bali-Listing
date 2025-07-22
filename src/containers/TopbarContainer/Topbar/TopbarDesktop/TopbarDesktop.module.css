@@ -506,6 +506,17 @@ width: 100%;
   
 }
 
+.searchPageTopbarMenu{
+  & > div:first-child{
+    & a{
+      color: #F74DF4;
+      & span{
+        color: #F74DF4
+      }
+    }
+  }
+}
+
 .tabs{
   display: flex;
   /* box-shadow: 0px 4px 10px 0px #0000000D; */

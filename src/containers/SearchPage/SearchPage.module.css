@@ -184,8 +184,8 @@
   }
 
   @media (--viewportLarge) {
-    flex-basis: 57.5%;
-    max-width: 57.5vw;
+    flex-basis: 62.5%;
+    max-width: 62.5vw;
   }
 }
 
@@ -257,7 +257,7 @@
 
 .listingsForMapVariant {
   composes: listings;
-  padding: 0 10px;
+  padding: 0 0px;
 
   @media (--viewportLarge) {
     padding: 0 23px;
@@ -286,7 +286,7 @@
   }
 
   @media (--viewportLarge) {
-    flex-basis: 42.5%;
+    flex-basis: 38.5%;
   }
 }
 
@@ -312,7 +312,7 @@
   }
 
   @media (--viewportLarge) {
-    width: 43vw;
+    width: 38.5vw;
   }
 }
 

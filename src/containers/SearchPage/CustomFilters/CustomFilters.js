@@ -51,10 +51,25 @@ const initialiseCategory = () => {
   }
 };
 
+const initialiseBedrooms = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_bedrooms') || 0;
+  }
+};
+
+const initialiseBathrooms = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_bathrooms') || 0;
+  }
+};
+
 const initialisePropertyType = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('pub_propertytype') || null;
+    const propertyType = urlParams.get('pub_propertytype') || null;
+    return propertyType ? propertyType.split(',') : [];
   }
 };
 
@@ -62,6 +77,13 @@ const initialiseHostType = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('pub_hosttype') || null;
+  }
+};
+
+const initialiseTenure = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_Freehold') || null;
   }
 };
 
@@ -77,11 +99,20 @@ const initialisePropertyDetail = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const living = urlParams.get('pub_living') || null;
     const furnished = urlParams.get('pub_furnished') || null;
+    const result = [];
     if (living) {
-      return living === 'open' ? 'open-livingroom' : 'closed-livingroom';
-    } else if (furnished) {
-      return furnished === 'yes' ? 'furnished' : 'unfurnished';
+      const livingTypes = living.split(',');
+      result.push(
+        ...livingTypes.map(type => (type === 'open' ? 'open-livingroom' : 'closed-livingroom'))
+      );
     }
+
+    if (furnished) {
+      const furnishedTypes = furnished.split(',');
+      result.push(...furnishedTypes.map(type => (type === 'yes' ? 'furnished' : 'unfurnished')));
+    }
+
+    return result;
   }
 };
 
@@ -142,15 +173,15 @@ function CustomFilters({
   const [priceRange, setPriceRange] = useState([0, 99]);
   const [simplePriceRange, setSimplePriceRange] = useState([0, 1000]);
   const [landSizeRange, setLandSizeRange] = useState([100, 1000]);
-  const [bedrooms, setBedrooms] = useState(0);
-  const [bathrooms, setBathrooms] = useState(0);
+  const [bedrooms, setBedrooms] = useState(initialiseBedrooms);
+  const [bathrooms, setBathrooms] = useState(initialiseBathrooms);
   const [selectedAmenities, setSelectedAmenities] = useState(initialiseAmenities);
   const [selectedPropertyType, setSelectedPropertyType] = useState(initialisePropertyType);
   const [selectedAvailability, setSelectedAvailability] = useState(initialiseAvailability);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedPropertyDetail, setSelectedPropertyDetail] = useState(initialisePropertyDetail);
   const [selectedHostType, setSelectedHostType] = useState(initialiseHostType);
-  const [selectedTenure, setSelectedTenure] = useState(null);
+  const [selectedTenure, setSelectedTenure] = useState(initialiseTenure);
   const [selectedLandTitles, setSelectedLandTitles] = useState([]);
   const [selectedLandZones, setSelectedLandZones] = useState([]);
   const history = useHistory();
@@ -183,7 +214,7 @@ function CustomFilters({
       setSelectedAmenities([]);
     }
     if (!newAvailableFilters.includes('propertyType')) {
-      setSelectedPropertyType(null);
+      setSelectedPropertyType([]);
     }
     if (!newAvailableFilters.includes('availability')) {
       setSelectedAvailability(null);
@@ -192,7 +223,7 @@ function CustomFilters({
       setSelectedService(null);
     }
     if (!newAvailableFilters.includes('propertyDetails')) {
-      setSelectedPropertyDetail(null);
+      setSelectedPropertyDetail([]);
     }
     if (!newAvailableFilters.includes('hostType')) {
       setSelectedHostType(null);
@@ -286,7 +317,7 @@ function CustomFilters({
 
   const handlePropertyTypeChange = propertyType => {
     onUpdateCurrentQueryParams({
-      pub_propertytype: propertyType,
+      pub_propertytype: propertyType.toString(),
     });
     setSelectedPropertyType(propertyType);
   };
@@ -295,7 +326,7 @@ function CustomFilters({
     onUpdateCurrentQueryParams({
       pub_propertytype: null,
     });
-    setSelectedPropertyType(null);
+    setSelectedPropertyType([]);
   };
 
   const handleAvailabilityChange = availability => {
@@ -326,23 +357,40 @@ function CustomFilters({
       pub_furnished: null,
     };
 
-    if (propertyDetail === 'open-livingroom') {
-      param.pub_living = 'open';
-    } else if (propertyDetail === 'closed-livingroom') {
-      param.pub_living = 'closed';
-    } else if (propertyDetail === 'furnished') {
-      param.pub_furnished = 'yes';
-    } else if (propertyDetail === 'unfurnished') {
-      param.pub_furnished = 'no';
+    if (Array.isArray(propertyDetail)) {
+      const livingTypes = [];
+      const furnishedTypes = [];
+
+      propertyDetail.forEach(detail => {
+        if (detail === 'open-livingroom') {
+          livingTypes.push('open');
+        } else if (detail === 'closed-livingroom') {
+          livingTypes.push('closed');
+        } else if (detail === 'furnished') {
+          furnishedTypes.push('yes');
+        } else if (detail === 'unfurnished') {
+          furnishedTypes.push('no');
+        }
+      });
+
+      if (livingTypes.length > 0) {
+        param.pub_living = livingTypes.join(',');
+      }
+      if (furnishedTypes.length > 0) {
+        param.pub_furnished = furnishedTypes.join(',');
+      }
     }
 
     onUpdateCurrentQueryParams(param);
-
     setSelectedPropertyDetail(propertyDetail);
   };
 
   const handlePropertyDetailReset = () => {
-    setSelectedPropertyDetail(null);
+    onUpdateCurrentQueryParams({
+      pub_living: null,
+      pub_furnished: null,
+    });
+    setSelectedPropertyDetail([]);
   };
 
   const handleHostTypeChange = hostType => {
@@ -360,10 +408,16 @@ function CustomFilters({
   };
 
   const handleTenureChange = tenure => {
+    onUpdateCurrentQueryParams({
+      pub_Freehold: tenure,
+    });
     setSelectedTenure(tenure);
   };
 
   const handleTenureReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_Freehold: null,
+    });
     setSelectedTenure(null);
   };
 
@@ -401,11 +455,14 @@ function CustomFilters({
     setSelectedTenure(null);
     setSelectedLandTitles([]);
     setSelectedLandZones([]);
+
     onReset();
+    onClose();
   };
 
   return (
     <div className={css.container}>
+      <div className={css.counterModalOverlay} onClick={onClose} />
       <div className={css.contentWrapper}>
         <div className={css.header}>
           <div className={css.spacer}></div>

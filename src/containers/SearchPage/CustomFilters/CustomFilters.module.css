@@ -11,6 +11,7 @@
   align-items: center;
 
   padding: 10px;
+
   @media (max-width: 768px) {
     padding: 0px;
     align-items: flex-end;
@@ -25,7 +26,9 @@
   max-height: 95vh;
   overflow: hidden;
   border-radius: 12px;
+  z-index: 2;
   @media (max-width: 768px) {
+   
     overflow: visible;
     max-width: 100%;
     max-height: 85vh;
@@ -40,12 +43,14 @@
   padding: 20px 20px;
   box-shadow: 0px 4px 10px 0px #0000001A;
   border-bottom: 1px solid #D3D3D3;
- position: relative;
+  position: relative;
+
   @media (max-width: 768px) {
     padding: 16px;
     border-bottom: none;
     justify-content: flex-start;
-    & .spacer{
+
+    & .spacer {
       display: none;
     }
   }
@@ -70,8 +75,9 @@
   text-align: center;
 }
 
-.filterIcon{
-margin-right: 10px;
+.filterIcon {
+  margin-right: 10px;
+
   @media (min-width: 768px) {
     display: none;
   }
@@ -88,6 +94,7 @@ margin-right: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
+
   @media (max-width: 768px) {
     position: absolute;
     right: 16px;
@@ -108,6 +115,7 @@ margin-right: 10px;
   padding: 20px;
   overflow-y: auto;
   max-height: calc(95vh - 150px);
+
   @media (max-width: 768px) {
     max-height: calc(85vh - 150px);
   }
@@ -122,12 +130,14 @@ margin-right: 10px;
   box-shadow: -4px 0px 10px 0px #0000001A;
 
   border-radius: 0 0 12px 12px;
+
   @media (max-width: 768px) {
     border-radius: 0px;
     border-top: none;
     gap: 22px;
-    & > button{
-flex: 1;
+
+    &>button {
+      flex: 1;
     }
   }
 
@@ -146,6 +156,7 @@ flex: 1;
   color: #F74DF4;
   cursor: pointer;
   padding: 0;
+
   @media (max-width: 768px) {
     font-size: 10px;
     text-decoration: underline;
@@ -170,10 +181,24 @@ flex: 1;
   cursor: pointer;
   height: 38px;
   min-height: 38px;
+
   @media (max-width: 768px) {
     height: 30px;
     min-height: 30px;
     padding: 8px 12px;
     font-size: 10px;
+  }
+}
+
+.counterModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+
+  @media (min-width: 768px) {
+    /* display: none; */
   }
 }
