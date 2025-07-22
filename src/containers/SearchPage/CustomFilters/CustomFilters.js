@@ -51,10 +51,25 @@ const initialiseCategory = () => {
   }
 };
 
+const initialiseBedrooms = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_bedrooms') || 0;
+  }
+};
+
+const initialiseBathrooms = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('pub_bathrooms') || 0;
+  }
+};
+
 const initialisePropertyType = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('pub_propertytype') || null;
+    const propertyType = urlParams.get('pub_propertytype') || null;
+    return propertyType ? propertyType.split(',') : [];
   }
 };
 
@@ -142,8 +157,8 @@ function CustomFilters({
   const [priceRange, setPriceRange] = useState([0, 99]);
   const [simplePriceRange, setSimplePriceRange] = useState([0, 1000]);
   const [landSizeRange, setLandSizeRange] = useState([100, 1000]);
-  const [bedrooms, setBedrooms] = useState(0);
-  const [bathrooms, setBathrooms] = useState(0);
+  const [bedrooms, setBedrooms] = useState(initialiseBedrooms);
+  const [bathrooms, setBathrooms] = useState(initialiseBathrooms);
   const [selectedAmenities, setSelectedAmenities] = useState(initialiseAmenities);
   const [selectedPropertyType, setSelectedPropertyType] = useState(initialisePropertyType);
   const [selectedAvailability, setSelectedAvailability] = useState(initialiseAvailability);
@@ -286,7 +301,7 @@ function CustomFilters({
 
   const handlePropertyTypeChange = propertyType => {
     onUpdateCurrentQueryParams({
-      pub_propertytype: propertyType,
+      pub_propertytype: propertyType.toString(),
     });
     setSelectedPropertyType(propertyType);
   };
@@ -295,7 +310,7 @@ function CustomFilters({
     onUpdateCurrentQueryParams({
       pub_propertytype: null,
     });
-    setSelectedPropertyType(null);
+    setSelectedPropertyType([]);
   };
 
   const handleAvailabilityChange = availability => {
@@ -401,7 +416,9 @@ function CustomFilters({
     setSelectedTenure(null);
     setSelectedLandTitles([]);
     setSelectedLandZones([]);
+
     onReset();
+    onClose();
   };
 
   return (
