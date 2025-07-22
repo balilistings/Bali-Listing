@@ -11,8 +11,15 @@ const formatLandSize = size => {
   return `${size} m2`;
 };
 
-const LandSizeDropdown = ({ input, className, rootClassName, alignLeft }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const LandSizeDropdown = ({
+  input,
+  className,
+  rootClassName,
+  alignLeft,
+  isOpen,
+  setIsOpen,
+  setIsOpenPrice,
+}) => {
   const [landSizeRange, setLandSizeRange] = useState([0, 1000]);
 
   const toggleDropdown = () => {
@@ -21,6 +28,7 @@ const LandSizeDropdown = ({ input, className, rootClassName, alignLeft }) => {
 
   const closeDropdown = () => {
     setIsOpen(false);
+    setIsOpenPrice(true);
   };
 
   const handleRangeChange = handles => {
