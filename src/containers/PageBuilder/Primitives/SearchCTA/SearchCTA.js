@@ -74,6 +74,7 @@ export const SearchCTA = React.forwardRef((props, ref) => {
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
   const categoryConfig = config.categoryConfiguration;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
   const filters = {
     categories: {
@@ -105,6 +106,7 @@ export const SearchCTA = React.forwardRef((props, ref) => {
             setIsOpenBedrooms={setIsOpenBedrooms}
             setIsOpenLandSize={setIsOpenLandSize}
             landSize={landSize}
+            isMobile={isMobile}
           />
         </div>
       ),

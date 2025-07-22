@@ -54,7 +54,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
     onSelectEnd,
     dropdownInput,
     onCloseDropdown,
-    isMobile,
+    onNext = () => {},
   } = props;
   if (predictions.length === 0) {
     return null;
@@ -181,8 +181,12 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
           style={{ paddingBottom: 0 }}
         >
           <div className={css.footer}>
-            <button className={css.resetButton}>Reset All</button>
-            <button className={css.showListingsButton}>Next</button>
+            <button type="button" className={css.resetButton}>
+              Reset All
+            </button>
+            <button type="button" className={css.showListingsButton} onClick={onNext}>
+              Next
+            </button>
           </div>
         </li>
       </ul>
@@ -561,6 +565,7 @@ class LocationAutocompleteInputImplementation extends Component {
       config,
       Searchicon,
       showCrossIcon,
+      onNext = () => {},
     } = this.props;
     const { name, onFocus } = input;
     const { search } = currentValue(this.props);
@@ -723,6 +728,7 @@ class LocationAutocompleteInputImplementation extends Component {
             }
             onCloseDropdown={handleCloseDropdown}
             isMobile={isMobile}
+            onNext={onNext}
           >
             <GeocoderAttribution
               className={predictionsAttributionClassName}
