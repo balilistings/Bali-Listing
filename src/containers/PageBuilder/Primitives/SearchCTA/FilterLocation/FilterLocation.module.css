@@ -148,12 +148,7 @@
     width: 100% !important;
     transform: unset;
     padding-bottom: 0 !important;
-<<<<<<< HEAD
-
-    &>ul {
-=======
     & > ul {
->>>>>>> fcf48ec88585dbc24bd0684db2d9276e5a81a28f
       background-color: white;
       max-width: 574px;
       max-height: 95vh;
@@ -168,10 +163,6 @@
       min-height: 65vh;
       display: flex;
       flex-direction: column;
-<<<<<<< HEAD
-
-=======
->>>>>>> fcf48ec88585dbc24bd0684db2d9276e5a81a28f
     }
   }
 }
