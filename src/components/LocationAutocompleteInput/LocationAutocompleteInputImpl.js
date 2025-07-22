@@ -233,6 +233,7 @@ class LocationAutocompleteInputImplementation extends Component {
     this.handlePredictionsSelectEnd = this.handlePredictionsSelectEnd.bind(this);
     this.finalizeSelection = this.finalizeSelection.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this); // NEW: bind
+    this.handleReset = this.handleReset.bind(this);
 
     // Debounce the method to avoid calling the API too many times
     // when the user is typing fast.
@@ -317,6 +318,16 @@ class LocationAutocompleteInputImplementation extends Component {
     }
   }
 
+  handleReset() {
+    console.log('calleddddd');
+    this.props.input.onChange({
+      search: '',
+      predictions: [],
+      selectedPlace: null,
+    });
+    this.setState({ highlightedIndex: -1 });
+  }
+
   // Handle input text change, fetch predictions if the value isn't empty
   onChange(e) {
     const onChange = this.props.input.onChange;
@@ -386,6 +397,7 @@ class LocationAutocompleteInputImplementation extends Component {
     this.props.input.onChange({
       ...this.props.input,
       selectedPlace: null,
+      predictions: this.props.input.value?.predictions || [],
     });
 
     this.setState({ fetchingPlaceDetails: true });
@@ -400,7 +412,7 @@ class LocationAutocompleteInputImplementation extends Component {
         this.setState({ fetchingPlaceDetails: false });
         this.props.input.onChange({
           search: place.address,
-          predictions: [],
+          predictions: this.props.input.value?.predictions || [],
           selectedPlace: place,
         });
       })
@@ -548,6 +560,7 @@ class LocationAutocompleteInputImplementation extends Component {
       disabled,
       config,
       Searchicon,
+      showCrossIcon,
     } = this.props;
     const { name, onFocus } = input;
     const { search } = currentValue(this.props);
@@ -660,6 +673,23 @@ class LocationAutocompleteInputImplementation extends Component {
             data-testid="location-search"
           />
         </div>
+
+        {this.state.inputHasFocus && showCrossIcon && (
+          <div
+            onClick={this.handleReset}
+            style={{
+              backgroundColor: 'red',
+              zIndex: 9999,
+              position: 'absolute',
+              right: 0,
+              width: '20px',
+              height: '20px',
+            }}
+          >
+            X
+          </div>
+        )}
+
         {renderPredictions ? (
           <LocationPredictionsList
             rootClassName={predictionsClass}
