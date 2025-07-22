@@ -167,6 +167,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  flex-wrap: wrap;
 }
 
 .tag {
@@ -345,10 +346,10 @@ margin-right: 10px;
 
   max-width: calc(57.5vw - 32.5vw);
   @media (min-width: 1240px) {
-    max-width: calc(57.5vw - 41vw);
+    /* max-width: calc(57.5vw - 41vw); */
   }
   @media (max-width: 1024px) {
-    max-width: calc(57.5vw - 15.5vw);
+    /* max-width: calc(57.5vw - 15.5vw); */
   }
   @media (max-width: 767px) {
     aspect-ratio: 336 / 173;

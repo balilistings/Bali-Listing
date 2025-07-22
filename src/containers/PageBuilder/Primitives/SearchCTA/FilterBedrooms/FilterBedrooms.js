@@ -88,7 +88,9 @@ const BedroomDropdown = ({ input, className, rootClassName, alignLeft }) => {
             className={classNames(css.dropdownContent, {
               [css.alignLeft]: alignLeft,
             })}
+            
           >
+            <div className={css.counterModalOverlay} onClick={closeDropdown} />
             <div className={css.counterModal}>
               <div className={css.menuItemMobile}>
                 <h2 className={css.menuItemMobileTitle}>

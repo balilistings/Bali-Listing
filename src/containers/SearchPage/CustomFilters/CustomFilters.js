@@ -406,6 +406,7 @@ function CustomFilters({
 
   return (
     <div className={css.container}>
+      <div className={css.counterModalOverlay} onClick={onClose} />
       <div className={css.contentWrapper}>
         <div className={css.header}>
           <div className={css.spacer}></div>
