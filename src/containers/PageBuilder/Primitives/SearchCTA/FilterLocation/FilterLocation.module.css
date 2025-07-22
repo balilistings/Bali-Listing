@@ -28,7 +28,7 @@
     box-shadow: none;
   }
 
-  &:hover::placeholder  {
+  &:hover::placeholder {
     color: #d3d3d3;
     transition: 0.1s all;
     font-weight: 400;
@@ -46,8 +46,7 @@
     font-weight: 400;
   }
 
-  @media (--viewportMedium) {
-  }
+  @media (--viewportMedium) {}
 }
 
 .inputWithCurrentLocation {
@@ -102,6 +101,12 @@
     padding: 0 0 0 16px;
     height: 56px;
   }
+
+  &>div:last-child {
+    @media (max-width: 768px) {
+      width: 100%;
+    }
+  }
 }
 
 .predictions {
@@ -148,7 +153,8 @@
     width: 100% !important;
     transform: unset;
     padding-bottom: 0 !important;
-    & > ul {
+
+    &>ul {
       background-color: white;
       max-width: 574px;
       max-height: 95vh;
