@@ -55,6 +55,43 @@
   }
 }
 
+.locationAddress{
+  & li{
+    color: #fff !important;
+    & svg{
+      margin-right: 10px;
+    }
+
+  }
+  & > div{
+    border: 1px solid #d8dce6;
+    border-radius: 5px;
+    padding-left: 10px;
+    gap: 8px;
+    & >div:nth-child(2){
+      width: 100%;
+    }
+    & label{
+      display: none;
+    }
+    & input{
+      border: none;
+      box-shadow: none;
+      border-radius: 0px;
+      &:hover{
+        border: none;
+        box-shadow: none;
+        border-radius: 0px;
+      }
+      &:focus{
+        border: none;
+        box-shadow: none;
+        border-radius: 0px;
+      }
+    }
+  }
+}
+
 .submitButton {
   margin-top: auto;
   margin-bottom: 24px;

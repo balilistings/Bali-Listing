@@ -184,8 +184,8 @@
   }
 
   @media (--viewportLarge) {
-    flex-basis: 57.5%;
-    max-width: 57.5vw;
+    flex-basis: 58.5%;
+    max-width: 58.5vw;
   }
 }
 
@@ -286,7 +286,7 @@
   }
 
   @media (--viewportLarge) {
-    flex-basis: 42.5%;
+    flex-basis: 41.5%;
   }
 }
 
@@ -312,7 +312,7 @@
   }
 
   @media (--viewportLarge) {
-    width: 43vw;
+    width: 41.5vw;
   }
 }
 
