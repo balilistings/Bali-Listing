@@ -16,11 +16,12 @@
   line-height: 130%;
   letter-spacing: 0%;
   color: #F74DF4;
+
   @media (--viewportMedium) {
     font-size: 14px;
   }
 
-  &:hover,
+  & &:hover,
   &:focus {
     border: none;
     outline: none;
@@ -46,8 +47,19 @@
 .inputWithCurrentLocation {
   composes: input;
 
+  &:hover {
+    color: #F74DF4;
+    border: none;
+
+    &::placeholder {
+      color: #F74DF4;
+      font-weight: 700;
+    }
+  }
+
   &::placeholder {
-    color: var(--colorGrey700);
+    color: #F74DF4;
+    font-weight: 700;
   }
 }
 
@@ -82,7 +94,7 @@
 
   @media (--viewportMedium) {
     margin-bottom: 0;
-    padding:0 0 0 16px;
+    padding: 0 0 0 16px;
     height: 56px;
   }
 }
@@ -112,6 +124,7 @@
       right: auto;
     }
   }
+
   @media (max-width: 768px) {
     position: fixed;
     top: 0;
@@ -130,6 +143,7 @@
     width: 100% !important;
     transform: unset;
     padding-bottom: 0 !important;
+
     &>ul {
       background-color: white;
       max-width: 574px;
@@ -145,7 +159,7 @@
       min-height: 65vh;
       display: flex;
       flex-direction: column;
-      
+
     }
   }
 }
