@@ -28,7 +28,7 @@
 
 .searchBarContainer {
   composes: align;
-  background-color: #f2f2f2;
+  background-color: #fff;
   border-color: var(--colorGrey800);
   border-width: 1px;
   color: var(--colorGrey500);
@@ -40,11 +40,13 @@
 
   @media (--viewportMedium) {
     width: 576px;
-    border-radius: 50px;
+  
+    background-color: #f2f2f2;
   }
 
   @media (--viewportLarge) {
     width: 100%;
+    border-radius: 50px;
     padding: 6px 25px 6px 10px;
     min-height: 68px;
 
