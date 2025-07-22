@@ -117,7 +117,7 @@ const BedroomDropdown = ({ input, className, rootClassName, alignLeft }) => {
                 <p className={css.menuItemMobileSubtitle}>
                 Select the number of bedrooms you need
                 </p>
-                <span className={css.closeIcon}>
+                <span className={css.closeIcon} onClick={closeDropdown}>
                   <IconCollection name="close_icon" />
                 </span>
               </div>

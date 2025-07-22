@@ -137,7 +137,7 @@ const PriceDropdown = ({ input, className, rootClassName, alignLeft, activeTabKe
                 <p className={css.menuItemMobileSubtitle}>
                 Select a price range per week, month, or year
                 </p>
-                <span className={css.closeIcon}>
+                <span className={css.closeIcon} onClick={closeDropdown}>
                   <IconCollection name="close_icon" />
                 </span>
               </div>
