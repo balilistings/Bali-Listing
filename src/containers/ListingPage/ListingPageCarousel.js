@@ -204,8 +204,6 @@ export const ListingPageComponent = props => {
     ...restOfProps
   } = props;
 
-  console.log('props in ListingPageCarousel', props);
-
   const listingConfig = config.listing;
   const listingId = new UUID(rawParams.id);
   const isVariant = rawParams.variant != null;
@@ -371,95 +369,6 @@ export const ListingPageComponent = props => {
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
-  const listingCategory = publicData.categoryLevel1;
-  const services = [
-    {
-      icon: CleaningIcon,
-      label: 'Cleaning',
-      description: '2x Weekly cleaning',
-      included: true,
-    },
-    {
-      icon: ElectricityIcon,
-      label: 'Electricity',
-      included: true,
-    },
-    {
-      icon: PoolIcon,
-      label: 'Pool maintenance',
-      included: false,
-    },
-  ];
-
-  const propertyRental = [
-    { label: 'Living', value: 'Open', icon: livingIcon },
-    { label: 'Furnished', value: 'Yes', icon: furnishedIcon },
-  ];
-  const propertySale = [
-    { label: 'Living', value: 'Open', icon: livingIcon },
-    { label: 'Furnished', value: 'Yes', icon: furnishedIcon },
-    { label: 'Buiding Size', value: '1000 m2', icon: buidingSize },
-    { label: 'Land Size', value: '1000 m2', icon: landSize },
-  ];
-  const propertyLand = [
-    { label: 'Land Size', value: '1000 m2', icon: landSize },
-    {
-      label: 'Land Title',
-      value: `Right to Ownership over Stacked Units\n 
-    (Hak Milik Atas Satuan Rumah Susun)`,
-      icon: landTitle,
-    },
-  ];
-
-  const propertyDetailData =
-    listingCategory === 'villaforsale'
-      ? propertySale
-      : listingCategory === 'landforsale'
-      ? propertyLand
-      : listingCategory === 'rentalvillas'
-      ? propertyRental
-      : null;
-
-  const rentalData = [
-    {
-      label: 'Minimum rental period:',
-      value: '3 months Minimum stay',
-    },
-    {
-      label: 'Payment terms:',
-      value: '3 months upfront + 1 month deposit',
-    },
-    {
-      label: 'Cancellation policy:',
-      value: '1-month notice required',
-    },
-  ];
-
-  const saleDataProperty = [
-    { label: 'Lease duration', value: '30 years' },
-    { label: 'Payment terms:', value: '3 months upfront + 1 month deposit' },
-  ];
-
-  const saleDataLand = [{ label: 'Payment terms', value: '3 months upfront + 1 month deposit' }];
-  const amenitiesData = [
-    { id: 1, icon: Wifi },
-    { id: 2, icon: Pool },
-    { id: 3, icon: Gym },
-    { id: 4, icon: PetFriendly },
-    { id: 5, icon: WorkingDesk },
-    { id: 6, icon: CarParking },
-    { id: 7, icon: Kitchen },
-    { id: 8, icon: AirConditioner },
-  ];
-  const listingDetailData =
-    listingCategory === 'villaforsale'
-      ? saleDataProperty
-      : listingCategory === 'landforsale'
-      ? saleDataLand
-      : listingCategory === 'rentalvillas'
-      ? rentalData
-      : null;
-
   return (
     <Page
       title={schemaTitle}
@@ -612,20 +521,6 @@ export const ListingPageComponent = props => {
                 publicData={publicData}
                 listingId={currentListing.id}
                 mapsConfig={config.maps}
-              />
-            </div>
-
-            <div id={listingCategory !== 'rentalvillas' ? 'saleDetails' : 'rentalTerms'}>
-              <SectionDetails
-                title={listingCategory !== 'rentalvillas' ? 'Sale Details' : 'Rental Terms'}
-                data={listingDetailData}
-              />
-            </div>
-
-            <div id={listingCategory !== 'rentalvillas' ? 'saleDetails' : 'rentalTerms'}>
-              <SectionDetails
-                title={listingCategory !== 'rentalvillas' ? 'Sale Details' : 'Rental Terms'}
-                data={listingDetailData}
               />
             </div>
 

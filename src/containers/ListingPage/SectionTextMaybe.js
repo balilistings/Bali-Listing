@@ -11,7 +11,6 @@ const MAX_VISIBLE_CHARS = 300; // Characters to show before "Read More"
 const SectionTextMaybe = props => {
   const [showMessageBox, setShowMessageBox] = useState(false);
   const { text, heading, showAsIngress = false, currentUser } = props;
-  const history = useHistory();
   const [isExpanded, setIsExpanded] = useState(false);
 
   const textClass = showAsIngress ? css.ingress : css.text;
