@@ -11,7 +11,7 @@ import { useHistory } from 'react-router-dom';
 const SectionTextMaybe = props => {
   const [showMessageBox, setShowMessageBox] = useState(false);
   const { text, heading, showAsIngress = false, currentUser } = props;
-  const history = useHistory();
+
   const textClass = showAsIngress ? css.ingress : css.text;
 
   const content = richText(text, {

@@ -101,48 +101,6 @@ const ListingImageGallery = props => {
   const [showMessageBox, setShowMessageBox] = useState(false);
 
   const renderItem = item => {
-    const handleShareClick = () => {
-      const currentUrl = window.location.href;
-
-      navigator.clipboard
-        .writeText(currentUrl)
-        .then(() => {
-          setCopySuccess(true);
-          setCopyError(false);
-
-          setTimeout(() => {
-            setCopySuccess(false);
-          }, 1500);
-        })
-        .catch(() => {
-          setCopySuccess(false);
-          setCopyError(true);
-
-          setTimeout(() => {
-            setCopyError(false);
-          }, 1500);
-        });
-    };
-    const handleFavoriteClick = () => {
-      if (currentUser) {
-        setIsFavorited(!isFavorited);
-        setAnimateHeart(true);
-
-        setTimeout(() => {
-          setAnimateHeart(false);
-        }, 400);
-      } else {
-        setShowMessageBox(true);
-      }
-    };
-    const handleConfirm = () => {
-      setShowMessageBox(false);
-      history.push('/signup');
-    };
-
-    const handleCancel = () => {
-      setShowMessageBox(false);
-    };
     return (
       <AspectRatioWrapper
         width={aspectWidth || 1}
@@ -150,31 +108,6 @@ const ListingImageGallery = props => {
         className={isFullscreen ? css.itemWrapperFullscreen : css.itemWrapper}
       >
         <div className={css.itemCentering}>
-          <div className={css.topRightIcons}>
-            <div className={css.shareWrapper}>
-              {(copySuccess || copyError) && (
-                <div className={copySuccess ? css.successTooltip : css.errorTooltip}>
-                  {copySuccess ? 'Link copied' : 'Failed to copy link'}
-                </div>
-              )}{' '}
-              <button className={css.iconButton} onClick={handleShareClick}>
-                <img src={IconShare} alt="Favorite" className={css.iconImage} />
-              </button>
-            </div>
-            <div className={css.margin}>
-              <button
-                className={classNames(
-                  css.iconButton,
-                  animateHeart && css.heartAnimate,
-                  isFavorited && css.heartActive
-                )}
-                onClick={handleFavoriteClick}
-              >
-                {' '}
-                <img src={IconHeart} alt="Share" className={css.iconImage} />
-              </button>
-            </div>
-          </div>
           <ResponsiveImage
             rootClassName={css.item}
             image={item.image}
