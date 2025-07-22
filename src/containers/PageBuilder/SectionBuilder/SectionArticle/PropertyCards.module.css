@@ -48,9 +48,10 @@
   display: block;
   box-shadow: none;
   @media (max-width: 1023px) {
-    font-size: 9px;
+    font-size: 10px;
     height: 28px;
-    padding: 8px 20px;
+    padding: 4px 20px;
+    border-radius: 5px;
   }
   &:hover {
     background: #fff;
@@ -192,9 +193,7 @@
 
   border-radius: 8px;
   padding: 4px 10px;
-  @media (max-width: 767px) {
-    font-size: 7px;
-  }
+ 
 }
 
 .listedBy {
@@ -242,6 +241,7 @@
   margin: 0px;
   @media (max-width: 767px) {
     font-size: 11px;
+    align-items: center;
   }
 }
 
@@ -274,7 +274,7 @@
 
   color: #818181;
   @media (max-width: 767px) {
-    font-size: 11px;
+    font-size: 8px;
   }
 }
 
@@ -326,6 +326,9 @@
   gap: 8px;
   padding: 6px;
   border-radius: 10px;
+  &:empty{
+    opacity: 0;
+  }
 }
 
 .iconItem {
