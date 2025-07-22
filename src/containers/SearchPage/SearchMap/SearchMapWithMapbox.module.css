@@ -22,4 +22,14 @@
 
 .infoCardContainer {
   z-index: 1;
+  @media (max-width: 768px) {
+  position: fixed;
+ top: unset !important;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  transform: unset !important;
+  background-color: white;
+  }
 }

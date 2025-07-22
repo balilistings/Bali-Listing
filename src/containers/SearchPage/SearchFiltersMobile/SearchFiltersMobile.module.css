@@ -71,15 +71,18 @@
     padding: 3px 0;
     @media (max-width: 768px) {
  
-      border-radius: 20px;
+      
       height: 34px;
     }
-
+& > *:last-child{
+  border-radius: 20px;
+}
     &:not(:last-child) {
       border-right: 1px solid var(--light-3-background-opsi-1, #F0F0F0) !important;
     }
   }
 }
+
 
 .mapIcon {
   /* Font */

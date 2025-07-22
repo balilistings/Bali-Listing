@@ -461,8 +461,9 @@ const PropertyCards = () => {
                     </div>
                     <div className={styles.description}>{description}</div>
                     <div className={styles.bottomContent}>
+                    <div className={styles.icons}>
                       {showPills && (
-                        <div className={styles.icons}>
+                        <>
                           {!!bedrooms && (
                             <span className={styles.iconItem}>
                               <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
@@ -483,8 +484,9 @@ const PropertyCards = () => {
                             <Icon type="pool" />
                           </span>
                         )} */}
-                        </div>
+                        </>
                       )}
+                      </div>
                       <div className={styles.price}>
                         <span className={styles.priceValue}>
                           {formatPriceInMillions(price.amount)} IDR
