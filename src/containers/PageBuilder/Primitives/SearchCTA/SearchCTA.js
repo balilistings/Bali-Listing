@@ -207,7 +207,7 @@ export const SearchCTA = React.forwardRef((props, ref) => {
           if (value === 0) {
             return;
           }
-          queryParams[key] = convertNumberToText(value);
+          queryParams[key] = value;
         } else if (key === 'pub_price') {
           let priceKey = '';
           if (tabs[activeTab].key !== 'rentalvillas') {
