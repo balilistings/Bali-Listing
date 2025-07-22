@@ -21,7 +21,7 @@
     font-size: 14px;
   }
 
-  & &:hover,
+  &:hover,
   &:focus {
     border: none;
     outline: none;
