@@ -55,8 +55,62 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
     dropdownInput,
     onCloseDropdown,
     isMobile,
+    onClearInput,
   } = props;
-  if (predictions.length === 0) {
+  // On mobile, always render the dropdown container, even if predictions are empty
+  if (predictions.length === 0 && isMobile) {
+    const predictionRootMapProviderClass = isGoogleMapsInUse
+      ? css.predictionsRootGoogle
+      : css.predictionsRootMapbox;
+    const classes = classNames(
+      rootClassName || css.predictionsRoot,
+      predictionRootMapProviderClass,
+      className
+    );
+    return (
+      <div className={classes} ref={ref}>
+        <ul className={css.predictions}>
+          <li className={css.menuItemMobile}>
+            <h2 className={css.menuItemMobileTitle}>
+              <span className={css.menuItemMobileTitleIcon}>
+                <svg
+                  width="14"
+                  height="16"
+                  viewBox="0 0 14 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M6.655 15.2633L6.7075 15.2933L6.7285 15.3053C6.81177 15.3503 6.90495 15.3739 6.99963 15.3739C7.0943 15.3739 7.18748 15.3503 7.27075 15.3053L7.29175 15.294L7.345 15.2633C7.63834 15.0893 7.92457 14.9037 8.203 14.7067C8.92381 14.1979 9.59728 13.625 10.2153 12.9952C11.6733 11.5027 13.1875 9.26025 13.1875 6.375C13.1875 4.73397 12.5356 3.16016 11.3752 1.99978C10.2148 0.839395 8.64103 0.1875 7 0.1875C5.35897 0.1875 3.78516 0.839395 2.62478 1.99978C1.4644 3.16016 0.8125 4.73397 0.8125 6.375C0.8125 9.2595 2.3275 11.5027 3.78475 12.9952C4.40248 13.625 5.07571 14.1978 5.79625 14.7067C6.07493 14.9037 6.36141 15.0893 6.655 15.2633ZM7 8.625C7.59674 8.625 8.16903 8.38795 8.59099 7.96599C9.01295 7.54403 9.25 6.97174 9.25 6.375C9.25 5.77826 9.01295 5.20597 8.59099 4.78401C8.16903 4.36205 7.59674 4.125 7 4.125C6.40326 4.125 5.83097 4.36205 5.40901 4.78401C4.98705 5.20597 4.75 5.77826 4.75 6.375C4.75 6.97174 4.98705 7.54403 5.40901 7.96599C5.83097 8.38795 6.40326 8.625 7 8.625Z"
+                    fill="#4D4D4D"
+                  />
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M6.655 15.2633L6.7075 15.2933L6.7285 15.3053C6.81177 15.3503 6.90495 15.3739 6.99963 15.3739C7.0943 15.3739 7.18748 15.3503 7.27075 15.3053L7.29175 15.294L7.345 15.2633C7.63834 15.0893 7.92457 14.9037 8.203 14.7067C8.92381 14.1979 9.59728 13.625 10.2153 12.9952C11.6733 11.5027 13.1875 9.26025 13.1875 6.375C13.1875 4.73397 12.5356 3.16016 11.3752 1.99978C10.2148 0.839395 8.64103 0.1875 7 0.1875C5.35897 0.1875 3.78516 0.839395 2.62478 1.99978C1.4644 3.16016 0.8125 4.73397 0.8125 6.375C0.8125 9.2595 2.3275 11.5027 3.78475 12.9952C4.40248 13.625 5.07571 14.1978 5.79625 14.7067C6.07493 14.9037 6.36141 15.0893 6.655 15.2633ZM7 8.625C7.59674 8.625 8.16903 8.38795 8.59099 7.96599C9.01295 7.54403 9.25 6.97174 9.25 6.375C9.25 5.77826 9.01295 5.20597 8.59099 4.78401C8.16903 4.36205 7.59674 4.125 7 4.125C6.40326 4.125 5.83097 4.36205 5.40901 4.78401C4.98705 5.20597 4.75 5.77826 4.75 6.375C4.75 6.97174 4.98705 7.54403 5.40901 7.96599C5.83097 8.38795 6.40326 8.625 7 8.625Z"
+                    fill="black"
+                    fillOpacity="0.2"
+                  />
+                </svg>
+              </span>
+              Location
+            </h2>
+            <span className={css.closeIcon} 
+              onClick={isMobile ? onClearInput : onCloseDropdown}>
+              <IconCollection name="close_icon" />
+            </span>
+          </li>
+          <li className={css.searchInputMobile}>{dropdownInput}</li>
+          <li className={css.listItemBlackText} style={{ textAlign: 'center', padding: '20px 0' }}>
+            No results found
+          </li>
+        </ul>
+        {children}
+      </div>
+    );
+  } else if (predictions.length === 0) {
     return null;
   }
 
@@ -234,6 +288,7 @@ class LocationAutocompleteInputImplementation extends Component {
     this.finalizeSelection = this.finalizeSelection.bind(this);
     this.handleClickOutside = this.handleClickOutside.bind(this); // NEW: bind
     this.handleReset = this.handleReset.bind(this);
+    this.handleContainerClick = this.handleContainerClick.bind(this); // BIND NEW HANDLER
 
     // Debounce the method to avoid calling the API too many times
     // when the user is typing fast.
@@ -257,6 +312,18 @@ class LocationAutocompleteInputImplementation extends Component {
     if (!this.state.dropdownOpen) return;
     if (this.dropdownRef.current && !this.dropdownRef.current.contains(event.target)) {
       this.setState({ dropdownOpen: false, inputHasFocus: false });
+    }
+  }
+
+  // NEW: Open dropdown on mobile tap/click
+  handleContainerClick(e) {
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    if (isMobile && !this.state.dropdownOpen) {
+      this.setState({ dropdownOpen: true, inputHasFocus: true }, () => {
+        if (this.input && typeof this.input.focus === 'function') {
+          this.input.focus();
+        }
+      });
     }
   }
 
@@ -319,13 +386,17 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   handleReset() {
-    console.log('calleddddd');
     this.props.input.onChange({
       search: '',
       predictions: [],
       selectedPlace: null,
     });
     this.setState({ highlightedIndex: -1 });
+
+    // On mobile, keep the dropdown open and input focused
+    if (typeof window !== 'undefined' && window.innerWidth <= 768) {
+      this.setState({ dropdownOpen: true, inputHasFocus: true });
+    }
   }
 
   // Handle input text change, fetch predictions if the value isn't empty
@@ -598,19 +669,19 @@ class LocationAutocompleteInputImplementation extends Component {
     const refMaybe =
       typeof inputRef === 'function'
         ? {
-            ref: node => {
-              this.input = node;
-              if (inputRef) {
-                inputRef(node);
-              }
-            },
-          }
+          ref: node => {
+            this.input = node;
+            if (inputRef) {
+              inputRef(node);
+            }
+          },
+        }
         : inputRef
-        ? { ref: inputRef }
-        : {};
+          ? { ref: inputRef }
+          : {};
 
     return (
-      <div className={rootClass} ref={this.dropdownRef}>
+      <div className={rootClass} ref={this.dropdownRef} onClick={this.handleContainerClick}>
         {/* <div className={iconClass}>
           {this.state.fetchingPlaceDetails ? (
             <IconSpinner className={css.iconSpinner} />
@@ -655,7 +726,7 @@ class LocationAutocompleteInputImplementation extends Component {
         </div>
         <div className={css.inputContainer}>
           <label className={css.label}>Location</label>
-          <input
+          {isMobile ? <span className={classNames(css.locationInput, search? css.hasValue : css.plceholder)}>{search ? search : placeholder}</span> : <input
             className={inputClass}
             type="search"
             autoComplete="off"
@@ -671,20 +742,20 @@ class LocationAutocompleteInputImplementation extends Component {
             {...refMaybe}
             title={search}
             data-testid="location-search"
-          />
-              {this.state.inputHasFocus && showCrossIcon && (
-          <div
-            onClick={this.handleReset}
-            className={css.crossIcon}
-          >
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </div>
-        )}
+          />}
+          {this.state.inputHasFocus && showCrossIcon && (
+            <div
+              onClick={this.handleReset}
+              className={css.crossIcon}
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+          )}
         </div>
 
-    
+
 
         {renderPredictions ? (
           <LocationPredictionsList
@@ -699,26 +770,41 @@ class LocationAutocompleteInputImplementation extends Component {
             onSelectMove={this.handlePredictionsSelectMove}
             onSelectEnd={this.handlePredictionsSelectEnd}
             dropdownInput={
-              <input
-                className={inputClass}
-                type="search"
-                autoComplete="off"
-                autoFocus={autoFocus}
-                placeholder={placeholder}
-                name={name}
-                value={search}
-                disabled={disabled || this.state.fetchingPlaceDetails}
-                onFocus={handleOnFocus}
-                onBlur={this.handleOnBlur}
-                onChange={this.onChange}
-                onKeyDown={this.onKeyDown}
-                {...refMaybe}
-                title={search}
-                data-testid="location-search"
-              />
+              <>
+                <input
+                  className={inputClass}
+                  type="search"
+                  autoComplete="off"
+                  autoFocus={autoFocus}
+                  placeholder={placeholder}
+                  name={name}
+                  value={search}
+                  disabled={disabled || this.state.fetchingPlaceDetails}
+                  onFocus={handleOnFocus}
+                  onBlur={this.handleOnBlur}
+                  onChange={this.onChange}
+                  onKeyDown={this.onKeyDown}
+                  {...refMaybe}
+                  title={search}
+                  data-testid="location-search"
+                />
+
+                {this.state.inputHasFocus && showCrossIcon && (
+                  <div
+                    onClick={this.handleReset}
+                    className={css.crossIcon}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                )}
+              </>
+
             }
             onCloseDropdown={handleCloseDropdown}
             isMobile={isMobile}
+            onClearInput={this.handleReset}
           >
             <GeocoderAttribution
               className={predictionsAttributionClassName}
