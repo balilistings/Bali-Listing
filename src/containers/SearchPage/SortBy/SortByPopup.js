@@ -138,7 +138,7 @@ const SortByPopup = props => {
             </MenuItem>
           );
         })}
-        <MenuItem key="reset" className={css.menuItemMobile}>
+        {/* <MenuItem key="reset" className={css.menuItemMobile}>
         <div className={css.footer}>
           <button className={css.resetButton}>
             Reset All
@@ -147,7 +147,7 @@ const SortByPopup = props => {
            Save
           </button>
         </div>
-        </MenuItem>
+        </MenuItem> */}
       </MenuContent>
     </Menu>
   );

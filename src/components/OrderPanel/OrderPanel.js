@@ -461,9 +461,9 @@ const OrderPanel = props => {
   return (
     <div className={classes}>
       {availableper === 'yes' && (
-        <Button className={classNames(css.availableNowButton, css.availableNowButtonDesktop)}>
+        <div className={classNames(css.availableNowButton, css.availableNowButtonDesktop)}>
           Available Now!
-        </Button>
+        </div>
       )}
       <ModalInMobile
         containerClassName={css.modalContainer}
@@ -596,9 +596,9 @@ const OrderPanel = props => {
         <div className={css.openOrderFormContainer}>
           <div>
             {availableper === 'yes' && (
-              <Button className={classNames(css.availableNowButton, css.availableNowButtonMobile)}>
+              <div className={classNames(css.availableNowButton, css.availableNowButtonMobile)}>
                 Available Now!
-              </Button>
+              </div>
             )}
             {!hideTabs && (
               <div className={css.tabsContainer}>
