@@ -18,6 +18,7 @@ const LocationSearchField = props => {
     alignLeft,
     Searchicon,
     showCrossIcon,
+    onNext,
   } = props;
   return (
     <Field
@@ -57,6 +58,7 @@ const LocationSearchField = props => {
             meta={meta}
             Searchicon={Searchicon}
             showCrossIcon={showCrossIcon}
+            onNext={onNext}
           />
         );
       }}
@@ -79,6 +81,7 @@ const FilterLocation = props => {
     setIsOpenBedrooms,
     setIsOpenLandSize,
     landSize,
+    isMobile,
     ...restOfProps
   } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -87,6 +90,10 @@ const FilterLocation = props => {
     if (location?.search?.length > 0 && !location?.selectedPlace) {
       setSubmitDisabled(true);
     } else if (location?.name === 'location') {
+      if (isMobile) {
+        return;
+      }
+
       if (landSize) {
         setIsOpenLandSize(true);
       } else {
@@ -94,6 +101,11 @@ const FilterLocation = props => {
       }
     } else {
       setSubmitDisabled(false);
+
+      if (isMobile) {
+        return;
+      }
+
       if (landSize) {
         setIsOpenLandSize(true);
       } else {
@@ -112,6 +124,13 @@ const FilterLocation = props => {
         alignLeft={alignLeft}
         Searchicon={Searchicon}
         showCrossIcon={true}
+        onNext={() => {
+          if (landSize) {
+            setIsOpenLandSize(true);
+          } else {
+            setIsOpenBedrooms(true);
+          }
+        }}
       />
     </div>
   );
