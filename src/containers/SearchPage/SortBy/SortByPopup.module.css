@@ -54,6 +54,9 @@
       max-height: 85vh;
       border-radius: 12px 12px 0px 0px;
       padding-bottom: 34px;
+      @media (max-width: 768px) {
+        padding-bottom: 40px;
+      }
 
       & li {
         button {
