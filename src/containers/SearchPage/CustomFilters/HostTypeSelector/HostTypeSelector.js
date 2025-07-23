@@ -9,7 +9,7 @@ const hostTypeOptions = [
 function HostTypeSelector({ selectedHostType, onHostTypeChange, onReset }) {
   return (
     <PillSelector
-      title="Communication for negotiation"
+      title="Host type"
       options={hostTypeOptions}
       selectedOption={selectedHostType}
       onOptionChange={onHostTypeChange}
