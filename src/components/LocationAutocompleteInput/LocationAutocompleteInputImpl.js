@@ -391,6 +391,7 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   handleReset() {
+    console.log('calleddddd')
     this.props.input.onChange({
       search: '',
       predictions: [],
