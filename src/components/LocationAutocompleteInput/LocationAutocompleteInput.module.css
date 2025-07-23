@@ -140,6 +140,9 @@ bottom of the container.
     }
   }
 
+ 
+
+
   .listItemBlackText {
     color: #231f20;
     font-family: Mulish;
@@ -188,6 +191,15 @@ bottom of the container.
     &.highlighted {
       border-left: 0px solid var(--colorWhite);
       color: var(--colorWhite);
+    }
+  }
+}
+
+.inputContainer{
+  position: relative;
+  & .crossIcon{
+    @media (max-width: 768px) {
+    display: none;
     }
   }
 }
@@ -361,6 +373,9 @@ bottom of the container.
     display: none;
   }
   position: relative;
+  & .closeIcon{
+    right: 20px !important;
+  }
   &:before {
     content: '';
     position: absolute;
@@ -474,5 +489,18 @@ bottom of the container.
     min-height: 30px;
     padding: 8px 12px;
     font-size: 10px;
+  }
+}
+
+.crossIcon{
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  z-index: 1;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  @media (max-width: 768px) {
+    right: 20px !important;
   }
 }

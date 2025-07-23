@@ -324,6 +324,9 @@
 
 .sliderSectionNoTabs {
   padding: 24px 0 16px 0;
+  @media (max-width: 768px) {
+    padding: 24px 20px 16px 20px;
+  }
 }
 
 .sliderWrapper {
@@ -335,6 +338,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
+  @media (max-width: 768px) {
+    padding: 0;
+  }
 }
 
 .priceValue {

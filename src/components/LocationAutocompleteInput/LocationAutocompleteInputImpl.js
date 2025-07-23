@@ -653,7 +653,7 @@ class LocationAutocompleteInputImplementation extends Component {
             </svg>
           )}
         </div>
-        <div>
+        <div className={css.inputContainer}>
           <label className={css.label}>Location</label>
           <input
             className={inputClass}
@@ -672,23 +672,19 @@ class LocationAutocompleteInputImplementation extends Component {
             title={search}
             data-testid="location-search"
           />
-        </div>
-
-        {this.state.inputHasFocus && showCrossIcon && (
+              {this.state.inputHasFocus && showCrossIcon && (
           <div
             onClick={this.handleReset}
-            style={{
-              backgroundColor: 'red',
-              zIndex: 9999,
-              position: 'absolute',
-              right: 0,
-              width: '20px',
-              height: '20px',
-            }}
+            className={css.crossIcon}
           >
-            X
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
           </div>
         )}
+        </div>
+
+    
 
         {renderPredictions ? (
           <LocationPredictionsList
