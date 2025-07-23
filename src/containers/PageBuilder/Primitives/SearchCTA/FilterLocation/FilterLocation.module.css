@@ -169,6 +169,7 @@
       min-height: 65vh;
       display: flex;
       flex-direction: column;
+      z-index: 3;
     }
   }
 }

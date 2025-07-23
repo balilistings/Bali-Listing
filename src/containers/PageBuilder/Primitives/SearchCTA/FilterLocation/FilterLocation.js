@@ -102,7 +102,7 @@ const FilterLocation = props => {
     } else {
       setSubmitDisabled(false);
 
-      if (isMobile) {
+      if (isMobile || location.search === '') {
         return;
       }
 

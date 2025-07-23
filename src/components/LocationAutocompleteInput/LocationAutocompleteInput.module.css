@@ -139,6 +139,12 @@ bottom of the container.
       border-bottom-right-radius: 20px;
     }
   }
+  & ul{
+    z-index: 3;
+  }
+
+ 
+
 
   .listItemBlackText {
     color: #231f20;
@@ -188,6 +194,15 @@ bottom of the container.
     &.highlighted {
       border-left: 0px solid var(--colorWhite);
       color: var(--colorWhite);
+    }
+  }
+}
+
+.inputContainer{
+  position: relative;
+  & .crossIcon{
+    @media (max-width: 768px) {
+    display: none;
     }
   }
 }
@@ -361,6 +376,9 @@ bottom of the container.
     display: none;
   }
   position: relative;
+  & .closeIcon{
+    right: 20px !important;
+  }
   &:before {
     content: '';
     position: absolute;
@@ -474,5 +492,59 @@ bottom of the container.
     min-height: 30px;
     padding: 8px 12px;
     font-size: 10px;
+  }
+}
+
+.crossIcon{
+  position: absolute;
+  right: -5px;
+  top: 4px;
+  z-index: 3;
+  cursor: pointer;
+  width: 25px;
+  height: 25px;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media (max-width: 768px) {
+    right: 20px !important;
+    top: 14px;
+  }
+
+}
+
+.locationInput{
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 10px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #D3D3D3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  max-width: 160px;
+  &.hasValue{
+    color: #f74df4;
+    font-weight: 700;
+  }
+}
+
+.closeDropdown{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  cursor: pointer;
+  @media (min-width: 768px) {
+    display: none;
   }
 }
