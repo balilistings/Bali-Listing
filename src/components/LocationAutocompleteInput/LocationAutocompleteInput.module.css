@@ -139,6 +139,9 @@ bottom of the container.
       border-bottom-right-radius: 20px;
     }
   }
+  & ul{
+    z-index: 3;
+  }
 
  
 
@@ -494,8 +497,8 @@ bottom of the container.
 
 .crossIcon{
   position: absolute;
-  right: 10px;
-  top: 5px;
+  right: -5px;
+  top: 4px;
   z-index: 3;
   cursor: pointer;
   width: 25px;
@@ -508,6 +511,7 @@ bottom of the container.
     right: 20px !important;
     top: 14px;
   }
+
 }
 
 .locationInput{
@@ -529,5 +533,18 @@ bottom of the container.
   &.hasValue{
     color: #f74df4;
     font-weight: 700;
+  }
+}
+
+.closeDropdown{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  cursor: pointer;
+  @media (min-width: 768px) {
+    display: none;
   }
 }

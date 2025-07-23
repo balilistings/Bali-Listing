@@ -197,6 +197,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
 
   return (
     <div className={classes} ref={ref}>
+      <div className={css.closeDropdown} onClick={onCloseDropdown} />
       <ul className={css.predictions}>
         <li className={css.menuItemMobile}>
           <h2 className={css.menuItemMobileTitle}>
@@ -560,7 +561,14 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   finalizeSelection() {
-    this.setState({ inputHasFocus: false, highlightedIndex: -1, dropdownOpen: false });
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    if (isMobile) {
+      // On mobile, keep the dropdown open and input focused
+      this.setState({ inputHasFocus: true, highlightedIndex: -1, dropdownOpen: true });
+    } else {
+      // On desktop, close the dropdown
+      this.setState({ inputHasFocus: false, highlightedIndex: -1, dropdownOpen: false });
+    }
     this.props.input.onBlur(currentValue(this.props));
   }
 
@@ -651,7 +659,9 @@ class LocationAutocompleteInputImplementation extends Component {
 
     const handleOnFocus = e => {
       this.setState({ inputHasFocus: true, dropdownOpen: true });
-      onFocus(e);
+      if (typeof input.onFocus === 'function') {
+        input.onFocus(e);
+      }
     };
 
     const handleCloseDropdown = () => {
@@ -733,7 +743,7 @@ class LocationAutocompleteInputImplementation extends Component {
         </div>
         <div className={css.inputContainer}>
           <label className={css.label}>Location</label>
-          {isMobile ? <span className={classNames(css.locationInput, search? css.hasValue : css.plceholder)}>{search ? search : placeholder}</span> : <input
+          {isMobile ? <span className={classNames(css.locationInput, search? css.hasValue : css.plceholder, placeholder == "Current location" && css.hasValue)}>{search ? search : placeholder}</span> : <input
             className={inputClass}
             type="search"
             autoComplete="off"
@@ -743,7 +753,7 @@ class LocationAutocompleteInputImplementation extends Component {
             value={search}
             disabled={disabled || this.state.fetchingPlaceDetails}
             onFocus={handleOnFocus}
-            onBlur={this.handleOnBlur}
+            // onBlur={this.handleOnBlur}
             onChange={this.onChange}
             onKeyDown={this.onKeyDown}
             {...refMaybe}
@@ -788,7 +798,7 @@ class LocationAutocompleteInputImplementation extends Component {
                   value={search}
                   disabled={disabled || this.state.fetchingPlaceDetails}
                   onFocus={handleOnFocus}
-                  onBlur={this.handleOnBlur}
+                  // onBlur={this.handleOnBlur}
                   onChange={this.onChange}
                   onKeyDown={this.onKeyDown}
                   {...refMaybe}
