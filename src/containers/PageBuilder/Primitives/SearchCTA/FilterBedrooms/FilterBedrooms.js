@@ -96,7 +96,7 @@ const BedroomDropdown = ({
               [css.alignLeft]: alignLeft,
             })}
           >
-            <div className={css.counterModalOverlay} onClick={closeDropdown} />
+            <div className={css.counterModalOverlay} onClick={() => setIsOpen(false)} />
             <div className={css.counterModal}>
               <div className={css.menuItemMobile}>
                 <h2 className={css.menuItemMobileTitle}>
@@ -176,7 +176,7 @@ const BedroomDropdown = ({
                   Bedrooms
                 </h2>
                 <p className={css.menuItemMobileSubtitle}>Select the number of bedrooms you need</p>
-                <span className={css.closeIcon} onClick={closeDropdown}>
+                <span className={css.closeIcon} onClick={() => setIsOpen(false)}>
                   <IconCollection name="close_icon" />
                 </span>
               </div>
