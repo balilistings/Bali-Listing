@@ -23,6 +23,7 @@ import { pickUserFieldsData, addScopePrefix } from '../../util/userHelpers';
 import { login, authenticationInProgress, signup, signupWithIdp } from '../../ducks/auth.duck';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { sendVerificationEmail } from '../../ducks/user.duck';
+import Signup from './Signup/Signup';
 
 import {
   Page,
@@ -636,7 +637,8 @@ export const AuthenticationPageComponent = props => {
         description: schemaDescription,
       }}
     >
-      <LayoutSingleColumn
+      <Signup />
+      {/* <LayoutSingleColumn
         mainColumnClassName={css.layoutWrapperMain}
         topbar={<TopbarContainer className={topbarClasses} />}
         footer={<FooterContainer />}
@@ -683,7 +685,7 @@ export const AuthenticationPageComponent = props => {
             />
           )}
         </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn>
+      </LayoutSingleColumn> */}
       <Modal
         id="AuthenticationPage.tos"
         isOpen={tosModalOpen}
@@ -765,10 +767,7 @@ const mapDispatchToProps = dispatch => ({
 // See: https://github.com/ReactTraining/react-router/issues/4671
 const AuthenticationPage = compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps, mapDispatchToProps)
 )(AuthenticationPageComponent);
 
 export default AuthenticationPage;
