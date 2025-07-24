@@ -232,7 +232,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
         </li>
         <li className={css.searchInputMobile}>{dropdownInput}</li>
         {predictions.map(item)}
-        <li
+        {/* <li
           className={classNames(css.menuItemMobile, css.footerWrapper)}
           style={{ paddingBottom: 0 }}
         >
@@ -244,7 +244,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
               Next
             </button>
           </div>
-        </li>
+        </li> */}
       </ul>
       {children}
     </div>
@@ -561,14 +561,14 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   finalizeSelection() {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    if (isMobile) {
-      // On mobile, keep the dropdown open and input focused
-      this.setState({ inputHasFocus: true, highlightedIndex: -1, dropdownOpen: true });
-    } else {
-      // On desktop, close the dropdown
-      this.setState({ inputHasFocus: false, highlightedIndex: -1, dropdownOpen: false });
-    }
+    // const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    // if (isMobile) {
+    //   // On mobile, keep the dropdown open and input focused
+    //   this.setState({ inputHasFocus: true, highlightedIndex: -1, dropdownOpen: true });
+    // } else {
+    //   // On desktop, close the dropdown
+    // }
+    this.setState({ inputHasFocus: false, highlightedIndex: -1, dropdownOpen: false });
     this.props.input.onBlur(currentValue(this.props));
   }
 
