@@ -1,0 +1,135 @@
+.container {
+  margin-bottom: 24px;
+  padding-top: 28px;
+  border-top: 1px solid #f2f2f2;
+  @media (max-width: 767px) {
+    padding-top: 24px;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  margin: 0;
+  padding: 0;
+  color: #231f20;
+  @media (max-width: 767px) {
+    font-size: 12px;
+  }
+}
+
+.resetButton {
+  background: none;
+  border: none;
+  color: #f74df4;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 500;
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  @media (max-width: 767px) {
+    font-size: 10px;
+  }
+}
+
+.resetButton:hover {
+  text-decoration: underline;
+}
+
+.amenitiesGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  @media (max-width: 767px) {
+    gap: 8px 4px;
+  }
+}
+
+.amenityPill {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #d3d3d3;
+  border-radius: 20px;
+  padding: 8px 20px;
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+
+  color: #231f20;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  @media (max-width: 767px) {
+    padding: 9px 12px;
+    font-size: 10px;
+  }
+}
+
+.amenityPill:hover {
+  border-color: #d1d5db;
+  background-color: #f9fafb;
+}
+
+.amenityPill.selected {
+  border-color: #f74df4;
+  background-color: #fba6f933;
+}
+
+.amenityIcon {
+  margin-bottom: 0px;
+  display: block;
+  & svg {
+    width: 24px;
+    height: 24px;
+    fill: transparent;
+    @media (max-width: 767px) {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.amenityName {
+  font-size: 12px;
+  font-weight: 500;
+  color: #374151;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.selected .amenityName {
+  /* color: #e91e63;
+    font-weight: 600; */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 480px) {
+  .amenitiesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

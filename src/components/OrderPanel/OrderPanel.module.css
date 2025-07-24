@@ -368,7 +368,8 @@
 .availableNowButton {
   min-height: 39px;
   background-color: #06C270;
-  border-radius: 12px;
+  box-shadow: none !important;
+  border-radius: 12px !important;
   font-family: Istok Web;
   font-weight: 700;
   font-size: 18px;
@@ -376,6 +377,10 @@
   letter-spacing: 0%;
   color: #FFFFFF;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px !important;
 }
 
 .availableNowButtonDesktop{

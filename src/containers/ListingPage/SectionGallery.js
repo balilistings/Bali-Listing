@@ -3,16 +3,19 @@ import ListingImageGallery from './ListingImageGallery/ListingImageGallery';
 
 import css from './ListingPage.module.css';
 import IconCollection from '../../components/IconCollection/IconCollection';
+import { useHistory } from 'react-router-dom';
 
 const SectionGallery = props => {
   const { listing, variantPrefix, currentUser } = props;
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const history = useHistory();
   const images = listing.images;
   const imageVariants = ['scaled-small', 'scaled-medium', 'scaled-large', 'scaled-xlarge'];
   const thumbnailVariants = [variantPrefix, `${variantPrefix}-2x`, `${variantPrefix}-4x`];
+
   return (
     <section className={css.productGallery} data-testid="carousel">
-      <div className={css.backButtonContainer}>
+      <div className={css.backButtonContainer} onClick={() => history.goBack()}>
         <div className={css.backButton}>
           <IconCollection name="icon-back" />
         </div>

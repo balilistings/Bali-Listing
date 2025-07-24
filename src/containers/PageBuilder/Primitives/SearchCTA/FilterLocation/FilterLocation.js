@@ -10,7 +10,16 @@ const identity = v => v;
 
 const LocationSearchField = props => {
   const [isCurrentLocation, setIsCurrentLocation] = useState(false);
-  const { inputRootClass, intl, inputRef, onLocationChange, alignLeft, Searchicon } = props;
+  const {
+    inputRootClass,
+    intl,
+    inputRef,
+    onLocationChange,
+    alignLeft,
+    Searchicon,
+    showCrossIcon,
+    onNext,
+  } = props;
   return (
     <Field
       name="location"
@@ -48,6 +57,8 @@ const LocationSearchField = props => {
             input={{ ...restInput, onChange: searchOnChange }}
             meta={meta}
             Searchicon={Searchicon}
+            showCrossIcon={showCrossIcon}
+            onNext={onNext}
           />
         );
       }}
@@ -67,6 +78,10 @@ const FilterLocation = props => {
     alignLeft,
     isCurrentLocation,
     Searchicon,
+    setIsOpenBedrooms,
+    setIsOpenLandSize,
+    landSize,
+    isMobile,
     ...restOfProps
   } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -74,8 +89,28 @@ const FilterLocation = props => {
   const onChange = location => {
     if (location?.search?.length > 0 && !location?.selectedPlace) {
       setSubmitDisabled(true);
+    } else if (location?.name === 'location') {
+      if (isMobile) {
+        return;
+      }
+
+      if (landSize) {
+        setIsOpenLandSize(true);
+      } else {
+        setIsOpenBedrooms(true);
+      }
     } else {
       setSubmitDisabled(false);
+
+      if (isMobile || location.search === '') {
+        return;
+      }
+
+      if (landSize) {
+        setIsOpenLandSize(true);
+      } else {
+        setIsOpenBedrooms(true);
+      }
     }
   };
 
@@ -88,6 +123,14 @@ const FilterLocation = props => {
         onLocationChange={onChange}
         alignLeft={alignLeft}
         Searchicon={Searchicon}
+        showCrossIcon={true}
+        onNext={() => {
+          if (landSize) {
+            setIsOpenLandSize(true);
+          } else {
+            setIsOpenBedrooms(true);
+          }
+        }}
       />
     </div>
   );

@@ -164,12 +164,16 @@ const SortByPopup = props => {
             </MenuItem>
           );
         })}
-        <MenuItem key="reset" className={css.menuItemMobile}>
-          <div className={css.footer}>
-            <button className={css.resetButton}>Reset All</button>
-            <button className={css.showListingsButton}>Save</button>
-          </div>
-        </MenuItem>
+        {/* <MenuItem key="reset" className={css.menuItemMobile}>
+        <div className={css.footer}>
+          <button className={css.resetButton}>
+            Reset All
+          </button>
+          <button className={css.showListingsButton}>
+           Save
+          </button>
+        </div>
+        </MenuItem> */}
       </MenuContent>
     </Menu>
   );

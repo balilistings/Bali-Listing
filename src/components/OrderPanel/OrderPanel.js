@@ -344,6 +344,7 @@ const OrderPanel = props => {
     availableper,
     categoryLevel1,
     priceperare,
+    hosttype,
   } = publicData || {};
 
   const isVillaforsale = categoryLevel1 === 'villaforsale';
@@ -465,9 +466,9 @@ const OrderPanel = props => {
   return (
     <div className={classes}>
       {availableper === 'yes' && (
-        <Button className={classNames(css.availableNowButton, css.availableNowButtonDesktop)}>
+        <div className={classNames(css.availableNowButton, css.availableNowButtonDesktop)}>
           Available Now!
-        </Button>
+        </div>
       )}
       <ModalInMobile
         containerClassName={css.modalContainer}
@@ -589,7 +590,11 @@ const OrderPanel = props => {
             {...sharedProps}
           />
         ) : showInquiryForm ? (
-          <InquiryWithoutPaymentForm formId="OrderPanelInquiryForm" onSubmit={onSubmit} />
+          <InquiryWithoutPaymentForm
+            formId="OrderPanelInquiryForm"
+            onSubmit={onSubmit}
+            hosttype={hosttype}
+          />
         ) : !isKnownProcess ? (
           <p className={css.errorSidebar}>
             <FormattedMessage id="OrderPanel.unknownTransactionProcess" />
@@ -600,9 +605,9 @@ const OrderPanel = props => {
         <div className={css.openOrderFormContainer}>
           <div>
             {availableper === 'yes' && (
-              <Button className={classNames(css.availableNowButton, css.availableNowButtonMobile)}>
+              <div className={classNames(css.availableNowButton, css.availableNowButtonMobile)}>
                 Available Now!
-              </Button>
+              </div>
             )}
             {!hideTabs && (
               <div className={css.tabsContainer}>

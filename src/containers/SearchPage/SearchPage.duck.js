@@ -365,7 +365,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
       ],
       ...createImageVariantConfig(`${variantPrefix}`, 400, aspectRatio),
       ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
-      'limit.images': 1,
+      // 'limit.images': 1,
     },
     config
   );

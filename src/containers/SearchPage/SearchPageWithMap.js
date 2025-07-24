@@ -233,12 +233,6 @@ export class SearchPageComponent extends Component {
       location
     );
 
-    // console.log('final callll', {
-    //   routeName,
-    //   pathParams,
-    //   searchParams,
-    //   search,
-    // });
     history.push(createResourceLocatorString(routeName, routeConfiguration, pathParams, search));
   }
 
@@ -268,7 +262,9 @@ export class SearchPageComponent extends Component {
     );
 
     history.push(
-      createResourceLocatorString(routeName, routeConfiguration, pathParams, queryParams)
+      createResourceLocatorString(routeName, routeConfiguration, pathParams, {
+        pub_categoryLevel1: 'rentalvillas',
+      })
     );
   }
 
@@ -726,7 +722,7 @@ export class SearchPageComponent extends Component {
                 this.applyFilters(newParams);
               }}
               resultsCount={totalItems}
-              // onResetAll={this.resetAll}
+              onReset={this.resetAll}
               currentQueryParams={this.state.currentQueryParams}
             />
           )}

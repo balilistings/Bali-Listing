@@ -6,8 +6,34 @@ import { useDispatch, useSelector } from 'react-redux';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { getListingsById } from '../../../../ducks/marketplaceData.duck';
 import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
+import { NamedLink } from '../../../../components/NamedLink/NamedLink';
+import { sortTags, capitaliseFirstLetter } from '../../../../util/helper';
+import { createSlug } from '../../../../util/urlHelpers';
+import { useHistory } from 'react-router-dom';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
+
+const formatPriceInMillions = priceAmount => {
+  if (!priceAmount) return null;
+
+  // First divide by 100 to get the actual price (prices are stored in subunits)
+  const actualPrice = priceAmount / 100;
+
+  // Check if the price is in millions (1,000,000 or more)
+  if (actualPrice >= 1000000) {
+    const millions = actualPrice / 1000000;
+    // If it's a whole number, show without decimal
+    if (millions % 1 === 0) {
+      return `${millions}M`;
+    } else {
+      // Show with one decimal place for partial millions
+      return `${millions.toFixed(1)}M`;
+    }
+  }
+
+  // For smaller amounts, show the actual price
+  return `${actualPrice.toLocaleString()}`;
+};
 
 export const Icon = ({ type }) => {
   // Use emoji for demo, replace with SVG/icon in real app
@@ -202,12 +228,16 @@ const PropertyCards = () => {
     featuredListingsInProgress,
     featuredListingsError,
   } = state.LandingPage;
-  const listings = getListingsById(state, featuredListingIds);
+  const l = getListingsById(state, featuredListingIds);
   const [activeTab, setActiveTab] = useState('denpasar');
   // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
+  const history = useHistory();
+
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const listings = isMobile ? l.slice(0, 2) : l;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -338,10 +368,28 @@ const PropertyCards = () => {
                 title,
                 description,
                 price,
-                publicData: { pricee, location, propertytype, bedrooms, bathrooms, kitchen, pool },
+                publicData: {
+                  pricee,
+                  location,
+                  propertytype,
+                  bedrooms,
+                  bathrooms,
+                  kitchen,
+                  pool,
+                  categoryLevel1,
+                },
               } = attributes;
+
+              const tags = sortTags(pricee);
+              const showPills = categoryLevel1 !== 'landforsale';
+
               return (
-                <div className={styles.card} key={card.id.uuid}>
+                <NamedLink
+                  className={styles.card}
+                  name="ListingPage"
+                  params={{ id: card.id.uuid, slug: createSlug(title) }}
+                  key={card.id.uuid}
+                >
                   <div className={styles.imageWrapper}>
                     <Slider {...cardSliderSettings} className={styles.slider}>
                       {imagesUrls.map((img, imgIdx) => (
@@ -376,45 +424,57 @@ const PropertyCards = () => {
                   </div>
                   <div className={styles.cardDetails}>
                     <div className={styles.tags}>
-                      {pricee?.map(tag => (
+                      {tags?.map(tag => (
                         <span className={styles.tag} key={tag}>
                           {tag}
                         </span>
                       ))}
-                      <span className={styles.listedBy}>
-                        Listed by:{' '}
-                        <span className={styles.listedByName}>
-                          {author.attributes.profile.displayName}
+                      <NamedLink
+                        className={styles.listedBy}
+                        name="ProfilePage"
+                        params={{ id: author.id.uuid }}
+                      >
+                        <span className={styles.listedBy}>
+                          Listed by:{' '}
+                          <span className={styles.listedByName}>
+                            {author.attributes.profile.displayName}
+                          </span>
                         </span>
-                      </span>
+                      </NamedLink>
                     </div>
                     <div className={styles.title}>{title}</div>
                     <div className={styles.location}>
+                      {propertytype && (
+                        <>
+                          <span className={styles.typeIcon}>
+                            <IconCollection name="typeIcon" />
+                          </span>
+                          <span className={styles.type}>{capitaliseFirstLetter(propertytype)}</span>
+                        </>
+                      )}
                       <span className={styles.locationWrapper}>
                         <span className={styles.locationIcon}>
                           <IconCollection name="locationIcon" />
                         </span>
                         {location?.address}
                       </span>
-                      <span className={styles.typeIcon}>
-                        <IconCollection name="typeIcon" />
-                      </span>
-                      <span className={styles.type}>{propertytype}</span>
                     </div>
-                    <div className={styles.description}>{description}</div>
+                    {/* <div className={styles.description}>{description}</div> */}
                     <div className={styles.bottomContent}>
-                      <div className={styles.icons}>
-                        {!!bedrooms && (
-                          <span className={styles.iconItem}>
-                            <Icon type="bed" /> {bedrooms}
-                          </span>
-                        )}
-                        {!!bathrooms && (
-                          <span className={styles.iconItem}>
-                            <Icon type="bath" /> {bathrooms}
-                          </span>
-                        )}
-                        {kitchen === 'yes' && (
+                    <div className={styles.icons}>
+                      {showPills && (
+                        <>
+                          {!!bedrooms && (
+                            <span className={styles.iconItem}>
+                              <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
+                            </span>
+                          )}
+                          {!!bathrooms && (
+                            <span className={styles.iconItem}>
+                              <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                            </span>
+                          )}
+                          {/* {kitchen === 'yes' && (
                           <span className={styles.iconItem}>
                             <Icon type="area" />
                           </span>
@@ -423,26 +483,25 @@ const PropertyCards = () => {
                           <span className={styles.iconItem}>
                             <Icon type="pool" />
                           </span>
-                        )}
+                        )} */}
+                        </>
+                      )}
                       </div>
                       <div className={styles.price}>
-                        <span className={styles.priceValue}>{price.amount / 100}</span>
-                        <span className={styles.priceUnit}>/ night</span>
+                        <span className={styles.priceValue}>
+                          {formatPriceInMillions(price.amount)} IDR
+                        </span>
+                        {showPills && <span className={styles.priceUnit}>/ night</span>}
                       </div>
                     </div>
                   </div>
-                </div>
+                </NamedLink>
               );
             })}
           </>
         )}
       </div>
-      <button
-        className={styles.browseAllButton}
-        onClick={() => {
-          window.location.href = '/s';
-        }}
-      >
+      <button className={styles.browseAllButton} onClick={() => history.push('/s')}>
         Browse all listings
       </button>
     </div>

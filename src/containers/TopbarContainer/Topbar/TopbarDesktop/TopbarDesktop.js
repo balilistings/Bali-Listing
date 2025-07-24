@@ -399,7 +399,11 @@ const TopbarDesktop = props => {
             </Button>
           </div>
         )}
-        <div className={css.rightMenus}>
+        <div
+          className={classNames(css.rightMenus, {
+            [css.searchPageTopbarMenu]: currentPage === 'search',
+          })}
+        >
           <CustomLinksMenu
             currentPage={currentPage}
             customLinks={customLinks}
