@@ -279,7 +279,6 @@ export const ListingCard = props => {
             />
           </button>
         </div>
-
         <LazyImage
           rootClassName={css.rootForImage}
           alt={title}
@@ -287,14 +286,7 @@ export const ListingCard = props => {
           variants={variants}
           sizes={renderSizes}
         />
-      </AspectRatioWrapper> */}
-      <div className={css.imageWrapper}>
-        <Slider {...cardSliderSettings} className={css.slider}>
-          {imagesUrls.map((img, imgIdx) => (
-            <img src={img} alt={title} className={css.image + ' ' + css.imageFade} key={imgIdx} />
-          ))}
-        </Slider>
-      </div>
+      </AspectRatioWrapper>
       <div className={css.info}>
         <div className={css.tags}>
           {tags?.map(tag => (
