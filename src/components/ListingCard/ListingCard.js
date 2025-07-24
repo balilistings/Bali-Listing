@@ -294,10 +294,9 @@ export const ListingCard = props => {
               {tag}
             </span>
           ))}
-          {/* <span className={css.tag}></span> */}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
-              Listed by:{' '}
+              Listed by:
               <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
             </span>
           </NamedLink>
