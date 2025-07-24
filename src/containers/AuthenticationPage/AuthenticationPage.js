@@ -637,8 +637,8 @@ export const AuthenticationPageComponent = props => {
         description: schemaDescription,
       }}
     >
-      <Signup />
-      {/* <LayoutSingleColumn
+      {/* <Signup /> */}
+      <LayoutSingleColumn
         mainColumnClassName={css.layoutWrapperMain}
         topbar={<TopbarContainer className={topbarClasses} />}
         footer={<FooterContainer />}
@@ -685,7 +685,7 @@ export const AuthenticationPageComponent = props => {
             />
           )}
         </ResponsiveBackgroundImageContainer>
-      </LayoutSingleColumn> */}
+      </LayoutSingleColumn>
       <Modal
         id="AuthenticationPage.tos"
         isOpen={tosModalOpen}

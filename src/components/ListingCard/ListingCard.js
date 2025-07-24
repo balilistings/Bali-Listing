@@ -14,7 +14,13 @@ import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { isBookingProcessAlias } from '../../transactions/transaction';
 import Slider from 'react-slick';
-import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '../../components';
+import {
+  AspectRatioWrapper,
+  IconCollection,
+  NamedLink,
+  ResponsiveImage,
+  ShareOptions,
+} from '../../components';
 
 import css from './ListingCard.module.css';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
