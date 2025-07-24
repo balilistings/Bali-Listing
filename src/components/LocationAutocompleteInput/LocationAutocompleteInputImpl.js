@@ -13,6 +13,7 @@ import * as geocoderMapbox from './GeocoderMapbox';
 import * as geocoderGoogleMaps from './GeocoderGoogleMaps';
 
 import css from './LocationAutocompleteInput.module.css';
+import EventBus from '../../util/EventBus';
 
 const DEBOUNCE_WAIT_TIME = 300;
 const DEBOUNCE_WAIT_TIME_FOR_SHORT_QUERIES = 1000;
@@ -231,7 +232,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
         </li>
         <li className={css.searchInputMobile}>{dropdownInput}</li>
         {predictions.map(item)}
-        <li
+        {/* <li
           className={classNames(css.menuItemMobile, css.footerWrapper)}
           style={{ paddingBottom: 0 }}
         >
@@ -243,7 +244,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
               Next
             </button>
           </div>
-        </li>
+        </li> */}
       </ul>
       {children}
     </div>
@@ -263,6 +264,8 @@ class LocationAutocompleteInputImplementation extends Component {
     super(props);
 
     this._isMounted = false;
+    this.unsubscribe = null;
+    this.unsubscribe2 = null;
 
     this.state = {
       inputHasFocus: false,
@@ -304,6 +307,9 @@ class LocationAutocompleteInputImplementation extends Component {
     this._isMounted = true;
     document.addEventListener('mousedown', this.handleClickOutside);
     document.addEventListener('touchstart', this.handleClickOutside);
+
+    this.unsubscribe = EventBus.on('selectPrediction', this.selectPrediction);
+    this.unsubscribe2 = EventBus.on('resetLocation', this.handleReset);
   }
 
   componentWillUnmount() {
@@ -311,6 +317,9 @@ class LocationAutocompleteInputImplementation extends Component {
     this._isMounted = false;
     document.removeEventListener('mousedown', this.handleClickOutside);
     document.removeEventListener('touchstart', this.handleClickOutside);
+
+    if (this.unsubscribe) this.unsubscribe();
+    if (this.unsubscribe2) this.unsubscribe2();
   }
 
   handleClickOutside(event) {
@@ -391,7 +400,6 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   handleReset() {
-    console.log('calleddddd');
     this.props.input.onChange({
       search: '',
       predictions: [],
@@ -560,14 +568,14 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   finalizeSelection() {
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    if (isMobile) {
-      // On mobile, keep the dropdown open and input focused
-      this.setState({ inputHasFocus: true, highlightedIndex: -1, dropdownOpen: true });
-    } else {
-      // On desktop, close the dropdown
-      this.setState({ inputHasFocus: false, highlightedIndex: -1, dropdownOpen: false });
-    }
+    // const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    // if (isMobile) {
+    //   // On mobile, keep the dropdown open and input focused
+    //   this.setState({ inputHasFocus: true, highlightedIndex: -1, dropdownOpen: true });
+    // } else {
+    //   // On desktop, close the dropdown
+    // }
+    this.setState({ inputHasFocus: false, highlightedIndex: -1, dropdownOpen: false });
     this.props.input.onBlur(currentValue(this.props));
   }
 

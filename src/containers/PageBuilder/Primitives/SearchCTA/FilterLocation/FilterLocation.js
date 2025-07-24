@@ -78,8 +78,8 @@ const FilterLocation = props => {
     alignLeft,
     isCurrentLocation,
     Searchicon,
-    setIsOpenBedrooms,
-    setIsOpenLandSize,
+    setIsOpenBedrooms = () => {},
+    setIsOpenLandSize = () => {},
     landSize,
     isMobile,
     ...restOfProps
@@ -90,10 +90,6 @@ const FilterLocation = props => {
     if (location?.search?.length > 0 && !location?.selectedPlace) {
       setSubmitDisabled(true);
     } else if (location?.name === 'location') {
-      if (isMobile) {
-        return;
-      }
-
       if (landSize) {
         setIsOpenLandSize(true);
       } else {
@@ -102,7 +98,7 @@ const FilterLocation = props => {
     } else {
       setSubmitDisabled(false);
 
-      if (isMobile || location.search === '') {
+      if (location.search === '') {
         return;
       }
 
