@@ -78,8 +78,8 @@ const FilterLocation = props => {
     alignLeft,
     isCurrentLocation,
     Searchicon,
-    setIsOpenBedrooms,
-    setIsOpenLandSize,
+    setIsOpenBedrooms = () => {},
+    setIsOpenLandSize = () => {},
     landSize,
     isMobile,
     ...restOfProps

@@ -13,6 +13,7 @@ import * as geocoderMapbox from './GeocoderMapbox';
 import * as geocoderGoogleMaps from './GeocoderGoogleMaps';
 
 import css from './LocationAutocompleteInput.module.css';
+import EventBus from '../../util/EventBus';
 
 const DEBOUNCE_WAIT_TIME = 300;
 const DEBOUNCE_WAIT_TIME_FOR_SHORT_QUERIES = 1000;
@@ -98,8 +99,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
               </span>
               Location
             </h2>
-            <span className={css.closeIcon} 
-              onClick={isMobile ? onClearInput : onCloseDropdown}>
+            <span className={css.closeIcon} onClick={isMobile ? onClearInput : onCloseDropdown}>
               <IconCollection name="close_icon" />
             </span>
           </li>
@@ -264,6 +264,8 @@ class LocationAutocompleteInputImplementation extends Component {
     super(props);
 
     this._isMounted = false;
+    this.unsubscribe = null;
+    this.unsubscribe2 = null;
 
     this.state = {
       inputHasFocus: false,
@@ -305,6 +307,9 @@ class LocationAutocompleteInputImplementation extends Component {
     this._isMounted = true;
     document.addEventListener('mousedown', this.handleClickOutside);
     document.addEventListener('touchstart', this.handleClickOutside);
+
+    this.unsubscribe = EventBus.on('selectPrediction', this.selectPrediction);
+    this.unsubscribe2 = EventBus.on('resetLocation', this.handleReset);
   }
 
   componentWillUnmount() {
@@ -312,6 +317,9 @@ class LocationAutocompleteInputImplementation extends Component {
     this._isMounted = false;
     document.removeEventListener('mousedown', this.handleClickOutside);
     document.removeEventListener('touchstart', this.handleClickOutside);
+
+    if (this.unsubscribe) this.unsubscribe();
+    if (this.unsubscribe2) this.unsubscribe2();
   }
 
   handleClickOutside(event) {
@@ -392,7 +400,6 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   handleReset() {
-    console.log('calleddddd')
     this.props.input.onChange({
       search: '',
       predictions: [],
@@ -686,16 +693,16 @@ class LocationAutocompleteInputImplementation extends Component {
     const refMaybe =
       typeof inputRef === 'function'
         ? {
-          ref: node => {
-            this.input = node;
-            if (inputRef) {
-              inputRef(node);
-            }
-          },
-        }
+            ref: node => {
+              this.input = node;
+              if (inputRef) {
+                inputRef(node);
+              }
+            },
+          }
         : inputRef
-          ? { ref: inputRef }
-          : {};
+        ? { ref: inputRef }
+        : {};
 
     return (
       <div className={rootClass} ref={this.dropdownRef} onClick={this.handleContainerClick}>
@@ -743,36 +750,55 @@ class LocationAutocompleteInputImplementation extends Component {
         </div>
         <div className={css.inputContainer}>
           <label className={css.label}>Location</label>
-          {isMobile ? <span className={classNames(css.locationInput, search? css.hasValue : css.plceholder, placeholder == "Current location" && css.hasValue)}>{search ? search : placeholder}</span> : <input
-            className={inputClass}
-            type="search"
-            autoComplete="off"
-            autoFocus={autoFocus}
-            placeholder={placeholder}
-            name={name}
-            value={search}
-            disabled={disabled || this.state.fetchingPlaceDetails}
-            onFocus={handleOnFocus}
-            // onBlur={this.handleOnBlur}
-            onChange={this.onChange}
-            onKeyDown={this.onKeyDown}
-            {...refMaybe}
-            title={search}
-            data-testid="location-search"
-          />}
-          {this.state.inputHasFocus && showCrossIcon && (
-            <div
-              onClick={this.handleReset}
-              className={css.crossIcon}
+          {isMobile ? (
+            <span
+              className={classNames(
+                css.locationInput,
+                search ? css.hasValue : css.plceholder,
+                placeholder == 'Current location' && css.hasValue
+              )}
             >
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              {search ? search : placeholder}
+            </span>
+          ) : (
+            <input
+              className={inputClass}
+              type="search"
+              autoComplete="off"
+              autoFocus={autoFocus}
+              placeholder={placeholder}
+              name={name}
+              value={search}
+              disabled={disabled || this.state.fetchingPlaceDetails}
+              onFocus={handleOnFocus}
+              // onBlur={this.handleOnBlur}
+              onChange={this.onChange}
+              onKeyDown={this.onKeyDown}
+              {...refMaybe}
+              title={search}
+              data-testid="location-search"
+            />
+          )}
+          {this.state.inputHasFocus && showCrossIcon && (
+            <div onClick={this.handleReset} className={css.crossIcon}>
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5"
+                  stroke="#231F20"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </div>
           )}
         </div>
-
-
 
         {renderPredictions ? (
           <LocationPredictionsList
@@ -807,17 +833,25 @@ class LocationAutocompleteInputImplementation extends Component {
                 />
 
                 {this.state.inputHasFocus && showCrossIcon && (
-                  <div
-                    onClick={this.handleReset}
-                    className={css.crossIcon}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <div onClick={this.handleReset} className={css.crossIcon}>
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5"
+                        stroke="#231F20"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
                     </svg>
                   </div>
                 )}
               </>
-
             }
             onCloseDropdown={handleCloseDropdown}
             isMobile={isMobile}
