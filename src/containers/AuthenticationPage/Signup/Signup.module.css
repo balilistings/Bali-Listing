@@ -1,0 +1,263 @@
+  .signupContainer {
+    display: flex;
+    height: 100vh;  
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .signupLeft {
+    width: auto;
+    height: 876px;
+    top: 30px;
+    left: 30px;
+    /* angle: 0 deg; */
+    opacity: 1;
+    margin: 30px;
+    
+  }
+  
+  .signupRight {
+    flex: 1;
+    margin: 138px 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 300px;
+    font-family: Mulish;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 16px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    text-align: center;
+  }
+  
+  .subtitle{
+    font-family: Mulish;
+    font-size: 12px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    }
+
+  .user{
+    width: 95;
+    height: 18;
+    opacity: 1;
+
+  }
+
+  .strong {
+    font-family: Mulish;
+    font-weight: 600;
+    font-style: bold;
+    font-size: 14px;
+    letter-spacing: 0%;
+  }    
+
+  .signup{
+    font-family: Istok Web;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 34px;
+    line-height: 130%;
+    letter-spacing: 0%;
+    text-align: center;
+  }
+  .signupRight h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    align-items: center;
+  } 
+  
+  .formContainer {
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sectionTitle {
+  text-align: center;
+  font-weight: 600;
+}
+
+.userOption {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border 0.3s;
+  background-color: #fff;
+  align-items: center;
+}
+
+.userOption:hover {
+  border-color: #9c27b0;
+}
+
+.userOption img {
+  width: 40px;
+  height: 40px;
+}
+
+.text {
+  font-size: 15px;
+  font-weight: 600;
+  left: 0;
+}
+
+.userOption p {
+  font-size: 13px;
+  color: #555;
+  margin: 2px 0 0;
+}
+
+.terms {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.terms a {
+  color: #F74DF4;
+  text-decoration: none;
+}
+
+.signupButton {
+  background: #F74DF4;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.signupDisable {
+  background: #D3D3D3;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+.signupGoogle,
+.signupFacebook {
+  display: flex;
+  width: 154px;
+  height: 50px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  padding: 6px 16px;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #222;
+  justify-content: center;
+}
+
+.FacebookWrapper {
+    margin-left: 20px;
+}
+
+.buttonWrapper{
+  display: flex;
+  width: 300px;
+  flex-direction: space-between;
+}
+
+.checkbox {
+  align-items: center;
+}
+
+.wrapper {
+  text-align: left;
+}
+
+.termsText {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 12px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  align-items: center;
+  }
+
+.imageWrapper {
+  padding: 15px;
+}
+
+.img{
+  width: 60px;
+  height: 60px;
+}
+
+.customCheckbox {
+  width: 18px;
+  height: 18px;
+  appearance: none;             /* Hapus default checkbox */
+  border: 2px solid #FF4FF7;    /* Warna pink border */
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+}
+
+.customCheckbox:checked {
+  background-color: #FF4FF7;    /* Warna pink ketika dicentang */
+}
+
+.customCheckbox:checked::after {
+  content: "✓";
+  color: white;
+  font-size: 14px;
+  position: absolute;
+  left: 2px;
+  top: -7px;
+}
+
+.dividerContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 16px 0;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #ccc;
+  border: none;
+}
+
+.textSignup {
+  font-size: 14px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.nameDevide {
+  display: flex;
+}
+
+.form {
+  left: 0;
+}
+
+.labelForm {
+font-family: Mulish;
+font-weight: 400;
+font-style: Regular;
+font-size: 14px;
+line-height: 130%;
+letter-spacing: 0%;
+
+}
