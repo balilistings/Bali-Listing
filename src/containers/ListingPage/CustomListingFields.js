@@ -42,7 +42,7 @@ const preparePropertyDetails = publicData => {
   };
 
   if (!publicData) return [];
-
+  const listingType = publicData.categoryLevel1;
   // Only process the specific keys we want to display
   return propertyDetailsConfig
     .filter(detail => publicData[detail.key]) // Only include if the key exists and has a value
@@ -121,7 +121,8 @@ const CustomListingFields = props => {
       )}
 
       {/* Uncomment this when we have services */}
-      {/* <div className={css.servicesContainerWrapper}>
+      {publicData.categoryLevel1 === 'rentalvillas' && (
+        <div className={css.servicesContainerWrapper}>
           <h2 className={css.servicesTitle}>Services included</h2>
           <div className={css.servicesContainer}>
             {services.map(s => (
@@ -151,7 +152,8 @@ const CustomListingFields = props => {
               </div>
             ))}
           </div>
-        </div> */}
+        </div>
+      )}
       {/* 
       <div className={css.propertyDetailsContainer} id="propertyDetails">
         <h2 className={css.propertyDetailsTitle}>Property Details</h2>
