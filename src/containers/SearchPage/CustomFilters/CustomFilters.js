@@ -245,6 +245,10 @@ function CustomFilters({
 
   const handleLocationReset = () => {
     setSelectedLocation(null);
+    onUpdateCurrentQueryParams({
+      address: null,
+      bounds: null,
+    });
   };
 
   const handlePeriodChange = period => {
