@@ -461,20 +461,20 @@ const PropertyCards = () => {
                     </div>
                     {/* <div className={styles.description}>{description}</div> */}
                     <div className={styles.bottomContent}>
-                    <div className={styles.icons}>
-                      {showPills && (
-                        <>
-                          {!!bedrooms && (
-                            <span className={styles.iconItem}>
-                              <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
-                            </span>
-                          )}
-                          {!!bathrooms && (
-                            <span className={styles.iconItem}>
-                              <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
-                            </span>
-                          )}
-                          {/* {kitchen === 'yes' && (
+                      <div className={styles.icons}>
+                        {showPills && (
+                          <>
+                            {!!bedrooms && (
+                              <span className={styles.iconItem}>
+                                <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
+                              </span>
+                            )}
+                            {!!bathrooms && (
+                              <span className={styles.iconItem}>
+                                <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                              </span>
+                            )}
+                            {/* {kitchen === 'yes' && (
                           <span className={styles.iconItem}>
                             <Icon type="area" />
                           </span>
@@ -484,8 +484,8 @@ const PropertyCards = () => {
                             <Icon type="pool" />
                           </span>
                         )} */}
-                        </>
-                      )}
+                          </>
+                        )}
                       </div>
                       <div className={styles.price}>
                         <span className={styles.priceValue}>
@@ -501,7 +501,10 @@ const PropertyCards = () => {
           </>
         )}
       </div>
-      <button className={styles.browseAllButton} onClick={() => history.push('/s')}>
+      <button
+        className={styles.browseAllButton}
+        onClick={() => history.push('/s?pub_categoryLevel1=rentalvillas')}
+      >
         Browse all listings
       </button>
     </div>

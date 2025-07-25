@@ -460,7 +460,6 @@ export const ListingPageComponent = props => {
                 categoryConfiguration={config.categoryConfiguration}
                 intl={intl}
                 location={publicData?.location?.address}
-                isLandforsale={isLandforsale}
               />
             </div>
 
