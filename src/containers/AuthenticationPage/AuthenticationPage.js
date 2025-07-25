@@ -24,6 +24,7 @@ import { login, authenticationInProgress, signup, signupWithIdp } from '../../du
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { sendVerificationEmail } from '../../ducks/user.duck';
 import Signup from './Signup/Signup';
+import Login from './Login/Login';
 
 import {
   Page,
@@ -637,7 +638,7 @@ export const AuthenticationPageComponent = props => {
         description: schemaDescription,
       }}
     >
-      {/* <Signup /> */}
+      {isLogin ? <Login /> : <Signup />}
       <LayoutSingleColumn
         mainColumnClassName={css.layoutWrapperMain}
         topbar={<TopbarContainer className={topbarClasses} />}
