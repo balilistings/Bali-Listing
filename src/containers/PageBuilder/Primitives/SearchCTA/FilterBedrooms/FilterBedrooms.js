@@ -49,7 +49,7 @@ const BedroomDropdown = ({
       ) : (
         <FormattedMessage
           id="PageBuilder.SearchCTA.BedroomFilter.multipleBedrooms"
-          values={{ count: displayValue }}
+          values={{ count: displayValue === 6 ? '6+' : displayValue }}
         />
       )
     ) : (
@@ -210,7 +210,9 @@ const BedroomDropdown = ({
                     </svg>
                   </button>
 
-                  <span className={css.counterValue}>{displayValue}</span>
+                  <span className={css.counterValue}>
+                    {displayValue === 6 ? '6+' : displayValue}
+                  </span>
 
                   <button
                     type="button"

@@ -12,6 +12,7 @@ function BedroomsSelector({ bedrooms, onBedroomsChange, onReset }) {
       onReset={onReset}
       min={0}
       max={6}
+      showPlus={true}
     />
   );
 }
