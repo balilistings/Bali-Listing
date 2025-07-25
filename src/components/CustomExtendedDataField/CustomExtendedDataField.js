@@ -21,13 +21,13 @@ import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '.
 // Import modules from this directory
 
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
 import { Field } from 'react-final-form';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import { useCheckboxContext } from '../../context/checkBoxContext';
 import css from './CustomExtendedDataField.module.css';
+import '../../styles/reactDatepicker.css';
 import calendarIcon from '../../assets/CalendarIcon.svg';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
