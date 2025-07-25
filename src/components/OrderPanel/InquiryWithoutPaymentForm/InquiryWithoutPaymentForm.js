@@ -10,7 +10,7 @@ import css from './InquiryWithoutPaymentForm.module.css';
 
 const renderForm = formRenderProps => {
   // FormRenderProps from final-form
-  const { formId, className, rootClassName, handleSubmit, hosttype } = formRenderProps;
+  const { formId, className, rootClassName, handleSubmit, agentorowner } = formRenderProps;
   const classes = classNames(rootClassName || css.root, className);
 
   return (
@@ -31,7 +31,7 @@ const renderForm = formRenderProps => {
               fill="white"
             />
           </svg>
-          Contact {hosttype === 'agent' ? ' Agent' : 'Owner'}
+          Contact {agentorowner === 'agent' ? ' Agent' : 'Owner'}
         </PrimaryButton>
       </div>
     </Form>
