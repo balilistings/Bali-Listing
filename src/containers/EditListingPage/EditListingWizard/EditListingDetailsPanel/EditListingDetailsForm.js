@@ -254,6 +254,15 @@ const AddListingFields = props => {
     const isProviderScope = ['public', 'private'].includes(scope);
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
+    // need to add boolean type here
+    const booleanEnumOptions = [{ label: 'Yes', option: "yes" }, { label: 'No', option: "no" }];
+    if (schemaType==='enum' && JSON.stringify(fieldConfig.enumOptions) === JSON.stringify(booleanEnumOptions)){
+      console.log("boolean enum");
+      
+      fieldConfig.schemaType = 'boolean';
+    }
+      // fieldConfig.schemaType = 'boolean';
+
 
     return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
       ? [
