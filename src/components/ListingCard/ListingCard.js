@@ -242,14 +242,23 @@ export const ListingCard = props => {
 
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
-      <AspectRatioWrapper
+      {/*<AspectRatioWrapper
         className={css.aspectRatioWrapper}
         width={aspectWidth}
         height={aspectHeight}
         {...setActivePropsMaybe}
       >
+
+        <LazyImage
+          rootClassName={css.rootForImage}
+          alt={title}
+          image={firstImage}
+          variants={variants}
+          sizes={renderSizes}
+        />
+       </AspectRatioWrapper> */}
+      <div className={css.shareWrapper}>
         <div className={css.iconButtonsWrapper}>
-          {/* Share Button */}
           <div className={css.shareWrapper}>
             <button
               className={css.shareButton}
@@ -261,7 +270,6 @@ export const ListingCard = props => {
             </button>
           </div>
 
-          {/* Favorite Button */}
           <button
             className={`${css.favoriteButton} ${clicked ? css.clicked : ''} ${
               isLiked ? css.liked : ''
@@ -279,14 +287,14 @@ export const ListingCard = props => {
             />
           </button>
         </div>
-        <LazyImage
-          rootClassName={css.rootForImage}
-          alt={title}
-          image={firstImage}
-          variants={variants}
-          sizes={renderSizes}
-        />
-      </AspectRatioWrapper>
+      </div>
+      <div className={css.imageWrapper}>
+        <Slider {...cardSliderSettings} className={css.slider}>
+          {imagesUrls.map((img, imgIdx) => (
+            <img src={img} alt={title} className={css.image + ' ' + css.imageFade} key={imgIdx} />
+          ))}
+        </Slider>
+      </div>
       <div className={css.info}>
         <div className={css.tags}>
           {tags?.map(tag => (

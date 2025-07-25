@@ -183,7 +183,6 @@ const ListingImageGallery = props => {
             : 'none',
         }}
       >
-        {console.log(images?.[0]?.attributes?.variants?.[thumbVariants[0]].url)}
         <button className={css.openFullscreen} onClick={onClick}>
           {/* <FormattedMessage
             id="ListingImageGallery.viewImagesButton"

@@ -27,7 +27,6 @@ const PlainButton = props => {
     enforcePagePreloadFor,
     ...rest
   } = props;
-  console.log('props on button', props);
 
   const rootClass = rootClassName || css.root;
   const classes = classNames(rootClass, className, {
