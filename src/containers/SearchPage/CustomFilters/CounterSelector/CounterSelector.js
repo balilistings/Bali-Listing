@@ -10,6 +10,7 @@ function CounterSelector({
   onReset,
   min = 0,
   max = 10,
+  showPlus = false,
 }) {
   const handleIncrement = () => {
     if (value < max) {
@@ -45,7 +46,7 @@ function CounterSelector({
             >
               -
             </button>
-            <span className={css.counterValue}>{value}</span>
+            <span className={css.counterValue}>{value === 6 && showPlus ? '6+' : value}</span>
             <button
               onClick={handleIncrement}
               className={`${css.counterButton} ${value >= max ? css.disabled : ''}`}

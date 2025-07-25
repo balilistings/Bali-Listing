@@ -76,7 +76,7 @@ const initialisePropertyType = () => {
 const initialiseHostType = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('pub_hosttype') || null;
+    return urlParams.get('pub_agentorowner') || null;
   }
 };
 
@@ -166,6 +166,7 @@ function CustomFilters({
   resultsCount,
   onUpdateCurrentQueryParams,
   currentQueryParams,
+  onlyUpdateCurrentQueryParams,
 }) {
   const [selectedCategory, setSelectedCategory] = useState(initialiseCategory);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -191,6 +192,11 @@ function CustomFilters({
 
   const handleCategoryChange = categoryId => {
     setSelectedCategory(categoryId);
+
+    onlyUpdateCurrentQueryParams({
+      pub_categoryLevel1: categoryId,
+    });
+
     // Reset filters that are not available in the new category
     const newAvailableFilters = categoryFilterConfig[categoryId] || [];
 
@@ -269,14 +275,14 @@ function CustomFilters({
 
   const handleBedroomsChange = value => {
     onUpdateCurrentQueryParams({
-      pub_bedrooms: value,
+      pub_bedrooms: value === 0 ? null : value,
     });
     setBedrooms(value);
   };
 
   const handleBathroomsChange = value => {
     onUpdateCurrentQueryParams({
-      pub_bathrooms: value,
+      pub_bathrooms: value === 0 ? null : value,
     });
     setBathrooms(value);
   };
@@ -399,14 +405,14 @@ function CustomFilters({
 
   const handleHostTypeChange = hostType => {
     onUpdateCurrentQueryParams({
-      pub_hosttype: hostType,
+      pub_agentorowner: hostType,
     });
     setSelectedHostType(hostType);
   };
 
   const handleHostTypeReset = () => {
     onUpdateCurrentQueryParams({
-      pub_hosttype: null,
+      pub_agentorowner: null,
     });
     setSelectedHostType(null);
   };

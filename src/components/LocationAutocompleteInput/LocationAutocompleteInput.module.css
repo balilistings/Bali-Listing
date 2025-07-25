@@ -270,6 +270,14 @@ bottom of the container.
     @media (--viewportMedium) {
       border-radius: 50px;
     }
+    &:placeholder{
+      color: #D3D3D3;
+    }
+    &:focus{
+      &::placeholder{
+        color: #D3D3D3 !important;
+      }
+    }
   }
 
   @media (--viewportMedium) {

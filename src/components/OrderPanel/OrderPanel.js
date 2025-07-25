@@ -343,7 +343,7 @@ const OrderPanel = props => {
     availableper,
     categoryLevel1,
     priceperare,
-    hosttype,
+    agentorowner,
   } = publicData || {};
 
   const isVillaforsale = categoryLevel1 === 'villaforsale';
@@ -589,7 +589,7 @@ const OrderPanel = props => {
           <InquiryWithoutPaymentForm
             formId="OrderPanelInquiryForm"
             onSubmit={onSubmit}
-            hosttype={hosttype}
+            agentorowner={agentorowner}
           />
         ) : !isKnownProcess ? (
           <p className={css.errorSidebar}>
