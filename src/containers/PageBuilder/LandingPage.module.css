@@ -582,6 +582,12 @@ padding: 0;
 :global(#safety_and_security) {
   max-width: 1440px;
   margin: 0 auto;
+  background-color: #FAFAFA;
+  overflow: hidden;
+  & img{
+    transform: scale(1.75) translateX(17%);
+    margin-top: 50px;
+  }
   & > div {
     padding: 0 0 20px;
     @media (max-width: 767px) {
@@ -597,6 +603,7 @@ padding: 0;
       grid-template-columns: 53% 44%;
       gap: 3%;
       width: calc(100% - 32px);
+      overflow: hidden;
       @media (max-width: 767px) {
         border-radius: 10px;
         grid-template-columns: 1fr;

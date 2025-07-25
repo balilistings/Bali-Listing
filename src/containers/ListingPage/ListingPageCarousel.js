@@ -147,7 +147,7 @@ export const ListingPageComponent = props => {
         const el = document.getElementById(section.id);
         if (el) {
           const rect = el.getBoundingClientRect();
-          if (rect.top <= 330) {
+          if (rect.top <= 80) {
             // adjust offset for sticky header if needed
             found = section.id;
           }

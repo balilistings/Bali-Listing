@@ -178,6 +178,7 @@
     transform: none;
     width: 100%;
     min-width: 396px;
+    z-index: 2;
 
     &.alignLeft {
       left: -8px;
