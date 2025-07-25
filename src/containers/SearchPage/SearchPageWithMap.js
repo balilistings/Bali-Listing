@@ -447,7 +447,6 @@ export class SearchPageComponent extends Component {
       listingFieldsConfig,
       activeListingTypes
     );
-    console.log('availableFilters', activeListingTypes);
     const availablePrimaryFilters = [
       ...builtInPrimaryFilters,
       ...customPrimaryFilters,

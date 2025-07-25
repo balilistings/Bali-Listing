@@ -71,8 +71,6 @@ const IntegerRangeFilter = props => {
     ...rest
   } = props;
 
-  // console.log('rentalPeriods', rentalPeriods);
-
   const classes = classNames(rootClassName || css.root, className);
 
   const hasValue = value => value != null;

@@ -114,7 +114,6 @@ const SelectMultipleFilter = props => {
 
   const handleSubmit = values => {
     const usedValue = values ? values[name] : values;
-    console.log('usedValue', usedValue);
     // onSubmit(format(usedValue, queryParamName, schemaType, searchMode));
     onSubmit(format(usedValue, queryParamName, schemaType, searchMode), usedValue);
   };
