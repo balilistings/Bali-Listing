@@ -25,6 +25,8 @@ import {
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
 
+import AmenitiesSelector from '../../../SearchPage/CustomFilters/AmenitiesSelector/AmenitiesSelector';
+
 const TITLE_MAX_LENGTH = 60;
 
 // Show various error messages
@@ -255,14 +257,16 @@ const AddListingFields = props => {
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
     // need to add boolean type here
-    const booleanEnumOptions = [{ label: 'Yes', option: "yes" }, { label: 'No', option: "no" }];
-    if (schemaType==='enum' && JSON.stringify(fieldConfig.enumOptions) === JSON.stringify(booleanEnumOptions)){
-      console.log("boolean enum");
-      
+    const booleanEnumOptions = [{ label: 'Yes', option: 'yes' }, { label: 'No', option: 'no' }];
+    if (
+      schemaType === 'enum' &&
+      JSON.stringify(fieldConfig.enumOptions) === JSON.stringify(booleanEnumOptions)
+    ) {
+      console.log('boolean enum');
+
       fieldConfig.schemaType = 'boolean';
     }
-      // fieldConfig.schemaType = 'boolean';
-
+    // fieldConfig.schemaType = 'boolean';
 
     return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
       ? [
@@ -416,6 +420,10 @@ const EditListingDetailsForm = props => (
               setAllCategoriesChosen={setAllCategoriesChosen}
             />
           )}
+
+          {values.categoryLevel1 === 'rentalvillas' || values.categoryLevel1 == 'villaforsale' ? (
+            <AmenitiesSelector />
+          ) : null}
 
           {showTitle && isCompatibleCurrency && (
             <FieldTextInput

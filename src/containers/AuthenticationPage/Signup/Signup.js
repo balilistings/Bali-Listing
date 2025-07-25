@@ -32,19 +32,6 @@ const Signup = () => {
     console.log('Form submitted with:', values);
   };
 
-  // const emailRequired = validators.required(
-  //   intl.formatMessage({
-  //     id: 'SignupForm.emailRequired',
-  //   })
-  // );
-  // const emailValid = validators.emailFormatValid(
-  //   intl.formatMessage({
-  //     id: 'SignupForm.emailInvalid',
-  //   })
-  // );
-
-  // const classes = classNames(rootClassName || css.root, className);
-
   return (
     <div className={css.signupContainer}>
       <img className={css.signupLeft} src={backgroundImage} />

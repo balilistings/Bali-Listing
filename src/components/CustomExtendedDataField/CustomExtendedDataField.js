@@ -106,6 +106,7 @@ const CustomFieldEnum = props => {
                   {({ input: dateInput, meta }) => (
                     <div className={css.customField}>
                       <label htmlFor="availabilityDate">Select availability date</label>
+
                       <DatePicker
                         id="availabilityDate"
                         selected={dateInput.value}
