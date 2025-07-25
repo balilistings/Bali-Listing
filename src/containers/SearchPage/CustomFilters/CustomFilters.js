@@ -269,14 +269,14 @@ function CustomFilters({
 
   const handleBedroomsChange = value => {
     onUpdateCurrentQueryParams({
-      pub_bedrooms: value,
+      pub_bedrooms: value === 0 ? null : value,
     });
     setBedrooms(value);
   };
 
   const handleBathroomsChange = value => {
     onUpdateCurrentQueryParams({
-      pub_bathrooms: value,
+      pub_bathrooms: value === 0 ? null : value,
     });
     setBathrooms(value);
   };
