@@ -20,7 +20,6 @@ const SectionHeading = props => {
     intl,
     categoryConfiguration,
     location,
-    isLandforsale,
   } = props;
 
   if (!publicData || !listingFieldConfigs) {
@@ -171,27 +170,39 @@ const SectionHeading = props => {
         </div>
       </div>
 
-      {!isLandforsale && (
-        <section className={css.sectionDetails}>
-          <ul className={css.detailsType}>
-            {existingListingFields.map(detail =>
-              detail.key === 'bedrooms' || detail.key === 'bathrooms' ? (
-                <li key={detail.key} className={css.detailsTypeRow}>
-                  {detail.key === 'bedrooms' ? (
-                    <IconCollection name="bed_icon" />
-                  ) : (
-                    <IconCollection name="bathroom_icon" />
-                  )}
-                  <span>
-                    <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
-                    <span className={css.detailTypeLabel}>{detail.label}</span>
+      <section className={css.sectionDetails}>
+        <ul className={css.detailsType}>
+          {existingListingFields.map(detail =>
+            detail.key === 'bedrooms' || detail.key === 'bathrooms' ? (
+              <li key={detail.key} className={css.detailsTypeRow}>
+                {detail.key === 'bedrooms' ? (
+                  <IconCollection name="bed_icon" />
+                ) : (
+                  <IconCollection name="bathroom_icon" />
+                )}
+                <span>
+                  <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
+                  <span className={css.detailTypeLabel}>{detail.label}</span>
+                </span>
+              </li>
+            ) : detail.key === 'landsize' || detail.key === 'landzone' ? (
+              <li key={detail.key} className={css.detailsTypeRow}>
+                {detail.key === 'landsize' ? (
+                  <IconCollection name="bed_icon" />
+                ) : (
+                  <IconCollection name="bathroom_icon" />
+                )}
+                <span>
+                  <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
+                  <span className={css.detailTypeLabel}>
+                    {detail.key === 'landsize' ? 'are' : 'zone'}
                   </span>
-                </li>
-              ) : null
-            )}
-          </ul>
-        </section>
-      )}
+                </span>
+              </li>
+            ) : null
+          )}
+        </ul>
+      </section>
     </>
   ) : null;
 };

@@ -169,20 +169,20 @@ export const ListingCard = props => {
   const { title = '', price, publicData } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
-  const authorName = author.attributes.profile.displayName;
-  const { pricee, location, propertytype, bedrooms, bathrooms, kitchen, pool } = publicData;
-  const tags = sortTags(pricee);
-  const firstImage =
-    currentListing.images && currentListing.images.length > 0 ? currentListing.images[0] : null;
-
   const {
-    aspectWidth = 1,
-    aspectHeight = 1,
-    variantPrefix = 'listing-card',
-  } = config.layout.listingImage;
-  const variants = firstImage
-    ? Object.keys(firstImage?.attributes?.variants).filter(k => k.startsWith(variantPrefix))
-    : [];
+    pricee,
+    location,
+    propertytype,
+    bedrooms,
+    bathrooms,
+    kitchen,
+    pool,
+    categoryLevel1,
+    landzone,
+    landsize,
+  } = publicData;
+  const tags = sortTags(pricee);
+  const isLand = categoryLevel1 === 'landforsale';
 
   const setActivePropsMaybe = setActiveListing
     ? {
@@ -247,10 +247,14 @@ export const ListingCard = props => {
             })}
           </div>
           <div className={css.location}>
-            <span className={css.typeIcon}>
-              <IconCollection name="typeIcon" />
-            </span>
-            <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
+            {!isLand && (
+              <>
+                <span className={css.typeIcon}>
+                  <IconCollection name="typeIcon" />
+                </span>
+                <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
+              </>
+            )}
 
             <span className={css.locationWrapper}>
               <span className={css.locationIcon}>
@@ -269,6 +273,17 @@ export const ListingCard = props => {
               {!!bathrooms && (
                 <span className={css.iconItem}>
                   <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                </span>
+              )}
+
+              {!!landsize && (
+                <span className={css.iconItem}>
+                  <Icon type="bed" /> {landsize} are
+                </span>
+              )}
+              {!!landzone && (
+                <span className={css.iconItem}>
+                  <Icon type="bath" /> {landzone} Zone
                 </span>
               )}
             </div>
