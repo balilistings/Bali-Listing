@@ -65,9 +65,10 @@
 /* Overwrite Mapbox's specific font rules */
 .root .card {
   font-weight: var(--fontWeightSemiBold);
+  padding-bottom: 20px;
   @media (max-width: 768px) {
     width: 100%;
-    padding: 25px 20px 55px;
+    padding: 25px 20px 45px;
   }
 }
 
