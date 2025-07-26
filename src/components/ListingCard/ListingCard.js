@@ -1,22 +1,19 @@
-import React from 'react';
 import classNames from 'classnames';
+import React from 'react';
 
 import { useConfiguration } from '../../context/configurationContext';
 
-import { FormattedMessage, useIntl } from '../../util/reactIntl';
-import { displayPrice, isPriceVariationsEnabled } from '../../util/configHelpers';
-import { lazyLoadWithDimensions } from '../../util/uiHelpers';
-import { formatMoney } from '../../util/currency';
+import Slider from 'react-slick';
+import { IconCollection, NamedLink } from '../../components';
+import { displayPrice } from '../../util/configHelpers';
 import { ensureListing, ensureUser } from '../../util/data';
+import { useIntl } from '../../util/reactIntl';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
-import { isBookingProcessAlias } from '../../transactions/transaction';
-import Slider from 'react-slick';
-import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '../../components';
 
-import css from './ListingCard.module.css';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
-import { sortTags, capitaliseFirstLetter } from '../../util/helper';
+import { capitaliseFirstLetter, sortTags } from '../../util/helper';
+import css from './ListingCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -74,33 +71,9 @@ const sliderSettings = {
   ),
 };
 
-const priceData = (price, currency, intl) => {
-  if (price && price.currency === currency) {
-    const formattedPrice = formatMoney(intl, price);
-    return { formattedPrice, priceTitle: formattedPrice };
-  } else if (price) {
-    return {
-      formattedPrice: intl.formatMessage(
-        { id: 'ListingCard.unsupportedPrice' },
-        { currency: price.currency }
-      ),
-      priceTitle: intl.formatMessage(
-        { id: 'ListingCard.unsupportedPriceTitle' },
-        { currency: price.currency }
-      ),
-    };
-  }
-  return {};
-};
-
-const LazyImage = lazyLoadWithDimensions(ResponsiveImage, { loadAfterInitialRendering: 3000 });
-
 // Format price in millions if appropriate
-export const formatPriceInMillions = priceAmount => {
-  if (!priceAmount) return null;
-
-  // First divide by 100 to get the actual price (prices are stored in subunits)
-  const actualPrice = priceAmount / 100;
+export const formatPriceInMillions = actualPrice => {
+  if (!actualPrice) return null;
 
   // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
@@ -128,7 +101,7 @@ const PriceMaybe = props => {
     return null;
   }
 
-  const formattedPrice = price ? formatPriceInMillions(price.amount) : null;
+  const formattedPrice = price ? formatPriceInMillions(price) : null;
 
   return (
     <div className={css.price}>
@@ -166,7 +139,7 @@ export const ListingCard = props => {
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
   const id = currentListing.id.uuid;
-  const { title = '', price, publicData } = currentListing.attributes;
+  const { title = '', price: p, publicData } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
   const {
@@ -180,9 +153,25 @@ export const ListingCard = props => {
     categoryLevel1,
     landzone,
     landsize,
+    weekprice,
+    monthprice,
+    yearprice,
   } = publicData;
   const tags = sortTags(pricee);
   const isLand = categoryLevel1 === 'landforsale';
+  const isRentals = categoryLevel1 === 'rentalvillas';
+
+  let price = p;
+
+  if (isRentals) {
+    if (pricee.includes('monthly')) {
+      price = monthprice;
+    } else if (pricee.includes('weekly')) {
+      price = weekprice;
+    } else if (pricee.includes('yearly')) {
+      price = yearprice;
+    }
+  }
 
   const setActivePropsMaybe = setActiveListing
     ? {
@@ -202,20 +191,6 @@ export const ListingCard = props => {
 
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
-      {/* <AspectRatioWrapper
-        className={css.aspectRatioWrapper}
-        width={aspectWidth}
-        height={aspectHeight}
-        {...setActivePropsMaybe}
-      >
-        <LazyImage
-          rootClassName={css.rootForImage}
-          alt={title}
-          image={firstImage}
-          variants={variants}
-          sizes={renderSizes}
-        />
-      </AspectRatioWrapper> */}
       <div className={css.imageWrapper}>
         <Slider {...cardSliderSettings} className={css.slider}>
           {imagesUrls.map((img, imgIdx) => (

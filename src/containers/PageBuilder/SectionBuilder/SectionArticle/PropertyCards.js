@@ -13,11 +13,8 @@ import { useHistory } from 'react-router-dom';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
-const formatPriceInMillions = priceAmount => {
-  if (!priceAmount) return null;
-
-  // First divide by 100 to get the actual price (prices are stored in subunits)
-  const actualPrice = priceAmount / 100;
+const formatPriceInMillions = actualPrice => {
+  if (!actualPrice) return null;
 
   // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
@@ -367,7 +364,7 @@ const PropertyCards = () => {
               const {
                 title,
                 description,
-                price,
+                price: p,
                 publicData: {
                   pricee,
                   location,
@@ -377,11 +374,27 @@ const PropertyCards = () => {
                   kitchen,
                   pool,
                   categoryLevel1,
+                  weekprice,
+                  monthprice,
+                  yearprice,
                 },
               } = attributes;
 
               const tags = sortTags(pricee);
               const showPills = categoryLevel1 !== 'landforsale';
+              const isRentals = categoryLevel1 === 'rentalvillas';
+
+              let price = p;
+
+              if (isRentals) {
+                if (pricee.includes('monthly')) {
+                  price = monthprice;
+                } else if (pricee.includes('weekly')) {
+                  price = weekprice;
+                } else if (pricee.includes('yearly')) {
+                  price = yearprice;
+                }
+              }
 
               return (
                 <NamedLink
@@ -489,7 +502,7 @@ const PropertyCards = () => {
                       </div>
                       <div className={styles.price}>
                         <span className={styles.priceValue}>
-                          {formatPriceInMillions(price.amount)} IDR
+                          {formatPriceInMillions(price)} IDR
                         </span>
                         {showPills && <span className={styles.priceUnit}>/ night</span>}
                       </div>
