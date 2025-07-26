@@ -2,6 +2,7 @@
   margin-bottom: 24px;
   padding-top: 28px;
   border-top: 1px solid #F2F2F2;
+
   @media (max-width: 767px) {
     padding-top: 24px;
   }
@@ -26,6 +27,7 @@
   margin: 0;
   padding: 0;
   color: #231F20;
+
   @media (max-width: 767px) {
     font-size: 12px;
   }
@@ -57,12 +59,12 @@
   border-radius: 10px;
   background-color: #FAFAFA;
   margin-bottom: 20px;
-@media (max-width: 767px) {
-border-radius: 5px;
-margin-bottom: 16px;
 
+  @media (max-width: 767px) {
+    border-radius: 5px;
+    margin-bottom: 16px;
+  }
 
-}
   &>div {
     height: 36px;
 
@@ -71,7 +73,18 @@ margin-bottom: 16px;
       gap: 10px;
 
       &>div:nth-child(3) {
-        top: 110% !important;
+        @media (min-width: 768px) {
+          top: 110% !important;
+        }
+      }
+
+      &>div:nth-child(2) {
+        flex: 1;
+
+        &>div {
+          right: 5px !important;
+          top: -4px !important;
+        }
       }
 
       & label {
@@ -111,9 +124,10 @@ margin-bottom: 16px;
   color: #231F20;
   cursor: pointer;
   transition: all 0.2s ease;
+
   @media (max-width: 767px) {
     padding: 9px 12px;
-   font-size: 10px;
+    font-size: 10px;
   }
 
 }
