@@ -10,11 +10,12 @@ import { types as sdkTypes } from '../../../../util/sdkLoader';
 import * as validators from '../../../../util/validators';
 
 // Import shared components
-import { Button, Form } from '../../../../components';
+import { Button, FieldCurrencyInput, Form } from '../../../../components';
 
 // Import modules from this directory
 import { AddListingFields } from '../EditListingDetailsPanel/EditListingDetailsForm';
 import css from './EditListingPricingForm.module.css';
+import appSettings from '../../../../config/settings';
 
 const { Money } = sdkTypes;
 
@@ -111,6 +112,7 @@ export const EditListingPricingForm = props => (
         categoryLevel1,
         listingFields,
         listingType,
+        unitType,
       } = formRenderProps;
 
       const intl = useIntl();
@@ -146,8 +148,7 @@ export const EditListingPricingForm = props => (
       return (
         <Form onSubmit={handleSubmit} className={classes}>
           <ErrorMessages fetchErrors={fetchErrors} />
-
-          {isRentals && (
+          {isRentals ? (
             <>
               <AddListingFields
                 listingType={listingType}
@@ -168,23 +169,23 @@ export const EditListingPricingForm = props => (
                   intl={intl}
                 />
               )}
-
-              {/* <FieldCurrencyInput
-            id={`${formId}price`}
-            name="price"
-            className={css.input}
-            autoFocus={autoFocus}
-            label={intl.formatMessage(
-              { id: 'EditListingPricingForm.pricePerProduct' },
-              { unitType }
-            )}
-            placeholder={intl.formatMessage({
-              id: 'EditListingPricingForm.priceInputPlaceholder',
-            })}
-            currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
-            validate={priceValidators}
-          /> */}
             </>
+          ) : (
+            <FieldCurrencyInput
+              id={`${formId}price`}
+              name="price"
+              className={css.input}
+              autoFocus={true}
+              label={intl.formatMessage(
+                { id: 'EditListingPricingForm.pricePerProduct' },
+                { unitType }
+              )}
+              placeholder={intl.formatMessage({
+                id: 'EditListingPricingForm.priceInputPlaceholder',
+              })}
+              currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
+              validate={priceValidators}
+            />
           )}
 
           <Button

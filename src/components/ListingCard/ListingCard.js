@@ -161,7 +161,7 @@ export const ListingCard = props => {
   const isLand = categoryLevel1 === 'landforsale';
   const isRentals = categoryLevel1 === 'rentalvillas';
 
-  let price = p;
+  let price;
 
   if (isRentals) {
     if (pricee.includes('monthly')) {
@@ -171,6 +171,8 @@ export const ListingCard = props => {
     } else if (pricee.includes('yearly')) {
       price = yearprice;
     }
+  } else {
+    price = p.amount / 100;
   }
 
   const setActivePropsMaybe = setActiveListing

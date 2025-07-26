@@ -1,30 +1,17 @@
-import React, { useState } from 'react';
 import classNames from 'classnames';
+import React, { useState } from 'react';
 
 // Import configs and util modules
 import { FormattedMessage } from '../../../../util/reactIntl';
-import { LISTING_STATE_DRAFT, propTypes } from '../../../../util/types';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
-import { isPriceVariationsEnabled } from '../../../../util/configHelpers';
-import { isValidCurrencyForTransactionProcess } from '../../../../util/fieldHelpers';
-import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
+import { LISTING_STATE_DRAFT, propTypes } from '../../../../util/types';
 
 // Import shared components
 import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
 import EditListingPricingForm from './EditListingPricingForm';
-import {
-  getInitialValuesForPriceVariants,
-  handleSubmitValuesForPriceVariants,
-} from './BookingPriceVariants';
-import {
-  getInitialValuesForStartTimeInterval,
-  handleSubmitValuesForStartTimeInterval,
-} from './StartTimeInverval';
 import css from './EditListingPricingPanel.module.css';
-
-const { Money } = sdkTypes;
 
 const getListingTypeConfig = (publicData, listingTypes) => {
   const selectedListingType = publicData.listingType;
@@ -36,7 +23,7 @@ const getListingTypeConfig = (publicData, listingTypes) => {
 // This is a tentative approach to contain logic in one place.
 const getInitialValues = props => {
   const { listing, listingTypes } = props;
-  const { publicData } = listing?.attributes || {};
+  const { publicData, price } = listing?.attributes || {};
   const { unitType, categoryLevel1 } = publicData || {};
   const isRentals = categoryLevel1 === 'rentalvillas';
 
@@ -47,25 +34,9 @@ const getInitialValues = props => {
       pub_weekprice: publicData.weekprice,
       pub_yearprice: publicData.yearprice,
     };
+  } else {
+    return { price };
   }
-};
-
-// This is needed to show the listing's price consistently over XHR calls.
-// I.e. we don't change the API entity saved to Redux store.
-// Instead, we use a temporary entity inside the form's state.
-const getOptimisticListing = (listing, updateValues) => {
-  const tmpListing = {
-    ...listing,
-    attributes: {
-      ...listing.attributes,
-      ...updateValues,
-      publicData: {
-        ...listing.attributes?.publicData,
-        ...updateValues?.publicData,
-      },
-    },
-  };
-  return tmpListing;
 };
 
 /**
@@ -114,23 +85,8 @@ const EditListingPricingPanel = props => {
 
   const publicData = listing?.attributes?.publicData;
   const listingTypeConfig = getListingTypeConfig(publicData, listingTypes);
-  const transactionProcessAlias = listingTypeConfig?.transactionType?.alias;
-  const process = listingTypeConfig?.transactionType?.process;
-  const isBooking = isBookingProcess(process);
 
-  // Note: publicData contains priceVariationsEnabled if listing is created with priceVariations enabled.
-  const isPriceVariationsInUse = isPriceVariationsEnabled(publicData, listingTypeConfig);
-
-  const isCompatibleCurrency = isValidCurrencyForTransactionProcess(
-    transactionProcessAlias,
-    marketplaceCurrency
-  );
-
-  const priceCurrencyValid = !isCompatibleCurrency
-    ? false
-    : marketplaceCurrency && initialValues.price instanceof Money
-    ? initialValues.price.currency === marketplaceCurrency
-    : !!marketplaceCurrency;
+  const priceCurrencyValid = true;
   const unitType = listing?.attributes?.publicData?.unitType;
 
   const isRentals = publicData.categoryLevel1 === 'rentalvillas';
@@ -159,8 +115,6 @@ const EditListingPricingPanel = props => {
           listingFields={listingFields}
           listingType={'free-listing'}
           onSubmit={values => {
-            console.log(';vaaaa', values);
-
             // New values for listing attributes
             let updateValues = {},
               initialValues = {};
@@ -182,6 +136,14 @@ const EditListingPricingPanel = props => {
                 pub_weekprice,
                 pub_yearprice,
               };
+            } else {
+              updateValues = {
+                price: values.price,
+              };
+
+              initialValues = {
+                price: values.price,
+              };
             }
 
             // Save the initialValues to state
@@ -194,7 +156,6 @@ const EditListingPricingPanel = props => {
           marketplaceCurrency={marketplaceCurrency}
           unitType={unitType}
           listingTypeConfig={listingTypeConfig}
-          isPriceVariationsInUse={isPriceVariationsInUse}
           listingMinimumPriceSubUnits={listingMinimumPriceSubUnits}
           saveActionMsg={submitButtonText}
           disabled={disabled}

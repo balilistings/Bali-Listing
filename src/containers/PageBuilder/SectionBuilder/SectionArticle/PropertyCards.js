@@ -384,7 +384,7 @@ const PropertyCards = () => {
               const showPills = categoryLevel1 !== 'landforsale';
               const isRentals = categoryLevel1 === 'rentalvillas';
 
-              let price = p;
+              let price;
 
               if (isRentals) {
                 if (pricee.includes('monthly')) {
@@ -394,6 +394,8 @@ const PropertyCards = () => {
                 } else if (pricee.includes('yearly')) {
                   price = yearprice;
                 }
+              } else {
+                price = p.amount / 100;
               }
 
               return (
