@@ -35,8 +35,8 @@ const GRID_CONFIG = [
 
 const tabs = [
   { label: 'Rentals', key: 'rentalvillas' },
-  { label: 'For Sale', key: 'landforsale' },
-  { label: 'Land', key: 'villaforsale' },
+  { label: 'For Sale', key: 'villaforsale' },
+  { label: 'Land', key: 'landforsale' },
 ];
 
 const getGridCount = numberOfFields => {

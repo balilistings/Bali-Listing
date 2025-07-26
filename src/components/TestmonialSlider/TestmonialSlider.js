@@ -3,32 +3,87 @@ import styles from './TestmonialSlider.module.css';
 
 const testimonials = [
   {
-    text: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    name: 'Name Text',
-    title: 'Title',
-    avatar: 'https://randomuser.me/api/portraits/women/1.jpg',
+    text:
+      "Thanks, Bali Listings! Finally, someone has implemented a modern idea to help us market our properties. I recommend it, and I believe it's very necessary for the Bali market.",
+    name: 'Mirah',
+    title: 'Agency',
+    avatar:
+      'https://sharetribe.imgix.net/67a98290-7785-4d51-a13e-9ff34051f0d5/682d7c49-a202-4afe-9078-5ddfeb3b574e?auto=format&crop=edges&fit=crop&h=120&w=120&s=67ae706751f85828c29e2de7632ed5f6',
     linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
   },
   {
     text:
-      "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's.",
-    name: 'Name Text',
-    title: 'Title',
-    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+      'Thanks to this team, we can now enjoy a proper and consistent marketplace, just like anywhere else. They make our lives significantly easier and more productive. Thanks, Bali Listings! I highly recommend their services.',
+    name: 'KLS',
+    title: 'Agency',
+    avatar:
+      'https://sharetribe.imgix.net/67a98290-7785-4d51-a13e-9ff34051f0d5/682d7ebb-5e5e-488c-b894-5ac9fadaae6a?auto=format&crop=edges&fit=crop&h=120&w=120&s=42c58b88f10ae19e3f44be3d9a4c5737',
     linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
   },
   {
-    text: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.',
-    name: 'Name Text',
-    title: 'Title',
-    avatar: '',
+    text:
+      'The platform is super easy to use with quick filters, this was missing in Bali.  Best of all, it’s free of cost with no commissions, saving us money while reaching more buyers.',
+    name: 'Rezy Balitecture',
+    title: 'Agency',
+    avatar:
+      'https://sharetribe.imgix.net/67a98290-7785-4d51-a13e-9ff34051f0d5/683fce23-ac06-4459-a7dc-f7e87b5c4362?auto=format&crop=edges&fit=crop&h=120&w=120&s=0c4261849d8766940c9338d658c5a2d5',
     linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
   },
   // ...add more testimonials as needed
 ];
-{
-  /* Duplicate for seamless loop */
-}
+
+const testimonials2 = [
+  {
+    text:
+      'I found a long-term rental within two days. The platform is clean, fast, and actually shows what’s available.',
+    name: 'Sarah L',
+    title: 'Customer',
+    avatar: null,
+    linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
+  },
+  {
+    text:
+      'Found my dream villa within a few days. The filters made everything so easy, and I avoided wasting time on Facebook.',
+    name: 'Thomas R',
+    title: 'Customer',
+    avatar: null,
+    linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
+  },
+  {
+    text:
+      'Finally a site that doesn’t send you in circles. I loved the Whatsapp integration. Got instant replies.',
+    name: 'Ayu W',
+    title: 'Customer',
+    avatar: null,
+    linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
+  },
+  {
+    text:
+      'We used it to scout for land while still abroad. Great filters, accurate listings, and no agent drama.',
+    name: 'Ben & Carla',
+    title: 'Customer',
+    avatar: null,
+    linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
+  },
+  {
+    text:
+      'Uploading my villa was simple. I got leads fast without paying commission. Will keep using this for sure.',
+    name: 'I Made Suta',
+    title: 'Owner',
+    avatar: null,
+    linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
+  },
+  {
+    text:
+      'I found a long-term rental within two days. The platform is clean, fast, and actually shows what’s available.',
+    name: 'Sarah L',
+    title: 'Customer',
+    avatar: null,
+    linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
+  },
+  // ...add more testimonials as needed
+];
+
 const duplicateTestimonials = [...testimonials, ...testimonials];
 
 const TestmonialSlider = () => {
@@ -38,17 +93,30 @@ const TestmonialSlider = () => {
         <div className={styles.scrollContent}>
           {duplicateTestimonials.map((t, idx) => (
             <div key={idx} className={styles.card}>
-              <div className={styles.testimonialText}>{t.text}</div>
+              <div className={styles.testimonialText}>"{t.text}"</div>
               <div className={styles.profile}>
-              {t.avatar ?
-                    <img src={t.avatar} alt={t.name} className={styles.avatar} />
-                    : <span className={styles.avatarPlaceholder}>
-                      <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.3278 24C20.9247 24 22.6262 21.2719 21.4731 18.9469C18.6841 13.3079 11.8497 11.0016 6.21062 13.7907C3.97469 14.8969 2.16062 16.711 1.05437 18.9469C-0.0987514 21.2719 1.6075 24 4.20437 24H18.3278Z" fill="#C4C4C4" />
-                        <path d="M11.2656 10.5469C14.1781 10.5469 16.5391 8.18588 16.5391 5.27344C16.5391 2.361 14.1781 0 11.2656 0C8.35319 0 5.99219 2.361 5.99219 5.27344C5.99219 8.18588 8.35319 10.5469 11.2656 10.5469Z" fill="#C4C4C4" />
-                      </svg>
-
-                    </span>}
+                {t.avatar ? (
+                  <img src={t.avatar} alt={t.name} className={styles.avatar} />
+                ) : (
+                  <span className={styles.avatarPlaceholder}>
+                    <svg
+                      width="22"
+                      height="24"
+                      viewBox="0 0 22 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M18.3278 24C20.9247 24 22.6262 21.2719 21.4731 18.9469C18.6841 13.3079 11.8497 11.0016 6.21062 13.7907C3.97469 14.8969 2.16062 16.711 1.05437 18.9469C-0.0987514 21.2719 1.6075 24 4.20437 24H18.3278Z"
+                        fill="#C4C4C4"
+                      />
+                      <path
+                        d="M11.2656 10.5469C14.1781 10.5469 16.5391 8.18588 16.5391 5.27344C16.5391 2.361 14.1781 0 11.2656 0C8.35319 0 5.99219 2.361 5.99219 5.27344C5.99219 8.18588 8.35319 10.5469 11.2656 10.5469Z"
+                        fill="#C4C4C4"
+                      />
+                    </svg>
+                  </span>
+                )}
                 <div>
                   <p className={styles.name}>{t.name}</p>
                   <p className={styles.title}>{t.title}</p>
@@ -74,20 +142,33 @@ const TestmonialSlider = () => {
 
       <div className={styles.scrollContainer}>
         <div className={`${styles.scrollContent} ${styles.reverse}`}>
-          {duplicateTestimonials.map((t, idx) => (
+          {testimonials2.map((t, idx) => (
             <div key={`reverse-${idx}`} className={styles.card}>
               <div className={styles.testimonialText}>"{t.text}"</div>
               <div className={styles.profileContainer}>
                 <div className={styles.profile}>
-                  {t.avatar ?
+                  {t.avatar ? (
                     <img src={t.avatar} alt={t.name} className={styles.avatar} />
-                    : <span className={styles.avatarPlaceholder}>
-                      <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18.3278 24C20.9247 24 22.6262 21.2719 21.4731 18.9469C18.6841 13.3079 11.8497 11.0016 6.21062 13.7907C3.97469 14.8969 2.16062 16.711 1.05437 18.9469C-0.0987514 21.2719 1.6075 24 4.20437 24H18.3278Z" fill="#C4C4C4" />
-                        <path d="M11.2656 10.5469C14.1781 10.5469 16.5391 8.18588 16.5391 5.27344C16.5391 2.361 14.1781 0 11.2656 0C8.35319 0 5.99219 2.361 5.99219 5.27344C5.99219 8.18588 8.35319 10.5469 11.2656 10.5469Z" fill="#C4C4C4" />
+                  ) : (
+                    <span className={styles.avatarPlaceholder}>
+                      <svg
+                        width="22"
+                        height="24"
+                        viewBox="0 0 22 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M18.3278 24C20.9247 24 22.6262 21.2719 21.4731 18.9469C18.6841 13.3079 11.8497 11.0016 6.21062 13.7907C3.97469 14.8969 2.16062 16.711 1.05437 18.9469C-0.0987514 21.2719 1.6075 24 4.20437 24H18.3278Z"
+                          fill="#C4C4C4"
+                        />
+                        <path
+                          d="M11.2656 10.5469C14.1781 10.5469 16.5391 8.18588 16.5391 5.27344C16.5391 2.361 14.1781 0 11.2656 0C8.35319 0 5.99219 2.361 5.99219 5.27344C5.99219 8.18588 8.35319 10.5469 11.2656 10.5469Z"
+                          fill="#C4C4C4"
+                        />
                       </svg>
-
-                    </span>}
+                    </span>
+                  )}
                   <div>
                     <p className={styles.name}>{t.name}</p>
                     <p className={styles.title}>{t.title}</p>

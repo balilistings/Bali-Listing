@@ -133,6 +133,12 @@ export class SearchPageComponent extends Component {
     // Custom filters
     this.openCustomFilters = this.openCustomFilters.bind(this);
     this.closeCustomFilters = this.closeCustomFilters.bind(this);
+
+    this.updateCurrentQueryParams = this.updateCurrentQueryParams.bind(this);
+  }
+
+  updateCurrentQueryParams(updatedParams = {}) {
+    this.setState({ currentQueryParams: { ...this.state.currentQueryParams, ...updatedParams } });
   }
 
   // Callback to determine if new search is needed
@@ -710,10 +716,15 @@ export class SearchPageComponent extends Component {
           {this.state.openCustomFilters && (
             <CustomFilters
               onClose={this.closeCustomFilters}
+              onlyUpdateCurrentQueryParams={this.updateCurrentQueryParams}
               onUpdateCurrentQueryParams={params => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const categoryLevel1 = urlParams.get('pub_categoryLevel1') || 'rentalvillas';
+
                 const newParams = {
                   ...this.state.currentQueryParams,
                   ...params,
+                  pub_categoryLevel1: categoryLevel1,
                 };
                 this.setState({
                   currentQueryParams: newParams,
@@ -865,11 +876,6 @@ const mapDispatchToProps = dispatch => ({
 // lifecycle hook.
 //
 // See: https://github.com/ReactTraining/react-router/issues/4671
-const SearchPage = compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(EnhancedSearchPage);
+const SearchPage = compose(connect(mapStateToProps, mapDispatchToProps))(EnhancedSearchPage);
 
 export default SearchPage;
