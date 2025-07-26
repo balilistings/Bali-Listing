@@ -201,7 +201,7 @@ export const AuthenticationForms = props => {
   ];
 
   const handleSubmitSignup = values => {
-    const { userType, email, password, fname, lname, displayName, ...rest } = values;
+    const { userType, email, password, fname, lname, displayName, documentLink, ...rest } = values;
     const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
     const params = {
@@ -220,6 +220,7 @@ export const AuthenticationForms = props => {
       protectedData: {
         ...pickUserFieldsData(rest, 'protected', userType, userFields),
         ...getNonUserFieldParams(rest, userFields),
+        ...(documentLink && { documentLink }),
       },
     };
 
@@ -765,10 +766,7 @@ const mapDispatchToProps = dispatch => ({
 // See: https://github.com/ReactTraining/react-router/issues/4671
 const AuthenticationPage = compose(
   withRouter,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
+  connect(mapStateToProps, mapDispatchToProps)
 )(AuthenticationPageComponent);
 
 export default AuthenticationPage;

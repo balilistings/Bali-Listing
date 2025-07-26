@@ -144,3 +144,7 @@ export const transitionPrivileged = body => {
 export const createUserWithIdp = body => {
   return post('/api/auth/create-user-with-idp', body);
 };
+
+export const getPresignedUrlR2 = body => {
+  return post('/api/r2/generate-presigned-url', body);
+};

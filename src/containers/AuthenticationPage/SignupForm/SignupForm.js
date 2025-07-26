@@ -39,9 +39,10 @@ const SignupFormComponent = props => (
         userTypes,
         userFields,
         values,
+        form,
       } = formRenderProps;
 
-      const { userType } = values || {};
+      const { userType, documentLink } = values || {};
 
       // email
       const emailRequired = validators.required(
@@ -101,10 +102,10 @@ const SignupFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
-      const submitDisabled = invalid || submitInProgress;
+      const submitDisabled = invalid || submitInProgress || !documentLink;
 
       const handleProfileSelect = file => {
-        console.log('Selected profile image:', file);
+        form.change('documentLink', file);
       };
 
       return (
@@ -201,7 +202,7 @@ const SignupFormComponent = props => (
             </div>
           ) : null}
 
-          {showCustomUserFields ? (
+          {userType === 'provider' ? (
             <ImageUploader
               label="ID Document (KTP/Driving License/Passport)"
               columns={1}
