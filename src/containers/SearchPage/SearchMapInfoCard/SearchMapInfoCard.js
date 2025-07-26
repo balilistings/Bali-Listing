@@ -178,15 +178,10 @@ const ListingCard = props => {
 
 
   return (
-    <a
-      alt={title}
+    <div
+
       className={classes}
-      href={urlToListing}
-      onClick={e => {
-        e.preventDefault();
-        // Use clickHandler from props to call internal router
-        clickHandler(listing);
-      }}
+
     >
       <div
         className={classNames(css.card, css.borderRadiusInheritTop, {
@@ -196,7 +191,16 @@ const ListingCard = props => {
         <div className={css.imageWrapper}>
           <Slider {...cardSliderSettings} className={css.slider}>
             {imagesUrls.map((img, imgIdx) => (
+               <a alt={title}
+
+               href={urlToListing}
+               onClick={e => {
+                 e.preventDefault();
+                 // Use clickHandler from props to call internal router
+                 clickHandler(listing);
+               }}>
               <img src={img} alt={title} className={css.image + ' ' + css.imageFade} key={imgIdx} />
+              </a>
             ))}
           </Slider>
         </div>
@@ -215,7 +219,14 @@ const ListingCard = props => {
             sizes="250px"
           />
         </AspectRatioWrapper> */}
-        <div className={css.info}>
+        <a className={css.info} alt={title}
+
+          href={urlToListing}
+          onClick={e => {
+            e.preventDefault();
+            // Use clickHandler from props to call internal router
+            clickHandler(listing);
+          }}>
           <div className={css.tags}>
             {tags?.map(tag => (
               <span className={css.tag} key={tag}>
@@ -267,9 +278,9 @@ const ListingCard = props => {
               <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
             </div>
           </div>
-        </div>
+        </a>
       </div>
-    </a>
+    </div>
   );
 };
 

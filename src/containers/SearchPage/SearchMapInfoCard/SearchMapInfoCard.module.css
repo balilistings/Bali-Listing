@@ -14,7 +14,7 @@
   transition: var(--transitionStyleButton);
 
   &:hover {
-    cursor: pointer;
+    /* cursor: pointer; */
     box-shadow: var(--boxShadowPopup);
   }
   @media (max-width: 768px) {
@@ -624,7 +624,9 @@ margin-right: 10px;
     z-index: 2;
     top: 44%;
     cursor: pointer;
-    display: none !important;
+    @media (min-width: 768px) {
+      display: none !important;
+     }
     & svg{
       width: 16px;
       height: 16px;
@@ -633,16 +635,16 @@ margin-right: 10px;
 
   & :global(.slick-prev) {
     left: 0;
-    @media (max-width: 767px) {
+    /* @media (max-width: 767px) {
       display: none !important;
-    }
+    } */
   }
 
   & :global(.slick-next) {
     right: 0;
-    @media (max-width: 767px) {
+    /* @media (max-width: 767px) {
       display: none !important;
-    }
+    } */
   }
 
   & :global(.slick-dots) {
@@ -679,14 +681,20 @@ margin-right: 10px;
   &:hover{
     & :global(.slick-arrow) {
    
-      display: block !important;
+   @media (min-width: 768px) {
+    display: block !important;
+   }
     }
   }
 }
 
 .info{
+  display: block;
   padding:0 10px;
   @media (max-width: 768px) {
    padding: 0;
+  }
+  &:hover{
+    text-decoration: none;
   }
 }
