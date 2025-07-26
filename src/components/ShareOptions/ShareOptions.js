@@ -1,11 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-// import { X } from 'lucide-react';
 
 import IconInstagram from '../../assets//iconmonstr-instagram-11.svg';
 import IconTiktok from '../../assets/iconmonstr-tiktok.svg';
 import IconFacebook from '../../assets/iconmonstr-faebook.svg';
 import IconLink from '../../assets/iconmonstr-copyLink.svg';
-import ShareIcon from '../../assets/ShareIcon.svg';
+import ShareIcon from '../../assets/ShareIcon2.svg';
+import { IconCollection } from '../../components';
 
 import css from './ShareOptions.module.css';
 
@@ -82,65 +82,64 @@ const ShareOptions = ({ shareUrl, onClose }) => {
     <div className={css.shareModal} onClick={handleOverlayClick}>
       <div className={css.shareModalContent} ref={modalRef} onClick={handleContentClick}>
         <div className={css.shareModalTop}>
-          <button className={css.shareModalClose} onClick={onClose}>
-            X
-          </button>
-
-          <div className={css.shareModalHeader}>
-            <img src={ShareIcon} alt="Share" className={css.shareModalIcon} />
-            <span className={css.shareModalLabel}>Share</span>
+          <div class={css.shareModalHeader}>
+            <div class={css.headerSpacer} />
+            <div class={css.headerCenter}>
+              <img src={ShareIcon} alt="Share" className={css.shareModalIcon} />
+              <span className={css.shareModalLabel}>Share</span>
+            </div>
+            <button class={css.closeButton} onclick={onClose} aria-label="Close">
+              <IconCollection name="close_icon" />
+            </button>
           </div>
-
-          <h3 className={css.shareModalTitle}>Share this listing</h3>
         </div>
+        <p className={css.shareModalTitle}>Share this listing</p>
 
-        <div className={css.shareModalBottom}>
-          <div className={css.shareOptionsGrid}>
-            <button
-              className={css.shareOption}
-              onClick={() =>
-                window.open(`https://www.instagram.com/sharer/sharer.php?u=${shareUrl}`, '_blank')
-              }
-            >
-              <div className={css.shareOptionIcon}>
-                <img src={IconInstagram} alt="Instagram" width="48" height="48" />
+        <div className={css.shareOptionsGrid}>
+          <button
+            className={css.shareOption}
+            onClick={() =>
+              window.open(`https://www.instagram.com/sharer/sharer.php?u=${shareUrl}`, '_blank')
+            }
+          >
+            <div className={css.shareOptionIcon}>
+              <img src={IconInstagram} alt="Instagram" width="48" height="48" />
+            </div>
+            <span className={css.shareOptionLabel}>Instagram</span>
+          </button>
+          <button
+            className={css.shareOption}
+            onClick={() =>
+              window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank')
+            }
+          >
+            <div className={css.shareOptionIcon}>
+              <img src={IconFacebook} alt="Facebook" width="48" height="48" />
+            </div>
+            <span className={css.shareOptionLabel}>Facebook</span>
+          </button>
+          <button
+            className={css.shareOption}
+            onClick={() =>
+              window.open(`https://www.tiktok.com/sharer/sharer.php?u=${shareUrl}`, '_blank')
+            }
+          >
+            <div className={css.shareOptionIcon}>
+              <img src={IconTiktok} alt="TikTok" width="48" height="48" />
+            </div>
+            <span className={css.shareOptionLabel}>TikTok</span>
+          </button>
+          <button className={css.shareOption} onClick={copyToClipboard}>
+            {(copySuccess || copyError) && (
+              <div className={copySuccess ? css.successTooltip : css.errorTooltip}>
+                {copySuccess ? 'Link copied' : 'Failed to copy link'}
               </div>
-              <span className={css.shareOptionLabel}>Instagram</span>
-            </button>
-            <button
-              className={css.shareOption}
-              onClick={() =>
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank')
-              }
-            >
-              <div className={css.shareOptionIcon}>
-                <img src={IconFacebook} alt="Facebook" width="48" height="48" />
-              </div>
-              <span className={css.shareOptionLabel}>Facebook</span>
-            </button>
-            <button
-              className={css.shareOption}
-              onClick={() =>
-                window.open(`https://www.tiktok.com/sharer/sharer.php?u=${shareUrl}`, '_blank')
-              }
-            >
-              <div className={css.shareOptionIcon}>
-                <img src={IconTiktok} alt="TikTok" width="48" height="48" />
-              </div>
-              <span className={css.shareOptionLabel}>TikTok</span>
-            </button>
-            <button className={css.shareOption} onClick={copyToClipboard}>
-              {(copySuccess || copyError) && (
-                <div className={copySuccess ? css.successTooltip : css.errorTooltip}>
-                  {copySuccess ? 'Link copied' : 'Failed to copy link'}
-                </div>
-              )}{' '}
-              <div className={css.shareOptionIcon}>
-                <img src={IconLink} alt="Copy Link" width="48" height="48" />
-              </div>
-              <span className={css.shareOptionLabel}>Copy Link</span>
-            </button>
-          </div>
+            )}{' '}
+            <div className={css.shareOptionIcon}>
+              <img src={IconLink} alt="Copy Link" width="48" height="48" />
+            </div>
+            <span className={css.shareOptionLabel}>Copy Link</span>
+          </button>
         </div>
       </div>
     </div>

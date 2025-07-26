@@ -1153,8 +1153,8 @@ color: #231F20;
   width: 100%;
 
   /* Static map: dimensions are 640px */
-  max-width: 640px;
-  max-height: 640px;
+  max-width: 804px;
+  max-height: 120px;
   background-color: #eee;
   padding: 0;
   border: 0;

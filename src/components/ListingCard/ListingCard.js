@@ -304,7 +304,7 @@ export const ListingCard = props => {
           ))}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
-              Listed by:
+              Listed by:{' '}
               <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
             </span>
           </NamedLink>
