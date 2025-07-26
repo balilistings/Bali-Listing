@@ -2,6 +2,14 @@
 
 .sortBy {
   margin-right: 9px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0px;
+  & svg{
+    fill: transparent;
+  }
 }
 
 .sortByDesktop {
@@ -21,10 +29,14 @@
   cursor: pointer;
 
   /* Font */
-  font-weight: var(--fontWeightSemiBold);
-  font-size: 13px;
-  line-height: 18px;
-  letter-spacing: 0.2px;
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  
 
   /* Button text styles */
   /* Default button text is centered without decorations */
@@ -32,17 +44,44 @@
   text-decoration: none;
 
   /* Button borders */
-  border: 1px solid var(--colorGrey100);
-  border-radius: var(--borderRadiusMedium);
 
+  border-radius: 50px;
+  border: 1px solid#C4C4C4;
   background-color: var(--colorWhite);
+@media (max-width: 768px) {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  height: auto;
+  min-height: 0;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: Mulish;
+font-weight: 700;
+font-style: Bold;
+font-size: 10px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
 
+  & svg{
+    fill: transparent;
+  }
+}
   &:focus,
   &:hover {
     outline: none;
-    box-shadow: var(--boxShadowFilterButton);
+    box-shadow: none;
     text-decoration: none;
-    border-color: var(--colorGrey300);
+    border: 1px solid#C4C4C4 !important;
+    @media (max-width: 768px) {
+      border: none !important;
+    }
+  
   }
 
   &:disabled {
@@ -53,7 +92,7 @@
   @media (--viewportMedium) {
     height: auto;
     min-height: 0;
-    padding: var(--marketplaceButtonSmallDesktopPadding);
+    padding: 4px 15px;
     margin: 0;
 
     font-weight: var(--fontWeightMedium);

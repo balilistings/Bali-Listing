@@ -28,11 +28,23 @@ import {
   isErrorUserPendingApproval,
   isForbiddenError,
 } from '../../util/errors';
-import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers';
+import {
+  hasPermissionToViewData,
+  isUserAuthorized,
+  showCreateListingLinkForUser,
+} from '../../util/userHelpers';
 import { getListingsById } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 
-import { H3, H5, ModalInMobile, NamedRedirect, Page } from '../../components';
+import {
+  Button,
+  H3,
+  H5,
+  IconCollection,
+  ModalInMobile,
+  NamedRedirect,
+  Page,
+} from '../../components';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 
 import { setActiveListing } from './SearchPage.duck';
@@ -61,6 +73,10 @@ import SearchResultsPanel from './SearchResultsPanel/SearchResultsPanel';
 import NoSearchResultsMaybe from './NoSearchResultsMaybe/NoSearchResultsMaybe';
 
 import css from './SearchPage.module.css';
+import { types as sdkTypes } from '../../util/sdkLoader';
+import CustomFilters from './CustomFilters/CustomFilters';
+
+const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
 const SEARCH_WITH_MAP_DEBOUNCE = 300; // Little bit of debounce before search is initiated.
@@ -99,6 +115,7 @@ export class SearchPageComponent extends Component {
       isMobileModalOpen: false,
       currentQueryParams: validUrlQueryParamsFromProps(props),
       isSecondaryFiltersOpen: false,
+      openCustomFilters: false,
     };
     this.onMapMoveEnd = debounce(this.onMapMoveEnd.bind(this), SEARCH_WITH_MAP_DEBOUNCE);
     this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
@@ -112,6 +129,10 @@ export class SearchPageComponent extends Component {
 
     // SortBy
     this.handleSortBy = this.handleSortBy.bind(this);
+
+    // Custom filters
+    this.openCustomFilters = this.openCustomFilters.bind(this);
+    this.closeCustomFilters = this.closeCustomFilters.bind(this);
   }
 
   // Callback to determine if new search is needed
@@ -184,8 +205,9 @@ export class SearchPageComponent extends Component {
   }
 
   // Apply the filters by redirecting to SearchPage with new filters.
-  applyFilters() {
+  applyFilters(updatedParams = {}) {
     const { history, routeConfiguration, config, params: currentPathParams, location } = this.props;
+
     const { listingFields: listingFieldsConfig } = config?.listing || {};
     const { defaultFilters: defaultFiltersConfig, sortConfig } = config?.search || {};
     const activeListingTypes = config?.listing?.listingTypes.map(config => config.listingType);
@@ -199,7 +221,11 @@ export class SearchPageComponent extends Component {
     };
 
     const urlQueryParams = validUrlQueryParamsFromProps(this.props);
-    const searchParams = { ...urlQueryParams, ...this.state.currentQueryParams };
+    const searchParams = {
+      ...urlQueryParams,
+      ...this.state.currentQueryParams,
+      ...updatedParams,
+    };
     const search = cleanSearchFromConflictingParams(searchParams, filterConfigs, sortConfig);
 
     const { routeName, pathParams } = getSearchPageResourceLocatorStringParams(
@@ -236,7 +262,9 @@ export class SearchPageComponent extends Component {
     );
 
     history.push(
-      createResourceLocatorString(routeName, routeConfiguration, pathParams, queryParams)
+      createResourceLocatorString(routeName, routeConfiguration, pathParams, {
+        pub_categoryLevel1: 'rentalvillas',
+      })
     );
   }
 
@@ -328,6 +356,14 @@ export class SearchPageComponent extends Component {
     );
   }
 
+  openCustomFilters() {
+    this.setState({ openCustomFilters: true });
+  }
+
+  closeCustomFilters() {
+    this.setState({ openCustomFilters: false });
+  }
+
   render() {
     const {
       intl,
@@ -344,6 +380,7 @@ export class SearchPageComponent extends Component {
       routeConfiguration,
       config,
       params: currentPathParams = {},
+      currentUser,
     } = this.props;
 
     // If the search page variant is of type /s/:listingType, this defines the :listingType
@@ -469,6 +506,8 @@ export class SearchPageComponent extends Component {
       validQueryParams,
       filterConfigs
     );
+
+    const showCreateListingsLink = showCreateListingLinkForUser(config, currentUser);
     const sortBy = mode => {
       return sortConfig.active ? (
         <SortBy
@@ -489,10 +528,17 @@ export class SearchPageComponent extends Component {
         totalItems={totalItems}
         location={location}
         resetAll={this.resetAll}
+        showCreateListingsLink={showCreateListingsLink}
       />
     );
 
-    const { bounds, origin } = searchParamsInURL || {};
+    const {
+      bounds = new SDKLatLngBounds(
+        new SDKLatLng(-7.99722356, 115.56892379),
+        new SDKLatLng(-8.85119719, 114.87263779)
+      ),
+      origin,
+    } = searchParamsInURL || {};
     const { title, description, schema } = createSearchResultSchema(
       listings,
       searchParamsInURL || {},
@@ -516,7 +562,12 @@ export class SearchPageComponent extends Component {
         title={title}
         schema={schema}
       >
-        <TopbarContainer rootClassName={topbarClasses} currentSearchParams={validQueryParams} />
+        <TopbarContainer
+          currentPage="search"
+          rootClassName={topbarClasses}
+          currentSearchParams={validQueryParams}
+          openCustomFilters={this.openCustomFilters}
+        />
         <div className={css.container}>
           <div className={css.searchResultContainer}>
             <SearchFiltersMobile
@@ -537,11 +588,13 @@ export class SearchPageComponent extends Component {
               noResultsInfo={noResultsInfo}
               location={location}
               isMapVariant
+              openCustomFilters={this.openCustomFilters}
+              isMapOpen={this.state.isSearchMapOpenOnMobile}
+              onMapClose={() => this.setState({ isSearchMapOpenOnMobile: false })}
             >
-              {availableFilters.map(filterConfig => {
-                const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${
-                  filterConfig.key
-                }`;
+              {/* {availableFilters.map(filterConfig => {
+                const key = `SearchFiltersMobile.${filterConfig.scope || 'built-in'}.${filterConfig.key
+                  }`;
                 return (
                   <FilterComponent
                     key={key}
@@ -557,8 +610,9 @@ export class SearchPageComponent extends Component {
                     showAsPopup={false}
                   />
                 );
-              })}
+              })} */}
             </SearchFiltersMobile>
+
             <MainPanelHeader
               className={css.mainPanelMapVariant}
               sortByComponent={sortBy('desktop')}
@@ -569,7 +623,7 @@ export class SearchPageComponent extends Component {
               searchListingsError={searchListingsError}
               noResultsInfo={noResultsInfo}
             >
-              <SearchFiltersPrimary {...propsForSecondaryFiltersToggle}>
+              {/* <SearchFiltersPrimary {...propsForSecondaryFiltersToggle}>
                 {availablePrimaryFilters.map(filterConfig => {
                   const key = `SearchFiltersPrimary.${filterConfig.scope || 'built-in'}.${
                     filterConfig.key
@@ -592,7 +646,7 @@ export class SearchPageComponent extends Component {
                     />
                   );
                 })}
-              </SearchFiltersPrimary>
+              </SearchFiltersPrimary> */}
             </MainPanelHeader>
             {isSecondaryFiltersOpen ? (
               <div className={classNames(css.searchFiltersPanel)}>
@@ -653,6 +707,25 @@ export class SearchPageComponent extends Component {
               </div>
             )}
           </div>
+
+          {this.state.openCustomFilters && (
+            <CustomFilters
+              onClose={this.closeCustomFilters}
+              onUpdateCurrentQueryParams={params => {
+                const newParams = {
+                  ...this.state.currentQueryParams,
+                  ...params,
+                };
+                this.setState({
+                  currentQueryParams: newParams,
+                });
+                this.applyFilters(newParams);
+              }}
+              resultsCount={totalItems}
+              onReset={this.resetAll}
+              currentQueryParams={this.state.currentQueryParams}
+            />
+          )}
           <ModalInMobile
             className={css.mapPanel}
             id="SearchPage_map"
@@ -751,6 +824,7 @@ const EnhancedSearchPage = props => {
       intl={intl}
       history={history}
       location={location}
+      currentUser={currentUser}
       {...restOfProps}
     />
   );

@@ -6,6 +6,8 @@ import BlockBuilder from '../../BlockBuilder';
 
 import SectionContainer from '../SectionContainer';
 import css from './SectionArticle.module.css';
+import PropertyCards from './PropertyCards';
+import { Button, IconCollection, TestmonialSlider } from '../../../../components';
 
 /**
  * @typedef {Object} BlockConfig
@@ -76,6 +78,8 @@ const SectionArticle = props => {
       appearance={appearance}
       options={fieldOptions}
     >
+   
+
       {hasHeaderFields ? (
         <header className={defaultClasses.sectionDetails}>
           <Field data={title} className={defaultClasses.title} options={fieldOptions} />
@@ -83,6 +87,11 @@ const SectionArticle = props => {
           <Field data={callToAction} className={defaultClasses.ctaButton} options={fieldOptions} />
         </header>
       ) : null}
+
+      {sectionId === 'select_your_properties' ? <PropertyCards /> : null}
+
+      {sectionId === 'testimonial_section' ? <TestmonialSlider /> : null}
+
       {hasBlocks ? (
         <div
           className={classNames(defaultClasses.blockContainer, css.articleMain, {

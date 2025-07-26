@@ -54,3 +54,14 @@
     margin-left: auto;
   }
 }
+
+:global(#our_services) {
+  & .media{
+    max-height: 217px;
+    min-height: 217px;
+    @media (max-width: 1023px) {
+      max-height: 133px;
+      min-height: 133px;
+    }
+  }
+}

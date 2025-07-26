@@ -111,16 +111,17 @@ const IconArrowHead = props => {
     return (
       <svg
         className={classes}
-        width="11"
-        height="15"
-        viewBox="0 0 11 15"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M9.4 1c.17 0 .34.065.458.192.214.228.182.57-.07.764L2.528 7.5l7.26 5.545c.252.194.284.535.07.763-.214.23-.592.257-.846.064l-7.8-5.958C1.077 7.81 1 7.66 1 7.5c0-.16.077-.31.212-.414l7.8-5.958C9.125 1.042 9.262 1 9.4 1"
-          fillRule="evenodd"
-        />
-      </svg>
+        style={{
+        fill: 'transparent'
+        }}
+        width="38" height="38" viewBox="0 0 38 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <foreignObject x="-5.77869" y="-5.77869" width="49.5574" height="49.5574"><div xmlns="http://www.w3.org/1999/xhtml" style={{backdropFilter: 'blur(2.89px)', clipPath: 'url(#bgblur_0_2376_35309_clip_path)', height: '100%', width: '100%'}}></div></foreignObject><rect data-figma-bg-blur-radius="5.77869" width="38" height="38" rx="19" fill="white"/>
+        <path d="M22.9507 26.5746L15.7031 19.327L22.9507 12.0793" stroke="#353535" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+        <clipPath id="bgblur_0_2376_35309_clip_path" transform="translate(5.77869 5.77869)"><rect width="38" height="38" rx="19"/>
+        </clipPath></defs>
+        </svg>
+        
     );
   } else if (isDown && isBig) {
     return (
