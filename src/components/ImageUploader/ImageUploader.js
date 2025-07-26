@@ -35,22 +35,55 @@ export default function ImageUploader({
         throw new Error(response.error || 'Failed to get presigned URL');
       }
 
-      // Upload file to R2 using presigned URL
-      const uploadResponse = await fetch(response.file.url, {
-        method: 'PUT',
-        body: file,
-        headers: { 'Content-Type': file.type },
+      // Upload file to R2 using XMLHttpRequest for real progress tracking
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        // Track real upload progress
+        xhr.upload.addEventListener('progress', event => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 100);
+            // console.log(
+            //   `File ${file.name} progress: ${percentComplete}% (index: ${progressIndex})`
+            // );
+            setUploadProgress(prevProgress => {
+              const updated = [...prevProgress];
+              if (updated[progressIndex]) {
+                updated[progressIndex].progress = percentComplete;
+                // console.log(`Updated progress for index ${progressIndex}: ${percentComplete}%`);
+              } else {
+                console.warn(
+                  `Progress index ${progressIndex} not found in array of length ${updated.length}`
+                );
+              }
+              return updated;
+            });
+          }
+        });
+
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            // Construct public URL
+            const fileName = encodeURIComponent(file.name);
+            const publicUrl = `${process.env.REACT_APP_R2_PUBLIC_DOMAIN}/${storagePath}/${fileName}`;
+            resolve(publicUrl);
+          } else {
+            reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
+          }
+        });
+
+        xhr.addEventListener('error', () => {
+          reject(new Error('Network error during upload'));
+        });
+
+        xhr.addEventListener('abort', () => {
+          reject(new Error('Upload was aborted'));
+        });
+
+        xhr.open('PUT', response.file.url);
+        xhr.setRequestHeader('Content-Type', file.type);
+        xhr.send(file);
       });
-
-      if (!uploadResponse.ok) {
-        throw new Error(`Upload failed: ${uploadResponse.statusText}`);
-      }
-
-      // Construct public URL
-      const fileName = encodeURIComponent(file.name);
-      const publicUrl = `${process.env.REACT_APP_R2_PUBLIC_DOMAIN}/${storagePath}/${fileName}`;
-
-      return publicUrl;
     } catch (error) {
       console.error('Failed to upload file:', error);
       throw error;
@@ -63,11 +96,12 @@ export default function ImageUploader({
         Object.assign(file, { preview: URL.createObjectURL(file) })
       );
 
+      const startIndex = images.length;
+      const startProgressIndex = uploadProgress.length;
+
       // Initialize progress tracking for new files
       const withProgress = newFiles.map(file => ({ file, progress: 0 }));
       setUploadProgress(prev => [...prev, ...withProgress]);
-
-      const startIndex = images.length;
 
       // Add files to display immediately
       setImages(prev => {
@@ -78,33 +112,10 @@ export default function ImageUploader({
 
       // Upload files to R2
       const uploadPromises = newFiles.map(async (file, index) => {
-        const progressIndex = uploadProgress.length + index;
+        const progressIndex = startProgressIndex + index;
 
         try {
-          // Simulate progress updates during upload
-          const progressInterval = setInterval(() => {
-            setUploadProgress(prevProgress => {
-              const updated = [...prevProgress];
-              if (updated[progressIndex] && updated[progressIndex].progress < 90) {
-                updated[progressIndex].progress += 10;
-              }
-              return updated;
-            });
-          }, 200);
-
           const publicUrl = await uploadFileToR2(file, progressIndex);
-
-          clearInterval(progressInterval);
-
-          // Set progress to 100% on successful upload
-          setUploadProgress(prevProgress => {
-            const updated = [...prevProgress];
-            if (updated[progressIndex]) {
-              updated[progressIndex].progress = 100;
-            }
-            return updated;
-          });
-
           return { index: startIndex + index, url: publicUrl };
         } catch (error) {
           console.error(`Failed to upload ${file.name}:`, error);
@@ -142,7 +153,7 @@ export default function ImageUploader({
         onProfileChange(firstSuccessfulUpload.url);
       }
     },
-    [maxImages, uploadProgress.length, images.length, userId, storagePath, onProfileChange]
+    [maxImages, images.length, userId, storagePath, onProfileChange]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
