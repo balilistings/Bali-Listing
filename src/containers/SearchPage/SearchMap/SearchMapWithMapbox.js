@@ -206,7 +206,8 @@ const infoCardComponent = (
   infoCardOpen,
   onListingInfoCardClicked,
   createURLToListing,
-  mapComponentRefreshToken
+  mapComponentRefreshToken,
+  onClose
 ) => {
   const listingsArray = Array.isArray(infoCardOpen) ? infoCardOpen : [infoCardOpen];
 
@@ -228,6 +229,7 @@ const infoCardComponent = (
       listings: listingsArray,
       onListingInfoCardClicked,
       createURLToListing,
+      onClose,
     },
   };
 };
@@ -445,7 +447,8 @@ class SearchMapWithMapbox extends Component {
           infoCardOpen,
           onListingInfoCardClicked,
           createURLToListing,
-          mapComponentRefreshToken
+          mapComponentRefreshToken,
+          this.props.onClose
         );
 
         // marker container and its styles

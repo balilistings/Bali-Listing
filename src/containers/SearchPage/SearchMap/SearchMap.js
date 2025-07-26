@@ -121,6 +121,10 @@ export class SearchMapComponent extends Component {
     }
   }
 
+  onCloseInfoCard() {
+    this.setState({ infoCardOpen: null });
+  }
+
   onMapLoadHandler(map) {
     this.mapRef = map;
 
@@ -162,6 +166,12 @@ export class SearchMapComponent extends Component {
       // Initiate rerendering
       this.setState({ mapReattachmentCount: window.mapReattachmentCount });
     };
+    
+    const handleCloseInfoCard = () => {
+      console.log('handleCloseInfoCard called, setting infoCardOpen to null');
+      this.setState({ infoCardOpen: null });
+    };
+    
     const mapProvider = config.maps.mapProvider;
     const hasApiAccessForMapProvider = !!getMapProviderApiAccess(config.maps);
     const SearchMapVariantComponent = getSearchMapVariantComponent(mapProvider);
@@ -192,6 +202,7 @@ export class SearchMapComponent extends Component {
           onListingInfoCardClicked={this.onListingInfoCardClicked}
           onMapLoad={this.onMapLoadHandler}
           onMapMoveEnd={onMapMoveEnd}
+          onClose={handleCloseInfoCard}
           reusableMapHiddenHandle={REUSABLE_MAP_HIDDEN_HANDLE}
           zoom={zoom}
           config={config}

@@ -359,6 +359,7 @@ const InfoCardComponent = props => {
     createURLToListing,
     mapComponentRefreshToken,
     config,
+    onClose,
   } = props;
   const listingsArray = Array.isArray(infoCardOpen) ? infoCardOpen : [infoCardOpen];
 
@@ -385,6 +386,7 @@ const InfoCardComponent = props => {
         listings={listingsArray}
         onListingInfoCardClicked={onListingInfoCardClicked}
         createURLToListing={createURLToListing}
+        onClose={onClose}
         config={config}
       />
     </CustomOverlayView>
@@ -575,6 +577,7 @@ class SearchMapWithGoogleMaps extends Component {
             createURLToListing={createURLToListing}
             mapComponentRefreshToken={mapComponentRefreshToken}
             config={config}
+            onClose={this.props.onClose}
           />
         ) : null}
       </div>

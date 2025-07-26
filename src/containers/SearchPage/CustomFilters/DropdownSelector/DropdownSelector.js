@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import css from './DropdownSelector.module.css';
 
 function DropdownSelector({
@@ -11,10 +11,24 @@ function DropdownSelector({
   placeholder,
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleToggle = () => {
     setIsOpen(!isOpen);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleOptionToggle = optionId => {
     const newSelection = selectedOptions.includes(optionId)
@@ -51,7 +65,7 @@ function DropdownSelector({
 
       {description && <div className={css.description}>{description}</div>}
 
-      <div className={css.dropdownContainer}>
+      <div className={css.dropdownContainer} ref={dropdownRef}>
         <div className={`${css.dropdownInput} ${isOpen ? css.open : ''}`} onClick={handleToggle}>
           <span className={css.dropdownText}>{getDisplayText()}</span>
           <span className={`${css.arrow} ${isOpen ? css.arrowUp : ''}`}>

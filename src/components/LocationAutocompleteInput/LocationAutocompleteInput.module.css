@@ -200,6 +200,7 @@ bottom of the container.
 
 .inputContainer{
   position: relative;
+  flex: 1;
   & .crossIcon{
     @media (max-width: 768px) {
     display: none;
