@@ -20,7 +20,7 @@ const LandSizeDropdown = ({
   setIsOpen,
   setIsOpenPrice,
 }) => {
-  const [landSizeRange, setLandSizeRange] = useState([0, 1000]);
+  const [landSizeRange, setLandSizeRange] = useState([100, 50000]);
 
   const toggleDropdown = () => {
     setIsOpen(prev => !prev);
@@ -38,6 +38,22 @@ const LandSizeDropdown = ({
       minSize: handles[0],
       maxSize: handles[1],
     });
+  };
+
+  const handleMinInputChange = e => {
+    const value = parseInt(e.target.value) || 0;
+    const clampedValue = Math.max(100, Math.min(value, landSizeRange[1]));
+    const newRange = [clampedValue, landSizeRange[1]];
+    setLandSizeRange(newRange);
+    handleRangeChange(newRange);
+  };
+
+  const handleMaxInputChange = e => {
+    const value = parseInt(e.target.value) || 0;
+    const clampedValue = Math.min(50000, Math.max(value, landSizeRange[0]));
+    const newRange = [landSizeRange[0], clampedValue];
+    setLandSizeRange(newRange);
+    handleRangeChange(newRange);
   };
 
   const getCurrentValue = () => {
@@ -125,9 +141,9 @@ const LandSizeDropdown = ({
               <div className={css.sliderSection}>
                 <div className={css.sliderWrapper}>
                   <RangeSlider
-                    min={0}
-                    max={1000}
-                    step={1}
+                    min={100}
+                    max={50000}
+                    step={100}
                     handles={landSizeRange}
                     onChange={handleRangeChange}
                   />
@@ -139,13 +155,29 @@ const LandSizeDropdown = ({
                     <span className={css.priceLabel}>
                       <FormattedMessage id="PageBuilder.SearchCTA.LandSizeFilter.minimum" />
                     </span>
-                    <span className={css.priceAmount}>{formatLandSize(landSizeRange[0])}</span>
+                    <input
+                      type="number"
+                      className={css.priceAmount}
+                      value={landSizeRange[0]}
+                      onChange={handleMinInputChange}
+                      min={100}
+                      max={50000}
+                      step={100}
+                    />
                   </div>
                   <div className={css.priceValue}>
                     <span className={css.priceLabel}>
                       <FormattedMessage id="PageBuilder.SearchCTA.LandSizeFilter.maximum" />
                     </span>
-                    <span className={css.priceAmount}>{formatLandSize(landSizeRange[1])}</span>
+                    <input
+                      type="number"
+                      className={css.priceAmount}
+                      value={landSizeRange[1]}
+                      onChange={handleMaxInputChange}
+                      min={100}
+                      max={50000}
+                      step={100}
+                    />
                   </div>
                 </div>
               </div>

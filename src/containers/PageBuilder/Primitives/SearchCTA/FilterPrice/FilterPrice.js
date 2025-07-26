@@ -14,16 +14,20 @@ const tabs = [
 ];
 
 const formatPrice = price => {
-  return `${price}M`;
+  return `${price / 1000000}M`;
 };
 
 const getRangeConfig = tabId => {
   const configs = {
-    weekly: { min: 0, max: 99, step: 1 }, // 0-99M
-    monthly: { min: 0, max: 500, step: 5 }, // 0-500M
-    yearly: { min: 0, max: 1999, step: 10 }, // 0-1999M
+    weekly: { min: 1000000, max: 150000000, step: 1000000 }, // 1M-150M
+    monthly: { min: 1000000, max: 500000000, step: 5000000 }, // 1M-500M
+    yearly: { min: 50000000, max: 5000000000, step: 50000000 }, // 50M-5000M
   };
   return configs[tabId] || configs.monthly;
+};
+
+const getNonRentalConfig = () => {
+  return { min: 1000000, max: 9999000000000, step: 1000000 }; // 1M-9999000M
 };
 
 const PriceDropdown = ({
@@ -37,13 +41,15 @@ const PriceDropdown = ({
 }) => {
   const [activeTab, setActiveTab] = useState('monthly');
   const showTabsInPrice = activeTabKey === 'rentalvillas';
-  const [priceRange, setPriceRange] = useState(showTabsInPrice ? [0, 500] : [1000000, 10000000000]);
+  const [priceRange, setPriceRange] = useState(
+    showTabsInPrice ? [1000000, 500000000] : [1000000, 9999000000000]
+  );
 
   useEffect(() => {
     if (showTabsInPrice) {
       // setActiveTab('monthly');
     } else {
-      setPriceRange([1000000, 10000000000]);
+      setPriceRange([1000000, 9999000000000]);
     }
   }, [showTabsInPrice]);
 
@@ -70,6 +76,24 @@ const PriceDropdown = ({
       minPrice: handles[0],
       maxPrice: handles[1],
     });
+  };
+
+  const handleMinInputChange = e => {
+    const value = parseFloat(e.target.value) * 1000000 || 0;
+    const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
+    const clampedValue = Math.max(config.min, Math.min(value, priceRange[1]));
+    const newRange = [clampedValue, priceRange[1]];
+    setPriceRange(newRange);
+    handleRangeChange(newRange);
+  };
+
+  const handleMaxInputChange = e => {
+    const value = parseFloat(e.target.value) * 1000000 || 0;
+    const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
+    const clampedValue = Math.min(config.max, Math.max(value, priceRange[0]));
+    const newRange = [priceRange[0], clampedValue];
+    setPriceRange(newRange);
+    handleRangeChange(newRange);
   };
 
   const getCurrentValue = () => {
@@ -212,9 +236,11 @@ const PriceDropdown = ({
               >
                 <div className={css.sliderWrapper}>
                   <RangeSlider
-                    min={showTabsInPrice ? getRangeConfig(activeTab).min : 1000000}
-                    max={showTabsInPrice ? getRangeConfig(activeTab).max : 10000000000}
-                    step={showTabsInPrice ? getRangeConfig(activeTab).step : 1000000}
+                    min={showTabsInPrice ? getRangeConfig(activeTab).min : getNonRentalConfig().min}
+                    max={showTabsInPrice ? getRangeConfig(activeTab).max : getNonRentalConfig().max}
+                    step={
+                      showTabsInPrice ? getRangeConfig(activeTab).step : getNonRentalConfig().step
+                    }
                     handles={priceRange}
                     onChange={handleRangeChange}
                   />
@@ -226,18 +252,58 @@ const PriceDropdown = ({
                     <span className={css.priceLabel}>
                       <FormattedMessage id="PageBuilder.SearchCTA.PriceFilter.minimum" />
                     </span>
-                    <span className={css.priceAmount}>{formatPrice(priceRange[0])}</span>
+                    <input
+                      type="number"
+                      className={css.priceAmount}
+                      value={priceRange[0] / 1000000}
+                      onChange={handleMinInputChange}
+                      min={
+                        showTabsInPrice
+                          ? getRangeConfig(activeTab).min / 1000000
+                          : getNonRentalConfig().min / 1000000
+                      }
+                      max={
+                        showTabsInPrice
+                          ? getRangeConfig(activeTab).max / 1000000
+                          : getNonRentalConfig().max / 1000000
+                      }
+                      step={
+                        showTabsInPrice
+                          ? getRangeConfig(activeTab).step / 1000000
+                          : getNonRentalConfig().step / 1000000
+                      }
+                    />
                   </div>
                   <div className={css.priceValue}>
                     <span className={css.priceLabel}>
                       <FormattedMessage id="PageBuilder.SearchCTA.PriceFilter.maximum" />
                     </span>
-                    <span className={css.priceAmount}>{formatPrice(priceRange[1])}</span>
+                    <input
+                      type="number"
+                      className={css.priceAmount}
+                      value={priceRange[1] / 1000000}
+                      onChange={handleMaxInputChange}
+                      min={
+                        showTabsInPrice
+                          ? getRangeConfig(activeTab).min / 1000000
+                          : getNonRentalConfig().min / 1000000
+                      }
+                      max={
+                        showTabsInPrice
+                          ? getRangeConfig(activeTab).max / 1000000
+                          : getNonRentalConfig().max / 1000000
+                      }
+                      step={
+                        showTabsInPrice
+                          ? getRangeConfig(activeTab).step / 1000000
+                          : getNonRentalConfig().step / 1000000
+                      }
+                    />
                   </div>
                 </div>
               </div>
 
-              {isMobile && (
+              {true && (
                 <div className={css.showButtonContainer}>
                   <button type="button" className={css.showButton} onClick={closeDropdown}>
                     Save
