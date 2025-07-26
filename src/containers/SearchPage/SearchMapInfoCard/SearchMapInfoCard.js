@@ -281,6 +281,7 @@ const ListingCard = props => {
  * @param {Array<propTypes.listing>} props.listings - The listings
  * @param {Function} props.onListingInfoCardClicked - The function to handle the listing info card click
  * @param {Function} props.createURLToListing - The function to create the URL to the listing
+ * @param {Function} [props.onClose] - The function to handle closing the info card
  * @param {Object} props.config - The configuration
  * @returns {JSX.Element}
  */
@@ -293,6 +294,7 @@ const SearchMapInfoCard = props => {
     listings,
     createURLToListing,
     onListingInfoCardClicked,
+    onClose,
     config,
   } = props;
   const currentListing = ensureListing(listings[currentListingIndex]);
@@ -301,9 +303,17 @@ const SearchMapInfoCard = props => {
   const classes = classNames(rootClassName || css.root, className);
   const caretClass = classNames(css.caret, { [css.caretWithCarousel]: hasCarousel });
 
+  const handleCloseClick = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onClose) {
+      onClose();
+    }
+  };
+
   return (
     <div className={classes}>
-      <span className={css.closeIcon}>
+      <span className={css.closeIcon} onClick={handleCloseClick}>
         <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M1.5 10L10.5 1M1.5 1L10.5 10" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
