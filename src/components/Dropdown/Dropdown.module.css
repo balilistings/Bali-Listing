@@ -1,0 +1,44 @@
+/* .selectWrapper {
+    width: 300px;
+    font-family: Arial, sans-serif;
+  } */
+  
+  .selectLabel {
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 4px;
+    display: block;
+  }
+  
+  .selectContainer {
+    position: relative;
+  }
+  
+  .selectField {
+    width: 100%;
+    padding: 8px 36px 8px 12px;
+    font-size: 14px;
+    color: #111827;
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    appearance: none;
+    outline: none;
+  }
+  
+  .selectField:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+  }
+  
+  .selectArrow {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  

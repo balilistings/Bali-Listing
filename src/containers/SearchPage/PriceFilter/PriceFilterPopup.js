@@ -154,7 +154,6 @@ class PriceFilterPopup extends Component {
       marketplaceCurrency,
     } = this.props;
     const classes = classNames(rootClassName || css.root, className);
-
     const priceQueryParam = getPriceQueryParamName(queryParamNames);
     const initialPrice =
       initialValues && initialValues[priceQueryParam] ? parse(initialValues[priceQueryParam]) : {};

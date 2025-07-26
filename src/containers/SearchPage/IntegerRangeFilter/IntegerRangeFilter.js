@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import debounce from 'lodash/debounce';
 import classNames from 'classnames';
@@ -63,6 +63,7 @@ const IntegerRangeFilter = props => {
     label,
     rootClassName,
     className,
+    rentalPeriods,
     intl,
     id,
     name,

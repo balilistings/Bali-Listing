@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import classNames from 'classnames';
+import FaviconIcon from '../../assets/favicon.svg';
+import ShareIcon from '../../assets/ShareIcon.svg';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -12,7 +14,13 @@ import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { isBookingProcessAlias } from '../../transactions/transaction';
 import Slider from 'react-slick';
-import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '../../components';
+import {
+  AspectRatioWrapper,
+  IconCollection,
+  NamedLink,
+  ResponsiveImage,
+  ShareOptions,
+} from '../../components';
 
 import css from './ListingCard.module.css';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
@@ -200,14 +208,47 @@ export const ListingCard = props => {
     infinite: imagesUrls.length > 1,
   };
 
+  const [clicked, setClicked] = useState(false);
+  const [isLiked, setIsLiked] = useState(false);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [shareUrl, setShareUrl] = useState('');
+
+  const handleEditClick = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsLiked(!isLiked);
+    setClicked(true);
+    setAnimateHeart(true);
+
+    setTimeout(() => {
+      setAnimateHeart(false);
+    }, 400);
+    if (onEditClick) {
+      onEditClick(currentListing);
+    }
+  };
+
+  const handleShareClick = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowShareOptions(true);
+    const url = window.location.origin + `/l/${createSlug(title)}/${listing.id.uuid}`;
+    setShareUrl(url);
+  };
+
+  const handleCloseShare = () => {
+    setShowShareOptions(false);
+  };
+
   return (
     <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
-      {/* <AspectRatioWrapper
+      {/*<AspectRatioWrapper
         className={css.aspectRatioWrapper}
         width={aspectWidth}
         height={aspectHeight}
         {...setActivePropsMaybe}
       >
+
         <LazyImage
           rootClassName={css.rootForImage}
           alt={title}
@@ -215,7 +256,38 @@ export const ListingCard = props => {
           variants={variants}
           sizes={renderSizes}
         />
-      </AspectRatioWrapper> */}
+       </AspectRatioWrapper> */}
+      <div className={css.shareWrapper}>
+        <div className={css.iconButtonsWrapper}>
+          <div className={css.shareWrapper}>
+            <button
+              className={css.shareButton}
+              onClick={handleShareClick}
+              type="button"
+              aria-label="Share listing"
+            >
+              <img src={ShareIcon} alt="Share" width="20" height="20" className={css.shareIcon} />
+            </button>
+          </div>
+
+          <button
+            className={`${css.favoriteButton} ${clicked ? css.clicked : ''} ${
+              isLiked ? css.liked : ''
+            }`}
+            onClick={handleEditClick}
+            type="button"
+            aria-label="Favorite listing"
+          >
+            <img
+              src={FaviconIcon}
+              alt="Favorite"
+              width="20"
+              height="20"
+              className={css.favoriteIcon}
+            />
+          </button>
+        </div>
+      </div>
       <div className={css.imageWrapper}>
         <Slider {...cardSliderSettings} className={css.slider}>
           {imagesUrls.map((img, imgIdx) => (
@@ -230,7 +302,6 @@ export const ListingCard = props => {
               {tag}
             </span>
           ))}
-          {/* <span className={css.tag}></span> */}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
               Listed by:{' '}
@@ -291,6 +362,14 @@ export const ListingCard = props => {
           </div>
         </div>
       </div>
+      {/* ShareOptions positioned at center of screen */}
+      {showShareOptions && (
+        <ShareOptions
+          className={css.shareOptionsModal}
+          shareUrl={shareUrl}
+          onClose={handleCloseShare}
+        />
+      )}
     </NamedLink>
   );
 };

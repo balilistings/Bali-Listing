@@ -143,7 +143,11 @@ export const queryUserListings = (userId, config, ownProfileOnly = false) => (
   const queryParams = {
     include: ['author', 'images'],
     'fields.listing': ['title', 'geolocation', 'price', 'deleted', 'state', 'publicData'],
-    'fields.image': [`variants.${variantPrefix}`, `variants.${variantPrefix}-2x`, 'variants.landscape-crop2x',],
+    'fields.image': [
+      `variants.${variantPrefix}`,
+      `variants.${variantPrefix}-2x`,
+      'variants.landscape-crop2x',
+    ],
     ...createImageVariantConfig(`${variantPrefix}`, 400, aspectRatio),
     ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
   };

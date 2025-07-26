@@ -333,6 +333,7 @@ const OrderPanel = props => {
     payoutDetailsWarning,
   } = props;
 
+  console.log('props', props);
   const publicData = listing?.attributes?.publicData || {};
   const {
     listingType,
@@ -458,6 +459,9 @@ const OrderPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
+
+  // const [selectedTab, setSelectedTab] = useState('Yearly'); // Default selected
+  const tabOptions = ['Weakly', 'Monthly', 'Yearly'];
 
   return (
     <div className={classes}>

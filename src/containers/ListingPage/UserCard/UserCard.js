@@ -145,27 +145,23 @@ const UserCard = props => {
   return (
     <div className={classes}>
       <div className={css.content}>
-       <div className={css.avatarWrapper}>
-       <AvatarLarge className={css.avatar} user={user} />
-      <span className={css.profileBadge}>
-      <IconCollection name="icon_profile_badge" />
-      </span>
-       </div>
+        <div className={css.avatarWrapper}>
+          <AvatarLarge className={css.avatar} user={user} />
+          <span className={css.profileBadge}>
+            <IconCollection name="icon_profile_badge" />
+          </span>
+        </div>
         <div className={css.info}>
           <div className={css.headingRow}>
             <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
             {editProfileDesktop}
           </div>
-         
+
           {/* {links} */}
-          <p className={css.owner}>
-          Owner
-          </p>
+          <p className={css.owner}>Owner</p>
         </div>
       </div>
-      {hasBio ? <h5 className={css.aboutTitle}>
-      About:
-      </h5> : null}
+      {hasBio ? <h5 className={css.aboutTitle}>About:</h5> : null}
       {hasBio ? <ExpandableBio className={css.mobileBio} bio={bio} /> : null}
     </div>
   );

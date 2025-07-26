@@ -10,8 +10,12 @@ import {
   IconClose,
   IconArrowHead,
   ResponsiveImage,
+  MessageBox,
 } from '../../../components';
 
+import IconHeart from '../../../assets/favicon.svg';
+import IconShare from '../../../assets/ShareIcon.svg';
+import { useHistory } from 'react-router-dom';
 // Copied directly from
 // `node_modules/react-image-gallery/styles/css/image-gallery.css`. The
 // copied file is left unedited, and all the overrides are defined in
@@ -64,7 +68,9 @@ const getFirstImageAspectRatio = (firstImage, scaledVariant) => {
 const ListingImageGallery = props => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const intl = useIntl();
-  const { rootClassName, className, images, imageVariants, thumbnailVariants } = props;
+  const { rootClassName, className, images, imageVariants, thumbnailVariants, currentUser } = props;
+  const history = useHistory();
+
   const thumbVariants = thumbnailVariants || imageVariants;
   // imageVariants are scaled variants.
   const { aspectWidth, aspectHeight } = getFirstImageAspectRatio(images?.[0], imageVariants[0]);
@@ -88,6 +94,12 @@ const ListingImageGallery = props => {
   const imageSizesMaybe = isFullscreen
     ? {}
     : { sizes: `(max-width: 1024px) 100vw, (max-width: 1200px) calc(100vw - 192px), 708px` };
+  const [copySuccess, setCopySuccess] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [animateHeart, setAnimateHeart] = useState(false);
+  const [showMessageBox, setShowMessageBox] = useState(false);
+
   const renderItem = item => {
     return (
       <AspectRatioWrapper
@@ -104,6 +116,13 @@ const ListingImageGallery = props => {
             {...imageSizesMaybe}
           />
         </div>
+        {showMessageBox && (
+          <MessageBox
+            message="Please sign up or log in to add this listing to favorite."
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+          />
+        )}
       </AspectRatioWrapper>
     );
   };

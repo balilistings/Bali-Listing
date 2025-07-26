@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ARRAY_ERROR } from 'final-form';
 import { Form as FinalForm, Field } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
@@ -13,9 +13,8 @@ import { nonEmptyArray, composeValidators } from '../../../../util/validators';
 import { isUploadImageOverLimitError } from '../../../../util/errors';
 
 // Import shared components
-import { Button, Form, AspectRatioWrapper } from '../../../../components';
+import { Button, Form, AspectRatioWrapper, ImageUploader } from '../../../../components';
 import FieldAddImageMultiple from '../../../../components/FieldAddImageMultiple';
-
 // Import modules from this directory
 import ListingImage from './ListingImage';
 import css from './EditListingPhotosForm.module.css';
@@ -85,25 +84,44 @@ export const FieldAddImage = props => {
 
 // Component that shows listing images from "images" field array
 const FieldListingImage = props => {
-  const { name, intl, onRemoveImage, aspectWidth, aspectHeight, variantPrefix } = props;
+  const {
+    name,
+    intl,
+    onRemoveImage,
+    onSetAsProfileImage,
+    isProfileImage,
+    aspectWidth,
+    aspectHeight,
+    variantPrefix,
+  } = props;
   return (
     <Field name={name}>
       {fieldProps => {
         const { input } = fieldProps;
         const image = input.value;
+        const imageId = image?.id?.uuid || image?.id;
+
         return image ? (
-          <ListingImage
-            image={image}
-            key={image?.id?.uuid || image?.id}
-            className={css.thumbnail}
-            savedImageAltText={intl.formatMessage({
-              id: 'EditListingPhotosForm.savedImageAltText',
-            })}
-            onRemoveImage={() => onRemoveImage(image?.id)}
-            aspectWidth={aspectWidth}
-            aspectHeight={aspectHeight}
-            variantPrefix={variantPrefix}
-          />
+          <div
+            className={`${css.imageWrapper} ${isProfileImage ? css.profileImage : ''}`}
+            onClick={() => onSetAsProfileImage(imageId)}
+          >
+            <div className={css.hoverBlurWrapper}>
+              <ListingImage
+                image={image}
+                key={imageId}
+                className={css.thumbnail}
+                savedImageAltText={intl.formatMessage({
+                  id: 'EditListingPhotosForm.savedImageAltText',
+                })}
+                onRemoveImage={() => onRemoveImage(imageId)}
+                aspectWidth={aspectWidth}
+                aspectHeight={aspectHeight}
+                variantPrefix={variantPrefix}
+              />
+            </div>
+            {isProfileImage && <div className={css.profileBadge}>Profile</div>}
+          </div>
         ) : null;
       }}
     </Field>
@@ -141,7 +159,7 @@ export const EditListingPhotosForm = props => {
   const [submittedImages, setSubmittedImages] = useState([]);
 
   const onImageUploadHandler = file => {
-    const { listingImageConfig, onImageUpload } = props;
+    const { listingImageConfig, onImageUpload, onSubmit = { handleSubmit } } = props;
     if (file) {
       setState({ imageUploadRequested: true });
 
@@ -159,10 +177,10 @@ export const EditListingPhotosForm = props => {
   return (
     <FinalForm
       {...props}
+      onSubmit={props.onSubmit || (() => {})}
       mutators={{ ...arrayMutators }}
       render={formRenderProps => {
         const {
-          form,
           className,
           fetchErrors,
           handleSubmit,
@@ -180,6 +198,7 @@ export const EditListingPhotosForm = props => {
         } = formRenderProps;
 
         const images = values.images || [];
+        // const { aspectWidth = 1, aspectHeight = 1, variantPrefix = '' } = listingImageConfig || {};
         const { aspectWidth = 1, aspectHeight = 1, variantPrefix } = listingImageConfig;
 
         const { publishListingError, showListingsError, updateListingError, uploadImageError } =
@@ -201,6 +220,11 @@ export const EditListingPhotosForm = props => {
         const imagesError = touched.images && errors?.images && errors.images[ARRAY_ERROR];
 
         const classes = classNames(css.root, className);
+        const [profileImageId, setProfileImageId] = useState(null);
+        const fieldValueId = value => value?.id?.uuid || value?.id;
+        const handleProfileSelect = file => {
+          console.log('Selected profile image:', file);
+        };
 
         return (
           <Form
@@ -227,24 +251,52 @@ export const EditListingPhotosForm = props => {
                   )
                 )}
               >
-                {({ fields }) =>
-                  fields.map((name, index) => (
-                    <FieldListingImage
-                      key={name}
-                      name={name}
-                      onRemoveImage={imageId => {
-                        fields.remove(index);
-                        onRemoveImage(imageId);
-                      }}
-                      intl={intl}
-                      aspectWidth={aspectWidth}
-                      aspectHeight={aspectHeight}
-                      variantPrefix={variantPrefix}
-                    />
-                  ))
-                }
-              </FieldArray>
+                {({ fields }) => {
+                  useEffect(() => {
+                    if (!profileImageId && fields.value && fields.value.length > 0) {
+                      const firstImage = fields.value[0];
+                      setProfileImageId(fieldValueId(firstImage));
+                    }
+                  }, [fields.value, profileImageId]);
 
+                  return fields.map((name, index) => {
+                    const imageValue = fields.value?.[index];
+                    const imageId = fieldValueId(imageValue);
+
+                    return (
+                      <FieldListingImage
+                        key={name}
+                        name={name}
+                        onRemoveImage={removedId => {
+                          fields.remove(index);
+                          onRemoveImage(removedId);
+
+                          if (removedId === profileImageId && fields.value.length > 0) {
+                            const newFirstImage = fields.value[0];
+                            setProfileImageId(fieldValueId(newFirstImage));
+                          }
+                        }}
+                        onSetAsProfileImage={() => {
+                          const confirmSet = window.confirm(
+                            'Are you sure to set the photo as profile photo?'
+                          );
+                          if (!confirmSet) return;
+
+                          if (index !== 0) {
+                            fields.swap(0, index);
+                          }
+                          setProfileImageId(imageId);
+                        }}
+                        isProfileImage={imageId === profileImageId}
+                        intl={intl}
+                        aspectWidth={aspectWidth}
+                        aspectHeight={aspectHeight}
+                        variantPrefix={variantPrefix}
+                      />
+                    );
+                  });
+                }}
+              </FieldArray>
               <FieldAddImageMultiple
                 onImageUploadHandler={onImageUploadHandler}
                 disabled={state.imageUploadRequested}

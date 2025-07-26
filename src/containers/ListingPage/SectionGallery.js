@@ -6,7 +6,7 @@ import IconCollection from '../../components/IconCollection/IconCollection';
 import { useHistory } from 'react-router-dom';
 
 const SectionGallery = props => {
-  const { listing, variantPrefix } = props;
+  const { listing, variantPrefix, currentUser } = props;
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const history = useHistory();
   const images = listing.images;
@@ -27,6 +27,7 @@ const SectionGallery = props => {
         images={images}
         imageVariants={imageVariants}
         thumbnailVariants={thumbnailVariants}
+        currentUser={currentUser}
       />
     </section>
   );

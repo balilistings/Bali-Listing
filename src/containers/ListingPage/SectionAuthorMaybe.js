@@ -37,14 +37,14 @@ const SectionAuthorMaybe = props => {
         <FormattedMessage id="ListingPage.aboutProviderTitle" />
       </Heading>
       <div className={css.sectionAuthor}>
-      <UserCard
-        user={listing.author}
-        currentUser={currentUser}
-        onContactUser={onContactUser}
-        showContact={!isInquiryProcess}
-      />
+        <UserCard
+          user={listing.author}
+          currentUser={currentUser}
+          onContactUser={onContactUser}
+          showContact={!isInquiryProcess}
+        />
       </div>
-  
+
       <Modal
         id="ListingPage.inquiry"
         contentClassName={css.inquiryModalContent}

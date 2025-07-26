@@ -53,6 +53,7 @@ import {
   NamedRedirect,
   OrderPanel,
   LayoutSingleColumn,
+  Amenities,
 } from '../../components';
 import SectionHeading from './SectionHeading';
 
@@ -87,7 +88,27 @@ import SectionGallery from './SectionGallery';
 import CustomListingFields from './CustomListingFields';
 import SectionTerms from './SectionTerms';
 
+import CleaningIcon from '../../assets/icons/Cleaning.svg';
+import ElectricityIcon from '../../assets/icons/Electricity.svg';
+import PoolIcon from '../../assets/icons/PoolMaintenance.svg';
 import css from './ListingPage.module.css';
+import SectionDetails from './SectionDetails.js';
+import SectionService from './SectionService.js';
+
+import livingIcon from '../../assets/icons/Living.svg';
+import furnishedIcon from '../../assets/icons/Furnished.svg';
+import landSize from '../../assets/icons/landSize.svg';
+import landTitle from '../../assets/icons/landTitle.svg';
+import buidingSize from '../../assets/icons/buidingSize.svg';
+
+import Wifi from '../../assets/Wifi.svg';
+import PetFriendly from '../../assets/petFriendly.svg';
+import Kitchen from '../../assets/kitchen.svg';
+import Pool from '../../assets/pool.svg';
+import WorkingDesk from '../../assets/workingDesk.svg';
+import AirConditioner from '../../assets/airConditioning.svg';
+import CarParking from '../../assets/carParking.svg';
+import Gym from '../../assets/Gym.svg';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -132,11 +153,10 @@ export const ListingPageComponent = props => {
       const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - 120, // Offset by 200px from top
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
       setActiveTab(id);
     }
-    
   };
 
   // Scrollspy: update active tab on scroll
@@ -275,7 +295,7 @@ export const ListingPageComponent = props => {
   const currentAuthor = authorAvailable ? currentListing.author : null;
   const ensuredAuthor = ensureUser(currentAuthor);
   const noPayoutDetailsSetWithOwnListing =
-    isOwnListing && (processType !== 'inquiry' && !currentUser?.attributes?.stripeConnected);
+    isOwnListing && processType !== 'inquiry' && !currentUser?.attributes?.stripeConnected;
   const payoutDetailsWarning = noPayoutDetailsSetWithOwnListing ? (
     <span className={css.payoutDetailsWarning}>
       <FormattedMessage id="ListingPage.payoutDetailsWarning" values={{ processType }} />
@@ -441,6 +461,7 @@ export const ListingPageComponent = props => {
             <SectionGallery
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
+              currentUser={currentUser}
             />
             <RentalPeriod
               publicData={publicData}
@@ -476,7 +497,7 @@ export const ListingPageComponent = props => {
               ))}
             </div>
             <div className={css.descriptionContainer}>
-              <div id="description" >
+              <div id="description">
                 <h4 className={css.descriptionHeading}>Description</h4>
                 <SectionTextMaybe text={description} showAsIngress />
               </div>
@@ -606,6 +627,7 @@ const EnhancedListingPage = props => {
   const showListingError = props.showListingError;
   const isVariant = props.params?.variant != null;
   const currentUser = props.currentUser;
+
   if (isForbiddenError(showListingError) && !isVariant && !currentUser) {
     // This can happen if private marketplace mode is active
     return (
@@ -643,19 +665,22 @@ const EnhancedListingPage = props => {
   }
 
   return (
-    <ListingPageComponent
-      config={config}
-      routeConfiguration={routeConfiguration}
-      intl={intl}
-      history={history}
-      location={location}
-      showOwnListingsOnly={hasNoViewingRights}
-      {...props}
-    />
+    <>
+      <ListingPageComponent
+        config={config}
+        routeConfiguration={routeConfiguration}
+        intl={intl}
+        history={history}
+        location={location}
+        showOwnListingsOnly={hasNoViewingRights}
+        {...props}
+      />
+    </>
   );
 };
 
 const mapStateToProps = state => {
+  console.log('state', state);
   const { isAuthenticated } = state.auth;
   const {
     showListingError,
@@ -722,11 +747,6 @@ const mapDispatchToProps = dispatch => ({
 // lifecycle hook.
 //
 // See: https://github.com/ReactTraining/react-router/issues/4671
-const ListingPage = compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(EnhancedListingPage);
+const ListingPage = compose(connect(mapStateToProps, mapDispatchToProps))(EnhancedListingPage);
 
 export default ListingPage;

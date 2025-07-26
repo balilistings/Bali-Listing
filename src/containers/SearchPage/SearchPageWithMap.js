@@ -117,7 +117,6 @@ export class SearchPageComponent extends Component {
       isSecondaryFiltersOpen: false,
       openCustomFilters: false,
     };
-
     this.onMapMoveEnd = debounce(this.onMapMoveEnd.bind(this), SEARCH_WITH_MAP_DEBOUNCE);
     this.onOpenMobileModal = this.onOpenMobileModal.bind(this);
     this.onCloseMobileModal = this.onCloseMobileModal.bind(this);
@@ -634,7 +633,9 @@ export class SearchPageComponent extends Component {
                   const key = `SearchFiltersPrimary.${filterConfig.scope || 'built-in'}.${
                     filterConfig.key
                   }`;
+
                   return (
+                    // <div>teeeeeeeeeeest</div>
                     <FilterComponent
                       key={key}
                       idPrefix="SearchFiltersPrimary"

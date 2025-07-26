@@ -154,7 +154,7 @@ const TopbarComponent = props => {
     showGenericError,
     config,
     routeConfiguration,
-    openCustomFilters
+    openCustomFilters,
   } = props;
 
   const handleSubmit = values => {

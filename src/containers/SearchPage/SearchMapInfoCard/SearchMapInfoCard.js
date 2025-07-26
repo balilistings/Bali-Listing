@@ -7,7 +7,12 @@ import { formatMoney } from '../../../util/currency';
 import { ensureListing, ensureUser } from '../../../util/data';
 import { isPriceVariationsEnabled, displayPrice } from '../../../util/configHelpers';
 import Slider from 'react-slick';
-import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '../../../components';
+import {
+  AspectRatioWrapper,
+  IconCollection,
+  NamedLink,
+  ResponsiveImage,
+} from '../../../components';
 import { sortTags, capitaliseFirstLetter } from '../../../util/helper';
 import css from './SearchMapInfoCard.module.css';
 import { Icon } from '../../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
@@ -92,7 +97,6 @@ export const formatPriceInMillions = priceAmount => {
   return `${actualPrice.toLocaleString()}`;
 };
 
-
 const PriceMaybe = props => {
   const { price, publicData, config, intl } = props;
   const { listingType } = publicData || {};
@@ -123,8 +127,8 @@ const ListingCard = props => {
     price && price.currency === config.currency
       ? formatMoney(intl, price)
       : price?.currency
-        ? price.currency
-        : null;
+      ? price.currency
+      : null;
   const firstImage = listing.images && listing.images.length > 0 ? listing.images[0] : null;
 
   const {
@@ -151,9 +155,9 @@ const ListingCard = props => {
 
   const priceMessage = hasMultiplePriceVariants
     ? intl.formatMessage(
-      { id: 'SearchMapInfoCard.priceStartingFrom' },
-      { priceValue, pricePerUnit }
-    )
+        { id: 'SearchMapInfoCard.priceStartingFrom' },
+        { priceValue, pricePerUnit }
+      )
     : intl.formatMessage({ id: 'SearchMapInfoCard.price' }, { priceValue, pricePerUnit });
 
   // listing card anchor needs sometimes inherited border radius.
@@ -167,15 +171,12 @@ const ListingCard = props => {
   const { pricee, location, propertytype, bedrooms, bathrooms, kitchen, pool } = publicData;
   const tags = sortTags(pricee);
 
-  const imagesUrls = listing.images.map(
-    img => img.attributes.variants['landscape-crop2x']?.url
-  );
+  const imagesUrls = listing.images.map(img => img.attributes.variants['landscape-crop2x']?.url);
   // Per-card slider settings
   const cardSliderSettings = {
     ...sliderSettings,
     infinite: imagesUrls.length > 1,
   };
-
 
   return (
     <a
@@ -304,8 +305,20 @@ const SearchMapInfoCard = props => {
   return (
     <div className={classes}>
       <span className={css.closeIcon}>
-        <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M1.5 10L10.5 1M1.5 1L10.5 10" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        <svg
+          width="12"
+          height="11"
+          viewBox="0 0 12 11"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1.5 10L10.5 1M1.5 1L10.5 10"
+            stroke="#231F20"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </span>
       <div className={css.caretShadow} />

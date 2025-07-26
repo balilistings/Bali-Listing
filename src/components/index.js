@@ -61,7 +61,11 @@ export { default as TimeRange } from './TimeRange/TimeRange';
 export { default as UserDisplayName } from './UserDisplayName/UserDisplayName';
 export { default as ValidationError } from './ValidationError/ValidationError';
 export {default as ImageUploader} from '../components/ImageUploader/ImageUploader';
-
+export { default as WhatsAppButton } from '../components/WhatsAppButton/WhatsAppButton';
+export { default as Dropdown } from '../components/Dropdown/Dropdown';
+export { default as MessageBox} from '../components/MessageBox/MessageBox';
+export { default as ShareOptions } from '../components/ShareOptions/ShareOptions';
+export {default as Amenities} from './Amenities/Amenities';
 /**
  * Composite components
  * These components include other components

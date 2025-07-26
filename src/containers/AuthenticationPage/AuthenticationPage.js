@@ -23,6 +23,7 @@ import { pickUserFieldsData, addScopePrefix } from '../../util/userHelpers';
 import { login, authenticationInProgress, signup, signupWithIdp } from '../../ducks/auth.duck';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { sendVerificationEmail } from '../../ducks/user.duck';
+import Signup from './Signup/Signup';
 
 import {
   Page,
@@ -636,6 +637,7 @@ export const AuthenticationPageComponent = props => {
         description: schemaDescription,
       }}
     >
+      {/* <Signup /> */}
       <LayoutSingleColumn
         mainColumnClassName={css.layoutWrapperMain}
         topbar={<TopbarContainer className={topbarClasses} />}

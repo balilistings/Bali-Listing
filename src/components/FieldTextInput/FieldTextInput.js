@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
 import { ValidationError, ExpandingTextarea } from '../../components';
+import iconGuide from '../../assets/guideIcon.png';
 
 import css from './FieldTextInput.module.css';
 
@@ -20,9 +21,15 @@ const FieldTextInputComponent = props => {
     onUnmount,
     isUncontrolled,
     inputRef,
+    textInput,
+    showGuideIcon,
     hideErrorMessage,
     ...rest
   } = props;
+  const shouldDisable =
+    (label === 'Weekly price in millions' && !props.checkboxState?.weekly) ||
+    (label === 'Monthly price in millions' && !props.checkboxState?.monthly) ||
+    (label === 'Yearly price in millions' && !props.checkboxState?.yearly);
 
   if (label && !id) {
     throw new Error('id required when a label is given');
@@ -60,6 +67,7 @@ const FieldTextInputComponent = props => {
         id,
         rows: 1,
         maxLength,
+        disabled: shouldDisable,
         ...refMaybe,
         ...inputWithoutType,
         ...rest,
@@ -70,16 +78,54 @@ const FieldTextInputComponent = props => {
         id,
         type,
         defaultValue,
+        disabled: shouldDisable,
         ...refMaybe,
         ...inputWithoutValue,
         ...rest,
       }
-    : { className: inputClasses, id, type, ...refMaybe, ...input, ...rest };
+    : {
+        className: inputClasses,
+        id,
+        type,
+        disabled: shouldDisable,
+        ...refMaybe,
+        ...input,
+        ...rest,
+      };
 
   const classes = classNames(rootClassName || css.root, className);
+
   return (
     <div className={classes}>
-      {label ? <label htmlFor={id}>{label}</label> : null}
+      {label ? (
+        <div className={css.customFieldWrapper}>
+          <div className={css.labelAndGuide}>
+            <label htmlFor={id}>{label}</label>
+            {showGuideIcon &&
+            [
+              // 'Property Name ',
+              'Email adress',
+              'Phone number',
+              'Payment terms',
+              'Link to Facebook post',
+              'Number of years for leasehold',
+              'Minimum rental period',
+              'Weekly price in millions',
+              'Monthly price in millions',
+              'Yearly price in millions',
+              'Land size in m2',
+              'Price per Are',
+              'Building size in M2',
+              'Total price in millions',
+            ].includes(label) ? (
+              <div className={css.imgWrapper}>
+                <img src={iconGuide} alt="instruction" className={css.img} />
+                <div className={css.tooltip}>{textInput}</div>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      ) : null}
       {isTextarea ? <ExpandingTextarea {...inputProps} /> : <input {...inputProps} />}
       {hideErrorMessage ? null : <ValidationError fieldMeta={fieldMeta} />}
     </div>
