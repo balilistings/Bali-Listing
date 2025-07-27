@@ -27,7 +27,7 @@ const categoryFilterConfig = {
     'amenities',
     'propertyType',
     'availability',
-    'services',
+    // 'services',
     'propertyDetails',
     'hostType',
   ],
