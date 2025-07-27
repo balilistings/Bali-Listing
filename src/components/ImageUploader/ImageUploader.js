@@ -185,7 +185,7 @@ export default function ImageUploader({
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'image/*': [], 'application/pdf': [] },
-    multiple: true,
+    multiple: false,
   });
 
   useEffect(() => {
@@ -241,7 +241,7 @@ export default function ImageUploader({
               'Drop the images here...'
             ) : (
               <>
-                + Add photos
+                + Add photo
                 <br />
                 (JPG/PNG, max 20 MB)
               </>

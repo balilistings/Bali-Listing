@@ -120,7 +120,7 @@ const PriceMaybe = props => {
   const priceParams = checkPriceParams();
 
   let suffix;
-  if (priceParams.weekprice || priceParams.monthprice || priceParams.yearprice) {
+  if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
     if (priceParams.weekprice) {
       suffix = '/ weekly';
     } else if (priceParams.monthprice) {
@@ -129,11 +129,11 @@ const PriceMaybe = props => {
       suffix = '/ yearly';
     }
   } else {
-    if (publicData.monthprice) {
+    if (publicData?.monthprice) {
       suffix = '/ monthly';
-    } else if (publicData.weekprice) {
+    } else if (publicData?.weekprice) {
       suffix = '/ weekly';
-    } else if (publicData.yearprice) {
+    } else if (publicData?.yearprice) {
       suffix = '/ yearly';
     }
   }
@@ -254,7 +254,7 @@ export const ListingCard = props => {
               {tag}
             </span>
           ))}
-          {isLand && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
+          {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
               Listed by:{' '}
@@ -300,12 +300,12 @@ export const ListingCard = props => {
                 </span>
               )}
 
-              {!!landsize && (
+              {!!landsize && isLand && (
                 <span className={css.iconItem}>
                   <Icon type="land" /> {landsize} m2
                 </span>
               )}
-              {!!landzone && (
+              {!!landzone && isLand && (
                 <span className={css.iconItem}>
                   <Icon type="zone" /> {landzone} Zone
                 </span>

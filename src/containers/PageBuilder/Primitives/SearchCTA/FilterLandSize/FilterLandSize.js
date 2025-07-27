@@ -132,13 +132,14 @@ const LandSizeDropdown = ({
                   </span>
                   Land Size
                 </h2>
-                <p className={css.menuItemMobileSubtitle}>Select a land size range that you need</p>
+                <p className={css.menuItemMobileSubtitle}>Select a land size range (in m2)</p>
                 <span className={css.closeIcon} onClick={() => setIsOpen(false)}>
                   <IconCollection name="close_icon" />
                 </span>
               </div>
               {/* Land Size Range Slider */}
               <div className={css.sliderSection}>
+              <p className={css.menuItemSubtitle}>Select a land size range (in m2)</p>
                 <div className={css.sliderWrapper}>
                   <RangeSlider
                     min={100}

@@ -283,7 +283,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     ),
     ...priceMaybe,
     ...datesMaybe,
-    ...stockMaybe,
+    // ...stockMaybe,
     ...seatsMaybe,
     ...sortMaybe,
     perPage,

@@ -263,8 +263,19 @@ class ProfileSettingsFormComponent extends Component {
           const submitDisabled =
             invalid || pristine || pristineSinceLastSubmit || uploadInProgress || submitInProgress;
 
+          const filterUserFields = userFields.filter(
+            elm =>
+              ![
+                'companyname',
+                'id_card_nik',
+                'id_npwp_nik',
+                'company_address',
+                'company_registration',
+              ].includes(elm.key)
+          );
+
           const userFieldProps = getPropsForCustomUserFieldInputs(
-            userFields,
+            filterUserFields,
             intl,
             userTypeConfig?.userType,
             false
@@ -391,9 +402,15 @@ class ProfileSettingsFormComponent extends Component {
                 </p>
               </div>
               <div className={classNames(css.sectionContainer, css.lastSection)}>
-                {userFieldProps.map(({ key, ...fieldProps }) => (
-                  <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
-                ))}
+                {userFieldProps.map(({ key, ...fieldProps }) => {
+                  let fP = { ...fieldProps };
+
+                  if (fieldProps.name === 'pub_role') {
+                    fP.disabled = true;
+                  }
+
+                  return <CustomExtendedDataField key={key} {...fP} formId={formId} />;
+                })}
               </div>
               {submitError}
               <Button
