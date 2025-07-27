@@ -10,6 +10,8 @@ import { NamedLink } from '../../../../components/NamedLink/NamedLink';
 import { sortTags, capitaliseFirstLetter } from '../../../../util/helper';
 import { createSlug } from '../../../../util/urlHelpers';
 import { useHistory } from 'react-router-dom';
+import { handleToggleFavorites } from '../../../../util/userFavorites';
+import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -225,6 +227,7 @@ const PropertyCards = () => {
     featuredListingsInProgress,
     featuredListingsError,
   } = state.LandingPage;
+  const currentUser = useSelector(state => state.user.currentUser);
   const l = getListingsById(state, featuredListingIds);
   const [activeTab, setActiveTab] = useState('denpasar');
   // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
@@ -398,11 +401,28 @@ const PropertyCards = () => {
                 price = p.amount / 100;
               }
 
+              const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
+                card.id.uuid
+              );
+              const onToggleFavorites = e => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleToggleFavorites({
+                  currentUser,
+                  history,
+                  params: { id: card.id.uuid },
+                  onUpdateFavorites: payload => dispatch(updateProfile(payload)),
+                })(isFavorite);
+              };
+
               return (
                 <NamedLink
                   className={styles.card}
                   name="ListingPage"
-                  params={{ id: card.id.uuid, slug: createSlug(title) }}
+                  params={{
+                    id: card.id.uuid,
+                    slug: createSlug(title),
+                  }}
                   key={card.id.uuid}
                 >
                   <div className={styles.imageWrapper}>
@@ -416,6 +436,12 @@ const PropertyCards = () => {
                         />
                       ))}
                     </Slider>
+                    <div className={styles.wishlistButton} onClick={onToggleFavorites}>
+                      <IconCollection
+                        name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'}
+                      />
+                    </div>
+
                     {/* <button
                   className={
                     (likedCards[idx] ? styles.heartActive : styles.heart) + ' ' + styles.heartAnim
@@ -481,7 +507,8 @@ const PropertyCards = () => {
                           <>
                             {!!bedrooms && (
                               <span className={styles.iconItem}>
-                                <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
+                                <Icon type="bed" /> {bedrooms} bedroom
+                                {bedrooms > 1 ? 's' : ''}
                               </span>
                             )}
                             {!!bathrooms && (
