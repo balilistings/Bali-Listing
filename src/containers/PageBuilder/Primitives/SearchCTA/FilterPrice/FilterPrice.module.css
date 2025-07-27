@@ -92,7 +92,7 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-  color: #231F20;
+  color: #231f20;
 
   @media (--viewportMedium) {
     font-size: 14px;
@@ -107,20 +107,19 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-  color: #D3D3D3;
+  color: #d3d3d3;
 
   @media (--viewportMedium) {
     font-size: 14px;
   }
 }
 
-
 .toggleButton.unselected .subLabel {
-  color: #D3D3D3;
+  color: #d3d3d3;
 }
 
 .toggleButton.selected .subLabel {
-  color: #F74DF4;
+  color: #f74df4;
   font-weight: 700;
 }
 
@@ -193,7 +192,7 @@
     left: 0 !important;
     right: 0 !important;
     height: 100%;
-    background: #0000004D;
+    background: #0000004d;
     z-index: 1000;
     display: flex;
     flex-direction: column;
@@ -208,7 +207,7 @@
   }
 }
 
-.counterModalOverlay{
+.counterModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -218,7 +217,7 @@
   @media (min-width: 768px) {
     display: none;
   }
-} 
+}
 
 .priceModal {
   padding: 20px;
@@ -261,7 +260,7 @@
   display: flex;
 
   border-radius: 50px;
-  border: 1px solid #F2F2F2;
+  border: 1px solid #f2f2f2;
   padding: 4px;
   width: 100%;
 }
@@ -271,7 +270,7 @@
   padding: 9px 20px;
   border: none;
   background: transparent;
-  color: #231F20;
+  color: #231f20;
   font-size: 10px;
   font-weight: 700;
   cursor: pointer;
@@ -292,8 +291,7 @@
 }
 
 .tab.activeTab {
-  color: #231F20;
-
+  color: #231f20;
 }
 
 .tabIndicator {
@@ -303,8 +301,8 @@
   width: calc(33.333% - 4px);
   height: calc(100% - 8px);
   background-color: rgba(251, 166, 249, 0.2) !important;
-  background: #FBA6F933 !important;
-  border: 1px solid #F74DF4;
+  background: #fba6f933 !important;
+  border: 1px solid #f74df4;
   border-radius: 50px;
   transition: transform 0.3s ease;
   z-index: 1;
@@ -375,10 +373,20 @@
   letter-spacing: 0%;
   text-align: center;
   border-radius: 5px;
-  color: #231F20;
+  color: #231f20;
   padding: 5px 10px;
   border: 1px solid rgba(196, 196, 196, 1);
   min-width: 99px;
+
+  /* Hide number input arrows/spinners */
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
 
   @media (--viewportMedium) {
     font-size: 14px;
@@ -443,7 +451,7 @@
 .opened {
   color: var(--colorGrey700);
   border-radius: 10px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 
   @media (--viewportMedium) {
     border-radius: 50px;
@@ -451,10 +459,9 @@
 }
 
 .menuItemMobile {
-
   padding: 0px 20px;
-  box-shadow: 0px 4px 10px 0px #0000001A;
-  border-bottom: 1px solid #D3D3D3;
+  box-shadow: 0px 4px 10px 0px #0000001a;
+  border-bottom: 1px solid #d3d3d3;
   position: relative;
   display: none;
 
@@ -471,7 +478,6 @@
   }
 }
 
-
 .menuItemMobileTitle {
   font-family: Istok Web;
   font-weight: 700;
@@ -481,7 +487,7 @@
   line-height: 130%;
   letter-spacing: 0%;
   text-align: center;
-  color: #231F20;
+  color: #231f20;
   margin: 0;
   padding: 0;
   text-align: left;
@@ -499,7 +505,7 @@
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-  color: #231F20;
+  color: #231f20;
   margin-top: 12px;
 }
 
@@ -527,9 +533,9 @@
     position: absolute;
     right: 16px;
     top: -16px;
-    box-shadow: 0px 4px 10px 0px #0000001A;
+    box-shadow: 0px 4px 10px 0px #0000001a;
     border-radius: 50%;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     width: 38px;
     height: 38px;
     display: flex;
