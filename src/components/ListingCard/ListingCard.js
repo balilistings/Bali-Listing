@@ -255,7 +255,7 @@ export const ListingCard = props => {
 
               {!!landsize && (
                 <span className={css.iconItem}>
-                  <Icon type="bed" /> {landsize} are
+                  <Icon type="land" /> {landsize} are
                 </span>
               )}
               {!!landzone && (
