@@ -1,6 +1,6 @@
 .root {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
 }
 
@@ -15,6 +15,7 @@
   /* Reset <a> tag sizing */
   line-height: 0;
   font-size: 0;
+  
 }
 
 .prev {
@@ -24,23 +25,26 @@
 .next {
   /* Minimum touch size 44px (svg width + padding) */
   padding-left: 33px;
+  & svg{
+    max-width: 8px;
+  }
 }
 
 .arrowIcon {
   /* Color for svg icons */
   fill: var(--marketplaceColor);
-  stroke: var(--marketplaceColor);
-
+  /* stroke: var(--marketplaceColor); */
+  max-width: 25px;
   &:hover {
     fill: var(--marketplaceColorDark);
-    stroke: var(--marketplaceColorDark);
+    /* stroke: var(--marketplaceColorDark); */
   }
 }
 
 .disabled,
 .disabled:hover {
   fill: var(--colorGrey300);
-  stroke: var(--colorGrey300);
+  /* stroke: var(--colorGrey300); */
 }
 
 .pageNumberList {
@@ -63,15 +67,15 @@
 }
 
 .pageNumberList3Items {
-  flex-basis: 100px;
+  flex-basis: 60px;
 }
 
 .pageNumberList4Items {
-  flex-basis: 160px;
+  flex-basis: 80px;
 }
 
 .pageNumberList5Items {
-  flex-basis: 200px;
+  flex-basis: 104px;
 }
 
 .pageNumberList6Items {
@@ -84,8 +88,16 @@
 
 .toPageLink {
   /* Dimensions */
-  padding: 21px 5px;
-
+  padding: 21px 5px 8px;
+  font-family: Istok Web;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  
   /* Color for svg icons */
   color: var(--colorGrey700);
 
