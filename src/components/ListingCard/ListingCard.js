@@ -14,6 +14,7 @@ import { createSlug } from '../../util/urlHelpers';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
 import css from './ListingCard.module.css';
+import { handleToggleFavorites } from '../../util/userFavorites';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -135,6 +136,8 @@ export const ListingCard = props => {
     renderSizes,
     setActiveListing,
     showAuthorInfo = true,
+    currentUser,
+    onUpdateFavorites,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
@@ -191,8 +194,24 @@ export const ListingCard = props => {
     infinite: imagesUrls.length > 1,
   };
 
+  const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
+  const onToggleFavorites = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleToggleFavorites({
+      currentUser,
+      history: props.history,
+      params: { id },
+      onUpdateFavorites: onUpdateFavorites,
+    })(isFavorite);
+  };
+
   return (
-    <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+    <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
+      <div className={css.wishlistButton} onClick={onToggleFavorites}>
+        <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
+      </div>
+
       <div className={css.imageWrapper}>
         <Slider {...cardSliderSettings} className={css.slider}>
           {imagesUrls.map((img, imgIdx) => (

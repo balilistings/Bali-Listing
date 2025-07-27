@@ -75,6 +75,7 @@ import NoSearchResultsMaybe from './NoSearchResultsMaybe/NoSearchResultsMaybe';
 import css from './SearchPage.module.css';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import CustomFilters from './CustomFilters/CustomFilters';
+import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -388,6 +389,7 @@ export class SearchPageComponent extends Component {
       config,
       params: currentPathParams = {},
       currentUser,
+      onUpdateFavorites,
     } = this.props;
 
     // If the search page variant is of type /s/:listingType, this defines the :listingType
@@ -707,6 +709,8 @@ export class SearchPageComponent extends Component {
                   setActiveListing={onActivateListing}
                   isMapVariant
                   listingTypeParam={listingTypePathParam}
+                  currentUser={currentUser}
+                  onUpdateFavorites={onUpdateFavorites}
                 />
               </div>
             )}
@@ -867,6 +871,7 @@ const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
   onActivateListing: listingId => dispatch(setActiveListing(listingId)),
+  onUpdateFavorites: payload => dispatch(updateProfile(payload)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

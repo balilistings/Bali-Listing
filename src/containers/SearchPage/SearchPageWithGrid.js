@@ -61,6 +61,7 @@ import SearchResultsPanel from './SearchResultsPanel/SearchResultsPanel';
 import NoSearchResultsMaybe from './NoSearchResultsMaybe/NoSearchResultsMaybe';
 
 import css from './SearchPage.module.css';
+import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 
 const MODAL_BREAKPOINT = 768; // Search is in modal on mobile layout
 
@@ -485,6 +486,7 @@ export class SearchPageComponent extends Component {
                   search={parse(location.search)}
                   isMapVariant={false}
                   listingTypeParam={listingTypePathParam}
+                  currentUser={currentUser}
                 />
               </div>
             </div>
@@ -589,6 +591,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => ({
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onUpdateFavorites: payload => dispatch(updateProfile(payload)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

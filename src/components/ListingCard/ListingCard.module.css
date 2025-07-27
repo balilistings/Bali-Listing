@@ -6,6 +6,7 @@
   flex-direction: column;
   border-radius: 10px;
   padding: 10px;
+  position: relative;
   /* Remove link's hover effect */
   &:hover {
     text-decoration: none;
@@ -495,4 +496,20 @@ margin-right: 10px;
       display: block !important;
     }
   }
+}
+
+.wishlistButton {
+  backdrop-filter: blur(9.399999618530273px);
+  width: 26px;
+  height: 26px;
+  border-radius: 25px;
+  background-color: #0202020D;
+  top: 18px;
+  right: 18px;
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
