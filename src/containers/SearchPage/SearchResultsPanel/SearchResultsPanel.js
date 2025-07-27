@@ -30,6 +30,8 @@ const SearchResultsPanel = props => {
     setActiveListing,
     isMapVariant = true,
     listingTypeParam,
+    currentUser,
+    onUpdateFavorites,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const pageName = listingTypeParam ? 'SearchPageWithListingType' : 'SearchPage';
@@ -80,6 +82,8 @@ const SearchResultsPanel = props => {
             listing={l}
             renderSizes={cardRenderSizes(isMapVariant)}
             setActiveListing={setActiveListing}
+            currentUser={currentUser}
+            onUpdateFavorites={onUpdateFavorites}
           />
         ))}
         {props.children}

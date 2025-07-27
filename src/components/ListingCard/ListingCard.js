@@ -14,6 +14,9 @@ import { createSlug } from '../../util/urlHelpers';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
 import css from './ListingCard.module.css';
+import { handleToggleFavorites } from '../../util/userFavorites';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
+import { useLocation, useHistory } from 'react-router-dom';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -91,8 +94,19 @@ export const formatPriceInMillions = actualPrice => {
   return `${actualPrice.toLocaleString()}`;
 };
 
+const checkPriceParams = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const weekprice = urlParams.get('pub_weekprice') || null;
+    const monthprice = urlParams.get('pub_monthprice') || null;
+    const yearprice = urlParams.get('pub_yearprice') || null;
+
+    return { weekprice, monthprice, yearprice };
+  }
+};
+
 const PriceMaybe = props => {
-  const { price, publicData, config, intl } = props;
+  const { price, publicData, config, isRentals } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -103,28 +117,37 @@ const PriceMaybe = props => {
 
   const formattedPrice = price ? formatPriceInMillions(price) : null;
 
+  const priceParams = checkPriceParams();
+
+  let suffix;
+  if (priceParams.weekprice || priceParams.monthprice || priceParams.yearprice) {
+    if (priceParams.weekprice) {
+      suffix = '/ weekly';
+    } else if (priceParams.monthprice) {
+      suffix = '/ monthly';
+    } else if (priceParams.yearprice) {
+      suffix = '/ yearly';
+    }
+  } else {
+    if (publicData.monthprice) {
+      suffix = '/ monthly';
+    } else if (publicData.weekprice) {
+      suffix = '/ weekly';
+    } else if (publicData.yearprice) {
+      suffix = '/ yearly';
+    }
+  }
+
   return (
     <div className={css.price}>
       <span className={css.priceValue}>
-        {formattedPrice} IDR<span>/night</span>
+        {formattedPrice} IDR
+        {isRentals && <span>{suffix}</span>}
       </span>
     </div>
   );
 };
 
-/**
- * ListingCard
- *
- * @component
- * @param {Object} props
- * @param {string?} props.className add more style rules in addition to component's own css.root
- * @param {string?} props.rootClassName overwrite components own css.root
- * @param {Object} props.listing API entity: listing or ownListing
- * @param {string?} props.renderSizes for img/srcset
- * @param {Function?} props.setActiveListing
- * @param {boolean?} props.showAuthorInfo
- * @returns {JSX.Element} listing card to be used in search result panel etc.
- */
 export const ListingCard = props => {
   const config = useConfiguration();
   const intl = props.intl || useIntl();
@@ -135,6 +158,8 @@ export const ListingCard = props => {
     renderSizes,
     setActiveListing,
     showAuthorInfo = true,
+    currentUser,
+    onUpdateFavorites,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
@@ -156,10 +181,14 @@ export const ListingCard = props => {
     weekprice,
     monthprice,
     yearprice,
+    Freehold,
   } = publicData;
   const tags = sortTags(pricee);
   const isLand = categoryLevel1 === 'landforsale';
   const isRentals = categoryLevel1 === 'rentalvillas';
+  const history = useHistory();
+  const routeLocation = useLocation();
+  const routes = useRouteConfiguration();
 
   let price;
 
@@ -191,8 +220,26 @@ export const ListingCard = props => {
     infinite: imagesUrls.length > 1,
   };
 
+  const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
+  const onToggleFavorites = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleToggleFavorites({
+      location: routeLocation,
+      history,
+      routes,
+      currentUser,
+      params: { id },
+      onUpdateFavorites: onUpdateFavorites,
+    })(isFavorite);
+  };
+
   return (
-    <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+    <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
+      <button className={css.wishlistButton} onClick={onToggleFavorites}>
+        <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
+      </button>
+
       <div className={css.imageWrapper}>
         <Slider {...cardSliderSettings} className={css.slider}>
           {imagesUrls.map((img, imgIdx) => (
@@ -207,7 +254,7 @@ export const ListingCard = props => {
               {tag}
             </span>
           ))}
-          {/* <span className={css.tag}></span> */}
+          {isLand && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
               Listed by:{' '}
@@ -255,7 +302,7 @@ export const ListingCard = props => {
 
               {!!landsize && (
                 <span className={css.iconItem}>
-                  <Icon type="land" /> {landsize} are
+                  <Icon type="land" /> {landsize} m2
                 </span>
               )}
               {!!landzone && (
@@ -264,7 +311,13 @@ export const ListingCard = props => {
                 </span>
               )}
             </div>
-            <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
+            <PriceMaybe
+              price={price}
+              publicData={publicData}
+              config={config}
+              intl={intl}
+              isRentals={isRentals}
+            />
           </div>
         </div>
       </div>

@@ -27,7 +27,7 @@ const getRangeConfig = tabId => {
 };
 
 const getNonRentalConfig = () => {
-  return { min: 1000000, max: 9999000000000, step: 1000000 }; // 1M-9999000M
+  return { min: 1000000, max: 999000000000, step: 1000000 }; // 1M-9999000M
 };
 
 const PriceDropdown = ({
@@ -41,17 +41,46 @@ const PriceDropdown = ({
 }) => {
   const [activeTab, setActiveTab] = useState('monthly');
   const showTabsInPrice = activeTabKey === 'rentalvillas';
-  const [priceRange, setPriceRange] = useState(
-    showTabsInPrice ? [1000000, 500000000] : [1000000, 9999000000000]
-  );
+
+  // Get initial config based on active tab
+  const getInitialConfig = () => {
+    if (showTabsInPrice) {
+      return getRangeConfig('monthly'); // Default to monthly
+    }
+    return getNonRentalConfig();
+  };
+
+  const initialConfig = getInitialConfig();
+  const [priceRange, setPriceRange] = useState([initialConfig.min, initialConfig.max]);
+
+  // Add separate state for input values to allow intermediate editing
+  const [minInputValue, setMinInputValue] = useState(initialConfig.min / 1000000);
+  const [maxInputValue, setMaxInputValue] = useState(initialConfig.max / 1000000);
+  const [isTabChanging, setIsTabChanging] = useState(false);
 
   useEffect(() => {
     if (showTabsInPrice) {
-      // setActiveTab('monthly');
+      // Reset to monthly defaults when switching to rental villas
+      const config = getRangeConfig('monthly');
+      setPriceRange([config.min, config.max]);
+      setMinInputValue(config.min / 1000000);
+      setMaxInputValue(config.max / 1000000);
     } else {
-      setPriceRange([1000000, 9999000000000]);
+      const config = getNonRentalConfig();
+      setPriceRange([config.min, config.max]);
+      setMinInputValue(config.min / 1000000);
+      setMaxInputValue(config.max / 1000000);
     }
   }, [showTabsInPrice]);
+
+  // Update input values when priceRange changes (e.g., from slider)
+  // But don't interfere when tab is changing
+  useEffect(() => {
+    if (!isTabChanging) {
+      setMinInputValue(priceRange[0] / 1000000);
+      setMaxInputValue(priceRange[1] / 1000000);
+    }
+  }, [priceRange, isTabChanging]);
 
   const toggleDropdown = () => {
     setIsOpen(prev => !prev);
@@ -62,10 +91,18 @@ const PriceDropdown = ({
   };
 
   const handleTabChange = tab => {
+    setIsTabChanging(true);
     setActiveTab(tab);
     const config = getRangeConfig(tab);
     setPriceRange([config.min, config.max]);
+    setMinInputValue(config.min / 1000000);
+    setMaxInputValue(config.max / 1000000);
     handleRangeChange([config.min, config.max]);
+
+    // Reset the flag after a brief delay to allow the change to complete
+    setTimeout(() => {
+      setIsTabChanging(false);
+    }, 100);
   };
 
   const handleRangeChange = handles => {
@@ -79,21 +116,92 @@ const PriceDropdown = ({
   };
 
   const handleMinInputChange = e => {
-    const value = parseFloat(e.target.value) * 1000000 || 0;
+    const inputValue = e.target.value;
     const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
-    const clampedValue = Math.max(config.min, Math.min(value, priceRange[1]));
-    const newRange = [clampedValue, priceRange[1]];
-    setPriceRange(newRange);
-    handleRangeChange(newRange);
+
+    // Prevent typing values beyond absolute max limit
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const numValue = parseFloat(inputValue);
+      if (numValue > config.max / 1000000) {
+        return; // Don't update input if beyond max limit
+      }
+    }
+
+    setMinInputValue(inputValue);
+
+    // Only update the range if we have a valid number and it's within absolute limits
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseFloat(inputValue) * 1000000;
+
+      // Validate against absolute config limits and current max
+      if (value >= config.min && value <= config.max && value <= priceRange[1]) {
+        const newRange = [value, priceRange[1]];
+        setPriceRange(newRange);
+        handleRangeChange(newRange);
+      }
+    }
   };
 
   const handleMaxInputChange = e => {
-    const value = parseFloat(e.target.value) * 1000000 || 0;
+    const inputValue = e.target.value;
     const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
-    const clampedValue = Math.min(config.max, Math.max(value, priceRange[0]));
-    const newRange = [priceRange[0], clampedValue];
-    setPriceRange(newRange);
-    handleRangeChange(newRange);
+
+    // Prevent typing values beyond absolute max limit
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const numValue = parseFloat(inputValue);
+      if (numValue > config.max / 1000000) {
+        return; // Don't update input if beyond max limit
+      }
+    }
+
+    setMaxInputValue(inputValue);
+
+    // Only update the range if we have a valid number and it's within absolute limits
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseFloat(inputValue) * 1000000;
+
+      // Validate against absolute config limits and current min
+      if (value <= config.max && value >= config.min && value >= priceRange[0]) {
+        const newRange = [priceRange[0], value];
+        setPriceRange(newRange);
+        handleRangeChange(newRange);
+      }
+    }
+  };
+
+  // Add blur handlers to apply final validation
+  const handleMinInputBlur = e => {
+    const inputValue = e.target.value;
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseFloat(inputValue) * 1000000;
+      const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
+      const clampedValue = Math.max(config.min, Math.min(value, priceRange[1]));
+
+      if (clampedValue !== value) {
+        // Update input display to show clamped value
+        setMinInputValue(clampedValue / 1000000);
+        const newRange = [clampedValue, priceRange[1]];
+        setPriceRange(newRange);
+        handleRangeChange(newRange);
+      }
+    }
+  };
+
+  const handleMaxInputBlur = e => {
+    const inputValue = e.target.value;
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseFloat(inputValue) * 1000000;
+      const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
+      const clampedValue = Math.min(config.max, Math.max(value, priceRange[0]));
+
+      if (clampedValue !== value) {
+        // Update input display to show clamped value
+        setMaxInputValue(clampedValue / 1000000);
+        const newRange = [priceRange[0], clampedValue];
+        setPriceRange(newRange);
+        handleRangeChange(newRange);
+      }
+    }
   };
 
   const getCurrentValue = () => {
@@ -255,8 +363,9 @@ const PriceDropdown = ({
                     <input
                       type="number"
                       className={css.priceAmount}
-                      value={priceRange[0] / 1000000}
+                      value={minInputValue}
                       onChange={handleMinInputChange}
+                      onBlur={handleMinInputBlur}
                       min={
                         showTabsInPrice
                           ? getRangeConfig(activeTab).min / 1000000
@@ -281,8 +390,9 @@ const PriceDropdown = ({
                     <input
                       type="number"
                       className={css.priceAmount}
-                      value={priceRange[1] / 1000000}
+                      value={maxInputValue}
                       onChange={handleMaxInputChange}
+                      onBlur={handleMaxInputBlur}
                       min={
                         showTabsInPrice
                           ? getRangeConfig(activeTab).min / 1000000

@@ -9,7 +9,10 @@ import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
 import { NamedLink } from '../../../../components/NamedLink/NamedLink';
 import { sortTags, capitaliseFirstLetter } from '../../../../util/helper';
 import { createSlug } from '../../../../util/urlHelpers';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
+import { handleToggleFavorites } from '../../../../util/userFavorites';
+import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
+import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -255,6 +258,7 @@ const PropertyCards = () => {
     featuredListingsInProgress,
     featuredListingsError,
   } = state.LandingPage;
+  const currentUser = useSelector(state => state.user.currentUser);
   const l = getListingsById(state, featuredListingIds);
   const [activeTab, setActiveTab] = useState('denpasar');
   // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
@@ -262,6 +266,8 @@ const PropertyCards = () => {
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
   const history = useHistory();
+  const routeLocation = useLocation();
+  const routes = useRouteConfiguration();
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const listings = isMobile ? l.slice(0, 2) : l;
@@ -407,12 +413,14 @@ const PropertyCards = () => {
                   weekprice,
                   monthprice,
                   yearprice,
+                  Freehold,
                 },
               } = attributes;
 
               const tags = sortTags(pricee);
               const showPills = categoryLevel1 !== 'landforsale';
               const isRentals = categoryLevel1 === 'rentalvillas';
+              const isLand = categoryLevel1 === 'landforsale';
 
               let price;
 
@@ -428,11 +436,30 @@ const PropertyCards = () => {
                 price = p.amount / 100;
               }
 
+              const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
+                card.id.uuid
+              );
+              const onToggleFavorites = e => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleToggleFavorites({
+                  currentUser,
+                  history,
+                  location: routeLocation,
+                  routes,
+                  params: { id: card.id.uuid },
+                  onUpdateFavorites: payload => dispatch(updateProfile(payload)),
+                })(isFavorite);
+              };
+
               return (
                 <NamedLink
                   className={styles.card}
                   name="ListingPage"
-                  params={{ id: card.id.uuid, slug: createSlug(title) }}
+                  params={{
+                    id: card.id.uuid,
+                    slug: createSlug(title),
+                  }}
                   key={card.id.uuid}
                 >
                   <div className={styles.imageWrapper}>
@@ -446,26 +473,11 @@ const PropertyCards = () => {
                         />
                       ))}
                     </Slider>
-                    {/* <button
-                  className={
-                    (likedCards[idx] ? styles.heartActive : styles.heart) + ' ' + styles.heartAnim
-                  }
-                  onClick={e => {
-                    handleLike(idx);
-                    // Add scale animation
-                    e.currentTarget.classList.remove(styles.heartAnim);
-                    void e.currentTarget.offsetWidth;
-                    e.currentTarget.classList.add(styles.heartAnim);
-                  }}
-                  aria-label="Like"
-                  type="button"
-                >
-                  {likedCards[idx] ? (
-                    <IconCollection name="liked" />
-                  ) : (
-                    <IconCollection name="unLiked" />
-                  )}
-                </button> */}
+                    <button className={styles.wishlistButton} onClick={onToggleFavorites}>
+                      <IconCollection
+                        name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'}
+                      />
+                    </button>
                   </div>
                   <div className={styles.cardDetails}>
                     <div className={styles.tags}>
@@ -474,6 +486,9 @@ const PropertyCards = () => {
                           {tag}
                         </span>
                       ))}
+                      {isLand && (
+                        <span className={styles.tag}>{capitaliseFirstLetter(Freehold)}</span>
+                      )}
                       <NamedLink
                         className={styles.listedBy}
                         name="ProfilePage"
@@ -511,7 +526,8 @@ const PropertyCards = () => {
                           <>
                             {!!bedrooms && (
                               <span className={styles.iconItem}>
-                                <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
+                                <Icon type="bed" /> {bedrooms} bedroom
+                                {bedrooms > 1 ? 's' : ''}
                               </span>
                             )}
                             {!!bathrooms && (
@@ -536,7 +552,11 @@ const PropertyCards = () => {
                         <span className={styles.priceValue}>
                           {formatPriceInMillions(price)} IDR
                         </span>
-                        {showPills && <span className={styles.priceUnit}>/ night</span>}
+                        {isRentals && (
+                          <span className={styles.priceUnit}>
+                            {weekprice ? '/ weekly' : monthprice ? '/ monthly' : '/ yearly'}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
