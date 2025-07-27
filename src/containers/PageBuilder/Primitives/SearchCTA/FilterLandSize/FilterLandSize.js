@@ -139,6 +139,7 @@ const LandSizeDropdown = ({
               </div>
               {/* Land Size Range Slider */}
               <div className={css.sliderSection}>
+              <p className={css.menuItemSubtitle}>Select a land size range (in m2)</p>
                 <div className={css.sliderWrapper}>
                   <RangeSlider
                     min={100}

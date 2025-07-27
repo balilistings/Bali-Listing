@@ -344,6 +344,11 @@ const PriceDropdown = ({
                   [css.sliderSectionNoTabs]: !showTabsInPrice,
                 })}
               >
+                <p className={css.menuItemSubtitle}>
+                  {showTabsInPrice
+                    ? 'Select a price range per week, month or year (in millions IDR)'
+                    : 'Select your price range (in millions IDR)'}
+                </p>
                 <div className={css.sliderWrapper}>
                   <RangeSlider
                     min={showTabsInPrice ? getRangeConfig(activeTab).min : getNonRentalConfig().min}
