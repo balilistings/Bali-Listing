@@ -383,12 +383,14 @@ const PropertyCards = () => {
                   weekprice,
                   monthprice,
                   yearprice,
+                  Freehold,
                 },
               } = attributes;
 
               const tags = sortTags(pricee);
               const showPills = categoryLevel1 !== 'landforsale';
               const isRentals = categoryLevel1 === 'rentalvillas';
+              const isLand = categoryLevel1 === 'landforsale';
 
               let price;
 
@@ -446,27 +448,6 @@ const PropertyCards = () => {
                         name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'}
                       />
                     </button>
-
-                    {/* <button
-                  className={
-                    (likedCards[idx] ? styles.heartActive : styles.heart) + ' ' + styles.heartAnim
-                  }
-                  onClick={e => {
-                    handleLike(idx);
-                    // Add scale animation
-                    e.currentTarget.classList.remove(styles.heartAnim);
-                    void e.currentTarget.offsetWidth;
-                    e.currentTarget.classList.add(styles.heartAnim);
-                  }}
-                  aria-label="Like"
-                  type="button"
-                >
-                  {likedCards[idx] ? (
-                    <IconCollection name="liked" />
-                  ) : (
-                    <IconCollection name="unLiked" />
-                  )}
-                </button> */}
                   </div>
                   <div className={styles.cardDetails}>
                     <div className={styles.tags}>
@@ -475,6 +456,9 @@ const PropertyCards = () => {
                           {tag}
                         </span>
                       ))}
+                      {isLand && (
+                        <span className={styles.tag}>{capitaliseFirstLetter(Freehold)}</span>
+                      )}
                       <NamedLink
                         className={styles.listedBy}
                         name="ProfilePage"

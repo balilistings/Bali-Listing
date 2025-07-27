@@ -161,6 +161,7 @@ export const ListingCard = props => {
     weekprice,
     monthprice,
     yearprice,
+    Freehold,
   } = publicData;
   const tags = sortTags(pricee);
   const isLand = categoryLevel1 === 'landforsale';
@@ -233,7 +234,7 @@ export const ListingCard = props => {
               {tag}
             </span>
           ))}
-          {/* <span className={css.tag}></span> */}
+          {isLand && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
               Listed by:{' '}
