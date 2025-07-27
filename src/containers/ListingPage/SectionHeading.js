@@ -80,6 +80,7 @@ const SectionHeading = props => {
         {existingListingFields.map(detail =>
           detail.key === 'propertytype' ? (
             <div key={detail.key} className={css.detailsTypeRow}>
+             
               <svg
                 width="15"
                 height="14"
@@ -188,9 +189,9 @@ const SectionHeading = props => {
             ) : detail.key === 'landsize' || detail.key === 'landzone' ? (
               <li key={detail.key} className={css.detailsTypeRow}>
                 {detail.key === 'landsize' ? (
-                  <IconCollection name="bed_icon" />
+                  <IconCollection name="landzone_icon" />
                 ) : (
-                  <IconCollection name="bathroom_icon" />
+                  <IconCollection name="zone_icon" />
                 )}
                 <span>
                   <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
