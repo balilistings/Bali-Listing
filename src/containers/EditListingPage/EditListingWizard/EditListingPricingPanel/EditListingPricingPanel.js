@@ -1,30 +1,17 @@
-import React, { useState } from 'react';
 import classNames from 'classnames';
+import React, { useState } from 'react';
 
 // Import configs and util modules
 import { FormattedMessage } from '../../../../util/reactIntl';
-import { LISTING_STATE_DRAFT, propTypes } from '../../../../util/types';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
-import { isPriceVariationsEnabled } from '../../../../util/configHelpers';
-import { isValidCurrencyForTransactionProcess } from '../../../../util/fieldHelpers';
-import { FIXED, isBookingProcess } from '../../../../transactions/transaction';
+import { LISTING_STATE_DRAFT, propTypes } from '../../../../util/types';
 
 // Import shared components
 import { H3, ListingLink } from '../../../../components';
 
 // Import modules from this directory
 import EditListingPricingForm from './EditListingPricingForm';
-import {
-  getInitialValuesForPriceVariants,
-  handleSubmitValuesForPriceVariants,
-} from './BookingPriceVariants';
-import {
-  getInitialValuesForStartTimeInterval,
-  handleSubmitValuesForStartTimeInterval,
-} from './StartTimeInverval';
 import css from './EditListingPricingPanel.module.css';
-
-const { Money } = sdkTypes;
 
 const getListingTypeConfig = (publicData, listingTypes) => {
   const selectedListingType = publicData.listingType;
@@ -36,36 +23,20 @@ const getListingTypeConfig = (publicData, listingTypes) => {
 // This is a tentative approach to contain logic in one place.
 const getInitialValues = props => {
   const { listing, listingTypes } = props;
-  const { publicData } = listing?.attributes || {};
-  const { unitType } = publicData || {};
-  const listingTypeConfig = getListingTypeConfig(publicData, listingTypes);
-  // Note: publicData contains priceVariationsEnabled if listing is created with priceVariations enabled.
-  const isPriceVariationsInUse = isPriceVariationsEnabled(publicData, listingTypeConfig);
+  const { publicData, price } = listing?.attributes || {};
+  const { unitType, categoryLevel1 } = publicData || {};
+  const isRentals = categoryLevel1 === 'rentalvillas';
 
-  return unitType === FIXED || isPriceVariationsInUse
-    ? {
-        ...getInitialValuesForPriceVariants(props, isPriceVariationsInUse),
-        ...getInitialValuesForStartTimeInterval(props),
-      }
-    : { price: listing?.attributes?.price };
-};
-
-// This is needed to show the listing's price consistently over XHR calls.
-// I.e. we don't change the API entity saved to Redux store.
-// Instead, we use a temporary entity inside the form's state.
-const getOptimisticListing = (listing, updateValues) => {
-  const tmpListing = {
-    ...listing,
-    attributes: {
-      ...listing.attributes,
-      ...updateValues,
-      publicData: {
-        ...listing.attributes?.publicData,
-        ...updateValues?.publicData,
-      },
-    },
-  };
-  return tmpListing;
+  if (isRentals) {
+    return {
+      pub_pricee: publicData.pricee,
+      pub_monthprice: publicData.monthprice,
+      pub_weekprice: publicData.weekprice,
+      pub_yearprice: publicData.yearprice,
+    };
+  } else {
+    return { price };
+  }
 };
 
 /**
@@ -105,6 +76,7 @@ const EditListingPricingPanel = props => {
     panelUpdated,
     updateInProgress,
     errors,
+    listingFields,
   } = props;
 
   const classes = classNames(rootClassName || css.root, className);
@@ -113,24 +85,11 @@ const EditListingPricingPanel = props => {
 
   const publicData = listing?.attributes?.publicData;
   const listingTypeConfig = getListingTypeConfig(publicData, listingTypes);
-  const transactionProcessAlias = listingTypeConfig?.transactionType?.alias;
-  const process = listingTypeConfig?.transactionType?.process;
-  const isBooking = isBookingProcess(process);
 
-  // Note: publicData contains priceVariationsEnabled if listing is created with priceVariations enabled.
-  const isPriceVariationsInUse = isPriceVariationsEnabled(publicData, listingTypeConfig);
-
-  const isCompatibleCurrency = isValidCurrencyForTransactionProcess(
-    transactionProcessAlias,
-    marketplaceCurrency
-  );
-
-  const priceCurrencyValid = !isCompatibleCurrency
-    ? false
-    : marketplaceCurrency && initialValues.price instanceof Money
-    ? initialValues.price.currency === marketplaceCurrency
-    : !!marketplaceCurrency;
+  const priceCurrencyValid = true;
   const unitType = listing?.attributes?.publicData?.unitType;
+
+  const isRentals = publicData.categoryLevel1 === 'rentalvillas';
 
   return (
     <div className={classes}>
@@ -147,69 +106,56 @@ const EditListingPricingPanel = props => {
           />
         )}
       </H3>
+
       {priceCurrencyValid ? (
         <EditListingPricingForm
           className={css.form}
           initialValues={initialValues}
+          categoryLevel1={publicData.categoryLevel1}
+          listingFields={listingFields}
+          listingType={'free-listing'}
           onSubmit={values => {
-            const { price } = values;
-
             // New values for listing attributes
-            let updateValues = {};
+            let updateValues = {},
+              initialValues = {};
 
-            if (unitType === FIXED || isPriceVariationsInUse) {
-              let publicDataUpdates = { priceVariationsEnabled: isPriceVariationsInUse };
-              // NOTE: components that handle price variants and start time interval are currently
-              // exporting helper functions that handle the initial values and the submission values.
-              // This is a tentative approach to contain logic in one place.
-              // We might remove or improve this setup in the future.
-
-              // This adds startTimeInterval to publicData
-              const startTimeIntervalChanges = handleSubmitValuesForStartTimeInterval(
-                values,
-                publicDataUpdates
-              );
-              // This adds lowest price variant to the listing.attributes.price and priceVariants to listing.attributes.publicData
-              const priceVariantChanges = handleSubmitValuesForPriceVariants(
-                values,
-                publicDataUpdates,
-                unitType,
-                listingTypeConfig
-              );
+            if (isRentals) {
+              const { pub_pricee, pub_monthprice, pub_weekprice, pub_yearprice } = values;
               updateValues = {
-                ...priceVariantChanges,
-                ...startTimeIntervalChanges,
                 publicData: {
-                  priceVariationsEnabled: isPriceVariationsInUse,
-                  ...startTimeIntervalChanges.publicData,
-                  ...priceVariantChanges.publicData,
+                  pricee: pub_pricee,
+                  ...(pub_monthprice && { monthprice: pub_monthprice }),
+                  ...(pub_weekprice && { weekprice: pub_weekprice }),
+                  ...(pub_yearprice && { yearprice: pub_yearprice }),
                 },
               };
+
+              initialValues = {
+                pub_pricee,
+                pub_monthprice,
+                pub_weekprice,
+                pub_yearprice,
+              };
             } else {
-              const priceVariationsEnabledMaybe = isBooking
-                ? {
-                    publicData: {
-                      priceVariationsEnabled: false,
-                    },
-                  }
-                : {};
-              updateValues = { price, ...priceVariationsEnabledMaybe };
+              updateValues = {
+                price: values.price,
+              };
+
+              initialValues = {
+                price: values.price,
+              };
             }
 
             // Save the initialValues to state
             // Otherwise, re-rendering would overwrite the values during XHR call.
             setState({
-              initialValues: getInitialValues({
-                listing: getOptimisticListing(listing, updateValues),
-                listingTypes,
-              }),
+              initialValues,
             });
             onSubmit(updateValues);
           }}
           marketplaceCurrency={marketplaceCurrency}
           unitType={unitType}
           listingTypeConfig={listingTypeConfig}
-          isPriceVariationsInUse={isPriceVariationsInUse}
           listingMinimumPriceSubUnits={listingMinimumPriceSubUnits}
           saveActionMsg={submitButtonText}
           disabled={disabled}

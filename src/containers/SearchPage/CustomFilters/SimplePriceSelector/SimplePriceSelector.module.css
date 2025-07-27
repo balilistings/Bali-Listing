@@ -1,7 +1,7 @@
 .container {
   margin-bottom: 24px;
   padding-top: 28px;
-  border-top: 1px solid #F2F2F2;
+  border-top: 1px solid #f2f2f2;
   @media (max-width: 768px) {
     padding-top: 24px;
   }
@@ -25,7 +25,7 @@
 
   margin: 0;
   padding: 0;
-  color: #231F20;
+  color: #231f20;
   @media (max-width: 768px) {
     font-size: 12px;
   }
@@ -34,7 +34,7 @@
 .resetButton {
   background: none;
   border: none;
-  color: #F74DF4;
+  color: #f74df4;
   font-size: 14px;
   cursor: pointer;
   padding: 0;
@@ -83,11 +83,9 @@
 }
 
 .priceValue {
-  
   display: flex;
   flex-direction: column;
   align-items: center;
-
 }
 
 .priceLabel {
@@ -99,7 +97,7 @@
   line-height: 130%;
   letter-spacing: 0%;
   text-align: center;
-color: #4D4D4D;  
+  color: #4d4d4d;
   margin-bottom: 4px;
   text-transform: lowercase;
   @media (max-width: 768px) {
@@ -110,19 +108,30 @@ color: #4D4D4D;
 .priceAmount {
   padding: 5px 10px;
   background-color: white;
-  border: 1px solid #C4C4C4;
+  border: 1px solid #c4c4c4;
   border-radius: 5px;
   font-family: Mulish;
-font-weight: 700;
-font-style: Bold;
-font-size: 14px;
-leading-trim: NONE;
-line-height: 130%;
-letter-spacing: 0%;
-text-align: center;
-min-width: 99px;
-@media (max-width: 767px) {
-  font-size: 10px;
-  min-width: 92px;
-}
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  min-width: 99px;
+
+  /* Hide number input arrows/spinners */
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  @media (max-width: 767px) {
+    font-size: 10px;
+    min-width: 92px;
+  }
 }

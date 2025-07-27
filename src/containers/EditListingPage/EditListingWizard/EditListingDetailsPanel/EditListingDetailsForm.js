@@ -242,7 +242,7 @@ const FieldSelectCategory = props => {
 };
 
 // Add collect data for listing fields (both publicData and privateData) based on configuration
-const AddListingFields = props => {
+export const AddListingFields = props => {
   const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
   const targetCategoryIds = Object.values(selectedCategories);
 
@@ -328,10 +328,14 @@ const EditListingDetailsForm = props => (
         updated,
         updateInProgress,
         fetchErrors,
-        listingFieldsConfig = [],
+        listingFieldsConfig: lFG = [],
         listingCurrency,
         values,
       } = formRenderProps;
+
+      const listingFieldsConfig = lFG.filter(
+        field => !['pricee', 'weekprice', 'monthprice', 'yearprice'].includes(field.key)
+      );
 
       const intl = useIntl();
       const { listingType, transactionProcessAlias, unitType } = values;

@@ -68,8 +68,8 @@ export const SearchCTA = React.forwardRef((props, ref) => {
   const [isOpenLandSize, setIsOpenLandSize] = useState(false);
 
   const { categories, dateRange, keywordSearch, locationSearch, price } = props.searchFields;
-  const bedrooms = tabs[activeTab].key !== 'villaforsale';
-  const landSize = tabs[activeTab].key === 'villaforsale';
+  const bedrooms = tabs[activeTab].key !== 'landforsale';
+  const landSize = tabs[activeTab].key === 'landforsale';
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
 
@@ -229,8 +229,8 @@ export const SearchCTA = React.forwardRef((props, ref) => {
             priceKey = 'pub_weekprice';
           }
           queryParams[priceKey] = `${value.minPrice},${value.maxPrice}`;
-        } else if (key === 'pub_landsize') {
-          // queryParams[key] = `${value.minSize},${value.maxSize}`;
+        } else if (key === 'pub_landSize') {
+          queryParams['pub_landsize'] = `${value.minSize},${value.maxSize}`;
           return;
         } else {
           queryParams[key] = value;
