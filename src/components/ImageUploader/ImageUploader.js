@@ -43,14 +43,14 @@ export default function ImageUploader({
         xhr.upload.addEventListener('progress', event => {
           if (event.lengthComputable) {
             const percentComplete = Math.round((event.loaded / event.total) * 100);
-            // console.log(
-            //   `File ${file.name} progress: ${percentComplete}% (index: ${progressIndex})`
-            // );
+            console.log(
+              `File ${file.name} progress: ${percentComplete}% (index: ${progressIndex})`
+            );
             setUploadProgress(prevProgress => {
               const updated = [...prevProgress];
               if (updated[progressIndex]) {
                 updated[progressIndex].progress = percentComplete;
-                // console.log(`Updated progress for index ${progressIndex}: ${percentComplete}%`);
+                console.log(`Updated progress for index ${progressIndex}: ${percentComplete}%`);
               } else {
                 console.warn(
                   `Progress index ${progressIndex} not found in array of length ${updated.length}`
@@ -68,11 +68,15 @@ export default function ImageUploader({
             const publicUrl = `${process.env.REACT_APP_R2_PUBLIC_DOMAIN}/${storagePath}/${fileName}`;
             resolve(publicUrl);
           } else {
+            console.log('xhr.status', xhr.status);
+            console.log('xhr.statusText', xhr.statusText);
             reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
           }
         });
 
         xhr.addEventListener('error', () => {
+          console.log('error - xhr.status', xhr.status);
+          console.log('error - xhr.statusText', xhr.statusText);
           reject(new Error('Network error during upload'));
         });
 
@@ -85,7 +89,7 @@ export default function ImageUploader({
         xhr.send(file);
       });
     } catch (error) {
-      console.error('Failed to upload file:', error);
+      console.log('Failed to upload file:', error);
       throw error;
     }
   };
