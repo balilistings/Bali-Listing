@@ -22,6 +22,20 @@ const LandSizeDropdown = ({
 }) => {
   const [landSizeRange, setLandSizeRange] = useState([100, 50000]);
 
+  // Add separate state for input values to allow intermediate editing
+  const [minInputValue, setMinInputValue] = useState(100);
+  const [maxInputValue, setMaxInputValue] = useState(50000);
+  const [isRangeChanging, setIsRangeChanging] = useState(false);
+
+  // Update input values when landSizeRange changes (e.g., from slider)
+  // But don't interfere when range is changing programmatically
+  React.useEffect(() => {
+    if (!isRangeChanging) {
+      setMinInputValue(landSizeRange[0]);
+      setMaxInputValue(landSizeRange[1]);
+    }
+  }, [landSizeRange, isRangeChanging]);
+
   const toggleDropdown = () => {
     setIsOpen(prev => !prev);
   };
@@ -32,28 +46,109 @@ const LandSizeDropdown = ({
   };
 
   const handleRangeChange = handles => {
+    setIsRangeChanging(true);
     setLandSizeRange(handles);
     // Update the form value with the range
     input.onChange({
       minSize: handles[0],
       maxSize: handles[1],
     });
+
+    // Reset the flag after a brief delay to allow the change to complete
+    setTimeout(() => {
+      setIsRangeChanging(false);
+    }, 100);
   };
 
   const handleMinInputChange = e => {
-    const value = parseInt(e.target.value) || 0;
-    const clampedValue = Math.max(100, Math.min(value, landSizeRange[1]));
-    const newRange = [clampedValue, landSizeRange[1]];
-    setLandSizeRange(newRange);
-    handleRangeChange(newRange);
+    const inputValue = e.target.value;
+
+    // Prevent typing values beyond absolute max limit (50000)
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const numValue = parseInt(inputValue);
+      if (numValue > 50000) {
+        return; // Don't update input if beyond max limit
+      }
+    }
+
+    setMinInputValue(inputValue);
+
+    // Only update the range if we have a valid number and it's within absolute limits
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseInt(inputValue);
+
+      // Validate against absolute limits (100-50000) and current max
+      if (value >= 100 && value <= 50000 && value <= landSizeRange[1]) {
+        const newRange = [value, landSizeRange[1]];
+        setLandSizeRange(newRange);
+        handleRangeChange(newRange);
+      }
+    }
   };
 
   const handleMaxInputChange = e => {
-    const value = parseInt(e.target.value) || 0;
-    const clampedValue = Math.min(50000, Math.max(value, landSizeRange[0]));
-    const newRange = [landSizeRange[0], clampedValue];
-    setLandSizeRange(newRange);
-    handleRangeChange(newRange);
+    const inputValue = e.target.value;
+
+    // Prevent typing values beyond absolute max limit (50000)
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const numValue = parseInt(inputValue);
+      if (numValue > 50000) {
+        return; // Don't update input if beyond max limit
+      }
+    }
+
+    setMaxInputValue(inputValue);
+
+    // Only update the range if we have a valid number and it's within absolute limits
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseInt(inputValue);
+
+      // Validate against absolute limits (100-50000) and current min
+      if (value <= 50000 && value >= 100 && value >= landSizeRange[0]) {
+        const newRange = [landSizeRange[0], value];
+        setLandSizeRange(newRange);
+        handleRangeChange(newRange);
+      }
+    }
+  };
+
+  // Add blur handlers to apply final validation
+  const handleMinInputBlur = e => {
+    const inputValue = e.target.value;
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseInt(inputValue);
+      const clampedValue = Math.max(100, Math.min(value, landSizeRange[1]));
+
+      if (clampedValue !== value) {
+        // Update input display to show clamped value
+        setMinInputValue(clampedValue);
+        const newRange = [clampedValue, landSizeRange[1]];
+        setLandSizeRange(newRange);
+        handleRangeChange(newRange);
+      }
+    } else if (inputValue === '') {
+      // If empty on blur, reset to current range value
+      setMinInputValue(landSizeRange[0]);
+    }
+  };
+
+  const handleMaxInputBlur = e => {
+    const inputValue = e.target.value;
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = parseInt(inputValue);
+      const clampedValue = Math.min(50000, Math.max(value, landSizeRange[0]));
+
+      if (clampedValue !== value) {
+        // Update input display to show clamped value
+        setMaxInputValue(clampedValue);
+        const newRange = [landSizeRange[0], clampedValue];
+        setLandSizeRange(newRange);
+        handleRangeChange(newRange);
+      }
+    } else if (inputValue === '') {
+      // If empty on blur, reset to current range value
+      setMaxInputValue(landSizeRange[1]);
+    }
   };
 
   const getCurrentValue = () => {
@@ -139,7 +234,7 @@ const LandSizeDropdown = ({
               </div>
               {/* Land Size Range Slider */}
               <div className={css.sliderSection}>
-              <p className={css.menuItemSubtitle}>Select a land size range (in m2)</p>
+                <p className={css.menuItemSubtitle}>Select a land size range (in m2)</p>
                 <div className={css.sliderWrapper}>
                   <RangeSlider
                     min={100}
@@ -159,8 +254,9 @@ const LandSizeDropdown = ({
                     <input
                       type="number"
                       className={css.priceAmount}
-                      value={landSizeRange[0]}
+                      value={minInputValue}
                       onChange={handleMinInputChange}
+                      onBlur={handleMinInputBlur}
                       min={100}
                       max={50000}
                       step={100}
@@ -173,8 +269,9 @@ const LandSizeDropdown = ({
                     <input
                       type="number"
                       className={css.priceAmount}
-                      value={landSizeRange[1]}
+                      value={maxInputValue}
                       onChange={handleMaxInputChange}
+                      onBlur={handleMaxInputBlur}
                       min={100}
                       max={50000}
                       step={100}

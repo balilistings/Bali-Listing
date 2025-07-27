@@ -63,11 +63,25 @@ const getFirstImageAspectRatio = (firstImage, scaledVariant) => {
  */
 const ListingImageGallery = props => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
   const intl = useIntl();
   const { rootClassName, className, images, imageVariants, thumbnailVariants } = props;
   const thumbVariants = thumbnailVariants || imageVariants;
   // imageVariants are scaled variants.
   const { aspectWidth, aspectHeight } = getFirstImageAspectRatio(images?.[0], imageVariants[0]);
+  
+  // Check if mobile on mount and resize
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const items = images.map((img, i) => {
     return {
       // We will only use the image resource, but react-image-gallery
@@ -85,6 +99,62 @@ const ListingImageGallery = props => {
       image: img,
     };
   });
+
+  // Handle mobile thumbnail visibility
+  React.useEffect(() => {
+    // Add a small delay to ensure DOM elements are available
+    const timeoutId = setTimeout(() => {
+      if (isMobile && !isFullscreen && items.length > 3) {
+        const thumbnails = document.querySelectorAll('.image-gallery-thumbnail');
+        
+        if (thumbnails.length > 0) {
+          thumbnails.forEach((thumb, index) => {
+            let shouldShow = false;
+            
+            // For first slide, show first, second, third
+            if (currentIndex === 0) {
+              shouldShow = index <= 2;
+            }
+            // For last slide, show third-to-last, second-to-last, last
+            else if (currentIndex === items.length - 1) {
+              shouldShow = index >= items.length - 3;
+            }
+            // For middle slides, show previous, current, next
+            else {
+              shouldShow = 
+                index === currentIndex - 1 || // previous
+                index === currentIndex ||     // current
+                index === currentIndex + 1;   // next
+            }
+            
+            if (shouldShow) {
+              thumb.style.display = 'inline-block';
+            } else {
+              thumb.style.display = 'none';
+            }
+          });
+        }
+      } else if (isMobile && !isFullscreen && items.length <= 3) {
+        // Show all thumbnails if 3 or fewer
+        const thumbnails = document.querySelectorAll('.image-gallery-thumbnail');
+        if (thumbnails.length > 0) {
+          thumbnails.forEach(thumb => {
+            thumb.style.display = 'inline-block';
+          });
+        }
+      } else if (!isMobile || isFullscreen) {
+        // Show all thumbnails in desktop or fullscreen
+        const thumbnails = document.querySelectorAll('.image-gallery-thumbnail');
+        if (thumbnails.length > 0) {
+          thumbnails.forEach(thumb => {
+            thumb.style.display = 'inline-block';
+          });
+        }
+      }
+    }, 100); // Small delay to ensure DOM is ready
+
+    return () => clearTimeout(timeoutId);
+  }, [currentIndex, isMobile, isFullscreen, items.length]);
   const imageSizesMaybe = isFullscreen
     ? {}
     : { sizes: `(max-width: 1024px) 100vw, (max-width: 1200px) calc(100vw - 192px), 708px` };
@@ -107,6 +177,7 @@ const ListingImageGallery = props => {
       </AspectRatioWrapper>
     );
   };
+  
   const renderThumbInner = item => {
     return (
       <div>
@@ -123,6 +194,10 @@ const ListingImageGallery = props => {
 
   const onScreenChange = isFull => {
     setIsFullscreen(isFull);
+  };
+
+  const onSlide = index => {
+    setCurrentIndex(index);
   };
 
   const renderLeftNav = (onClick, disabled) => {
@@ -192,6 +267,7 @@ const ListingImageGallery = props => {
       renderRightNav={renderRightNav}
       renderFullscreenButton={renderFullscreenButton}
       {...IMAGE_GALLERY_OPTIONS}
+      onSlide={onSlide}
     />
   );
 };
