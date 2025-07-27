@@ -10,13 +10,20 @@ import css from './InquiryWithoutPaymentForm.module.css';
 
 const renderForm = formRenderProps => {
   // FormRenderProps from final-form
-  const { formId, className, rootClassName, handleSubmit, agentorowner } = formRenderProps;
+  const {
+    formId,
+    className,
+    rootClassName,
+    handleSubmit,
+    agentorowner,
+    handleWhatsappClick,
+  } = formRenderProps;
   const classes = classNames(rootClassName || css.root, className);
 
   return (
     <Form id={formId} onSubmit={handleSubmit} className={classes}>
       <div className={css.submitButton}>
-        <PrimaryButton type="submit" className={css.button}>
+        <PrimaryButton type="button" className={css.button} onClick={handleWhatsappClick}>
           <svg
             width="24"
             height="24"
