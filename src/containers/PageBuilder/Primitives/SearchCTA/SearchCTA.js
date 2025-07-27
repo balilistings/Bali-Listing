@@ -192,8 +192,6 @@ export const SearchCTA = React.forwardRef((props, ref) => {
       pub_categoryLevel1: tabs[activeTab].key,
     };
 
-    console.log('values', values);
-
     Object.entries(values).forEach(([key, value]) => {
       if (!isEmpty(value)) {
         if (key == 'dateRange') {
@@ -221,9 +219,9 @@ export const SearchCTA = React.forwardRef((props, ref) => {
           let priceKey = '';
           if (tabs[activeTab].key !== 'rentalvillas') {
             priceKey = 'price';
-          } else if (key.d === 'monthly') {
+          } else if (value.period === 'monthly') {
             priceKey = 'pub_monthprice';
-          } else if (key.d === 'yearly') {
+          } else if (value.period === 'yearly') {
             priceKey = 'pub_yearprice';
           } else {
             priceKey = 'pub_weekprice';

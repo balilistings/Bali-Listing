@@ -585,3 +585,20 @@
     }
   }
 }
+
+.wishlistButton {
+  backdrop-filter: blur(9.399999618530273px);
+  width: 38px;
+  height: 38px;
+  border-radius: 25px;
+  background-color: #0202020D;
+  top: 18px;
+  right: 18px;
+  position: absolute;
+  z-index: 2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}

@@ -44,7 +44,7 @@ import RentalPeriod from './RentalPeriod';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 import { initializeCardPaymentData } from '../../ducks/stripe.duck.js';
-
+import { updateProfile } from '../ProfileSettingsPage/ProfileSettingsPage.duck';
 // Shared components
 import {
   H4,
@@ -88,6 +88,7 @@ import CustomListingFields from './CustomListingFields';
 import SectionTerms from './SectionTerms';
 
 import css from './ListingPage.module.css';
+import { handleToggleFavorites } from '../../util/userFavorites.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -137,7 +138,6 @@ export const ListingPageComponent = props => {
       });
       setActiveTab(id);
     }
-    
   };
 
   // Scrollspy: update active tab on scroll
@@ -189,6 +189,7 @@ export const ListingPageComponent = props => {
     config,
     routeConfiguration,
     showOwnListingsOnly,
+    onUpdateFavorites,
     ...restOfProps
   } = props;
 
@@ -449,6 +450,13 @@ export const ListingPageComponent = props => {
             <SectionGallery
               listing={currentListing}
               variantPrefix={config.layout.listingImage.variantPrefix}
+              onToggleFavorites={handleToggleFavorites({
+                ...commonParams,
+                currentUser,
+                onUpdateFavorites,
+                location,
+              })}
+              currentUser={currentUser}
             />
             <RentalPeriod
               publicData={publicData}
@@ -724,6 +732,7 @@ const mapDispatchToProps = dispatch => ({
   onInitializeCardPaymentData: () => dispatch(initializeCardPaymentData()),
   onFetchTimeSlots: (listingId, start, end, timeZone, options) =>
     dispatch(fetchTimeSlots(listingId, start, end, timeZone, options)), // for OrderPanel
+  onUpdateFavorites: payload => dispatch(updateProfile(payload)),
 });
 
 // Note: it is important that the withRouter HOC is **outside** the

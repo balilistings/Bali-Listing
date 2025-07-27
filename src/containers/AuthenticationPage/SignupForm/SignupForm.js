@@ -105,7 +105,7 @@ const SignupFormComponent = props => (
       const submitDisabled = invalid || submitInProgress || !documentLink;
 
       const handleProfileSelect = file => {
-        console.log('file', file);
+        console.log('file link updated');
         form.change('documentLink', file);
       };
 
