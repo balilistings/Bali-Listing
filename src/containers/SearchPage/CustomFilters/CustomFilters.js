@@ -54,14 +54,14 @@ const initialiseCategory = () => {
 const initialiseBedrooms = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('pub_bedrooms') || 0;
+    return Number(urlParams.get('pub_bedrooms')) || 0;
   }
 };
 
 const initialiseBathrooms = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get('pub_bathrooms') || 0;
+    return Number(urlParams.get('pub_bathrooms')) || 0;
   }
 };
 
@@ -148,6 +148,24 @@ const initialiseAmenities = () => {
   }
 };
 
+const initialiseLandSize = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const landSize = urlParams.get('pub_landsize') || null;
+    const splitLandSize = landSize ? landSize.split(',') : null;
+    return splitLandSize ? [Number(splitLandSize[0]), Number(splitLandSize[1])] : [100, 50000];
+  }
+};
+
+const initialisePrice = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const price = urlParams.get('price') || null;
+    const splitPrice = price ? price.split(',') : null;
+    return splitPrice ? [Number(splitPrice[0]), Number(splitPrice[1])] : [1000000, 9999000000000];
+  }
+};
+
 const allPubAmentiesKeys = [
   'pub_pool',
   'pub_wifi',
@@ -170,10 +188,10 @@ function CustomFilters({
 }) {
   const [selectedCategory, setSelectedCategory] = useState(initialiseCategory);
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [selectedPeriod, setSelectedPeriod] = useState('weekly');
-  const [priceRange, setPriceRange] = useState([0, 99]);
-  const [simplePriceRange, setSimplePriceRange] = useState([0, 1000]);
-  const [landSizeRange, setLandSizeRange] = useState([100, 1000]);
+  const [selectedPeriod, setSelectedPeriod] = useState('monthly');
+  const [priceRange, setPriceRange] = useState([1000000, 500000000]);
+  const [simplePriceRange, setSimplePriceRange] = useState(initialisePrice);
+  const [landSizeRange, setLandSizeRange] = useState(initialiseLandSize);
   const [bedrooms, setBedrooms] = useState(initialiseBedrooms);
   const [bathrooms, setBathrooms] = useState(initialiseBathrooms);
   const [selectedAmenities, setSelectedAmenities] = useState(initialiseAmenities);
@@ -205,10 +223,10 @@ function CustomFilters({
       !newAvailableFilters.includes('simplePrice') &&
       !newAvailableFilters.includes('landSize')
     ) {
-      setSelectedPeriod('weekly');
-      setPriceRange([0, 50]);
-      setSimplePriceRange([0, 1000]);
-      setLandSizeRange([100, 1000]);
+      setSelectedPeriod('monthly');
+      setPriceRange([1000000, 500000000]);
+      setSimplePriceRange([1000000, 9999000000000]);
+      setLandSizeRange([100, 50000]);
     }
     if (!newAvailableFilters.includes('bedrooms')) {
       setBedrooms(0);
@@ -262,15 +280,22 @@ function CustomFilters({
   };
 
   const handlePriceRangeChange = range => {
-    setPriceRange(range);
+    console.log('range', range);
+    // setPriceRange(range);
   };
 
   const handleSimplePriceRangeChange = range => {
-    setSimplePriceRange(range);
+    onUpdateCurrentQueryParams({
+      price: range.toString(),
+    });
+    // setSimplePriceRange(range);
   };
 
   const handleLandSizeRangeChange = range => {
-    setLandSizeRange(range);
+    onUpdateCurrentQueryParams({
+      pub_landsize: range.toString(),
+    });
+    // setLandSizeRange(range);
   };
 
   const handleBedroomsChange = value => {
@@ -522,13 +547,13 @@ function CustomFilters({
             <SimplePriceSelector
               priceRange={landSizeRange}
               onPriceRangeChange={handleLandSizeRangeChange}
-              onReset={() => setLandSizeRange([100, 1000])}
               title="Land size"
               description="Choose your preferred range in square meters"
               formatValue={value => `${value} m²`}
-              min={50}
-              max={5000}
-              step={50}
+              min={100}
+              max={50000}
+              step={100}
+              isSize={true}
             />
           )}
 
@@ -536,7 +561,9 @@ function CustomFilters({
             <SimplePriceSelector
               priceRange={simplePriceRange}
               onPriceRangeChange={handleSimplePriceRangeChange}
-              onReset={() => setSimplePriceRange([0, 1000])}
+              min={1000000}
+              max={9999000000000}
+              step={5000000}
             />
           )}
 
