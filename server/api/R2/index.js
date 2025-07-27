@@ -1,4 +1,4 @@
-// const { PutObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getR2Client } = require('../../api-util/sdk');
 // const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { getFileCategory } = require('./helper');
@@ -15,29 +15,29 @@ const URL_EXPIRATION = 30; // URL expiration in seconds
  * @returns {Promise<Object>} Presigned URL and file information
  */
 const generateSinglePresignedUrl = async (R2, fileData, storagePath) => {
-  // const { name, type } = fileData;
-  // const fileCategory = getFileCategory(type);
-  // const key = `${storagePath}/${name}`;
+  const { name, type } = fileData;
+  const fileCategory = getFileCategory(type);
+  const key = `${storagePath}/${name}`;
 
-  // // Generate presigned URL for PUT operation
-  // const command = new PutObjectCommand({
-  //   Bucket: R2_BUCKET_NAME,
-  //   Key: key,
-  //   ContentType: type,
-  //   Metadata: {
-  //     originalname: name,
-  //     category: fileCategory,
-  //   },
-  // });
+  // Generate presigned URL for PUT operation
+  const command = new PutObjectCommand({
+    Bucket: R2_BUCKET_NAME,
+    Key: key,
+    ContentType: type,
+    Metadata: {
+      originalname: name,
+      category: fileCategory,
+    },
+  });
 
   // const signedUrl = await getSignedUrl(R2, command, { expiresIn: URL_EXPIRATION });
 
-  // return {
-  //   url: signedUrl,
-  //   name: key,
-  //   originalName: name,
-  //   category: fileCategory,
-  // };
+  return {
+    // url: signedUrl,
+    name: key,
+    originalName: name,
+    category: fileCategory,
+  };
 };
 
 /**
