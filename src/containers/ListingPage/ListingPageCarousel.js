@@ -120,6 +120,7 @@ export const ListingPageComponent = props => {
   );
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState(SECTIONS[0].id);
+  const [showTabsShadow, setShowTabsShadow] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -154,6 +155,13 @@ export const ListingPageComponent = props => {
         }
       }
       setActiveTab(found);
+
+      // Check if scroll position has reached bottomDescription
+      const bottomDescriptionEl = document.getElementById('bottomDescription');
+      if (bottomDescriptionEl) {
+        const rect = bottomDescriptionEl.getBoundingClientRect();
+        setShowTabsShadow(rect.top <= 130);
+      }
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -463,7 +471,7 @@ export const ListingPageComponent = props => {
               />
             </div>
 
-            <div className={css.tabsConrainer}>
+            <div className={classNames(css.tabsConrainer, { [css.tabsContainerWithShadow]: showTabsShadow })}>
               {prepareSections(isLandforsale).map(section => (
                 <button
                   key={section.id}
@@ -478,7 +486,9 @@ export const ListingPageComponent = props => {
             <div className={css.descriptionContainer}>
               <div id="description" >
                 <h4 className={css.descriptionHeading}>Description</h4>
+                <div id="bottomDescription"/>
                 <SectionTextMaybe text={description} showAsIngress />
+            
               </div>
 
               <div>
