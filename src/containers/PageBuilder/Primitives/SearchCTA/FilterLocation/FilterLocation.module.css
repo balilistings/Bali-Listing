@@ -19,6 +19,7 @@
 
   @media (--viewportMedium) {
     font-size: 14px;
+    width: 90%;
   }
 
   &:hover,
