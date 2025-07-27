@@ -42,7 +42,7 @@ const SignupFormComponent = props => (
         form,
       } = formRenderProps;
 
-      const { userType, documentLink } = values || {};
+      const { userType, selfieDocumentLink, pub_role } = values || {};
 
       // email
       const emailRequired = validators.required(
@@ -93,7 +93,30 @@ const SignupFormComponent = props => (
 
       // Custom user fields. Since user types are not supported here,
       // only fields with no user type id limitation are selected.
-      const userFieldProps = getPropsForCustomUserFieldInputs(userFields, intl, userType);
+
+      const filterUserFields =
+        pub_role === undefined
+          ? userFields.filter(
+              elm =>
+                ![
+                  'companyname',
+                  'id_card_nik',
+                  'id_npwp_nik',
+                  'company_address',
+                  'company_registration',
+                ].includes(elm.key)
+            )
+          : pub_role === 'individual'
+          ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
+          : pub_role === 'freelance'
+          ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
+          : pub_role === 'company'
+          ? userFields.filter(elm =>
+              ['companyname', 'company_address', 'company_registration', 'role'].includes(elm.key)
+            )
+          : [];
+
+      const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
 
       const noUserTypes = !userType && !(userTypes?.length > 0);
       const userTypeConfig = userTypes.find(config => config.userType === userType);
@@ -102,11 +125,18 @@ const SignupFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
-      const submitDisabled = invalid || submitInProgress || !documentLink;
+      const submitDisabled = invalid || submitInProgress || !selfieDocumentLink;
 
-      const handleProfileSelect = file => {
-        console.log('file link updated');
-        form.change('documentLink', file);
+      const handleSelfieDocument = file => {
+        form.change('selfieDocumentLink', file);
+      };
+
+      const handleIdDocument = file => {
+        form.change('idDocumentLink', file);
+      };
+
+      const handleCompanyDocument = file => {
+        form.change('companyDocumentLink', file);
       };
 
       return (
@@ -205,12 +235,16 @@ const SignupFormComponent = props => (
 
           {userType === 'provider' ? (
             <ImageUploader
-              label="ID Document (KTP/Driving License/Passport)"
+              label={
+                pub_role === 'company'
+                  ? 'Screenshot/Picture NIB or NPWP Mentioning Company Name'
+                  : 'ID Document (KTP/Driving License/Passport)'
+              }
               columns={1}
               dropzoneHeight="100px"
               labelText=""
               maxImages={1}
-              onProfileChange={handleProfileSelect}
+              onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
             />
           ) : null}
 
@@ -220,6 +254,17 @@ const SignupFormComponent = props => (
                 <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
               ))}
             </div>
+          ) : null}
+
+          {userType === 'provider' && pub_role ? (
+            <ImageUploader
+              label="Add a selfie of you holding your ID card"
+              columns={1}
+              dropzoneHeight="100px"
+              labelText=""
+              maxImages={1}
+              onProfileChange={handleSelfieDocument}
+            />
           ) : null}
 
           <div className={css.bottomWrapper}>
