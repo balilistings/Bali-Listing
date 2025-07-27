@@ -1,6 +1,6 @@
 const { PutObjectCommand } = require('@aws-sdk/client-s3');
 const { getR2Client } = require('../../api-util/sdk');
-// const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { getFileCategory } = require('./helper');
 
 // Define constants
@@ -30,10 +30,10 @@ const generateSinglePresignedUrl = async (R2, fileData, storagePath) => {
     },
   });
 
-  // const signedUrl = await getSignedUrl(R2, command, { expiresIn: URL_EXPIRATION });
+  const signedUrl = await getSignedUrl(R2, command, { expiresIn: URL_EXPIRATION });
 
   return {
-    // url: signedUrl,
+    url: signedUrl,
     name: key,
     originalName: name,
     category: fileCategory,
