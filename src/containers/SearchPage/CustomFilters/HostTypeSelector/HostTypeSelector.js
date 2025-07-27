@@ -3,7 +3,7 @@ import PillSelector from '../PillSelector/PillSelector';
 
 const hostTypeOptions = [
   { id: 'agent', label: 'Agent' },
-  { id: 'owner', label: 'Direct owner' },
+  { id: 'owner', label: 'Owner' },
 ];
 
 function HostTypeSelector({ selectedHostType, onHostTypeChange, onReset }) {
