@@ -14,6 +14,9 @@ import { createSlug } from '../../util/urlHelpers';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
 import css from './ListingCard.module.css';
+import { handleToggleFavorites } from '../../util/userFavorites';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
+import { useLocation, useHistory } from 'react-router-dom';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -135,6 +138,8 @@ export const ListingCard = props => {
     renderSizes,
     setActiveListing,
     showAuthorInfo = true,
+    currentUser,
+    onUpdateFavorites,
   } = props;
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
@@ -160,6 +165,9 @@ export const ListingCard = props => {
   const tags = sortTags(pricee);
   const isLand = categoryLevel1 === 'landforsale';
   const isRentals = categoryLevel1 === 'rentalvillas';
+  const history = useHistory();
+  const routeLocation = useLocation();
+  const routes = useRouteConfiguration();
 
   let price;
 
@@ -191,8 +199,26 @@ export const ListingCard = props => {
     infinite: imagesUrls.length > 1,
   };
 
+  const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
+  const onToggleFavorites = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    handleToggleFavorites({
+      location: routeLocation,
+      history,
+      routes,
+      currentUser,
+      params: { id },
+      onUpdateFavorites: onUpdateFavorites,
+    })(isFavorite);
+  };
+
   return (
-    <NamedLink className={classes} name="ListingPage" params={{ id, slug }}>
+    <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
+      <button className={css.wishlistButton} onClick={onToggleFavorites}>
+        <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
+      </button>
+
       <div className={css.imageWrapper}>
         <Slider {...cardSliderSettings} className={css.slider}>
           {imagesUrls.map((img, imgIdx) => (
