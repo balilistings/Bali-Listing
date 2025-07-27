@@ -134,7 +134,7 @@ export const ListingPageComponent = props => {
       const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({
         top: elementPosition - 120, // Offset by 200px from top
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
       setActiveTab(id);
     }
@@ -269,6 +269,8 @@ export const ListingPageComponent = props => {
 
   const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
   const isLandforsale = categoryLevel1 === 'landforsale';
+  const isRentals = categoryLevel1 === 'rentalvillas';
+  const isVillaSale = categoryLevel1 === 'villaforsale';
 
   if (!(listingType && transactionProcessAlias && unitType)) {
     // Listing should always contain listingType, transactionProcessAlias and unitType)
@@ -284,7 +286,7 @@ export const ListingPageComponent = props => {
   const currentAuthor = authorAvailable ? currentListing.author : null;
   const ensuredAuthor = ensureUser(currentAuthor);
   const noPayoutDetailsSetWithOwnListing =
-    isOwnListing && (processType !== 'inquiry' && !currentUser?.attributes?.stripeConnected);
+    isOwnListing && processType !== 'inquiry' && !currentUser?.attributes?.stripeConnected;
   const payoutDetailsWarning = noPayoutDetailsSetWithOwnListing ? (
     <span className={css.payoutDetailsWarning}>
       <FormattedMessage id="ListingPage.payoutDetailsWarning" values={{ processType }} />
@@ -403,8 +405,14 @@ export const ListingPageComponent = props => {
                   />
                 </svg>
               </span>
-              <NamedLink name="SearchPage" params={params} className={css.breadCrumbLink}>
-                Rental
+              <NamedLink
+                name="SearchPage"
+                to={{
+                  search: `?pub_categoryLevel1=${categoryLevel1}`,
+                }}
+                className={css.breadCrumbLink}
+              >
+                {isRentals ? 'Rentals' : isVillaSale ? 'For Sale' : 'Land'}
               </NamedLink>
               <span className={css.breadCrumbSeparator}>
                 <svg
@@ -479,7 +487,11 @@ export const ListingPageComponent = props => {
               />
             </div>
 
-            <div className={classNames(css.tabsConrainer, { [css.tabsContainerWithShadow]: showTabsShadow })}>
+            <div
+              className={classNames(css.tabsConrainer, {
+                [css.tabsContainerWithShadow]: showTabsShadow,
+              })}
+            >
               {prepareSections(isLandforsale).map(section => (
                 <button
                   key={section.id}
@@ -492,11 +504,10 @@ export const ListingPageComponent = props => {
               ))}
             </div>
             <div className={css.descriptionContainer}>
-              <div id="description" >
+              <div id="description">
                 <h4 className={css.descriptionHeading}>Description</h4>
-                <div id="bottomDescription"/>
+                <div id="bottomDescription" />
                 <SectionTextMaybe text={description} showAsIngress />
-            
               </div>
 
               <div>
@@ -573,6 +584,7 @@ export const ListingPageComponent = props => {
               marketplaceCurrency={config.currency}
               dayCountAvailableForBooking={config.stripe.dayCountAvailableForBooking}
               marketplaceName={config.marketplaceName}
+              currentUser={currentUser}
             />
           </div>
         </div>
@@ -741,11 +753,6 @@ const mapDispatchToProps = dispatch => ({
 // lifecycle hook.
 //
 // See: https://github.com/ReactTraining/react-router/issues/4671
-const ListingPage = compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(EnhancedListingPage);
+const ListingPage = compose(connect(mapStateToProps, mapDispatchToProps))(EnhancedListingPage);
 
 export default ListingPage;

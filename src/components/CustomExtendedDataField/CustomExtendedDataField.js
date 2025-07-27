@@ -26,7 +26,7 @@ const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, l
 const getLabel = fieldConfig => fieldConfig?.saveConfig?.label || fieldConfig?.label;
 
 const CustomFieldEnum = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl, disabled } = props;
   const { enumOptions = [], saveConfig } = fieldConfig || {};
   const { placeholderMessage, isRequired, requiredMessage } = saveConfig || {};
   const validateMaybe = isRequired
@@ -45,6 +45,7 @@ const CustomFieldEnum = props => {
       name={name}
       id={formId ? `${formId}.${name}` : name}
       label={label}
+      disabled={disabled}
       {...validateMaybe}
     >
       <option disabled value="">
@@ -90,15 +91,38 @@ const CustomFieldText = props => {
   const validateMaybe = isRequired
     ? { validate: required(requiredMessage || defaultRequiredMessage) }
     : {};
-  const placeholder =
-    placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
 
+  const showtextArea = ![
+    'pub_companyname',
+    'pub_id_card_nik',
+    'pub_id_npwp_nik',
+    'pub_company_address',
+    'pub_company_registration',
+  ].includes(name);
+
+  const customPlaceholder =
+    name === 'pub_companyname'
+      ? 'Your company name'
+      : name === 'pub_company_address'
+      ? 'Your company address'
+      : name === 'pub_company_registration'
+      ? 'Business number'
+      : name === 'pub_id_card_nik'
+      ? '3212345678990001'
+      : name === 'pub_id_npwp_nik'
+      ? 'Your NPWP or NIK number'
+      : null;
+
+  const placeholder =
+    customPlaceholder ||
+    placeholderMessage ||
+    intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
   return (
     <FieldTextInput
       className={css.customField}
       id={formId ? `${formId}.${name}` : name}
       name={name}
-      type="textarea"
+      type={showtextArea ? 'textarea' : 'text'}
       label={label}
       placeholder={placeholder}
       {...validateMaybe}

@@ -14,11 +14,19 @@ const amenitiesConfig = [
   { icon: <IconCollection name="aircondition" />, label: 'Airconditioning', key: 'airco' },
 ];
 
+const amenitiesConfig2 = [
+  { icon: <IconCollection name="pool" />, label: 'Pool', key: 'pool' },
+  { icon: <IconCollection name="gym" />, label: 'Gym', key: 'Gym' },
+];
+
 const prepareAmenities = publicData => {
   if (!publicData) return [];
 
+  const isSale = publicData.categoryLevel1 === 'villaforsale';
+  const config = isSale ? amenitiesConfig2 : amenitiesConfig;
+
   // Only process the specific keys we want to display
-  return amenitiesConfig.filter(amenity => {
+  return config.filter(amenity => {
     const value = publicData[amenity.key];
     return value === 'yes' || value === 'gymyes'; // Handle special case for gym
   });
@@ -152,7 +160,7 @@ const CustomListingFields = props => {
             ))}
           </div>
         </div> */}
-{/* 
+      {/* 
       <div className={css.propertyDetailsContainer} id="propertyDetails">
         <h2 className={css.propertyDetailsTitle}>Property Details</h2>
         <div className={css.propertyDetailList}>

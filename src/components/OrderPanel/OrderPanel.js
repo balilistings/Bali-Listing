@@ -331,6 +331,7 @@ const OrderPanel = props => {
     fetchLineItemsInProgress,
     fetchLineItemsError,
     payoutDetailsWarning,
+    currentUser,
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
@@ -344,6 +345,7 @@ const OrderPanel = props => {
     categoryLevel1,
     priceperare,
     agentorowner,
+    phonenumber,
   } = publicData || {};
 
   const isVillaforsale = categoryLevel1 === 'villaforsale';
@@ -458,6 +460,22 @@ const OrderPanel = props => {
 
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
+
+  const handleWhatsappClick = () => {
+    if (!currentUser) {
+      history.push('/login');
+      return;
+    }
+
+    // Clean phone number - keep only digits
+    const cleanedNumber = phonenumber ? phonenumber.replace(/\D/g, '') : '';
+
+    if (cleanedNumber) {
+      // Open WhatsApp with the cleaned phone number
+      const whatsappUrl = `https://wa.me/${cleanedNumber}`;
+      window.open(whatsappUrl, '_blank');
+    }
+  };
 
   return (
     <div className={classes}>
@@ -590,6 +608,7 @@ const OrderPanel = props => {
             formId="OrderPanelInquiryForm"
             onSubmit={onSubmit}
             agentorowner={agentorowner}
+            handleWhatsappClick={handleWhatsappClick}
           />
         ) : !isKnownProcess ? (
           <p className={css.errorSidebar}>
@@ -643,14 +662,8 @@ const OrderPanel = props => {
                 </div>
               ) : (
                 <PrimaryButton
-                  onClick={handleSubmit(
-                    isOwnListing,
-                    isClosed,
-                    showInquiryForm,
-                    onSubmit,
-                    history,
-                    location
-                  )}
+                  onClick={handleWhatsappClick}
+                  type="button"
                   disabled={isOutOfStock}
                   className={css.openOrderFormButton}
                 >
@@ -676,7 +689,7 @@ const OrderPanel = props => {
                           fill="white"
                         />
                       </svg>
-                      <FormattedMessage id="OrderPanel.ctaButtonMessageInquiry" />
+                      Contact {agentorowner === 'agent' ? ' Agent' : 'Owner'}
                     </>
                   )}
                 </PrimaryButton>

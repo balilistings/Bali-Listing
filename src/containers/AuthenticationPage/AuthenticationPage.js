@@ -201,7 +201,23 @@ export const AuthenticationForms = props => {
   ];
 
   const handleSubmitSignup = values => {
-    const { userType, email, password, fname, lname, displayName, documentLink, ...rest } = values;
+    const {
+      userType,
+      email,
+      password,
+      fname,
+      lname,
+      displayName,
+      selfieDocumentLink,
+      idDocumentLink,
+      companyDocumentLink,
+      pub_companyname,
+      pub_id_card_nik,
+      pub_id_npwp_nik,
+      pub_company_address,
+      pub_company_registration,
+      ...rest
+    } = values;
     const displayNameMaybe = displayName ? { displayName: displayName.trim() } : {};
 
     const params = {
@@ -220,7 +236,14 @@ export const AuthenticationForms = props => {
       protectedData: {
         ...pickUserFieldsData(rest, 'protected', userType, userFields),
         ...getNonUserFieldParams(rest, userFields),
-        ...(documentLink && { documentLink }),
+        ...(selfieDocumentLink && { selfieDocumentLink }),
+        ...(idDocumentLink && { idDocumentLink }),
+        ...(companyDocumentLink && { companyDocumentLink }),
+        ...(pub_companyname && { companyname: pub_companyname }),
+        ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
+        ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
+        ...(pub_company_address && { company_address: pub_company_address }),
+        ...(pub_company_registration && { company_registration: pub_company_registration }),
       },
     };
 

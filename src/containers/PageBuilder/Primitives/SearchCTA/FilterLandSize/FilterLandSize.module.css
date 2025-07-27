@@ -503,6 +503,23 @@
   margin-top: 12px;
 }
 
+.menuItemSubtitle {
+  display: none;
+
+  @media (min-width: 768px) {
+    font-family: Mulish;
+    font-weight: 500;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #231f20;
+    margin-top: -12px;
+    display: block;
+  }
+}
+
 .menuItemMobileTitleIcon {
   margin-right: 10px;
 
