@@ -27,7 +27,7 @@ const getRangeConfig = tabId => {
 };
 
 const getNonRentalConfig = () => {
-  return { min: 1000000, max: 9999000000000, step: 1000000 }; // 1M-9999000M
+  return { min: 1000000, max: 999000000000, step: 1000000 }; // 1M-9999000M
 };
 
 const PriceDropdown = ({
@@ -42,14 +42,14 @@ const PriceDropdown = ({
   const [activeTab, setActiveTab] = useState('monthly');
   const showTabsInPrice = activeTabKey === 'rentalvillas';
   const [priceRange, setPriceRange] = useState(
-    showTabsInPrice ? [1000000, 500000000] : [1000000, 9999000000000]
+    showTabsInPrice ? [1000000, 500000000] : [1000000, 999000000000]
   );
 
   useEffect(() => {
     if (showTabsInPrice) {
       // setActiveTab('monthly');
     } else {
-      setPriceRange([1000000, 9999000000000]);
+      setPriceRange([1000000, 999000000000]);
     }
   }, [showTabsInPrice]);
 

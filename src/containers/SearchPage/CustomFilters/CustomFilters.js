@@ -162,7 +162,7 @@ const initialisePrice = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const price = urlParams.get('price') || null;
     const splitPrice = price ? price.split(',') : null;
-    return splitPrice ? [Number(splitPrice[0]), Number(splitPrice[1])] : [1000000, 9999000000000];
+    return splitPrice ? [Number(splitPrice[0]), Number(splitPrice[1])] : [1000000, 999000000000];
   }
 };
 
@@ -265,7 +265,7 @@ function CustomFilters({
     ) {
       setSelectedPeriod('monthly');
       setPriceRange([1000000, 500000000]);
-      setSimplePriceRange([1000000, 9999000000000]);
+      setSimplePriceRange([1000000, 999000000000]);
       setLandSizeRange([100, 50000]);
     }
     if (!newAvailableFilters.includes('bedrooms')) {
@@ -617,7 +617,7 @@ function CustomFilters({
               priceRange={simplePriceRange}
               onPriceRangeChange={handleSimplePriceRangeChange}
               min={1000000}
-              max={9999000000000}
+              max={999000000000}
               step={5000000}
             />
           )}
