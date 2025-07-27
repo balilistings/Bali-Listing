@@ -125,7 +125,8 @@ const SignupFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
-      const submitDisabled = invalid || submitInProgress || !selfieDocumentLink;
+      const providerDisabled = userType === 'provider' ? !selfieDocumentLink : false;
+      const submitDisabled = invalid || submitInProgress || providerDisabled;
 
       const handleSelfieDocument = file => {
         form.change('selfieDocumentLink', file);
