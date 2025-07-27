@@ -212,9 +212,8 @@ const initialiseLandTitles = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     const data = urlParams.get('pub_landtitle') || null;
-    const splitData = data ? data.split('has_any:') : null;
 
-    return splitData ? splitData[1].split(',') : [];
+    return data ? data.split(',') : [];
   }
 };
 
@@ -534,7 +533,7 @@ function CustomFilters({
 
   const handleLandTitlesChange = landTitles => {
     onUpdateCurrentQueryParams({
-      pub_landtitle: landTitles?.length > 0 ? `has_any:${landTitles.toString()}` : null,
+      pub_landtitle: landTitles?.length > 0 ? landTitles.toString() : null,
     });
     setSelectedLandTitles(landTitles);
   };
