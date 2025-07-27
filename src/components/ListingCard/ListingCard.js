@@ -120,7 +120,7 @@ const PriceMaybe = props => {
   const priceParams = checkPriceParams();
 
   let suffix;
-  if (priceParams.weekprice || priceParams.monthprice || priceParams.yearprice) {
+  if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
     if (priceParams.weekprice) {
       suffix = '/ weekly';
     } else if (priceParams.monthprice) {
@@ -129,11 +129,11 @@ const PriceMaybe = props => {
       suffix = '/ yearly';
     }
   } else {
-    if (publicData.monthprice) {
+    if (publicData?.monthprice) {
       suffix = '/ monthly';
-    } else if (publicData.weekprice) {
+    } else if (publicData?.weekprice) {
       suffix = '/ weekly';
-    } else if (publicData.yearprice) {
+    } else if (publicData?.yearprice) {
       suffix = '/ yearly';
     }
   }
