@@ -28,6 +28,7 @@ const sliderSettings = {
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
+  lazyLoad: 'progressive',
   appendDots: dots => <div className={css.dots}>{dots}</div>,
   customPaging: i => <span className={css.dot}></span>,
   nextArrow: (
@@ -94,7 +95,7 @@ export const formatPriceInMillions = actualPrice => {
   return `${actualPrice.toLocaleString()}`;
 };
 
-const checkPriceParams = () => {
+export const checkPriceParams = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     const weekprice = urlParams.get('pub_weekprice') || null;

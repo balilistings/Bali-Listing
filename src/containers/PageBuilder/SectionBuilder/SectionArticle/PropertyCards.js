@@ -342,6 +342,7 @@ const PropertyCards = () => {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
+    lazyLoad: 'progressive',
     appendDots: dots => <div className={styles.dots}>{dots}</div>,
     customPaging: i => <span className={styles.dot}></span>,
     nextArrow: (

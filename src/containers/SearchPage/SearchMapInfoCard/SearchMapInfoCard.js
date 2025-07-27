@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
 import classNames from 'classnames';
-
-import { useIntl } from '../../../util/reactIntl';
-import { propTypes } from '../../../util/types';
-import { formatMoney } from '../../../util/currency';
-import { ensureListing, ensureUser } from '../../../util/data';
-import { isPriceVariationsEnabled, displayPrice } from '../../../util/configHelpers';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Slider from 'react-slick';
-import { AspectRatioWrapper, IconCollection, NamedLink, ResponsiveImage } from '../../../components';
-import { sortTags, capitaliseFirstLetter } from '../../../util/helper';
-import css from './SearchMapInfoCard.module.css';
+import { IconCollection } from '../../../components';
+import {
+  checkPriceParams,
+  formatPriceInMillions,
+} from '../../../components/ListingCard/ListingCard';
 import { Icon } from '../../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
+import { displayPrice } from '../../../util/configHelpers';
+import { ensureListing, ensureUser } from '../../../util/data';
+import { capitaliseFirstLetter, sortTags } from '../../../util/helper';
+import { useIntl } from '../../../util/reactIntl';
 import { richText } from '../../../util/richText';
+import { propTypes } from '../../../util/types';
+import css from './SearchMapInfoCard.module.css';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -23,6 +26,7 @@ const sliderSettings = {
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
+  lazyLoad: 'progressive',
   appendDots: dots => <div className={css.dots}>{dots}</div>,
   customPaging: i => <span className={css.dot}></span>,
   nextArrow: (
@@ -69,32 +73,8 @@ const sliderSettings = {
   ),
 };
 
-// Format price in millions if appropriate
-export const formatPriceInMillions = priceAmount => {
-  if (!priceAmount) return null;
-
-  // First divide by 100 to get the actual price (prices are stored in subunits)
-  const actualPrice = priceAmount / 100;
-
-  // Check if the price is in millions (1,000,000 or more)
-  if (actualPrice >= 1000000) {
-    const millions = actualPrice / 1000000;
-    // If it's a whole number, show without decimal
-    if (millions % 1 === 0) {
-      return `${millions}M`;
-    } else {
-      // Show with one decimal place for partial millions
-      return `${millions.toFixed(1)}M`;
-    }
-  }
-
-  // For smaller amounts, show the actual price
-  return `${actualPrice.toLocaleString()}`;
-};
-
-
 const PriceMaybe = props => {
-  const { price, publicData, config, intl } = props;
+  const { price, publicData, config, isRentals } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -103,12 +83,34 @@ const PriceMaybe = props => {
     return null;
   }
 
-  const formattedPrice = price ? formatPriceInMillions(price.amount) : null;
+  const formattedPrice = price ? formatPriceInMillions(price) : null;
+
+  const priceParams = checkPriceParams();
+
+  let suffix;
+  if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
+    if (priceParams.weekprice) {
+      suffix = '/ weekly';
+    } else if (priceParams.monthprice) {
+      suffix = '/ monthly';
+    } else if (priceParams.yearprice) {
+      suffix = '/ yearly';
+    }
+  } else {
+    if (publicData?.monthprice) {
+      suffix = '/ monthly';
+    } else if (publicData?.weekprice) {
+      suffix = '/ weekly';
+    } else if (publicData?.yearprice) {
+      suffix = '/ yearly';
+    }
+  }
 
   return (
     <div className={css.price}>
       <span className={css.priceValue}>
-        {formattedPrice} IDR<span>/night</span>
+        {formattedPrice} IDR
+        {isRentals && <span>{suffix}</span>}
       </span>
     </div>
   );
@@ -116,45 +118,10 @@ const PriceMaybe = props => {
 
 // ListingCard is the listing info without overlayview or carousel controls
 const ListingCard = props => {
+  const history = useHistory();
   const { className, clickHandler, intl, isInCarousel, listing, urlToListing, config } = props;
-
-  const { title, price, publicData } = listing.attributes;
-  const formattedPrice =
-    price && price.currency === config.currency
-      ? formatMoney(intl, price)
-      : price?.currency
-        ? price.currency
-        : null;
-  const firstImage = listing.images && listing.images.length > 0 ? listing.images[0] : null;
-
-  const {
-    aspectWidth = 1,
-    aspectHeight = 1,
-    variantPrefix = 'listing-card',
-  } = config.layout.listingImage;
-  const variants = firstImage
-    ? Object.keys(firstImage?.attributes?.variants).filter(k => k.startsWith(variantPrefix))
-    : [];
+  const { title, price: p, publicData } = listing.attributes;
   const author = ensureUser(listing.author);
-  const pricePerUnit = intl.formatMessage(
-    { id: 'SearchMapInfoCard.perUnit' },
-    { unitType: publicData?.unitType }
-  );
-  const priceValue = formattedPrice ? formattedPrice : '';
-
-  const validListingTypes = config.listing.listingTypes;
-  const foundListingTypeConfig = validListingTypes.find(
-    conf => conf.listingType === publicData?.listingType
-  );
-  const isPriceVariationsInUse = isPriceVariationsEnabled(publicData, foundListingTypeConfig);
-  const hasMultiplePriceVariants = isPriceVariationsInUse && publicData?.priceVariants?.length > 1;
-
-  const priceMessage = hasMultiplePriceVariants
-    ? intl.formatMessage(
-      { id: 'SearchMapInfoCard.priceStartingFrom' },
-      { priceValue, pricePerUnit }
-    )
-    : intl.formatMessage({ id: 'SearchMapInfoCard.price' }, { priceValue, pricePerUnit });
 
   // listing card anchor needs sometimes inherited border radius.
   const classes = classNames(
@@ -164,12 +131,26 @@ const ListingCard = props => {
     className
   );
 
-  const { pricee, location, propertytype, bedrooms, bathrooms, kitchen, pool } = publicData;
+  const {
+    pricee,
+    location,
+    propertytype,
+    bedrooms,
+    bathrooms,
+    Freehold,
+    categoryLevel1,
+    landzone,
+    landsize,
+    weekprice,
+    monthprice,
+    yearprice,
+  } = publicData;
+  const isLand = categoryLevel1 === 'landforsale';
+  const isRentals = categoryLevel1 === 'rentalvillas';
+
   const tags = sortTags(pricee);
 
-  const imagesUrls = listing.images.map(
-    img => img.attributes.variants['landscape-crop2x']?.url
-  );
+  const imagesUrls = listing.images.map(img => img.attributes.variants['landscape-crop2x']?.url);
   // Per-card slider settings
   const cardSliderSettings = {
     ...sliderSettings,
@@ -197,19 +178,28 @@ const ListingCard = props => {
     e.stopPropagation();
   };
 
+  let price;
+
+  if (isRentals) {
+    if (pricee.includes('monthly')) {
+      price = monthprice;
+    } else if (pricee.includes('weekly')) {
+      price = weekprice;
+    } else if (pricee.includes('yearly')) {
+      price = yearprice;
+    }
+  } else {
+    price = p.amount / 100;
+  }
 
   return (
-    <div
-
-      className={classes}
-
-    >
+    <div className={classes}>
       <div
         className={classNames(css.card, css.borderRadiusInheritTop, {
           [css.borderRadiusInheritBottom]: !isInCarousel,
         })}
       >
-        <div 
+        <div
           className={css.imageWrapper}
           onMouseDown={handleCardInteraction}
           onMouseMove={handleCardInteraction}
@@ -221,36 +211,28 @@ const ListingCard = props => {
         >
           <Slider {...cardSliderSettings} className={css.slider}>
             {imagesUrls.map((img, imgIdx) => (
-               <a alt={title}
-
-               href={urlToListing}
-               onClick={e => {
-                 e.preventDefault();
-                 // Use clickHandler from props to call internal router
-                 clickHandler(listing);
-               }}>
-              <img src={img} alt={title} className={css.image + ' ' + css.imageFade} key={imgIdx} />
+              <a
+                alt={title}
+                href={urlToListing}
+                onClick={e => {
+                  e.preventDefault();
+                  // Use clickHandler from props to call internal router
+                  clickHandler(listing);
+                }}
+              >
+                <img
+                  src={img}
+                  alt={title}
+                  className={css.image + ' ' + css.imageFade}
+                  key={imgIdx}
+                />
               </a>
             ))}
           </Slider>
         </div>
 
-        {/* <AspectRatioWrapper
-          className={css.aspectRatioWrapper}
-          width={aspectWidth}
-          height={aspectHeight}
-        >
-          <ResponsiveImage
-            rootClassName={classNames(css.rootForImage, css.borderRadiusInheritTop)}
-            alt={title}
-            noImageMessage={intl.formatMessage({ id: 'SearchMapInfoCard.noImage' })}
-            image={firstImage}
-            variants={variants}
-            sizes="250px"
-          />
-        </AspectRatioWrapper> */}
-        <a 
-          className={css.info} 
+        <a
+          className={css.info}
           alt={title}
           href={urlToListing}
           onClick={e => {
@@ -272,13 +254,11 @@ const ListingCard = props => {
                 {tag}
               </span>
             ))}
-            {/* <span className={css.tag}></span> */}
-            {/* <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}> */}
-            <span className={css.listedBy}>
+            {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
+            <span className={css.listedBy} onClick={() => history.push(`/u/${author.id.uuid}`)}>
               Listed by:{' '}
               <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
             </span>
-            {/* </NamedLink> */}
           </div>
 
           <div className={css.mainInfo}>
@@ -289,10 +269,14 @@ const ListingCard = props => {
               })}
             </div>
             <div className={css.location}>
-              <span className={css.typeIcon}>
-                <IconCollection name="typeIcon" />
-              </span>
-              <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
+              {!isLand && (
+                <>
+                  <span className={css.typeIcon}>
+                    <IconCollection name="typeIcon" />
+                  </span>
+                  <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
+                </>
+              )}
 
               <span className={css.locationWrapper}>
                 <span className={css.locationIcon}>
@@ -313,8 +297,25 @@ const ListingCard = props => {
                     <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
                   </span>
                 )}
+
+                {!!landsize && isLand && (
+                  <span className={css.iconItem}>
+                    <Icon type="land" /> {landsize} m2
+                  </span>
+                )}
+                {!!landzone && isLand && (
+                  <span className={css.iconItem}>
+                    <Icon type="zone" /> {landzone} Zone
+                  </span>
+                )}
               </div>
-              <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
+              <PriceMaybe
+                price={price}
+                publicData={publicData}
+                config={config}
+                intl={intl}
+                isRentals={isRentals}
+              />
             </div>
           </div>
         </a>
@@ -383,7 +384,7 @@ const SearchMapInfoCard = props => {
   };
 
   return (
-    <div 
+    <div
       className={classes}
       onMouseDown={handleCardInteraction}
       onMouseMove={handleCardInteraction}
@@ -394,8 +395,20 @@ const SearchMapInfoCard = props => {
       onWheel={handleWheel}
     >
       <span className={css.closeIcon} onClick={handleCloseClick}>
-        <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M1.5 10L10.5 1M1.5 1L10.5 10" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        <svg
+          width="12"
+          height="11"
+          viewBox="0 0 12 11"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1.5 10L10.5 1M1.5 1L10.5 10"
+            stroke="#231F20"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
         </svg>
       </span>
       <div className={css.caretShadow} />
@@ -408,7 +421,7 @@ const SearchMapInfoCard = props => {
         config={config}
       />
       {hasCarousel ? (
-        <div 
+        <div
           className={classNames(css.paginationInfo, css.borderRadiusInheritBottom)}
           onMouseDown={handleCardInteraction}
           onMouseMove={handleCardInteraction}
