@@ -176,6 +176,27 @@ const ListingCard = props => {
     infinite: imagesUrls.length > 1,
   };
 
+  const handleCardInteraction = e => {
+    // Prevent map from moving when interacting with card content
+    e.stopPropagation();
+  };
+
+  const handleTouchStart = e => {
+    e.stopPropagation();
+  };
+
+  const handleTouchMove = e => {
+    e.stopPropagation();
+  };
+
+  const handleTouchEnd = e => {
+    e.stopPropagation();
+  };
+
+  const handleWheel = e => {
+    e.stopPropagation();
+  };
+
 
   return (
     <div
@@ -188,7 +209,16 @@ const ListingCard = props => {
           [css.borderRadiusInheritBottom]: !isInCarousel,
         })}
       >
-        <div className={css.imageWrapper}>
+        <div 
+          className={css.imageWrapper}
+          onMouseDown={handleCardInteraction}
+          onMouseMove={handleCardInteraction}
+          onMouseUp={handleCardInteraction}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
+        >
           <Slider {...cardSliderSettings} className={css.slider}>
             {imagesUrls.map((img, imgIdx) => (
                <a alt={title}
@@ -219,14 +249,23 @@ const ListingCard = props => {
             sizes="250px"
           />
         </AspectRatioWrapper> */}
-        <a className={css.info} alt={title}
-
+        <a 
+          className={css.info} 
+          alt={title}
           href={urlToListing}
           onClick={e => {
             e.preventDefault();
             // Use clickHandler from props to call internal router
             clickHandler(listing);
-          }}>
+          }}
+          onMouseDown={handleCardInteraction}
+          onMouseMove={handleCardInteraction}
+          onMouseUp={handleCardInteraction}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
+        >
           <div className={css.tags}>
             {tags?.map(tag => (
               <span className={css.tag} key={tag}>
@@ -322,8 +361,38 @@ const SearchMapInfoCard = props => {
     }
   };
 
+  const handleCardInteraction = e => {
+    // Prevent map from moving when interacting with card content
+    e.stopPropagation();
+  };
+
+  const handleTouchStart = e => {
+    e.stopPropagation();
+  };
+
+  const handleTouchMove = e => {
+    e.stopPropagation();
+  };
+
+  const handleTouchEnd = e => {
+    e.stopPropagation();
+  };
+
+  const handleWheel = e => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className={classes}>
+    <div 
+      className={classes}
+      onMouseDown={handleCardInteraction}
+      onMouseMove={handleCardInteraction}
+      onMouseUp={handleCardInteraction}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onWheel={handleWheel}
+    >
       <span className={css.closeIcon} onClick={handleCloseClick}>
         <svg width="12" height="11" viewBox="0 0 12 11" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M1.5 10L10.5 1M1.5 1L10.5 10" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -339,7 +408,16 @@ const SearchMapInfoCard = props => {
         config={config}
       />
       {hasCarousel ? (
-        <div className={classNames(css.paginationInfo, css.borderRadiusInheritBottom)}>
+        <div 
+          className={classNames(css.paginationInfo, css.borderRadiusInheritBottom)}
+          onMouseDown={handleCardInteraction}
+          onMouseMove={handleCardInteraction}
+          onMouseUp={handleCardInteraction}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          onWheel={handleWheel}
+        >
           <button
             className={css.paginationPrev}
             onClick={e => {
