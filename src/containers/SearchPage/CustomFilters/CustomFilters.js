@@ -166,6 +166,46 @@ const initialisePrice = () => {
   }
 };
 
+const initialiseMainPrice = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const weekprice = urlParams.get('pub_weekprice') || null;
+    const monthprice = urlParams.get('pub_monthprice') || null;
+    const yearprice = urlParams.get('pub_yearprice') || null;
+
+    if (weekprice) {
+      const splitWeekprice = weekprice.split(',');
+      return [Number(splitWeekprice[0]), Number(splitWeekprice[1])];
+    } else if (monthprice) {
+      const splitMonthprice = monthprice.split(',');
+      return [Number(splitMonthprice[0]), Number(splitMonthprice[1])];
+    } else if (yearprice) {
+      const splitYearprice = yearprice.split(',');
+      return [Number(splitYearprice[0]), Number(splitYearprice[1])];
+    }
+    return [1000000, 500000000];
+  }
+};
+
+const initialisePricePeriod = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const weekprice = urlParams.get('pub_weekprice') || null;
+    const monthprice = urlParams.get('pub_monthprice') || null;
+    const yearprice = urlParams.get('pub_yearprice') || null;
+
+    if (weekprice) {
+      return 'weekly';
+    } else if (monthprice) {
+      return 'monthly';
+    } else if (yearprice) {
+      return 'yearly';
+    } else {
+      return 'monthly';
+    }
+  }
+};
+
 const allPubAmentiesKeys = [
   'pub_pool',
   'pub_wifi',
@@ -188,8 +228,8 @@ function CustomFilters({
 }) {
   const [selectedCategory, setSelectedCategory] = useState(initialiseCategory);
   const [selectedLocation, setSelectedLocation] = useState(null);
-  const [selectedPeriod, setSelectedPeriod] = useState('monthly');
-  const [priceRange, setPriceRange] = useState([1000000, 500000000]);
+  const [selectedPeriod, setSelectedPeriod] = useState(initialisePricePeriod);
+  const [priceRange, setPriceRange] = useState(initialiseMainPrice);
   const [simplePriceRange, setSimplePriceRange] = useState(initialisePrice);
   const [landSizeRange, setLandSizeRange] = useState(initialiseLandSize);
   const [bedrooms, setBedrooms] = useState(initialiseBedrooms);
@@ -279,9 +319,24 @@ function CustomFilters({
     setSelectedPeriod(period);
   };
 
-  const handlePriceRangeChange = range => {
-    console.log('range', range);
-    // setPriceRange(range);
+  const handlePriceRangeChange = (range, period) => {
+    let pub_weekprice = null,
+      pub_monthprice = null,
+      pub_yearprice = null;
+
+    if (period === 'weekly') {
+      pub_weekprice = range.toString();
+    } else if (period === 'monthly') {
+      pub_monthprice = range.toString();
+    } else if (period === 'yearly') {
+      pub_yearprice = range.toString();
+    }
+
+    onUpdateCurrentQueryParams({
+      pub_weekprice,
+      pub_monthprice,
+      pub_yearprice,
+    });
   };
 
   const handleSimplePriceRangeChange = range => {

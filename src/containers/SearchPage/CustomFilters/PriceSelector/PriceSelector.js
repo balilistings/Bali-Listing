@@ -32,7 +32,7 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
       clearTimeout(debounceRef.current);
     }
     debounceRef.current = setTimeout(() => {
-      onPriceRangeChange(newRange);
+      onPriceRangeChange(newRange, activeTab);
     }, 300); // 300ms debounce
   };
 
@@ -52,7 +52,7 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
     setRange(newRange);
     onPeriodChange(tabId);
     // Immediate call for tab change, no debouncing
-    onPriceRangeChange(newRange);
+    onPriceRangeChange(newRange, tabId);
   };
 
   const handleRangeChange = handles => {
@@ -79,6 +79,10 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
   };
 
   const config = getRangeConfig(activeTab);
+
+  // console.log('config', config);
+  // console.log('selectedPeriod', selectedPeriod);
+  // console.log('priceRange', priceRange);
 
   return (
     <div className={css.container}>

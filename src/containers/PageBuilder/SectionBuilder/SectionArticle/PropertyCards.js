@@ -522,7 +522,11 @@ const PropertyCards = () => {
                         <span className={styles.priceValue}>
                           {formatPriceInMillions(price)} IDR
                         </span>
-                        {showPills && <span className={styles.priceUnit}>/ night</span>}
+                        {isRentals && (
+                          <span className={styles.priceUnit}>
+                            {weekprice ? '/ weekly' : monthprice ? '/ monthly' : '/ yearly'}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
