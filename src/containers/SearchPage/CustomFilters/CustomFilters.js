@@ -39,6 +39,8 @@ const categoryFilterConfig = {
     'amenities',
     'propertyType',
     'propertyDetails',
+    'landTitle',
+    'landZone',
     'hostType',
   ],
   landforsale: ['tenure', 'simplePrice', 'landSize', 'hostType', 'landTitle', 'landZone'],
@@ -206,6 +208,25 @@ const initialisePricePeriod = () => {
   }
 };
 
+const initialiseLandTitles = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get('pub_landtitle') || null;
+    const splitData = data ? data.split('has_any:') : null;
+
+    return splitData ? splitData[1].split(',') : [];
+  }
+};
+
+const initialiseLandZones = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const data = urlParams.get('pub_landzone') || null;
+
+    return data ? data.split(',') : [];
+  }
+};
+
 const allPubAmentiesKeys = [
   'pub_pool',
   'pub_wifi',
@@ -241,8 +262,8 @@ function CustomFilters({
   const [selectedPropertyDetail, setSelectedPropertyDetail] = useState(initialisePropertyDetail);
   const [selectedHostType, setSelectedHostType] = useState(initialiseHostType);
   const [selectedTenure, setSelectedTenure] = useState(initialiseTenure);
-  const [selectedLandTitles, setSelectedLandTitles] = useState([]);
-  const [selectedLandZones, setSelectedLandZones] = useState([]);
+  const [selectedLandTitles, setSelectedLandTitles] = useState(initialiseLandTitles);
+  const [selectedLandZones, setSelectedLandZones] = useState(initialiseLandZones);
   const history = useHistory();
 
   // Get available filters for current category
@@ -512,18 +533,30 @@ function CustomFilters({
   };
 
   const handleLandTitlesChange = landTitles => {
+    onUpdateCurrentQueryParams({
+      pub_landtitle: landTitles?.length > 0 ? `has_any:${landTitles.toString()}` : null,
+    });
     setSelectedLandTitles(landTitles);
   };
 
   const handleLandTitlesReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_landtitle: null,
+    });
     setSelectedLandTitles([]);
   };
 
   const handleLandZonesChange = landZones => {
+    onUpdateCurrentQueryParams({
+      pub_landzone: landZones?.length > 0 ? landZones.toString() : null,
+    });
     setSelectedLandZones(landZones);
   };
 
   const handleLandZonesReset = () => {
+    onUpdateCurrentQueryParams({
+      pub_landzone: null,
+    });
     setSelectedLandZones([]);
   };
 

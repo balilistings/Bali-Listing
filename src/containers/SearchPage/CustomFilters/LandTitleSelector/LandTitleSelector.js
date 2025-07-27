@@ -2,15 +2,15 @@ import React from 'react';
 import DropdownSelector from '../DropdownSelector/DropdownSelector';
 
 const landTitleOptions = [
-  { id: 'hak-milik', label: 'Right of ownership (Hak Milik)' },
-  { id: 'hak-guna-bangunan', label: 'Right to Build (Hak Guna Bangunan)' },
-  { id: 'hak-guna-usaha', label: 'Right to Cultivate (Hak Guna Usaha)' },
-  { id: 'hak-pakai', label: 'Right to Use (Hak Pakai)' },
+  { id: 'hakmilik', label: 'Right of ownership (Hak Milik)' },
+  { id: 'HGB', label: 'Right to Build (Hak Guna Bangunan)' },
+  { id: 'HGU', label: 'Right to Cultivate (Hak Guna Usaha)' },
+  { id: 'hakpakai', label: 'Right to Use (Hak Pakai)' },
   {
-    id: 'hak-milik-satuan',
+    id: 'hakmilikatas',
     label: 'Right to Ownership over Stacked Units (Hak Milik Atas Satuan Rumah Susun)',
   },
-  { id: 'hak-sewa', label: 'Lease (Hak Sewa)' },
+  { id: 'haksewa', label: 'Lease (Hak Sewa)' },
 ];
 
 function LandTitleSelector({ selectedLandTitles, onLandTitlesChange, onReset }) {

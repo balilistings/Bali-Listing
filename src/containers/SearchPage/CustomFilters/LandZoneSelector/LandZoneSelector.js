@@ -2,11 +2,11 @@ import React from 'react';
 import DropdownSelector from '../DropdownSelector/DropdownSelector';
 
 const landZoneOptions = [
-  { id: 'green', label: 'Green' },
-  { id: 'yellow', label: 'Yellow' },
-  { id: 'red', label: 'Red' },
-  { id: 'pink', label: 'Pink' },
-  { id: 'orange', label: 'Orange' },
+  { id: 'Green', label: 'Green' },
+  { id: 'Yellow', label: 'Yellow' },
+  { id: 'Red', label: 'Red' },
+  { id: 'Pink', label: 'Pink' },
+  { id: 'Orange', label: 'Orange' },
 ];
 
 function LandZoneSelector({ selectedLandZones, onLandZonesChange, onReset }) {
