@@ -20,6 +20,16 @@ export default function ImageUploader({
 
   const uploadFileToR2 = async (file, progressIndex) => {
     try {
+      // Mark upload as started
+      setUploadProgress(prevProgress => {
+        const updated = [...prevProgress];
+        if (updated[progressIndex]) {
+          updated[progressIndex].progress = 1; // Start with 1% to indicate upload has begun
+          updated[progressIndex].status = 'uploading';
+        }
+        return updated;
+      });
+
       const params = {
         file: {
           name: file.name,
@@ -49,7 +59,8 @@ export default function ImageUploader({
             setUploadProgress(prevProgress => {
               const updated = [...prevProgress];
               if (updated[progressIndex]) {
-                updated[progressIndex].progress = percentComplete;
+                updated[progressIndex].progress = Math.max(percentComplete, 1); // Ensure it's at least 1%
+                updated[progressIndex].status = 'uploading';
                 console.log(`Updated progress for index ${progressIndex}: ${percentComplete}%`);
               } else {
                 console.warn(
@@ -63,6 +74,16 @@ export default function ImageUploader({
 
         xhr.addEventListener('load', () => {
           if (xhr.status >= 200 && xhr.status < 300) {
+            // Mark as completed
+            setUploadProgress(prevProgress => {
+              const updated = [...prevProgress];
+              if (updated[progressIndex]) {
+                updated[progressIndex].progress = 100;
+                updated[progressIndex].status = 'completed';
+              }
+              return updated;
+            });
+
             // Construct public URL
             const fileName = encodeURIComponent(file.name);
             const publicUrl = `${process.env.REACT_APP_R2_PUBLIC_DOMAIN}/${storagePath}/${fileName}`;
@@ -104,7 +125,7 @@ export default function ImageUploader({
       const startProgressIndex = uploadProgress.length;
 
       // Initialize progress tracking for new files
-      const withProgress = newFiles.map(file => ({ file, progress: 0 }));
+      const withProgress = newFiles.map(file => ({ file, progress: 0, status: 'pending' }));
       setUploadProgress(prev => [...prev, ...withProgress]);
 
       // Add files to display immediately
@@ -124,11 +145,12 @@ export default function ImageUploader({
         } catch (error) {
           console.error(`Failed to upload ${file.name}:`, error);
 
-          // Set progress to 0 on error to indicate failure
+          // Mark as failed
           setUploadProgress(prevProgress => {
             const updated = [...prevProgress];
             if (updated[progressIndex]) {
               updated[progressIndex].progress = 0;
+              updated[progressIndex].status = 'failed';
             }
             return updated;
           });
@@ -267,7 +289,7 @@ export default function ImageUploader({
               </div>
             )}
 
-            {uploadProgress[index]?.progress === 0 && uploadedUrls[index] === undefined && (
+            {uploadProgress[index]?.status === 'failed' && (
               <div className={css.uploadError}>
                 <span className={css.errorText}>Upload failed</span>
               </div>
