@@ -11,12 +11,12 @@ const MAX_VISIBLE_CHARS = 300; // Characters to show before "Read More"
 const SectionTextMaybe = props => {
   const { text, heading, showAsIngress = false } = props;
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   const textClass = showAsIngress ? css.ingress : css.text;
-  
+
   // Check if text is long enough to need "Read More"
   const needsReadMore = text && text.length > MAX_VISIBLE_CHARS;
-  
+
   // Process the full text with richText
   const fullContent = richText(text, {
     linkify: true,
@@ -27,27 +27,27 @@ const SectionTextMaybe = props => {
 
   // Get the display content
   let displayContent = fullContent;
-  if (needsReadMore && !isExpanded) {
+  if (needsReadMore && !isExpanded && typeof window !== 'undefined' && window?.document) {
     // Convert React elements to HTML string
     const htmlString = ReactDOMServer.renderToString(<span>{fullContent}</span>);
-    
+
     // Remove HTML tags for character counting
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlString;
     const plainText = tempDiv.textContent || tempDiv.innerText || '';
-    
+
     if (plainText.length > MAX_VISIBLE_CHARS) {
       // Find the last space before the character limit
       const truncated = plainText.substring(0, MAX_VISIBLE_CHARS);
       const lastSpaceIndex = truncated.lastIndexOf(' ');
-      
+
       let truncatedText;
       if (lastSpaceIndex > 0) {
         truncatedText = truncated.substring(0, lastSpaceIndex) + '...';
       } else {
         truncatedText = truncated + '...';
       }
-      
+
       // Create simple HTML with the truncated text
       displayContent = `<span>${truncatedText}</span>`;
     }
@@ -71,11 +71,7 @@ const SectionTextMaybe = props => {
           <span>{fullContent}</span>
         )}
         {needsReadMore && (
-          <button 
-            onClick={handleToggle}
-            className={css.readMoreButton}
-            type="button"
-          >
+          <button onClick={handleToggle} className={css.readMoreButton} type="button">
             {isExpanded ? 'Read Less' : 'Read More'}
           </button>
         )}
