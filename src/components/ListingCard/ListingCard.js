@@ -300,12 +300,12 @@ export const ListingCard = props => {
                 </span>
               )}
 
-              {!!landsize && (
+              {!!landsize && isLand && (
                 <span className={css.iconItem}>
                   <Icon type="land" /> {landsize} m2
                 </span>
               )}
-              {!!landzone && (
+              {!!landzone && isLand && (
                 <span className={css.iconItem}>
                   <Icon type="zone" /> {landzone} Zone
                 </span>
