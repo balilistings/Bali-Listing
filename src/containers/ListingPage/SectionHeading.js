@@ -195,7 +195,7 @@ const SectionHeading = props => {
                 <span>
                   <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
                   <span className={css.detailTypeLabel}>
-                    {detail.key === 'landsize' ? 'are' : 'zone'}
+                    {detail.key === 'landsize' ? 'm2' : 'zone'}
                   </span>
                 </span>
               </li>
