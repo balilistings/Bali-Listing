@@ -3,7 +3,7 @@ const https = require('https');
 const Decimal = require('decimal.js');
 const log = require('../log');
 const sharetribeSdk = require('sharetribe-flex-sdk');
-const { S3Client } = require('@aws-sdk/client-s3');
+// const { S3Client } = require('@aws-sdk/client-s3');
 
 const CLIENT_ID = process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID;
 const CLIENT_SECRET = process.env.SHARETRIBE_SDK_CLIENT_SECRET;
@@ -217,12 +217,12 @@ exports.fetchAccessControlAsset = sdk => {
 };
 
 exports.getR2Client = () => {
-  return new S3Client({
-    region: 'auto',
-    endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-    credentials: {
-      accessKeyId: R2_ACCESS_KEY_ID,
-      secretAccessKey: R2_SECRET_ACCESS_KEY,
-    },
-  });
+  // return new S3Client({
+  //   region: 'auto',
+  //   endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  //   credentials: {
+  //     accessKeyId: R2_ACCESS_KEY_ID,
+  //     secretAccessKey: R2_SECRET_ACCESS_KEY,
+  //   },
+  // });
 };
