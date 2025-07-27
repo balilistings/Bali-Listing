@@ -331,6 +331,7 @@ const OrderPanel = props => {
     fetchLineItemsInProgress,
     fetchLineItemsError,
     payoutDetailsWarning,
+    currentUser,
   } = props;
 
   const publicData = listing?.attributes?.publicData || {};
@@ -461,6 +462,11 @@ const OrderPanel = props => {
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
   const handleWhatsappClick = () => {
+    if (!currentUser) {
+      history.push('/login');
+      return;
+    }
+
     // Clean phone number - keep only digits
     const cleanedNumber = phonenumber ? phonenumber.replace(/\D/g, '') : '';
 
