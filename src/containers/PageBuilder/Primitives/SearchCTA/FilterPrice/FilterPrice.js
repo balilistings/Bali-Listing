@@ -305,7 +305,9 @@ const PriceDropdown = ({
                   Price
                 </h2>
                 <p className={css.menuItemMobileSubtitle}>
-                  Select a price range per week, month, or year
+                  {showTabsInPrice
+                    ? 'Select a price range per week, month or year (in millions IDR)'
+                    : 'Select your price range (in millions IDR)'}
                 </p>
                 <span className={css.closeIcon} onClick={closeDropdown}>
                   <IconCollection name="close_icon" />
