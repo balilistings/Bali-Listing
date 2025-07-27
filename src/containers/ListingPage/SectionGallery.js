@@ -23,9 +23,9 @@ const SectionGallery = props => {
         <div className={css.backButton} onClick={() => history.goBack()}>
           <IconCollection name="icon-back" />
         </div>
-        <div className={css.wishlistButton} onClick={toggleFavorites}>
+        <button className={css.wishlistButton} onClick={toggleFavorites}>
           <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
-        </div>
+        </button>
       </div>
       <ListingImageGallery
         images={images}

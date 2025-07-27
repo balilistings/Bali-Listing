@@ -1,3 +1,5 @@
+import { createResourceLocatorString } from './routes';
+
 /**
  * Toggles the favorite status of a listing for the current user.
  *
@@ -16,14 +18,13 @@
  */
 
 export const handleToggleFavorites = parameters => isFavorite => {
-  
   const { currentUser, routes, location, history } = parameters;
 
   if (!currentUser) {
-    // const state = {
-    //   from: `${location.pathname}${location.search}${location.hash}`,
-    // };
-    // history.push(createResourceLocatorString('SignupPage', routes, {}, {}), state);
+    const state = {
+      from: `${location.pathname}${location.search}${location.hash}`,
+    };
+    history.push(createResourceLocatorString('LoginPage', routes, {}, {}), state);
   } else {
     const { params, onUpdateFavorites } = parameters;
     const {

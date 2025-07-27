@@ -9,9 +9,10 @@ import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
 import { NamedLink } from '../../../../components/NamedLink/NamedLink';
 import { sortTags, capitaliseFirstLetter } from '../../../../util/helper';
 import { createSlug } from '../../../../util/urlHelpers';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { handleToggleFavorites } from '../../../../util/userFavorites';
 import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
+import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -235,6 +236,8 @@ const PropertyCards = () => {
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
   const history = useHistory();
+  const routeLocation = useLocation();
+  const routes = useRouteConfiguration();
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const listings = isMobile ? l.slice(0, 2) : l;
@@ -410,6 +413,8 @@ const PropertyCards = () => {
                 handleToggleFavorites({
                   currentUser,
                   history,
+                  location: routeLocation,
+                  routes,
                   params: { id: card.id.uuid },
                   onUpdateFavorites: payload => dispatch(updateProfile(payload)),
                 })(isFavorite);
@@ -436,11 +441,11 @@ const PropertyCards = () => {
                         />
                       ))}
                     </Slider>
-                    <div className={styles.wishlistButton} onClick={onToggleFavorites}>
+                    <button className={styles.wishlistButton} onClick={onToggleFavorites}>
                       <IconCollection
                         name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'}
                       />
-                    </div>
+                    </button>
 
                     {/* <button
                   className={

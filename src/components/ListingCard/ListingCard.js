@@ -15,6 +15,8 @@ import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
 import css from './ListingCard.module.css';
 import { handleToggleFavorites } from '../../util/userFavorites';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
+import { useLocation, useHistory } from 'react-router-dom';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -163,6 +165,9 @@ export const ListingCard = props => {
   const tags = sortTags(pricee);
   const isLand = categoryLevel1 === 'landforsale';
   const isRentals = categoryLevel1 === 'rentalvillas';
+  const history = useHistory();
+  const routeLocation = useLocation();
+  const routes = useRouteConfiguration();
 
   let price;
 
@@ -199,8 +204,10 @@ export const ListingCard = props => {
     e.preventDefault();
     e.stopPropagation();
     handleToggleFavorites({
+      location: routeLocation,
+      history,
+      routes,
       currentUser,
-      history: props.history,
       params: { id },
       onUpdateFavorites: onUpdateFavorites,
     })(isFavorite);
@@ -208,9 +215,9 @@ export const ListingCard = props => {
 
   return (
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
-      <div className={css.wishlistButton} onClick={onToggleFavorites}>
+      <button className={css.wishlistButton} onClick={onToggleFavorites}>
         <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
-      </div>
+      </button>
 
       <div className={css.imageWrapper}>
         <Slider {...cardSliderSettings} className={css.slider}>
