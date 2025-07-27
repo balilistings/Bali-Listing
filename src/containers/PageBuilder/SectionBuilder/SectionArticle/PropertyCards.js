@@ -529,7 +529,7 @@ const PropertyCards = () => {
                           {tag}
                         </span>
                       ))}
-                      {isLand && (
+                      {!!Freehold && (
                         <span className={styles.tag}>{capitaliseFirstLetter(Freehold)}</span>
                       )}
                       <NamedLink

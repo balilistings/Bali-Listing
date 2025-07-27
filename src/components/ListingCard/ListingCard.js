@@ -254,7 +254,7 @@ export const ListingCard = props => {
               {tag}
             </span>
           ))}
-          {isLand && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
+          {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
               Listed by:{' '}
