@@ -25,6 +25,16 @@ const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, l
 
 const getLabel = fieldConfig => fieldConfig?.saveConfig?.label || fieldConfig?.label;
 
+// Phone number validation function
+const validatePhoneNumber = (value, invalidPhoneMessage) => {
+  if (!value) return undefined;
+
+  // Only allow numbers and "+" characters, no spaces or other text
+  const phoneRegex = /^[\d+]+$/;
+
+  return phoneRegex.test(value) ? undefined : invalidPhoneMessage;
+};
+
 const CustomFieldEnum = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl, disabled } = props;
   const { enumOptions = [], saveConfig } = fieldConfig || {};
@@ -88,9 +98,6 @@ const CustomFieldText = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig);
-  const validateMaybe = isRequired
-    ? { validate: required(requiredMessage || defaultRequiredMessage) }
-    : {};
 
   const showtextArea = ![
     'pub_companyname',
@@ -98,6 +105,7 @@ const CustomFieldText = props => {
     'pub_id_npwp_nik',
     'pub_company_address',
     'pub_company_registration',
+    'pub_phonenumber',
   ].includes(name);
 
   const customPlaceholder =
@@ -111,12 +119,43 @@ const CustomFieldText = props => {
       ? '3212345678990001'
       : name === 'pub_id_npwp_nik'
       ? 'Your NPWP or NIK number'
+      : name === 'pub_phonenumber'
+      ? '+6212345678911'
       : null;
 
   const placeholder =
     customPlaceholder ||
     placeholderMessage ||
     intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
+
+  // Handle validation for phone number field
+  const validateMaybe =
+    name === 'pub_phonenumber'
+      ? {
+          validate: value => {
+            const requiredMsg = requiredMessage || defaultRequiredMessage;
+            const invalidPhoneMsg = intl.formatMessage(
+              {
+                id: 'CustomExtendedDataField.invalidPhoneNumber',
+              },
+              {
+                defaultMessage: 'Phone number can only contain numbers and "+" character',
+              }
+            );
+
+            // Check required validation first
+            if (!value) {
+              return requiredMsg;
+            }
+
+            // Then check phone number format if value exists
+            return validatePhoneNumber(value, invalidPhoneMsg);
+          },
+        }
+      : isRequired
+      ? { validate: required(requiredMessage || defaultRequiredMessage) }
+      : {};
+
   return (
     <FieldTextInput
       className={css.customField}
