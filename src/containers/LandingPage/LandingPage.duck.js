@@ -77,6 +77,7 @@ export const fetchFeaturedListings = (
       'fields.listing': ['title', 'description', 'geolocation', 'price', 'publicData'],
       'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
       'fields.image': ['variants.landscape-crop2x'],
+      pub_featured: true,
     });
 
     dispatch(addMarketplaceEntities(response));
