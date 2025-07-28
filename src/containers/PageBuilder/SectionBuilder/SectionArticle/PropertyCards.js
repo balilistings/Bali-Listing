@@ -376,6 +376,8 @@ const PropertyCards = () => {
       
       return <div className={styles.dots}>{selectedDots}</div>;
     },
+    lazyLoad: 'progressive',
+    appendDots: dots => <div className={styles.dots}>{dots}</div>,
     customPaging: i => <span className={styles.dot}></span>,
     nextArrow: (
       <button className={styles.arrowRight} type="button" aria-label="Next image">

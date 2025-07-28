@@ -8,7 +8,13 @@ import { propTypes } from '../../../util/types';
 import * as validators from '../../../util/validators';
 import { getPropsForCustomUserFieldInputs } from '../../../util/userHelpers';
 
-import { Form, PrimaryButton, FieldTextInput, CustomExtendedDataField } from '../../../components';
+import {
+  Form,
+  PrimaryButton,
+  FieldTextInput,
+  CustomExtendedDataField,
+  ImageUploader,
+} from '../../../components';
 
 import FieldSelectUserType from '../FieldSelectUserType';
 import UserFieldDisplayName from '../UserFieldDisplayName';
@@ -40,9 +46,10 @@ const ConfirmSignupFormComponent = props => (
         userTypes,
         userFields,
         values,
+        form,
       } = formRenderProps;
 
-      const { userType } = values || {};
+      const { userType, selfieDocumentLink, pub_role } = values || {};
 
       // email
       const emailRequired = validators.required(
@@ -58,7 +65,30 @@ const ConfirmSignupFormComponent = props => (
 
       // Custom user fields. Since user types are not supported here,
       // only fields with no user type id limitation are selected.
-      const userFieldProps = getPropsForCustomUserFieldInputs(userFields, intl, userType);
+
+      const filterUserFields =
+        pub_role === undefined
+          ? userFields.filter(
+              elm =>
+                ![
+                  'companyname',
+                  'id_card_nik',
+                  'id_npwp_nik',
+                  'company_address',
+                  'company_registration',
+                ].includes(elm.key)
+            )
+          : pub_role === 'individual'
+          ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
+          : pub_role === 'freelance'
+          ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
+          : pub_role === 'company'
+          ? userFields.filter(elm =>
+              ['companyname', 'company_address', 'company_registration', 'role'].includes(elm.key)
+            )
+          : [];
+
+      const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
 
       const noUserTypes = !userType && !(userTypes?.length > 0);
       const userTypeConfig = userTypes.find(config => config.userType === userType);
@@ -67,7 +97,8 @@ const ConfirmSignupFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
-      const submitDisabled = invalid || submitInProgress;
+      const providerDisabled = userType === 'provider' ? !selfieDocumentLink : false;
+      const submitDisabled = invalid || submitInProgress || providerDisabled;
 
       // If authInfo is not available we should not show the ConfirmForm
       if (!authInfo) {
@@ -76,6 +107,18 @@ const ConfirmSignupFormComponent = props => (
 
       // Initial values from idp provider
       const { email, firstName, lastName } = authInfo;
+
+      const handleSelfieDocument = file => {
+        form.change('selfieDocumentLink', file);
+      };
+
+      const handleIdDocument = file => {
+        form.change('idDocumentLink', file);
+      };
+
+      const handleCompanyDocument = file => {
+        form.change('companyDocumentLink', file);
+      };
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
@@ -158,12 +201,38 @@ const ConfirmSignupFormComponent = props => (
             </div>
           ) : null}
 
+          {userType === 'provider' ? (
+            <ImageUploader
+              label={
+                pub_role === 'company'
+                  ? 'Screenshot/Picture NIB or NPWP Mentioning Company Name'
+                  : 'ID Document (KTP/Driving License/Passport)'
+              }
+              columns={1}
+              dropzoneHeight="100px"
+              labelText=""
+              maxImages={1}
+              onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
+            />
+          ) : null}
+
           {showCustomUserFields ? (
             <div className={css.customFields}>
               {userFieldProps.map(({ key, ...fieldProps }) => (
                 <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
               ))}
             </div>
+          ) : null}
+
+          {userType === 'provider' && pub_role ? (
+            <ImageUploader
+              label="Add a selfie of you holding your ID card"
+              columns={1}
+              dropzoneHeight="100px"
+              labelText=""
+              maxImages={1}
+              onProfileChange={handleSelfieDocument}
+            />
           ) : null}
 
           <div className={css.bottomWrapper}>

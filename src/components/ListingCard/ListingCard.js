@@ -62,6 +62,8 @@ const sliderSettings = {
     
     return <div className={css.dots}>{selectedDots}</div>;
   },
+  lazyLoad: 'progressive',
+  appendDots: dots => <div className={css.dots}>{dots}</div>,
   customPaging: i => <span className={css.dot}></span>,
   nextArrow: (
     <button className={css.arrowRight} type="button" aria-label="Next image">
@@ -127,7 +129,7 @@ export const formatPriceInMillions = actualPrice => {
   return `${actualPrice.toLocaleString()}`;
 };
 
-const checkPriceParams = () => {
+export const checkPriceParams = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
     const weekprice = urlParams.get('pub_weekprice') || null;
