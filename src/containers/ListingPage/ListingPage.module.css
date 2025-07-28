@@ -1011,6 +1011,12 @@
   z-index: 2;
 }
 
+.rightButtons{ 
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .wishlistButton {
   backdrop-filter: blur(9.399999618530273px);
   width: 38px;
@@ -1020,8 +1026,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+}
+
+button {
   border: none;
+  cursor: pointer;
 }
 
 .productGallery {
