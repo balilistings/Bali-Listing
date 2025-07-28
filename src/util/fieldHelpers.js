@@ -222,3 +222,51 @@ export const isValidCurrencyForTransactionProcess = (
     );
   }
 };
+
+export const fieldTooltipText = {
+  'Email adress': 'Enter a valid email for notifications and inquiries (e.g., yourname@email.com).',
+  'Phone number':
+    'Add your phone number with country code (e.g., +62 812-3456-7890); it’ll be hidden behind a WhatsApp button.',
+  'Payment terms': 'Describe your payment terms (e.g., “50% deposit, balance on arrival”).',
+  'Link to Facebook post': 'Paste the link to your FB post about this property (if applicable).',
+  'Number of years for leasehold':
+    'Specify remaining lease years (e.g., “20 years”); leave blank if freehold.',
+  'Minimum rental period':
+    'Specify the minimum stay (e.g., “1 week” or “1 month”) to set expectations.',
+  'Property type':
+    'Choose the type of property you’re listing. This helps users filter listings based on their needs.',
+  'Bedrooms':
+    'Choose the number of bedrooms (e.g., 1, 2, 3+); select “0” for land',
+  'Bathrooms':
+    'Choose the number of bathrooms (e.g., 1, 2, 3+); select “0” for land.',
+  'Available now':
+    'Select “Yes” if the property is available immediately, or “No” if it’s available later. This helps users filter for properties they can book right away.',
+  'Living':
+    'Select whether the living room is “Open” or “Closed.” ',
+  'Pool':
+    'Select “Yes” if the property has a pool, or “No” if it doesn’t.',
+  'Furnished':
+    'Select “Yes” if the property is furnished, or “No” if it’s unfurnished. Choose “Semi” if it is partly furnished.',
+  'Kitchen':
+    'Select “Yes” if there’s a kitchen, or “No” if there isn’t.',
+  'Airconditioning':
+    'Select “Yes” if the property has air conditioning, or “No” if it doesn’t. ',
+  'Pet friendly':
+    'Select “Yes” if pets are allowed, or “No” if they’re not.',
+  'Working desk':
+    'Select “Yes” if there’s a working desk, or “No” if there isn’t.',
+  'Car parking':
+    'Select “Yes” if there’s car parking available, or “No” if there isn’t. ',
+  'Gym':
+    'Select “Yes” if there’s a gym on-site, or “No” if there isn’t.',
+  'Agent or Direct owner':
+    'Select if you’re the owner or an agent; this builds trust with users.',
+  'Freehold or leasehold':
+    'Select “Freehold” for outright ownership, or “Leasehold” for leased property.',
+  'Land Title':
+    'Select the title (e.g., Hak Milik, HGB); critical for buyers to avoid scams.',
+  'Land zone':
+    'Select the zone (e.g., Green, Pink); informs buyers about usage and investment potential.',
+  'Wifi':
+    'Select “Yes” if there’s a wifi, or “No” if there isn’t.',
+};

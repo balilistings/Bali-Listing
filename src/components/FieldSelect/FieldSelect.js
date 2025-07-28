@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { ValidationError } from '../../components';
 
 import css from './FieldSelect.module.css';
+import LabelWithTooltip from '../LabelWithTooltip/LabelWithTooltip';
 
 const FieldSelectComponent = props => {
   const {
@@ -47,9 +48,11 @@ const FieldSelectComponent = props => {
   return (
     <div className={classes}>
       {label ? (
-        <label htmlFor={id} className={classNames({ [css.labelDisabled]: showLabelAsDisabled })}>
-          {label}
-        </label>
+        <LabelWithTooltip
+          label={label}
+          htmlFor={id}
+          className={classNames({ [css.labelDisabled]: showLabelAsDisabled })}
+        />
       ) : null}
       <select {...selectProps}>{children}</select>
       <ValidationError fieldMeta={meta} />

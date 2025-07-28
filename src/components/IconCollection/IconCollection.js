@@ -1908,6 +1908,20 @@ const IconCollection = ({ name }) => {
           <path d="M1.5 10L10.5 1M1.5 1L10.5 10" stroke="#231F20" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       )
+    case 'info_icon':
+      return (
+        <svg
+          width={16}
+          height={16}
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx={10} cy={10} r={9} stroke="currentColor" strokeWidth={1.5} fill="none" />
+          <path d="M10 14v-4" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" />
+          <circle cx={10} cy={6.5} r={1} fill="currentColor" />
+        </svg>
+      );
     default:
       return <></>;
   }
