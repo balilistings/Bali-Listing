@@ -28,6 +28,40 @@ const sliderSettings = {
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
+  appendDots: dots => {
+    // Show only 3 dots: previous, current, next
+    if (dots.length <= 3) {
+      return <div className={css.dots}>{dots}</div>;
+    }
+    
+    // For more than 3 slides, dynamically show 3 dots
+    // Find the currently active dot
+    const activeIndex = dots.findIndex(dot => 
+      dot.props.className && dot.props.className.includes('slick-active')
+    );
+    
+    let selectedDots = [];
+    
+    if (activeIndex === -1) {
+      // If no active dot found, show first 3
+      selectedDots = dots.slice(0, 3);
+    } else if (activeIndex === 0) {
+      // If first slide is active, show first 3
+      selectedDots = dots.slice(0, 3);
+    } else if (activeIndex === dots.length - 1) {
+      // If last slide is active, show last 3
+      selectedDots = dots.slice(-3);
+    } else {
+      // Show previous, current, next
+      selectedDots = [
+        dots[activeIndex - 1],
+        dots[activeIndex],
+        dots[activeIndex + 1]
+      ];
+    }
+    
+    return <div className={css.dots}>{selectedDots}</div>;
+  },
   lazyLoad: 'progressive',
   appendDots: dots => <div className={css.dots}>{dots}</div>,
   customPaging: i => <span className={css.dot}></span>,
