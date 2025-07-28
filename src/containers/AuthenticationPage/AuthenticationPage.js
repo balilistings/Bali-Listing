@@ -337,6 +337,14 @@ const ConfirmIdProviderInfoForm = props => {
       firstName: newFirstName,
       lastName: newLastName,
       displayName,
+      selfieDocumentLink,
+      idDocumentLink,
+      companyDocumentLink,
+      pub_companyname,
+      pub_id_card_nik,
+      pub_id_npwp_nik,
+      pub_company_address,
+      pub_company_registration,
       ...rest
     } = values;
 
@@ -365,6 +373,14 @@ const ConfirmIdProviderInfoForm = props => {
             ...pickUserFieldsData(rest, 'protected', userType, userFields),
             // If the confirm form has any additional values, pass them forward as user's protected data
             ...getNonUserFieldParams(rest, userFields),
+            ...(selfieDocumentLink && { selfieDocumentLink }),
+            ...(idDocumentLink && { idDocumentLink }),
+            ...(companyDocumentLink && { companyDocumentLink }),
+            ...(pub_companyname && { companyname: pub_companyname }),
+            ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
+            ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
+            ...(pub_company_address && { company_address: pub_company_address }),
+            ...(pub_company_registration && { company_registration: pub_company_registration }),
           },
         }
       : {};
@@ -789,7 +805,10 @@ const mapDispatchToProps = dispatch => ({
 // See: https://github.com/ReactTraining/react-router/issues/4671
 const AuthenticationPage = compose(
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(AuthenticationPageComponent);
 
 export default AuthenticationPage;
