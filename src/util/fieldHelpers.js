@@ -222,3 +222,10 @@ export const isValidCurrencyForTransactionProcess = (
     );
   }
 };
+
+export const hiddenListingField = {
+  "numberofyears": {
+    matchingKey: "pub_Freehold",
+    matchingValue: "freehold"
+  }
+}
