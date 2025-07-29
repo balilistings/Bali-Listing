@@ -22,7 +22,7 @@ import {
   STOCK_INFINITE_MULTIPLE_ITEMS,
   LISTING_STATE_PUBLISHED,
 } from '../../util/types';
-import { formatMoney } from '../../util/currency';
+import { convertUnitToSubUnit, formatMoney, unitDivisor } from '../../util/currency';
 import { createSlug, parse, stringify } from '../../util/urlHelpers';
 import { userDisplayNameAsString } from '../../util/data';
 import {
@@ -531,7 +531,13 @@ const OrderPanel = props => {
         {priceperare && (
           <div className={css.availableFrom}>
             Price per are:{' '}
-            {formatMoneyIfSupportedCurrency(new Money(priceperare, marketplaceCurrency), intl)}
+            {formatMoneyIfSupportedCurrency(
+              new Money(
+                convertUnitToSubUnit(priceperare, unitDivisor(marketplaceCurrency)),
+                marketplaceCurrency
+              ),
+              intl
+            )}
           </div>
         )}
         {/* <div className={css.author}>
