@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Field, Form as FinalForm } from 'react-final-form';
+import { Field, Form as FinalForm, useFormState } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
 
@@ -7,6 +7,7 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 import { EXTENDED_DATA_SCHEMA_TYPES, propTypes } from '../../../../util/types';
 import {
+  hiddenListingField,
   isFieldForCategory,
   isFieldForListingType,
   isValidCurrencyForTransactionProcess,
@@ -245,6 +246,7 @@ const FieldSelectCategory = props => {
 export const AddListingFields = props => {
   const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
   const targetCategoryIds = Object.values(selectedCategories);
+  const { values } = useFormState({ subscription: { values: true } });
 
   const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
     const { key, schemaType, scope } = fieldConfig || {};
@@ -254,6 +256,13 @@ export const AddListingFields = props => {
     const isProviderScope = ['public', 'private'].includes(scope);
     const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
     const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
+
+    if (
+      hiddenListingField[key] &&
+      values[hiddenListingField[key].matchingKey] === hiddenListingField[key].matchingValue
+    ) {
+      return pickedFields;
+    }
 
     return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
       ? [
