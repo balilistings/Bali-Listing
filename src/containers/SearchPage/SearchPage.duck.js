@@ -169,6 +169,24 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       : {};
   };
 
+  const rentPriceSearchParams = (weeklyPriceParam, monthlyPriceParam, yearlyPriceParam) => {
+    const formatPriceRange = priceParam => {
+      if (!priceParam) {
+        return null;
+      }
+      const splitted = priceParam.split(',');
+      const min = Number(splitted[0]);
+      const max = Number(splitted[1]) + 1;
+      return [min, max].join(',');
+    };
+
+    return {
+      pub_weekprice: formatPriceRange(weeklyPriceParam),
+      pub_monthprice: formatPriceRange(monthlyPriceParam),
+      pub_yearprice: formatPriceRange(yearlyPriceParam),
+    };
+  };
+
   const datesSearchParams = datesParam => {
     const searchTZ = 'Etc/UTC';
     const datesFilter = config.search.defaultFilters.find(f => f.key === 'dates');
@@ -250,6 +268,9 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
   const {
     perPage,
     price,
+    pub_weekprice,
+    pub_monthprice,
+    pub_yearprice,
     dates,
     seats,
     sort,
@@ -259,6 +280,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     ...restOfParams
   } = searchParams;
   const priceMaybe = priceSearchParams(price);
+  const rentPriceMaybe = rentPriceSearchParams(pub_weekprice, pub_monthprice, pub_yearprice);
   const datesMaybe = datesSearchParams(dates);
   const stockMaybe = stockFilters(datesMaybe);
   const seatsMaybe = seatsSearchParams(seats, datesMaybe);
@@ -282,6 +304,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
       isListingTypeVariant
     ),
     ...priceMaybe,
+    ...rentPriceMaybe,
     ...datesMaybe,
     // ...stockMaybe,
     ...seatsMaybe,
