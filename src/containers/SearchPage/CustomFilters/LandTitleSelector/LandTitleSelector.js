@@ -22,7 +22,7 @@ function LandTitleSelector({ selectedLandTitles, onLandTitlesChange, onReset }) 
       selectedOptions={selectedLandTitles}
       onSelectionChange={onLandTitlesChange}
       onReset={onReset}
-      placeholder="drop down Land Title"
+      placeholder="Select Land Title"
     />
   );
 }
