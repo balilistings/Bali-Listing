@@ -21,6 +21,7 @@ import css from './SearchMapPriceLabel.module.css';
  * @param {Function} props.onListingClicked - The function to handle the listing click
  * @param {Object} props.config - The configuration
  * @param {intlShape} props.intl - The intl object
+ * @param {string} props.rentPeriodParam - The rent period param (e.g. 'weekprice', 'monthprice', 'yearprice')
  * @returns {JSX.Element}
  */
 class SearchMapPriceLabel extends Component {
@@ -29,11 +30,18 @@ class SearchMapPriceLabel extends Component {
     const nextListing = ensureListing(nextProps.listing);
     const isSameListing = currentListing.id.uuid === nextListing.id.uuid;
     const hasSamePrice = currentListing.attributes.price === nextListing.attributes.price;
+    const hasSameRentParam = this.props.rentPeriodParam === nextProps.rentPeriodParam;
     const hasSameActiveStatus = this.props.isActive === nextProps.isActive;
     const hasSameRefreshToken =
       this.props.mapComponentRefreshToken === nextProps.mapComponentRefreshToken;
 
-    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken);
+    return !(
+      isSameListing &&
+      hasSamePrice &&
+      hasSameActiveStatus &&
+      hasSameRefreshToken &&
+      hasSameRentParam
+    );
   }
 
   render() {
@@ -45,22 +53,29 @@ class SearchMapPriceLabel extends Component {
       onListingClicked,
       isActive,
       config,
+      rentPeriodParam,
     } = this.props;
     const currentListing = ensureListing(listing);
     const { price, publicData } = currentListing.attributes;
     const priceAmount = price?.amount / 100;
+    const rentPriceAmount =
+      rentPeriodParam === 'noFilter'
+        ? publicData['yearprice'] || publicData['monthprice'] || publicData['weekprice']
+        : publicData[rentPeriodParam];
 
-    let formattedPriceAmount = priceAmount?.toString();
+    const isRental = publicData?.categoryLevel1 === 'rentalvillas';
+
+    let formattedPriceAmount = (isRental ? rentPriceAmount : priceAmount)?.toString();
 
     if (formattedPriceAmount) {
       const numValue = parseFloat(formattedPriceAmount);
-      const millions = numValue / 1000000; // Convert to millions
+      const millions = (numValue / 1000000).toFixed(1); // Convert to millions with one decimal
       formattedPriceAmount = `IDR ${millions} Mil`;
     }
 
     // Create formatted price if currency is known or alternatively show just the unknown currency.
     const formattedPrice =
-      price && price.currency === config.currency
+      (price && price.currency === config.currency) || isRental
         ? formattedPriceAmount
         : price?.currency
         ? price.currency
