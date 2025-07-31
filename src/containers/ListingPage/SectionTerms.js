@@ -20,7 +20,7 @@ const prepareTerms = publicData => {
     });
   }
 
-  if (publicData.numberofyears) {
+  if (publicData.Freehold !== 'freehold' && publicData.numberofyears) {
     t.push({
       label: 'Lease duration:',
       value: publicData.numberofyears,
