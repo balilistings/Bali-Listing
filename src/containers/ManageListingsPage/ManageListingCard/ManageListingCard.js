@@ -349,21 +349,26 @@ const LinkToStockOrAvailabilityTab = props => {
 };
 
 const PriceMaybe = props => {
-  const { price, publicData, config, intl } = props;
+  const { price, publicData, config, intl, isDraft } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
 
   const isRental = publicData?.categoryLevel1 === 'rentalvillas';
+  const isRentalDraft = isRental && isDraft;
+  const showPrice = displayPrice(foundListingTypeConfig);
 
-  const showPrice = displayPrice(foundListingTypeConfig) ;
-  if (showPrice && !price && !isRental) {
+  const shouldShowPriceNotSet = isRentalDraft || (showPrice && !price && !isRental);
+
+  const shouldShowNothing = !showPrice && !isRental;
+
+  if (shouldShowPriceNotSet) {
     return (
       <div className={css.noPrice}>
         <FormattedMessage id="ManageListingCard.priceNotSet" />
       </div>
     );
-  } else if (!showPrice && !isRental) {
+  } else if (shouldShowNothing) {
     return null;
   }
 
@@ -624,7 +629,13 @@ export const ManageListingCard = props => {
       </div>
 
       <div className={css.info}>
-        <PriceMaybe price={price} publicData={publicData} config={config} intl={intl} />
+        <PriceMaybe
+          price={price}
+          publicData={publicData}
+          config={config}
+          intl={intl}
+          isDraft={isDraft}
+        />
 
         <div className={css.mainInfo}>
           <div className={css.titleWrapper}>
