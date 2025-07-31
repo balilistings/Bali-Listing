@@ -46,6 +46,7 @@ const preparePropertyDetails = publicData => {
     no: 'No',
     open: 'Open',
     closed: 'Closed',
+    semi: 'Semi',
     // Add more transformations as needed
   };
 
