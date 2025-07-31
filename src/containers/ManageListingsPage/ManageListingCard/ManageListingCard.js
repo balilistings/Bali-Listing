@@ -349,16 +349,16 @@ const LinkToStockOrAvailabilityTab = props => {
 };
 
 const PriceMaybe = props => {
-  const { price, publicData, config, intl, isDraft } = props;
+  const { price, publicData, config, intl } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
 
   const isRental = publicData?.categoryLevel1 === 'rentalvillas';
-  const isRentalDraft = isRental && isDraft;
+  const isRentalWithNoPrice = isRental && !publicData?.weekprice && !publicData?.monthprice && !publicData?.yearprice;
   const showPrice = displayPrice(foundListingTypeConfig);
 
-  const shouldShowPriceNotSet = isRentalDraft || (showPrice && !price && !isRental);
+  const shouldShowPriceNotSet = isRentalWithNoPrice || (showPrice && !price && !isRental);
 
   const shouldShowNothing = !showPrice && !isRental;
 
@@ -634,7 +634,6 @@ export const ManageListingCard = props => {
           publicData={publicData}
           config={config}
           intl={intl}
-          isDraft={isDraft}
         />
 
         <div className={css.mainInfo}>
