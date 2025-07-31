@@ -5,6 +5,7 @@ const propertyDetailsOptions = [
   { id: 'open-livingroom', name: 'Open livingroom' },
   { id: 'closed-livingroom', name: 'Closed livingroom' },
   { id: 'furnished', name: 'Furnished' },
+  { id: 'semi-furnished', name: 'Semi Furnished' },
   { id: 'unfurnished', name: 'Unfurnished' },
 ];
 

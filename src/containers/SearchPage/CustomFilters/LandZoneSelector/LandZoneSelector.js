@@ -18,7 +18,7 @@ function LandZoneSelector({ selectedLandZones, onLandZonesChange, onReset }) {
       selectedOptions={selectedLandZones}
       onSelectionChange={onLandZonesChange}
       onReset={onReset}
-      placeholder="drop down Land Zone"
+      placeholder="Select Land Zone"
     />
   );
 }
