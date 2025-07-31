@@ -402,6 +402,19 @@ class SearchMapWithMapbox extends Component {
 
     if (this.map) {
       // Create markers out of price labels and grouped labels
+
+      const queryParams = new URLSearchParams(this.props.location.search);
+      const isRentalParam = queryParams.get('pub_categoryLevel1') === 'rentalvillas';
+      const rentPeriodParam = queryParams.get('pub_weekprice')
+        ? 'weekprice'
+        : queryParams.get('pub_monthprice')
+        ? 'monthprice'
+        : queryParams.get('pub_yearprice')
+        ? 'yearprice'
+        : isRentalParam
+        ? 'noFilter'
+        : null;
+
       const labels = priceLabelsInLocations(
         listings,
         activeListingId,
@@ -428,6 +441,7 @@ class SearchMapWithMapbox extends Component {
           const existingMarkerId = this.currentMarkers.findIndex(
             marker => m.markerId === marker.markerId && marker.marker
           );
+          m.componentProps.rentPeriodParam = rentPeriodParam;
 
           if (existingMarkerId >= 0) {
             const { marker, markerContainer, ...rest } = this.currentMarkers[existingMarkerId];
