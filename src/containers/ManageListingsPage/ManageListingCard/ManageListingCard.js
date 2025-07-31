@@ -13,7 +13,7 @@ import {
   propTypes,
   STOCK_MULTIPLE_ITEMS,
 } from '../../../util/types';
-import { formatMoney } from '../../../util/currency';
+import { convertUnitToSubUnit, formatMoney, unitDivisor } from '../../../util/currency';
 import { ensureOwnListing } from '../../../util/data';
 import {
   LISTING_PAGE_PENDING_APPROVAL_VARIANT,
@@ -23,6 +23,7 @@ import {
   createSlug,
 } from '../../../util/urlHelpers';
 import { createResourceLocatorString, findRouteByRouteName } from '../../../util/routes';
+import { types as sdkTypes } from '../../../util/sdkLoader';
 import { isBookingProcessAlias, isPurchaseProcessAlias } from '../../../transactions/transaction';
 
 import {
@@ -41,6 +42,8 @@ import {
 import MenuIcon from './MenuIcon';
 import Overlay from './Overlay';
 import css from './ManageListingCard.module.css';
+
+const { Money } = sdkTypes;
 
 // Menu content needs the same padding
 const MENU_CONTENT_OFFSET = -12;
@@ -64,6 +67,22 @@ const priceData = (price, currency, intl) => {
     };
   }
   return {};
+};
+
+const formatRentalPrice = (publicData, currency, intl) => {
+  const [price, period] = publicData.yearprice
+    ? [publicData.yearprice, 'Yearly']
+    : publicData.monthprice
+    ? [publicData.monthprice, 'Monthly']
+    : publicData.weekprice
+    ? [publicData.weekprice, 'Weekly']
+    : [];
+  const formattedPrice = formatMoney(
+    intl,
+    new Money(convertUnitToSubUnit(price, unitDivisor(currency)), currency)
+  );
+
+  return { formattedPrice: `${formattedPrice} - ${period}` };
 };
 
 const createListingURL = (routes, listing) => {
@@ -335,14 +354,16 @@ const PriceMaybe = props => {
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
 
-  const showPrice = displayPrice(foundListingTypeConfig);
-  if (showPrice && !price) {
+  const isRental = publicData?.categoryLevel1 === 'rentalvillas';
+
+  const showPrice = displayPrice(foundListingTypeConfig) ;
+  if (showPrice && !price && !isRental) {
     return (
       <div className={css.noPrice}>
         <FormattedMessage id="ManageListingCard.priceNotSet" />
       </div>
     );
-  } else if (!showPrice) {
+  } else if (!showPrice && !isRental) {
     return null;
   }
 
@@ -350,7 +371,9 @@ const PriceMaybe = props => {
   const hasMultiplePriceVariants = isPriceVariationsInUse && publicData?.priceVariants?.length > 1;
 
   const isBookable = isBookingProcessAlias(publicData?.transactionProcessAlias);
-  const { formattedPrice, priceTitle } = priceData(price, config.currency, intl);
+  const { formattedPrice, priceTitle } = isRental
+    ? formatRentalPrice(publicData, config.currency, intl)
+    : priceData(price, config.currency, intl);
 
   const priceValue = <span className={css.priceValue}>{formattedPrice}</span>;
   const pricePerUnit = isBookable ? (
