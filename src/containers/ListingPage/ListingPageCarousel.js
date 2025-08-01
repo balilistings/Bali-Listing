@@ -140,33 +140,6 @@ export const ListingPageComponent = props => {
     }
   };
 
-  // Scrollspy: update active tab on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      let found = SECTIONS[0].id;
-      for (const section of SECTIONS) {
-        const el = document.getElementById(section.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 80) {
-            // adjust offset for sticky header if needed
-            found = section.id;
-          }
-        }
-      }
-      setActiveTab(found);
-
-      // Check if scroll position has reached bottomDescription
-      const bottomDescriptionEl = document.getElementById('bottomDescription');
-      if (bottomDescriptionEl) {
-        const rect = bottomDescriptionEl.getBoundingClientRect();
-        setShowTabsShadow(rect.top <= 130);
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const {
     isAuthenticated,
     currentUser,
@@ -216,6 +189,49 @@ export const ListingPageComponent = props => {
 
   const pendingIsApproved = isPendingApprovalVariant && isApproved;
 
+  const {
+    description = '',
+    geolocation = null,
+    price = null,
+    title = '',
+    publicData = {},
+    metadata = {},
+  } = currentListing.attributes;
+
+  const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
+  const isLandforsale = categoryLevel1 === 'landforsale';
+  const isRentals = categoryLevel1 === 'rentalvillas';
+  const isVillaSale = categoryLevel1 === 'villaforsale';
+
+  const preparedSections = prepareSections(isLandforsale);
+
+  // Scrollspy: update active tab on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      let found = activeTab || preparedSections[0].id;
+      for (const section of preparedSections) {
+        const el = document.getElementById(section.id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          if (rect.top <= 80) {
+            // adjust offset for sticky header if needed
+            found = section.id;
+          }
+        }
+      }
+      setActiveTab(found);
+
+      // Check if scroll position has reached bottomDescription
+      const bottomDescriptionEl = document.getElementById('bottomDescription');
+      if (bottomDescriptionEl) {
+        const rect = bottomDescriptionEl.getBoundingClientRect();
+        setShowTabsShadow(rect.top <= 130);
+      }
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // If a /pending-approval URL is shared, the UI requires
   // authentication and attempts to fetch the listing from own
   // listings. This will fail with 403 Forbidden if the author is
@@ -244,15 +260,6 @@ export const ListingPageComponent = props => {
     return <LoadingPage topbar={topbar} scrollingDisabled={scrollingDisabled} intl={intl} />;
   }
 
-  const {
-    description = '',
-    geolocation = null,
-    price = null,
-    title = '',
-    publicData = {},
-    metadata = {},
-  } = currentListing.attributes;
-
   const richTitle = (
     <span>
       {richText(title, {
@@ -266,11 +273,6 @@ export const ListingPageComponent = props => {
   const userAndListingAuthorAvailable = !!(currentUser && authorAvailable);
   const isOwnListing =
     userAndListingAuthorAvailable && currentListing.author.id.uuid === currentUser.id.uuid;
-
-  const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
-  const isLandforsale = categoryLevel1 === 'landforsale';
-  const isRentals = categoryLevel1 === 'rentalvillas';
-  const isVillaSale = categoryLevel1 === 'villaforsale';
 
   if (!(listingType && transactionProcessAlias && unitType)) {
     // Listing should always contain listingType, transactionProcessAlias and unitType)
@@ -492,7 +494,7 @@ export const ListingPageComponent = props => {
                 [css.tabsContainerWithShadow]: showTabsShadow,
               })}
             >
-              {prepareSections(isLandforsale).map(section => (
+              {preparedSections.map(section => (
                 <button
                   key={section.id}
                   className={classNames(css.tab, { [css.activeTab]: activeTab === section.id })}
@@ -509,17 +511,17 @@ export const ListingPageComponent = props => {
                 <div id="bottomDescription" />
                 <SectionTextMaybe text={description} showAsIngress />
               </div>
+            </div>
 
-              <div>
-                <CustomListingFields
-                  publicData={publicData}
-                  metadata={metadata}
-                  listingFieldConfigs={listingConfig.listingFields}
-                  categoryConfiguration={config.categoryConfiguration}
-                  intl={intl}
-                  isLandforsale={isLandforsale}
-                />
-              </div>
+            <div className={css.descriptionContainer}>
+              <CustomListingFields
+                publicData={publicData}
+                metadata={metadata}
+                listingFieldConfigs={listingConfig.listingFields}
+                categoryConfiguration={config.categoryConfiguration}
+                intl={intl}
+                isLandforsale={isLandforsale}
+              />
             </div>
 
             <div id="location">
@@ -753,6 +755,11 @@ const mapDispatchToProps = dispatch => ({
 // lifecycle hook.
 //
 // See: https://github.com/ReactTraining/react-router/issues/4671
-const ListingPage = compose(connect(mapStateToProps, mapDispatchToProps))(EnhancedListingPage);
+const ListingPage = compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(EnhancedListingPage);
 
 export default ListingPage;
