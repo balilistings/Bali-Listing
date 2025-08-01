@@ -626,7 +626,7 @@ class LocationAutocompleteInputImplementation extends Component {
       },
       () => {
         if (selectAndFinalize) {
-          this.selectPrediction(prediction);
+          EventBus.emit('selectPrediction', prediction);
           this.finalizeSelection();
         }
       }
