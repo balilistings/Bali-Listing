@@ -632,7 +632,7 @@ const PropertyCards = () => {
                         </span>
                         {isRentals && (
                           <span className={styles.priceUnit}>
-                            {weekprice ? '/ weekly' : monthprice ? '/ monthly' : '/ yearly'}
+                            {monthprice ? '/ monthly' : weekprice ? '/ weekly' : '/ yearly'}
                           </span>
                         )}
                       </div>
