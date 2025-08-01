@@ -1411,10 +1411,10 @@
   margin-bottom: 30px;
 
   @media screen and (max-width: 768px) {
-    margin-top: 40px;
+    margin-top: 0px;
     border-bottom: none;
-    padding-bottom: 0;
     margin-bottom: 0;
+    padding: 20px;
   }
 }
 
