@@ -154,13 +154,22 @@ const PriceMaybe = props => {
 
   let rentalPrice = price;
   if (isRentals) {
+    // Check if priceParams is available
     if (priceParams?.yearprice) {
       rentalPrice = yearprice;
     } else if (priceParams?.monthprice) {
       rentalPrice = monthprice;
     } else if (priceParams?.weekprice) {
       rentalPrice = weekprice;
-    } 
+    }
+    // Check if publicData is available
+    else if (publicData?.monthprice) {
+      rentalPrice = monthprice;
+    } else if (publicData?.weekprice) {
+      rentalPrice = weekprice;
+    } else if (publicData?.yearprice) {
+      rentalPrice = yearprice;
+    }
   }
 
   const formattedPrice = rentalPrice ? formatPriceInMillions(rentalPrice) : null;
