@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 
 import { useConfiguration } from '../../../context/configurationContext';
 import { useIntl } from '../../../util/reactIntl';
@@ -24,6 +25,7 @@ import css from './SortBy.module.css';
 const SortBy = props => {
   const config = useConfiguration();
   const intl = useIntl();
+  const location = useLocation();
   const {
     sort,
     showAsPopup = false,
@@ -58,21 +60,42 @@ const SortBy = props => {
 
   const isRelevanceOptionActive = activeOptions.includes(relevanceFilter);
 
+  const urlParams = new URLSearchParams(location.search);
+  const category = urlParams.get('pub_categoryLevel1');
+
   const options = config.search.sortConfig.options.reduce((selected, option) => {
-    const isRelevance = option.key === relevanceKey;
+    let currentOption = { ...option };
+    if (category === 'rentalvillas' && currentOption.key.includes('price')) {
+      const isAscending = currentOption.key.startsWith('-');
+      let priceKey;
+
+      if (urlParams.has('pub_weekprice')) {
+        priceKey = 'pub_weekprice';
+      } else if (urlParams.has('pub_monthprice')) {
+        priceKey = 'pub_monthprice';
+      } else if (urlParams.has('pub_yearprice')) {
+        priceKey = 'pub_yearprice';
+      } else {
+        priceKey = 'pub_monthprice'; // Default if no period is in URL
+      }
+
+      currentOption.key = isAscending ? `-${priceKey}` : priceKey;
+    }
+
+    const isRelevance = currentOption.key === relevanceKey;
     const isConflictingFilterSetAndActive = hasConflictingFilters && !isConflictingFilterActive;
 
     // Some default options might be mapped with translation files
-    const translationKeyLongMaybe = option?.labelTranslationKeyLong
-      ? { longLabel: intl.formatMessage({ id: option?.labelTranslationKeyLong }) }
+    const translationKeyLongMaybe = currentOption?.labelTranslationKeyLong
+      ? { longLabel: intl.formatMessage({ id: currentOption?.labelTranslationKeyLong }) }
       : {};
-    const translatedOption = option?.labelTranslationKey
+    const translatedOption = currentOption?.labelTranslationKey
       ? {
-        key: option.key,
-        label: intl.formatMessage({ id: option.labelTranslationKey }),
-        ...translationKeyLongMaybe,
-      }
-      : option;
+          key: currentOption.key,
+          label: intl.formatMessage({ id: currentOption.labelTranslationKey }),
+          ...translationKeyLongMaybe,
+        }
+      : currentOption;
     // Omit relevance option if mainSearchType is not 'keywords'
     // Note: We might change this in the future, if multiple transaction types are allowed
     return isRelevance && !isKeywordsFilterEnabled

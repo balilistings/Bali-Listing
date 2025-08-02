@@ -736,7 +736,7 @@ export class SearchPageComponent extends Component {
               }}
               resultsCount={totalItems}
               onReset={this.resetAll}
-              currentQueryParams={this.state.currentQueryParams}
+              currentQueryParams={validQueryParams}
             />
           )}
           <ModalInMobile
