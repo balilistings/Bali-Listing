@@ -347,7 +347,7 @@ const PropertyCards = () => {
       if (dots.length <= 3) {
         return <div className={styles.dots}>{dots}</div>;
       }
-      
+
       // For more than 3 slides, dynamically show 3 dots
       // Find the currently active dot
       const activeIndex = dots.findIndex(dot => 
@@ -496,7 +496,6 @@ const PropertyCards = () => {
               } = attributes;
 
               const tags = sortTags(pricee);
-              const showPills = categoryLevel1 !== 'landforsale';
               const isRentals = categoryLevel1 === 'rentalvillas';
               const isLand = categoryLevel1 === 'landforsale';
 
@@ -600,30 +599,26 @@ const PropertyCards = () => {
                     {/* <div className={styles.description}>{description}</div> */}
                     <div className={styles.bottomContent}>
                       <div className={styles.icons}>
-                        {showPills && (
-                          <>
-                            {!!bedrooms && (
-                              <span className={styles.iconItem}>
-                                <Icon type="bed" /> {bedrooms} bedroom
-                                {bedrooms > 1 ? 's' : ''}
-                              </span>
-                            )}
-                            {!!bathrooms && (
-                              <span className={styles.iconItem}>
-                                <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
-                              </span>
-                            )}
-                            {!!landsize && isLand && (
-                              <span className={css.iconItem}>
-                                <Icon type="land" /> {landsize} m2
-                              </span>
-                            )}
-                            {!!landzone && isLand && (
-                              <span className={css.iconItem}>
-                                <Icon type="zone" /> {landzone} Zone
-                              </span>
-                            )}
-                          </>
+                        {!!bedrooms && (
+                          <span className={styles.iconItem}>
+                            <Icon type="bed" /> {bedrooms} bedroom
+                            {bedrooms > 1 ? 's' : ''}
+                          </span>
+                        )}
+                        {!!bathrooms && (
+                          <span className={styles.iconItem}>
+                            <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                          </span>
+                        )}
+                        {!!landsize && isLand && (
+                          <span className={styles.iconItem}>
+                            <Icon type="land" /> {landsize} m2
+                          </span>
+                        )}
+                        {!!landzone && isLand && (
+                          <span className={styles.iconItem}>
+                            <Icon type="zone" /> {landzone} Zone
+                          </span>
                         )}
                       </div>
                       <div className={styles.price}>
