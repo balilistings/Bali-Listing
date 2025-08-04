@@ -71,7 +71,14 @@ export class SearchMapComponent extends Component {
       }
     }
 
-    this.state = { infoCardOpen: null, mapReattachmentCount };
+    const mapProvider = props.config.maps.mapProvider;
+    const isMapProviderAvailable = getSearchMapVariant(mapProvider).isMapsLibLoaded();
+
+    this.state = {
+      infoCardOpen: null,
+      mapReattachmentCount,
+      isMapLibReady: isMapProviderAvailable,
+    };
 
     this.createURLToListing = this.createURLToListing.bind(this);
     this.onListingInfoCardClicked = this.onListingInfoCardClicked.bind(this);
@@ -80,8 +87,19 @@ export class SearchMapComponent extends Component {
     this.onMapLoadHandler = this.onMapLoadHandler.bind(this);
   }
 
+  componentDidMount() {
+    if (!this.state.isMapLibReady) {
+      window.addEventListener('mapbox-loaded', () => {
+        this.setState({ isMapLibReady: true });
+      });
+    }
+  }
+
   componentWillUnmount() {
     this.listings = [];
+    window.removeEventListener('mapbox-loaded', () => {
+      this.setState({ isMapLibReady: true });
+    });
   }
 
   createURLToListing(listing) {
@@ -166,17 +184,16 @@ export class SearchMapComponent extends Component {
       // Initiate rerendering
       this.setState({ mapReattachmentCount: window.mapReattachmentCount });
     };
-    
+
     const handleCloseInfoCard = () => {
       console.log('handleCloseInfoCard called, setting infoCardOpen to null');
       this.setState({ infoCardOpen: null });
     };
-    
+
     const mapProvider = config.maps.mapProvider;
     const hasApiAccessForMapProvider = !!getMapProviderApiAccess(config.maps);
     const SearchMapVariantComponent = getSearchMapVariantComponent(mapProvider);
-    const isMapProviderAvailable =
-      hasApiAccessForMapProvider && getSearchMapVariant(mapProvider).isMapsLibLoaded();
+    const isMapProviderAvailable = hasApiAccessForMapProvider && this.state.isMapLibReady;
 
     return isMapProviderAvailable ? (
       <ReusableMapContainer
