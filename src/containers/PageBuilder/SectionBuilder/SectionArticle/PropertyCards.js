@@ -249,47 +249,47 @@ export const Icon = ({ type }) => {
 };
 
 const tabList = [
-  { id: 'denpasar', label: 'Denpasar' },
   { id: 'canggu', label: 'Canggu' },
   { id: 'ubud', label: 'Ubud' },
-  { id: 'nusa-dua', label: 'Nusa Dua' },
   { id: 'seminyak', label: 'Seminyak' },
+  { id: 'sanur', label: 'Sanur' },
+  { id: 'jimbaran', label: 'Jimbaran' },
 ];
 
 export const customLocationBounds = [
   {
-    id: 'denpasar',
-    bounds: new SDKLatLngBounds(
-      new SDKLatLng(-8.592722477000354, 115.27484842727029),
-      new SDKLatLng(-8.75264407117466, 115.17369806515754)
-    ),
-  },
-  {
     id: 'canggu',
     bounds: new SDKLatLngBounds(
-      new SDKLatLng(-8.61652101959895, 115.15729002358397),
-      new SDKLatLng(-8.6625340485523, 115.12274196212356)
+      new SDKLatLng(-8.57966544, 115.17228623),
+      new SDKLatLng(-8.67330673, 115.09845393)
     ),
   },
   {
     id: 'ubud',
     bounds: new SDKLatLngBounds(
-      new SDKLatLng(-8.46888942657574, 115.27748594193899),
-      new SDKLatLng(-8.523332932377631, 115.25459296998088)
+      new SDKLatLng(-8.44879721, 115.30985518),
+      new SDKLatLng(-8.58531967, 115.20224382)
     ),
   },
   {
-    id: 'nusa-dua',
+    id: 'sanur',
     bounds: new SDKLatLngBounds(
-      new SDKLatLng(-8.79286494449648, 115.23580328128047),
-      new SDKLatLng(-8.798839003123469, 115.23177085428605)
+      new SDKLatLng(-8.65920685, 115.26954166),
+      new SDKLatLng(-8.71088816, 115.22878674)
     ),
   },
   {
     id: 'seminyak',
     bounds: new SDKLatLngBounds(
-      new SDKLatLng(-8.682166994357754, 115.16198340000001),
-      new SDKLatLng(-8.697791538610351, 115.15089434469054)
+      new SDKLatLng(-8.64217254, 115.19883816),
+      new SDKLatLng(-8.71787404, 115.13914216)
+    ),
+  },
+  {
+    id: 'jimbaran',
+    bounds: new SDKLatLngBounds(
+      new SDKLatLng(-8.754441, 115.20630051),
+      new SDKLatLng(-8.85126784, 115.12992051)
     ),
   },
 ];
@@ -303,7 +303,7 @@ const PropertyCards = () => {
   } = state.LandingPage;
   const currentUser = useSelector(state => state.user.currentUser);
   const l = getListingsById(state, featuredListingIds);
-  const [activeTab, setActiveTab] = useState('denpasar');
+  const [activeTab, setActiveTab] = useState('canggu');
   // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef([]);
@@ -347,15 +347,15 @@ const PropertyCards = () => {
       if (dots.length <= 3) {
         return <div className={styles.dots}>{dots}</div>;
       }
-      
+
       // For more than 3 slides, dynamically show 3 dots
       // Find the currently active dot
-      const activeIndex = dots.findIndex(dot => 
-        dot.props.className && dot.props.className.includes('slick-active')
+      const activeIndex = dots.findIndex(
+        dot => dot.props.className && dot.props.className.includes('slick-active')
       );
-      
+
       let selectedDots = [];
-      
+
       if (activeIndex === -1) {
         // If no active dot found, show first 3
         selectedDots = dots.slice(0, 3);
@@ -367,13 +367,9 @@ const PropertyCards = () => {
         selectedDots = dots.slice(-3);
       } else {
         // Show previous, current, next
-        selectedDots = [
-          dots[activeIndex - 1],
-          dots[activeIndex],
-          dots[activeIndex + 1]
-        ];
+        selectedDots = [dots[activeIndex - 1], dots[activeIndex], dots[activeIndex + 1]];
       }
-      
+
       return <div className={styles.dots}>{selectedDots}</div>;
     },
     lazyLoad: 'progressive',
