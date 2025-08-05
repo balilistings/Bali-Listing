@@ -58,7 +58,7 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
 
   const handleLocationsClick = async location => {
     try {
-      console.log('called', location);
+      // console.log('called', location);
       setIsActive(location);
       if (location.id === 'nearBy') {
         EventBus.emit('selectPrediction', {
@@ -77,6 +77,17 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
     setIsActive(null);
     EventBus.emit('resetLocation');
     onReset();
+  };
+
+  const handleLocationChange = location => {
+    if (
+      mapDetails[(isActive?.id)] &&
+      location.selectedPlace.address === mapDetails[(isActive?.id)]['place_name_en-GB']
+    ) {
+      // console.log('location', location);
+    } else {
+      onLocationChange(location);
+    }
   };
 
   return (
@@ -99,7 +110,11 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
             >
               <>
                 <div className={css.filterField} key="locationSearch">
-                  <FilterLocation setSubmitDisabled={() => {}} Searchicon={true} />
+                  <FilterLocation
+                    setSubmitDisabled={() => {}}
+                    Searchicon={true}
+                    onUpdateLocationSelector={handleLocationChange}
+                  />
                 </div>
 
                 <div className={css.locationGrid}>

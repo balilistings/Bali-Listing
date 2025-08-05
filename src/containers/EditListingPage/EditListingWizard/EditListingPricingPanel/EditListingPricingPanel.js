@@ -13,6 +13,8 @@ import { H3, ListingLink } from '../../../../components';
 import EditListingPricingForm from './EditListingPricingForm';
 import css from './EditListingPricingPanel.module.css';
 
+const { Money } = sdkTypes;
+
 const getListingTypeConfig = (publicData, listingTypes) => {
   const selectedListingType = publicData.listingType;
   return listingTypes.find(conf => conf.listingType === selectedListingType);
@@ -121,7 +123,14 @@ const EditListingPricingPanel = props => {
 
             if (isRentals) {
               const { pub_pricee, pub_monthprice, pub_weekprice, pub_yearprice } = values;
+              const mainPrice = pub_monthprice
+                ? pub_monthprice * 100
+                : pub_yearprice
+                ? pub_yearprice * 100
+                : pub_weekprice * 100;
+
               updateValues = {
+                price: new Money(mainPrice, marketplaceCurrency),
                 publicData: {
                   pricee: pub_pricee,
                   ...(pub_monthprice && { monthprice: pub_monthprice }),
