@@ -324,7 +324,10 @@ function CustomFilters({
   };
 
   const handleLocationChange = location => {
-    setSelectedLocation(location);
+    onUpdateCurrentQueryParams({
+      address: location.selectedPlace.address,
+      bounds: location.selectedPlace.bounds,
+    });
   };
 
   const handleLocationReset = () => {
