@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { DeferredScriptLoader } from './deferredScriptLoader';
 
 const MAPBOX_SCRIPT_ID = 'mapbox_GL_JS';
 const GOOGLE_MAPS_SCRIPT_ID = 'GoogleMapsApi';
@@ -130,6 +131,7 @@ export const IncludeScripts = props => {
     if (isMapboxInUse && !window.mapboxgl.accessToken) {
       // Add access token for Mapbox sdk.
       window.mapboxgl.accessToken = mapboxAccessToken;
+      window.dispatchEvent(new CustomEvent('mapbox-loaded'));
     }
   };
 
@@ -147,6 +149,10 @@ export const IncludeScripts = props => {
     }
   };
 
-  const allScripts = [...analyticsLibraries, ...mapLibraries];
-  return <Helmet onChangeClientState={onChangeClientState}>{allScripts}</Helmet>;
+  return (
+    <>
+      <Helmet onChangeClientState={onChangeClientState}>{analyticsLibraries}</Helmet>
+      <DeferredScriptLoader scripts={mapLibraries} onChangeClientState={onChangeClientState} />
+    </>
+  );
 };
