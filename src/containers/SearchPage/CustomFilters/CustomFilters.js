@@ -481,6 +481,8 @@ function CustomFilters({
           livingTypes.push('closed');
         } else if (detail === 'furnished') {
           furnishedTypes.push('yes');
+        } else if (detail === 'semi-furnished') {
+          furnishedTypes.push('Semi');
         } else if (detail === 'unfurnished') {
           furnishedTypes.push('no');
         }
