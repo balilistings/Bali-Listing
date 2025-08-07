@@ -142,7 +142,7 @@ export const checkPriceParams = () => {
 
 const PriceMaybe = props => {
   const { price, publicData, config, isRentals } = props;
-  const { listingType } = publicData || {};
+  const { listingType, weekprice, monthprice, yearprice } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showPrice = displayPrice(foundListingTypeConfig);
@@ -150,9 +150,20 @@ const PriceMaybe = props => {
     return null;
   }
 
-  const formattedPrice = price ? formatPriceInMillions(price) : null;
-
   const priceParams = checkPriceParams();
+
+  let rentalPrice = price;
+  if (isRentals) {
+    if (priceParams?.yearprice) {
+      rentalPrice = yearprice;
+    } else if (priceParams?.monthprice) {
+      rentalPrice = monthprice;
+    } else if (priceParams?.weekprice) {
+      rentalPrice = weekprice;
+    } 
+  }
+
+  const formattedPrice = rentalPrice ? formatPriceInMillions(rentalPrice) : null;
 
   let suffix;
   if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
@@ -213,9 +224,6 @@ export const ListingCard = props => {
     categoryLevel1,
     landzone,
     landsize,
-    weekprice,
-    monthprice,
-    yearprice,
     Freehold,
   } = publicData;
   const tags = sortTags(pricee);
@@ -225,19 +233,7 @@ export const ListingCard = props => {
   const routeLocation = useLocation();
   const routes = useRouteConfiguration();
 
-  let price;
-
-  if (isRentals) {
-    if (pricee.includes('monthly')) {
-      price = monthprice;
-    } else if (pricee.includes('weekly')) {
-      price = weekprice;
-    } else if (pricee.includes('yearly')) {
-      price = yearprice;
-    }
-  } else {
-    price = p.amount / 100;
-  }
+  const price = isRentals ? null : p.amount / 100;
 
   const setActivePropsMaybe = setActiveListing
     ? {
