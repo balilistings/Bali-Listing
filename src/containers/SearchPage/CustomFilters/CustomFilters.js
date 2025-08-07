@@ -355,11 +355,27 @@ function CustomFilters({
       pub_yearprice = range.toString();
     }
 
-    onUpdateCurrentQueryParams({
+    const paramsToUpdate = {
       pub_weekprice,
       pub_monthprice,
       pub_yearprice,
-    });
+    };
+
+    // Update price sorting
+    const currentSort = currentQueryParams.sort;
+    if (currentSort && currentSort.includes('price')) {
+      const isAscending = currentSort.startsWith('-');
+      const priceKeyMap = {
+        weekly: 'pub_weekprice',
+        monthly: 'pub_monthprice',
+        yearly: 'pub_yearprice',
+      };
+      const newSortKey = priceKeyMap[period];
+      if (newSortKey) {
+        paramsToUpdate.sort = isAscending ? `-${newSortKey}` : newSortKey;
+      }
+    }
+    onUpdateCurrentQueryParams(paramsToUpdate);
   };
 
   const handleSimplePriceRangeChange = range => {
