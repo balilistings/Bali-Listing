@@ -111,23 +111,22 @@ const CustomListingFields = props => {
               </div>
             ))}
           </div>
-
-          <div className={css.propertyDetailsContainer}>
-            <h2 className={css.propertyDetailsTitle}>Property Details</h2>
-            <div className={css.propertyDetailList}>
-              {availablePropertyDetails.map(d => (
-                <div key={d.label} className={css.propertyDetailItem}>
-                  <span className={css.propertyDetailLabelWrapper}>
-                    <span className={css.propertyDetailIcon}>{d.icon}</span>
-                    <span className={css.propertyDetailLabel}>{d.label}</span>
-                  </span>
-                  <span className={css.propertyDetailValue}>{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
+      <div className={css.propertyDetailsContainer} id="propertyDetails">
+        <h2 className={css.propertyDetailsTitle}>Property Details</h2>
+        <div className={css.propertyDetailList}>
+          {availablePropertyDetails.map(d => (
+            <div key={d.label} className={css.propertyDetailItem}>
+              <span className={css.propertyDetailLabelWrapper}>
+                <span className={css.propertyDetailIcon}>{d.icon}</span>
+                <span className={css.propertyDetailLabel}>{d.label}</span>
+              </span>
+              <span className={css.propertyDetailValue}>{d.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* Uncomment this when we have services */}
       {/* <div className={css.servicesContainerWrapper}>
