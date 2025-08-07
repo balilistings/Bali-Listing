@@ -26,6 +26,7 @@ import {
   isForbiddenError,
 } from '../../util/errors.js';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers.js';
+import { convertUnitToSubUnit, unitDivisor } from '../../util/currency';
 import {
   ensureListing,
   ensureOwnListing,
@@ -89,6 +90,8 @@ import SectionTerms from './SectionTerms';
 
 import css from './ListingPage.module.css';
 import { handleToggleFavorites } from '../../util/userFavorites.js';
+
+const { Money } = sdkTypes;
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
@@ -362,6 +365,20 @@ export const ListingPageComponent = props => {
 
   const availabilityMaybe = schemaAvailability ? { availability: schemaAvailability } : {};
 
+  let priceForSchema = priceForSchemaMaybe(price);
+  if (isRentals) {
+    const { yearprice, monthprice, weekprice } = publicData;
+    const rentalPrice = yearprice || monthprice || weekprice;
+
+    if (rentalPrice) {
+      const numericPrice = new Money(
+        convertUnitToSubUnit(rentalPrice, unitDivisor(config.currency)),
+        config.currency
+      );
+      priceForSchema = priceForSchemaMaybe(numericPrice);
+    }
+  }
+
   return (
     <Page
       title={schemaTitle}
@@ -379,7 +396,7 @@ export const ListingPageComponent = props => {
         offers: {
           '@type': 'Offer',
           url: productURL,
-          ...priceForSchemaMaybe(price),
+          ...priceForSchema,
           ...availabilityMaybe,
         },
       }}
