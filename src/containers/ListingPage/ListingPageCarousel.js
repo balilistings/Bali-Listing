@@ -128,6 +128,13 @@ export const ListingPageComponent = props => {
 
   useEffect(() => {
     setMounted(true);
+
+    if (window.fbq) {
+      fbq('track', 'ViewContent', {
+        content_name: 'Property Listing',
+        content_category: 'Real Estate',
+      });
+    }
   }, []);
 
   // Scroll to section on tab click with offset from top

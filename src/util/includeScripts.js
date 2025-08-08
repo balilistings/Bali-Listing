@@ -18,7 +18,7 @@ const GOOGLE_MAPS_SCRIPT_ID = 'GoogleMapsApi';
  */
 export const IncludeScripts = props => {
   const { marketplaceRootURL: rootURL, maps, analytics } = props?.config || {};
-  const { googleAnalyticsId, plausibleDomains } = analytics;
+  const { googleAnalyticsId, plausibleDomains, facebookPixelId } = analytics;
 
   const { mapProvider, googleMapsAPIKey, mapboxAccessToken } = maps || {};
   const isGoogleMapsInUse = mapProvider === 'googleMaps';
@@ -30,18 +30,20 @@ export const IncludeScripts = props => {
 
   // Collect relevant map libraries
   let mapLibraries = [];
+  let deferredMapLibraries = [];
   let analyticsLibraries = [];
 
   if (isMapboxInUse) {
     // NOTE: remember to update mapbox-sdk.min.js to a new version regularly.
     // mapbox-sdk.min.js is included from static folder for CSP purposes.
-    mapLibraries.push(
+    deferredMapLibraries.push(
       <script key="mapboxSDK" src={`${rootURL}/static/scripts/mapbox/mapbox-sdk.min.js`}></script>
     );
     // License information for v3.7.0 of the mapbox-gl-js library:
     // https://github.com/mapbox/mapbox-gl-js/blob/v3.7.0/LICENSE.txt
 
     // Add CSS for Mapbox map
+    // lazy loading the css seems to create problem if visiting listing page directly
     mapLibraries.push(
       <link
         key="mapbox_GL_CSS"
@@ -51,7 +53,7 @@ export const IncludeScripts = props => {
       />
     );
     // Add Mapbox library
-    mapLibraries.push(
+    deferredMapLibraries.push(
       <script
         id={MAPBOX_SCRIPT_ID}
         key="mapbox_GL_JS"
@@ -61,7 +63,7 @@ export const IncludeScripts = props => {
     );
   } else if (isGoogleMapsInUse) {
     // Add Google Maps library
-    mapLibraries.push(
+    deferredMapLibraries.push(
       <script
         id={GOOGLE_MAPS_SCRIPT_ID}
         key="GoogleMapsApi"
@@ -112,6 +114,33 @@ export const IncludeScripts = props => {
     );
   }
 
+  if (facebookPixelId) {
+    // Facebook Pixel script
+    analyticsLibraries.push(
+      <script key="facebook-pixel">
+        {`
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', '${facebookPixelId}');
+          fbq('track', 'PageView');
+        `}
+      </script>
+    );
+
+    // Facebook Pixel noscript fallback
+    analyticsLibraries.push(
+      <noscript key="facebook-pixel-noscript">
+        {`<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${facebookPixelId}&ev=PageView&noscript=1" />`}
+      </noscript>
+    );
+  }
+
   const isBrowser = typeof window !== 'undefined';
   const isMapboxLoaded = isBrowser && window.mapboxgl;
 
@@ -151,8 +180,8 @@ export const IncludeScripts = props => {
 
   return (
     <>
-      <Helmet onChangeClientState={onChangeClientState}>{analyticsLibraries}</Helmet>
-      <DeferredScriptLoader scripts={mapLibraries} onChangeClientState={onChangeClientState} />
+      <Helmet onChangeClientState={onChangeClientState}>{[...analyticsLibraries, ...mapLibraries]}</Helmet>
+      <DeferredScriptLoader scripts={deferredMapLibraries} onChangeClientState={onChangeClientState} />
     </>
   );
 };
