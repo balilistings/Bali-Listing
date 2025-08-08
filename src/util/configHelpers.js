@@ -160,7 +160,9 @@ const mergeAnalyticsConfig = (hostedAnalyticsConfig, defaultAnalyticsConfig) => 
   const plausibleDomains = joinStrings(plausibleDomainsHosted, plausibleDomainsDefault);
   const plausibleDomainsMaybe = plausibleDomains ? { plausibleDomains } : {};
 
-  return { googleAnalyticsId, ...plausibleDomainsMaybe };
+  const facebookPixelId = defaultAnalyticsConfig.facebookPixelId;
+
+  return { googleAnalyticsId, facebookPixelId, ...plausibleDomainsMaybe };
 };
 
 ////////////////////
