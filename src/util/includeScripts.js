@@ -30,6 +30,7 @@ export const IncludeScripts = props => {
 
   // Collect relevant map libraries
   let mapLibraries = [];
+  let deferredMapLibraries = [];
   let analyticsLibraries = [];
 
   if (isMapboxInUse) {
@@ -42,6 +43,7 @@ export const IncludeScripts = props => {
     // https://github.com/mapbox/mapbox-gl-js/blob/v3.7.0/LICENSE.txt
 
     // Add CSS for Mapbox map
+    // lazy loading the css seems to create problem if visiting listing page directly
     mapLibraries.push(
       <link
         key="mapbox_GL_CSS"
@@ -51,7 +53,7 @@ export const IncludeScripts = props => {
       />
     );
     // Add Mapbox library
-    mapLibraries.push(
+    deferredMapLibraries.push(
       <script
         id={MAPBOX_SCRIPT_ID}
         key="mapbox_GL_JS"
@@ -61,7 +63,7 @@ export const IncludeScripts = props => {
     );
   } else if (isGoogleMapsInUse) {
     // Add Google Maps library
-    mapLibraries.push(
+    deferredMapLibraries.push(
       <script
         id={GOOGLE_MAPS_SCRIPT_ID}
         key="GoogleMapsApi"
@@ -151,8 +153,8 @@ export const IncludeScripts = props => {
 
   return (
     <>
-      <Helmet onChangeClientState={onChangeClientState}>{analyticsLibraries}</Helmet>
-      <DeferredScriptLoader scripts={mapLibraries} onChangeClientState={onChangeClientState} />
+      <Helmet onChangeClientState={onChangeClientState}>{[...analyticsLibraries, ...mapLibraries]}</Helmet>
+      <DeferredScriptLoader scripts={deferredMapLibraries} onChangeClientState={onChangeClientState} />
     </>
   );
 };
