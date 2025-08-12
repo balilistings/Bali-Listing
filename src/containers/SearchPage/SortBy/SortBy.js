@@ -64,8 +64,9 @@ const SortBy = props => {
   const category = urlParams.get('pub_categoryLevel1');
 
   const options = config.search.sortConfig.options.reduce((selected, option) => {
-    if (category === 'rentalvillas' && option.key.includes('price')) {
-      const isAscending = option.key.startsWith('-');
+    let optionKey = option.key;
+    if (category === 'rentalvillas' && optionKey.includes('price')) {
+      const isAscending = optionKey.startsWith('-');
       let priceKey;
 
       if (urlParams.has('pub_weekprice')) {
@@ -78,10 +79,10 @@ const SortBy = props => {
         priceKey = 'pub_monthprice'; // Default if no period is in URL
       }
 
-      option.key = isAscending ? `-${priceKey}` : priceKey;
+      optionKey = isAscending ? `-${priceKey}` : priceKey;
     }
 
-    const isRelevance = option.key === relevanceKey;
+    const isRelevance = optionKey === relevanceKey;
     const isConflictingFilterSetAndActive = hasConflictingFilters && !isConflictingFilterActive;
 
     // Some default options might be mapped with translation files
@@ -90,11 +91,11 @@ const SortBy = props => {
       : {};
     const translatedOption = option?.labelTranslationKey
       ? {
-        key: option.key,
+        key: optionKey,
         label: intl.formatMessage({ id: option.labelTranslationKey }),
         ...translationKeyLongMaybe,
       }
-      : option;
+      : {...option, key: optionKey};
     // Omit relevance option if mainSearchType is not 'keywords'
     // Note: We might change this in the future, if multiple transaction types are allowed
     return isRelevance && !isKeywordsFilterEnabled
