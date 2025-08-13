@@ -3,11 +3,59 @@
 
 .input {
 }
+
 .textarea {
 }
 
 .inputSuccess {
 }
+
 .inputError {
   border: var(--borderErrorField);
+}
+
+.passwordInput {
+  padding-right: 40px; /* Make room for the eye icon */
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  z-index: 10;
+  min-width: 24px;
+  min-height: 24px;
+  color: var(--colorGrey700);
+}
+
+.passwordToggle:hover {
+  background-color: var(--colorGrey100);
+  color: var(--colorGrey900);
+}
+
+.passwordToggle:focus {
+  outline: 2px solid var(--colorGrey300);
+  outline-offset: 2px;
+}
+
+.passwordToggle:active {
+  background-color: var(--colorGrey200);
+  color: var(--colorGrey1000);
 }

@@ -12,15 +12,67 @@
 
 .password {
   composes: marketplaceModalPasswordMargins from global;
+  margin-top: 20px;
 }
 
 .bottomWrapper {
-  composes: marketplaceModalBottomWrapper from global;
+  /* composes: marketplaceModalBottomWrapper from global; */
+max-width: 300px;
+width: 100%;
+margin: 0 auto;
+& button{
+  background-color: #F74DF4;
+  color: #fff;
+   min-height: 41px;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  @media (max-width: 768px) {
+    font-family: Mulish;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 12px;
+  }
+  
+
+}
 }
 
 /* Adjust the bottomWrapper's margin to match modals without the helper text */
 .bottomWrapperText {
-  composes: marketplaceModalBottomWrapperText from global;
+  /* composes: marketplaceModalBottomWrapperText from global; */
+  text-align: right;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  margin-bottom: 0;
+
+  & a {
+    font-family: Mulish;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 12px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    text-decoration: underline;
+    text-decoration-style: solid;
+    text-decoration-offset: 0%;
+    text-decoration-thickness: 0%;
+    text-decoration-skip-ink: auto;
+    color: #F74DF4;
+
+  }
+
+  margin-top: 14px;
+  padding: 0;
 }
 
 .recoveryLink {
@@ -29,4 +81,207 @@
 
 .recoveryLinkInfo {
   composes: marketplaceModalHelperText from global;
+}
+
+.formTitle {
+  & h2 {
+    font-family: Istok Web;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 34px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    text-align: center;
+    color: #151515;
+    margin: 0 0 20px;
+    @media (max-width: 768px) {
+      font-family: Istok Web;
+      font-weight: 700;
+      font-style: Bold;
+      font-size: 22px;
+      leading-trim: NONE;
+      line-height: 130%;
+      letter-spacing: 0%;
+      text-align: center;
+      margin-bottom: 8px;
+
+    }
+  }
+
+  & p {
+    font-family: Mulish;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 16px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    color: #717171;
+    @media (max-width: 768px) {
+      font-family: Mulish;
+      font-weight: 400;
+      font-style: Regular;
+      font-size: 10px;
+      leading-trim: NONE;
+      line-height: 130%;
+      letter-spacing: 0%;
+      text-align: center;
+
+    }
+  }
+}
+
+.formFields {
+  max-width: 300px;
+  width: 100%;
+  margin: 40px auto 24px;
+
+  & label {
+    font-family: Mulish;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #231F20;
+    padding-bottom: 8px;
+    margin-bottom: 0;
+    @media (max-width: 768px) {
+      font-family: Mulish;
+      font-weight: 400;
+      font-style: Regular;
+      font-size: 12px;
+    }
+  }
+
+  & input {
+    border: 1px solid #C4C4C4;
+    border-radius: 10px;
+    padding: 9px 16px 9px 16px;
+    font-family: Mulish;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    @media (max-width: 768px) {
+      font-family: Mulish;
+      font-weight: 400;
+      font-style: Regular;
+      font-size: 12px;
+    }
+
+    &:placeholder {
+      color: #D3D3D3;
+    }
+  }
+
+}
+
+/* Password field wrapper styles */
+.passwordFieldWrapper {
+  margin-top: 20px;
+
+  & label {
+    font-family: Mulish;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #231F20;
+    padding-bottom: 8px;
+    margin-bottom: 0;
+    display: block;
+    @media (max-width: 768px) {
+      font-family: Mulish;
+      font-weight: 400;
+      font-style: Regular;
+      font-size: 12px;
+    }
+  }
+}
+
+.passwordInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.passwordInput {
+  border: 1px solid #C4C4C4;
+  border-radius: 10px;
+  padding: 9px 16px 9px 16px;
+  padding-right: 50px; /* Make room for the eye icon */
+  font-family: Mulish;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  width: 100%;
+  box-sizing: border-box;
+  @media (max-width: 768px) {
+    font-family: Mulish;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 12px;
+  }
+
+  &:placeholder {
+    color: #D3D3D3;
+  }
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  z-index: 10;
+  min-width: 24px;
+  min-height: 24px;
+  color: #717171;
+  &:focus{
+    background: none;
+  border: none;
+  }
+  &:hover{
+    background: none;
+    border: none;
+  }
+  & svg{
+    fill: transparent;
+  }
+}
+
+.passwordToggle:hover {
+
+}
+
+.passwordToggle:focus {
+ 
+}
+
+.passwordToggle:active {
+  background-color: #e5e5e5;
+  color: #000;
 }

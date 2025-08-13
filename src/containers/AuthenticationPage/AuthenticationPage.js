@@ -23,6 +23,8 @@ import { pickUserFieldsData, addScopePrefix } from '../../util/userHelpers';
 import { login, authenticationInProgress, signup, signupWithIdp } from '../../ducks/auth.duck';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { sendVerificationEmail } from '../../ducks/user.duck';
+import authImage from '../../assets/auth-banner.png';
+import authImage2 from '../../assets/auth-banner-2.png';
 
 import {
   Page,
@@ -34,6 +36,7 @@ import {
   ResponsiveBackgroundImageContainer,
   Modal,
   LayoutSingleColumn,
+  NamedLink,
 } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
@@ -100,35 +103,37 @@ export const SocialLoginButtonsMaybe = props => {
     <div className={css.idpButtons}>
       <div className={css.socialButtonsOr}>
         <span className={css.socialButtonsOrText}>
-          <FormattedMessage id="AuthenticationPage.or" />
+          <FormattedMessage id="AuthenticationPage.or1" />
         </span>
       </div>
+      <div className={css.idpButtonsInner}>
+        {showGoogleLogin ? (
+          <div className={css.socialButtonWrapper}>
+            <SocialLoginButton onClick={() => authWithGoogle()}>
+              <span className={css.buttonIcon}>{GoogleLogo}</span>
+              {isLogin ? (
+                <FormattedMessage id="AuthenticationPage.loginWithGoogle1" />
+              ) : (
+                <FormattedMessage id="AuthenticationPage.signupWithGoogle1" />
+              )}
+            </SocialLoginButton>
+          </div>
+        ) : null}
+        {showFacebookLogin ? (
+          <div className={css.socialButtonWrapper}>
+            <SocialLoginButton onClick={() => authWithFacebook()}>
+              <span className={css.buttonIcon}>{FacebookLogo}</span>
+              {isLogin ? (
+                <FormattedMessage id="AuthenticationPage.loginWithFacebook1" />
+              ) : (
+                <FormattedMessage id="AuthenticationPage.signupWithFacebook1" />
+              )}
+            </SocialLoginButton>
+          </div>
+        ) : null}
+      </div>
 
-      {showFacebookLogin ? (
-        <div className={css.socialButtonWrapper}>
-          <SocialLoginButton onClick={() => authWithFacebook()}>
-            <span className={css.buttonIcon}>{FacebookLogo}</span>
-            {isLogin ? (
-              <FormattedMessage id="AuthenticationPage.loginWithFacebook" />
-            ) : (
-              <FormattedMessage id="AuthenticationPage.signupWithFacebook" />
-            )}
-          </SocialLoginButton>
-        </div>
-      ) : null}
 
-      {showGoogleLogin ? (
-        <div className={css.socialButtonWrapper}>
-          <SocialLoginButton onClick={() => authWithGoogle()}>
-            <span className={css.buttonIcon}>{GoogleLogo}</span>
-            {isLogin ? (
-              <FormattedMessage id="AuthenticationPage.loginWithGoogle" />
-            ) : (
-              <FormattedMessage id="AuthenticationPage.signupWithGoogle" />
-            )}
-          </SocialLoginButton>
-        </div>
-      ) : null}
     </div>
   ) : null;
 };
@@ -142,9 +147,9 @@ const getNonUserFieldParams = (values, userFieldConfigs) => {
     return isUserFieldKey
       ? picked
       : {
-          ...picked,
-          [key]: value,
-        };
+        ...picked,
+        [key]: value,
+      };
   }, {});
 };
 
@@ -276,14 +281,14 @@ export const AuthenticationForms = props => {
     isLogin && !!idpAuthError
       ? idpAuthErrorMessage
       : isLogin && !!loginError
-      ? loginErrorMessage
-      : !!signupError
-      ? signupErrorMessage
-      : null;
+        ? loginErrorMessage
+        : !!signupError
+          ? signupErrorMessage
+          : null;
 
   return (
     <div className={css.content}>
-      <LinkTabNavHorizontal className={css.tabs} tabs={tabs} />
+      {/* <LinkTabNavHorizontal className={css.tabs} tabs={tabs} /> */}
       {loginOrSignupError}
 
       {isLogin ? (
@@ -302,11 +307,26 @@ export const AuthenticationForms = props => {
 
       <SocialLoginButtonsMaybe
         isLogin={isLogin}
-        showFacebookLogin={showFacebookLogin}
-        showGoogleLogin={showGoogleLogin}
+        // showFacebookLogin={showFacebookLogin}
+        // showGoogleLogin={showGoogleLogin}
+        showFacebookLogin={true}
+        showGoogleLogin={true}
         {...fromMaybe}
         {...userTypeMaybe}
       />
+      {isLogin ? (
+          <div className={css.signUpLink}>
+            <p className={css.signUpLinkText}>
+              Don't have an account? <NamedLink name="SignupPage">Sign up</NamedLink>
+            </p>
+          </div>
+      ) : (
+        <div className={css.signUpLink}>
+          <p className={css.signUpLinkText}>
+            Already have an account? <NamedLink name="LoginPage">Login</NamedLink>
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -362,27 +382,27 @@ const ConfirmIdProviderInfoForm = props => {
     // Pass other values as extended data according to user field configuration
     const extendedDataMaybe = !isEmpty(rest)
       ? {
-          publicData: {
-            userType,
-            ...pickUserFieldsData(rest, 'public', userType, userFields),
-          },
-          privateData: {
-            ...pickUserFieldsData(rest, 'private', userType, userFields),
-          },
-          protectedData: {
-            ...pickUserFieldsData(rest, 'protected', userType, userFields),
-            // If the confirm form has any additional values, pass them forward as user's protected data
-            ...getNonUserFieldParams(rest, userFields),
-            ...(selfieDocumentLink && { selfieDocumentLink }),
-            ...(idDocumentLink && { idDocumentLink }),
-            ...(companyDocumentLink && { companyDocumentLink }),
-            ...(pub_companyname && { companyname: pub_companyname }),
-            ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
-            ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
-            ...(pub_company_address && { company_address: pub_company_address }),
-            ...(pub_company_registration && { company_registration: pub_company_registration }),
-          },
-        }
+        publicData: {
+          userType,
+          ...pickUserFieldsData(rest, 'public', userType, userFields),
+        },
+        privateData: {
+          ...pickUserFieldsData(rest, 'private', userType, userFields),
+        },
+        protectedData: {
+          ...pickUserFieldsData(rest, 'protected', userType, userFields),
+          // If the confirm form has any additional values, pass them forward as user's protected data
+          ...getNonUserFieldParams(rest, userFields),
+          ...(selfieDocumentLink && { selfieDocumentLink }),
+          ...(idDocumentLink && { idDocumentLink }),
+          ...(companyDocumentLink && { companyDocumentLink }),
+          ...(pub_companyname && { companyname: pub_companyname }),
+          ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
+          ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
+          ...(pub_company_address && { company_address: pub_company_address }),
+          ...(pub_company_registration && { company_registration: pub_company_registration }),
+        },
+      }
       : {};
 
     submitSingupWithIdp({
@@ -665,6 +685,9 @@ export const AuthenticationPageComponent = props => {
     </p>
   ) : null;
 
+  // const isConfirm = tab === 'confirm';
+  // const isLogin = tab === 'login';
+
   return (
     <Page
       title={schemaTitle}
@@ -681,7 +704,7 @@ export const AuthenticationPageComponent = props => {
         topbar={<TopbarContainer className={topbarClasses} />}
         footer={<FooterContainer />}
       >
-        <ResponsiveBackgroundImageContainer
+        {/* <ResponsiveBackgroundImageContainer
           className={css.root}
           childrenWrapperClassName={css.contentContainer}
           as="section"
@@ -689,6 +712,12 @@ export const AuthenticationPageComponent = props => {
           sizes="100%"
           useOverlay
         >
+       
+        </ResponsiveBackgroundImageContainer> */}
+        <div className={css.contentContainer}>
+          <div className={css.imageContainer}>
+            <img src={tab === 'signup' ? authImage2 : authImage} alt="logo" />
+          </div>
           {showEmailVerification ? (
             <EmailVerificationInfo
               name={user.attributes.profile.firstName}
@@ -698,6 +727,7 @@ export const AuthenticationPageComponent = props => {
               sendVerificationEmailInProgress={sendVerificationEmailInProgress}
             />
           ) : (
+
             <AuthenticationOrConfirmInfoForm
               tab={tab}
               userType={userType}
@@ -722,7 +752,7 @@ export const AuthenticationPageComponent = props => {
               }
             />
           )}
-        </ResponsiveBackgroundImageContainer>
+        </div>
       </LayoutSingleColumn>
       <Modal
         id="AuthenticationPage.tos"

@@ -97,24 +97,24 @@ const SignupFormComponent = props => (
       const filterUserFields =
         pub_role === undefined
           ? userFields.filter(
-              elm =>
-                ![
-                  'companyname',
-                  'id_card_nik',
-                  'id_npwp_nik',
-                  'company_address',
-                  'company_registration',
-                ].includes(elm.key)
-            )
+            elm =>
+              ![
+                'companyname',
+                'id_card_nik',
+                'id_npwp_nik',
+                'company_address',
+                'company_registration',
+              ].includes(elm.key)
+          )
           : pub_role === 'individual'
-          ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
-          : pub_role === 'freelance'
-          ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
-          : pub_role === 'company'
-          ? userFields.filter(elm =>
-              ['companyname', 'company_address', 'company_registration', 'role'].includes(elm.key)
-            )
-          : [];
+            ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
+            : pub_role === 'freelance'
+              ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
+              : pub_role === 'company'
+                ? userFields.filter(elm =>
+                  ['companyname', 'company_address', 'company_registration', 'role'].includes(elm.key)
+                )
+                : [];
 
       const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
 
@@ -142,137 +142,185 @@ const SignupFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-          <FieldSelectUserType
-            name="userType"
-            userTypes={userTypes}
-            hasExistingUserType={!!preselectedUserType}
-            intl={intl}
-          />
 
-          {showDefaultUserFields ? (
-            <div className={css.defaultUserFields}>
-              <FieldTextInput
-                type="email"
-                id={formId ? `${formId}.email` : 'email'}
-                name="email"
-                autoComplete="email"
-                label={intl.formatMessage({
-                  id: 'SignupForm.emailLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.emailPlaceholder',
-                })}
-                validate={validators.composeValidators(emailRequired, emailValid)}
-              />
-              <div className={css.name}>
+          <div className={css.formTitle}>
+            <h2>Sign Up</h2>
+            <p>Create your account and get started. Whether you’re looking for a place or offering one.</p>
+          </div>
+          <div className={css.formContent}>
+            <FieldSelectUserType
+              name="userType"
+              userTypes={userTypes}
+              hasExistingUserType={!!preselectedUserType}
+              intl={intl}
+              validate={validators.required(
+                intl.formatMessage({
+                  id: 'FieldSelectUserType.required',
+                })
+              )}
+            />
+
+            {showDefaultUserFields ? (
+              <div className={css.defaultUserFields}>
                 <FieldTextInput
-                  className={css.firstNameRoot}
-                  type="text"
-                  id={formId ? `${formId}.fname` : 'fname'}
-                  name="fname"
-                  autoComplete="given-name"
+                  type="email"
+                  id={formId ? `${formId}.email` : 'email'}
+                  name="email"
+                  autoComplete="email"
                   label={intl.formatMessage({
-                    id: 'SignupForm.firstNameLabel',
+                    id: 'SignupForm.emailLabel',
                   })}
                   placeholder={intl.formatMessage({
-                    id: 'SignupForm.firstNamePlaceholder',
+                    id: 'SignupForm.emailPlaceholder',
                   })}
-                  validate={validators.required(
-                    intl.formatMessage({
-                      id: 'SignupForm.firstNameRequired',
-                    })
-                  )}
+                  validate={validators.composeValidators(emailRequired, emailValid)}
                 />
+                <div className={css.name}>
+                  <FieldTextInput
+                    className={css.firstNameRoot}
+                    type="text"
+                    id={formId ? `${formId}.fname` : 'fname'}
+                    name="fname"
+                    autoComplete="given-name"
+                    label={intl.formatMessage({
+                      id: 'SignupForm.firstNameLabel',
+                    })}
+                    placeholder={intl.formatMessage({
+                      id: 'SignupForm.firstNamePlaceholder',
+                    })}
+                    validate={validators.required(
+                      intl.formatMessage({
+                        id: 'SignupForm.firstNameRequired',
+                      })
+                    )}
+                  />
+                  <FieldTextInput
+                    className={css.lastNameRoot}
+                    type="text"
+                    id={formId ? `${formId}.lname` : 'lname'}
+                    name="lname"
+                    autoComplete="family-name"
+                    label={intl.formatMessage({
+                      id: 'SignupForm.lastNameLabel',
+                    })}
+                    placeholder={intl.formatMessage({
+                      id: 'SignupForm.lastNamePlaceholder',
+                    })}
+                    validate={validators.required(
+                      intl.formatMessage({
+                        id: 'SignupForm.lastNameRequired',
+                      })
+                    )}
+                  />
+                </div>
+
+                <UserFieldDisplayName
+                  formName="SignupForm"
+                  className={css.row}
+                  userTypeConfig={userTypeConfig}
+                  intl={intl}
+                />
+
                 <FieldTextInput
-                  className={css.lastNameRoot}
-                  type="text"
-                  id={formId ? `${formId}.lname` : 'lname'}
-                  name="lname"
-                  autoComplete="family-name"
+                  className={css.password}
+                  type="password"
+                  id={formId ? `${formId}.password` : 'password'}
+                  name="password"
+                  autoComplete="new-password"
                   label={intl.formatMessage({
-                    id: 'SignupForm.lastNameLabel',
+                    id: 'SignupForm.passwordLabel',
                   })}
                   placeholder={intl.formatMessage({
-                    id: 'SignupForm.lastNamePlaceholder',
+                    id: 'SignupForm.passwordPlaceholder',
                   })}
-                  validate={validators.required(
-                    intl.formatMessage({
-                      id: 'SignupForm.lastNameRequired',
-                    })
-                  )}
+                  validate={passwordValidators}
+                />
+
+                <UserFieldPhoneNumber
+                  formName="SignupForm"
+                  className={css.row}
+                  userTypeConfig={userTypeConfig}
+                  intl={intl}
                 />
               </div>
+            ) : null}
+            {userType === 'provider' ?
 
-              <UserFieldDisplayName
-                formName="SignupForm"
-                className={css.row}
-                userTypeConfig={userTypeConfig}
-                intl={intl}
-              />
+              <div>
+                <FieldTextInput
+                   className={css.password}
+                  type="number"
+                  id={formId ? `${formId}.whatsapp_number` : 'whatsapp_number'}
+                  name="whatsapp_number"
+                  autoComplete="whatsapp_number"
+                  label={intl.formatMessage({
+                    id: 'SignupForm.whatsappNumberLabel',
+                  })}
+                  placeholder={intl.formatMessage({
+                    id: 'SignupForm.whatsappNumberPlaceholder',
+                  })}
 
-              <FieldTextInput
-                className={css.password}
-                type="password"
-                id={formId ? `${formId}.password` : 'password'}
-                name="password"
-                autoComplete="new-password"
-                label={intl.formatMessage({
-                  id: 'SignupForm.passwordLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'SignupForm.passwordPlaceholder',
-                })}
-                validate={passwordValidators}
-              />
+                />
+                <FieldTextInput
+                 className={css.password}
+                  type="text"
+                  id={formId ? `${formId}.company_name` : 'company_name'}
+                  name="company_name"
+                  autoComplete="company_name"
+                  label={intl.formatMessage({
+                    id: 'SignupForm.companyNameLabel',
+                  })}
+                  placeholder={intl.formatMessage({
+                    id: 'SignupForm.companyNamePlaceholder',
+                  })}
+                  validate={validators.required(
+                    intl.formatMessage({
+                      id: 'SignupForm.companyNameRequired',
+                    })
+                  )}
+                />
+              </div> : null}
 
-              <UserFieldPhoneNumber
-                formName="SignupForm"
-                className={css.row}
-                userTypeConfig={userTypeConfig}
-                intl={intl}
+            {/* {userType === 'provider' ? (
+              <ImageUploader
+                label={
+                  pub_role === 'company'
+                    ? 'Screenshot/Picture NIB or NPWP Mentioning Company Name'
+                    : 'ID Document (KTP/Driving License/Passport)'
+                }
+                columns={1}
+                dropzoneHeight="100px"
+                labelText=""
+                maxImages={1}
+                onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
               />
+            ) : null} */}
+
+            {/* {showCustomUserFields ? (
+              <div className={css.customFields}>
+                {userFieldProps.map(({ key, ...fieldProps }) => (
+                  <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
+                ))}
+              </div>
+            ) : null} */}
+
+            {userType === 'provider' && pub_role ? (
+              <ImageUploader
+                label="Add a selfie of you holding your ID card"
+                columns={1}
+                dropzoneHeight="100px"
+                labelText=""
+                maxImages={1}
+                onProfileChange={handleSelfieDocument}
+              />
+            ) : null}
+
+            <div className={css.bottomWrapper}>
+              {termsAndConditions}
+              <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+                <FormattedMessage id="SignupForm.signUp" />
+              </PrimaryButton>
             </div>
-          ) : null}
-
-          {userType === 'provider' ? (
-            <ImageUploader
-              label={
-                pub_role === 'company'
-                  ? 'Screenshot/Picture NIB or NPWP Mentioning Company Name'
-                  : 'ID Document (KTP/Driving License/Passport)'
-              }
-              columns={1}
-              dropzoneHeight="100px"
-              labelText=""
-              maxImages={1}
-              onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
-            />
-          ) : null}
-
-          {showCustomUserFields ? (
-            <div className={css.customFields}>
-              {userFieldProps.map(({ key, ...fieldProps }) => (
-                <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
-              ))}
-            </div>
-          ) : null}
-
-          {userType === 'provider' && pub_role ? (
-            <ImageUploader
-              label="Add a selfie of you holding your ID card"
-              columns={1}
-              dropzoneHeight="100px"
-              labelText=""
-              maxImages={1}
-              onProfileChange={handleSelfieDocument}
-            />
-          ) : null}
-
-          <div className={css.bottomWrapper}>
-            {termsAndConditions}
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-              <FormattedMessage id="SignupForm.signUp" />
-            </PrimaryButton>
           </div>
         </Form>
       );
