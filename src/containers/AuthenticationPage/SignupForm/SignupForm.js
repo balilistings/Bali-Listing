@@ -281,7 +281,7 @@ const SignupFormComponent = props => (
                 />
               </div> : null}
 
-            {/* {userType === 'provider' ? (
+            {userType === 'provider' ? (
               <ImageUploader
                 label={
                   pub_role === 'company'
@@ -294,15 +294,15 @@ const SignupFormComponent = props => (
                 maxImages={1}
                 onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
               />
-            ) : null} */}
+            ) : null}
 
-            {/* {showCustomUserFields ? (
+            {showCustomUserFields ? (
               <div className={css.customFields}>
                 {userFieldProps.map(({ key, ...fieldProps }) => (
                   <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
                 ))}
               </div>
-            ) : null} */}
+            ) : null}
 
             {userType === 'provider' && pub_role ? (
               <ImageUploader

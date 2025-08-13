@@ -27,11 +27,14 @@
 
 .imageContainer {
   width: 50%;
-
+  height: calc(100vh - 120px);
+position: sticky;
+top: 100px;
   & img {
     width: 100%;
     border-radius: 20px;
     height: 100%;
+    object-fit: cover;
   }
   @media (max-width: 768px) {
     display: none;
