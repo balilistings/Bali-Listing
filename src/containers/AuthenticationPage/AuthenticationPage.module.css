@@ -35,6 +35,7 @@ top: 100px;
     border-radius: 20px;
     height: 100%;
     object-fit: cover;
+    object-position: top;
   }
   @media (max-width: 768px) {
     display: none;
