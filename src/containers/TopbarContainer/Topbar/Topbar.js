@@ -326,7 +326,7 @@ const TopbarComponent = props => {
           linkToExternalSite={config?.topbar?.logoLink}
         />
         <div className={css.mobileContent}>
-          <NamedLink name="SignupPage" className={css.addListing}>
+          <NamedLink name="NewListingPage" className={css.addListing}>
             <FormattedMessage id="TopbarDesktop.addListing" />
           </NamedLink>
           <Button
