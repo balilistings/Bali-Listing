@@ -161,6 +161,8 @@ export const IncludeScripts = props => {
       // Add access token for Mapbox sdk.
       window.mapboxgl.accessToken = mapboxAccessToken;
       window.dispatchEvent(new CustomEvent('mapbox-loaded'));
+    } else if (isGoogleMapsInUse) {
+      window.dispatchEvent(new CustomEvent('mapbox-loaded'));
     }
   };
 
@@ -180,8 +182,13 @@ export const IncludeScripts = props => {
 
   return (
     <>
-      <Helmet onChangeClientState={onChangeClientState}>{[...analyticsLibraries, ...mapLibraries]}</Helmet>
-      <DeferredScriptLoader scripts={deferredMapLibraries} onChangeClientState={onChangeClientState} />
+      <Helmet onChangeClientState={onChangeClientState}>
+        {[...analyticsLibraries, ...mapLibraries]}
+      </Helmet>
+      <DeferredScriptLoader
+        scripts={deferredMapLibraries}
+        onChangeClientState={onChangeClientState}
+      />
     </>
   );
 };
