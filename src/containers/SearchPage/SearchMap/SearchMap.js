@@ -195,6 +195,8 @@ export class SearchMapComponent extends Component {
     const SearchMapVariantComponent = getSearchMapVariantComponent(mapProvider);
     const isMapProviderAvailable = hasApiAccessForMapProvider && this.state.isMapLibReady;
 
+    console.log('isMapProviderAvailable', hasApiAccessForMapProvider, this.state.isMapLibReady);
+
     return isMapProviderAvailable ? (
       <ReusableMapContainer
         className={reusableContainerClassName}
