@@ -360,17 +360,37 @@ const InfoCardComponent = props => {
     mapComponentRefreshToken,
     config,
     onClose,
+    isMobile,
   } = props;
   const listingsArray = Array.isArray(infoCardOpen) ? infoCardOpen : [infoCardOpen];
 
   if (!infoCardOpen) {
     return null;
   }
+  
   // Explicit type change to object literal for Google OverlayViews (geolocation is SDK type)
   const firstListing = ensureListing(listingsArray[0]);
   const geolocation = firstListing.attributes.geolocation;
   const latLngLiteral = { lat: geolocation.lat, lng: geolocation.lng };
 
+  // On mobile, render the info card directly in the DOM instead of as an overlay
+  if (isMobile) {
+    return (
+      <div className={classNames(INFO_CARD_HANDLE, css.infoCardContainer)}>
+        <SearchMapInfoCard
+          mapComponentRefreshToken={mapComponentRefreshToken}
+          className={classNames(INFO_CARD_HANDLE, css.infoCardContainer)}
+          listings={listingsArray}
+          onListingInfoCardClicked={onListingInfoCardClicked}
+          createURLToListing={createURLToListing}
+          onClose={onClose}
+          config={config}
+        />
+      </div>
+    );
+  }
+
+  // On desktop, use the overlay positioning
   return (
     <CustomOverlayView
       key={listingsArray[0].id.uuid}
@@ -382,7 +402,7 @@ const InfoCardComponent = props => {
     >
       <SearchMapInfoCard
         mapComponentRefreshToken={mapComponentRefreshToken}
-        className={INFO_CARD_HANDLE}
+        className={classNames(INFO_CARD_HANDLE, css.infoCardContainer)}
         listings={listingsArray}
         onListingInfoCardClicked={onListingInfoCardClicked}
         createURLToListing={createURLToListing}
@@ -419,11 +439,17 @@ class SearchMapWithGoogleMaps extends Component {
     this.map = null;
     this.viewportBounds = null;
     this.idleListener = null;
-    this.state = { mapContainer: null, isMapReady: false };
+    this.state = { mapContainer: null, isMapReady: false, isMobile: false };
 
     this.initializeMap = this.initializeMap.bind(this);
     this.onMount = this.onMount.bind(this);
     this.onIdle = this.onIdle.bind(this);
+    this.handleResize = this.handleResize.bind(this);
+  }
+
+  componentDidMount() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
   }
 
   componentDidUpdate(prevProps) {
@@ -465,7 +491,10 @@ class SearchMapWithGoogleMaps extends Component {
   }
 
   componentWillUnmount() {
-    this.idleListener.remove();
+    if (this.idleListener) {
+      this.idleListener.remove();
+    }
+    window.removeEventListener('resize', this.handleResize);
   }
 
   initializeMap() {
@@ -506,6 +535,11 @@ class SearchMapWithGoogleMaps extends Component {
 
   onMount(element) {
     this.setState({ mapContainer: element });
+  }
+
+  handleResize() {
+    const isMobile = window.innerWidth <= 768;
+    this.setState({ isMobile });
   }
 
   onIdle(e) {
@@ -578,6 +612,7 @@ class SearchMapWithGoogleMaps extends Component {
             mapComponentRefreshToken={mapComponentRefreshToken}
             config={config}
             onClose={this.props.onClose}
+            isMobile={this.state.isMobile}
           />
         ) : null}
       </div>
