@@ -476,7 +476,20 @@ class LocationAutocompleteInputImplementation extends Component {
 
   // Select the prediction in the given item. This will fetch/read the
   // place details and set it as the selected place.
-  selectPrediction(prediction) {
+  async selectPrediction(p) {
+    let prediction = p;
+
+    if (typeof p === 'string') {
+      const config = this.props.config;
+      const r = await this.getGeocoder().getPlacePredictions(
+        prediction,
+        config.maps.search.countryLimit,
+        config.localization.locale
+      );
+
+      prediction = r.predictions[0];
+    }
+
     const currentLocationBoundsDistance = this.props.config.maps?.search
       ?.currentLocationBoundsDistance;
     this.props.input.onChange({
