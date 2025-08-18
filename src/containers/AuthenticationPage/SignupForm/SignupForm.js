@@ -97,24 +97,24 @@ const SignupFormComponent = props => (
       const filterUserFields =
         pub_role === undefined
           ? userFields.filter(
-            elm =>
-              ![
-                'companyname',
-                'id_card_nik',
-                'id_npwp_nik',
-                'company_address',
-                'company_registration',
-              ].includes(elm.key)
-          )
+              elm =>
+                ![
+                  'companyname',
+                  'id_card_nik',
+                  'id_npwp_nik',
+                  'company_address',
+                  'company_registration',
+                ].includes(elm.key)
+            )
           : pub_role === 'individual'
-            ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
-            : pub_role === 'freelance'
-              ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
-              : pub_role === 'company'
-                ? userFields.filter(elm =>
-                  ['companyname', 'company_address', 'company_registration', 'role'].includes(elm.key)
-                )
-                : [];
+          ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
+          : pub_role === 'freelance'
+          ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
+          : pub_role === 'company'
+          ? userFields.filter(elm =>
+              ['companyname', 'company_address', 'company_registration', 'role'].includes(elm.key)
+            )
+          : [];
 
       const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
 
@@ -142,10 +142,12 @@ const SignupFormComponent = props => (
 
       return (
         <Form className={classes} onSubmit={handleSubmit}>
-
           <div className={css.formTitle}>
             <h2>Sign Up</h2>
-            <p>Create your account and get started. Whether you’re looking for a place or offering one.</p>
+            <p>
+              Create your account and get started. Whether you’re looking for a place or offering
+              one.
+            </p>
           </div>
           <div className={css.formContent}>
             <FieldSelectUserType
@@ -244,42 +246,6 @@ const SignupFormComponent = props => (
                 />
               </div>
             ) : null}
-            {userType === 'provider' ?
-
-              <div>
-                <FieldTextInput
-                   className={css.password}
-                  type="number"
-                  id={formId ? `${formId}.whatsapp_number` : 'whatsapp_number'}
-                  name="whatsapp_number"
-                  autoComplete="whatsapp_number"
-                  label={intl.formatMessage({
-                    id: 'SignupForm.whatsappNumberLabel',
-                  })}
-                  placeholder={intl.formatMessage({
-                    id: 'SignupForm.whatsappNumberPlaceholder',
-                  })}
-
-                />
-                <FieldTextInput
-                 className={css.password}
-                  type="text"
-                  id={formId ? `${formId}.company_name` : 'company_name'}
-                  name="company_name"
-                  autoComplete="company_name"
-                  label={intl.formatMessage({
-                    id: 'SignupForm.companyNameLabel',
-                  })}
-                  placeholder={intl.formatMessage({
-                    id: 'SignupForm.companyNamePlaceholder',
-                  })}
-                  validate={validators.required(
-                    intl.formatMessage({
-                      id: 'SignupForm.companyNameRequired',
-                    })
-                  )}
-                />
-              </div> : null}
 
             {userType === 'provider' ? (
               <ImageUploader

@@ -132,8 +132,6 @@ export const SocialLoginButtonsMaybe = props => {
           </div>
         ) : null}
       </div>
-
-
     </div>
   ) : null;
 };
@@ -147,9 +145,9 @@ const getNonUserFieldParams = (values, userFieldConfigs) => {
     return isUserFieldKey
       ? picked
       : {
-        ...picked,
-        [key]: value,
-      };
+          ...picked,
+          [key]: value,
+        };
   }, {});
 };
 
@@ -281,10 +279,10 @@ export const AuthenticationForms = props => {
     isLogin && !!idpAuthError
       ? idpAuthErrorMessage
       : isLogin && !!loginError
-        ? loginErrorMessage
-        : !!signupError
-          ? signupErrorMessage
-          : null;
+      ? loginErrorMessage
+      : !!signupError
+      ? signupErrorMessage
+      : null;
 
   return (
     <div className={css.content}>
@@ -307,19 +305,17 @@ export const AuthenticationForms = props => {
 
       <SocialLoginButtonsMaybe
         isLogin={isLogin}
-        // showFacebookLogin={showFacebookLogin}
-        // showGoogleLogin={showGoogleLogin}
-        showFacebookLogin={true}
-        showGoogleLogin={true}
+        showFacebookLogin={showFacebookLogin}
+        showGoogleLogin={showGoogleLogin}
         {...fromMaybe}
         {...userTypeMaybe}
       />
       {isLogin ? (
-          <div className={css.signUpLink}>
-            <p className={css.signUpLinkText}>
-              Don't have an account? <NamedLink name="SignupPage">Sign up</NamedLink>
-            </p>
-          </div>
+        <div className={css.signUpLink}>
+          <p className={css.signUpLinkText}>
+            Don't have an account? <NamedLink name="SignupPage">Sign up</NamedLink>
+          </p>
+        </div>
       ) : (
         <div className={css.signUpLink}>
           <p className={css.signUpLinkText}>
@@ -382,27 +378,27 @@ const ConfirmIdProviderInfoForm = props => {
     // Pass other values as extended data according to user field configuration
     const extendedDataMaybe = !isEmpty(rest)
       ? {
-        publicData: {
-          userType,
-          ...pickUserFieldsData(rest, 'public', userType, userFields),
-        },
-        privateData: {
-          ...pickUserFieldsData(rest, 'private', userType, userFields),
-        },
-        protectedData: {
-          ...pickUserFieldsData(rest, 'protected', userType, userFields),
-          // If the confirm form has any additional values, pass them forward as user's protected data
-          ...getNonUserFieldParams(rest, userFields),
-          ...(selfieDocumentLink && { selfieDocumentLink }),
-          ...(idDocumentLink && { idDocumentLink }),
-          ...(companyDocumentLink && { companyDocumentLink }),
-          ...(pub_companyname && { companyname: pub_companyname }),
-          ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
-          ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
-          ...(pub_company_address && { company_address: pub_company_address }),
-          ...(pub_company_registration && { company_registration: pub_company_registration }),
-        },
-      }
+          publicData: {
+            userType,
+            ...pickUserFieldsData(rest, 'public', userType, userFields),
+          },
+          privateData: {
+            ...pickUserFieldsData(rest, 'private', userType, userFields),
+          },
+          protectedData: {
+            ...pickUserFieldsData(rest, 'protected', userType, userFields),
+            // If the confirm form has any additional values, pass them forward as user's protected data
+            ...getNonUserFieldParams(rest, userFields),
+            ...(selfieDocumentLink && { selfieDocumentLink }),
+            ...(idDocumentLink && { idDocumentLink }),
+            ...(companyDocumentLink && { companyDocumentLink }),
+            ...(pub_companyname && { companyname: pub_companyname }),
+            ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
+            ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
+            ...(pub_company_address && { company_address: pub_company_address }),
+            ...(pub_company_registration && { company_registration: pub_company_registration }),
+          },
+        }
       : {};
 
     submitSingupWithIdp({
@@ -730,7 +726,6 @@ export const AuthenticationPageComponent = props => {
               sendVerificationEmailInProgress={sendVerificationEmailInProgress}
             />
           ) : (
-
             <AuthenticationOrConfirmInfoForm
               tab={tab}
               userType={userType}
