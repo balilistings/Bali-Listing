@@ -714,10 +714,13 @@ export const AuthenticationPageComponent = props => {
         >
        
         </ResponsiveBackgroundImageContainer> */}
-        <div className={css.contentContainer}>
+        <div className={!showEmailVerification ? css.contentContainer : css.contentContainer2}>
+         {!showEmailVerification && (
           <div className={css.imageContainer}>
             <img src={tab === 'signup' ? authImage2 : authImage} alt="logo" />
           </div>
+         )}
+      
           {showEmailVerification ? (
             <EmailVerificationInfo
               name={user.attributes.profile.firstName}
