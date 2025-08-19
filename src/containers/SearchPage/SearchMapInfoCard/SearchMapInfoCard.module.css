@@ -21,6 +21,12 @@
     width: 100%;
       /* Borders */
   border-radius: var(--borderRadiusMedium);
+  position: fixed;
+  z-index: 1000;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
   }
 }
 

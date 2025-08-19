@@ -1,31 +1,106 @@
 @import '../../styles/customMediaQueries.css';
 
-.layoutWrapperMain {
-}
+.layoutWrapperMain {}
 
 .root {
   flex-grow: 1;
+
+  &>div:first-child {
+    display: none;
+  }
 }
 
 .contentContainer {
-  composes: marketplaceModalRootStyles from global;
+  /* composes: marketplaceModalRootStyles from global; */
   min-height: calc(100vh - 60px);
   height: auto;
+  display: flex;
+  padding: 60px 20px;
+  background-color: #fff;
 
   @media (--viewportMedium) {
     height: unset;
-    min-height: unset;
+    padding: 30px;
+    min-height: calc(100vh - 60px);
+  }
+}
+
+.contentContainer2{
+    composes: marketplaceModalRootStyles from global;
+    min-height: calc(100vh - 60px);
+    height: auto;
+    padding: 60px 20px;
+    background-color: #fff;
+  
+    @media (--viewportMedium) {
+      height: unset;
+      padding: 30px;
+      min-height: calc(100vh - 60px);
+    }
+}
+
+.imageContainer {
+  width: 50%;
+  height: calc(100vh - 120px);
+position: sticky;
+top: 100px;
+  & img {
+    width: 100%;
+    border-radius: 20px;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.idpButtons {
+  max-width: 430px;
+  width: 100%;
+  margin: 0 auto;
+  @media (max-width: 768px) {
+    max-width: 300px;
   }
 }
 
 .content {
-  composes: marketplaceModalBaseStyles from global;
+  /* composes: marketplaceModalBaseStyles from global; */
   padding-top: 29px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-  @media (--viewportMedium) {
-    margin-top: 5vh;
-    margin-bottom: 7.5vh;
-    min-height: 700px;
+  @media (max-width: 768px) {
+    padding-top: 0px;
+  }
+}
+
+.content2{
+   composes: marketplaceModalBaseStyles from global;
+   padding-top: 29px;
+   
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+ 
+   @media (max-width: 768px) {
+     padding-top: 0px;
+   }
+}
+
+.verifyClose{
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  & span{
+    display: none;
   }
 }
 
@@ -66,7 +141,7 @@
 }
 
 .loginForm {
-  margin-top: 24px;
+  margin-top: 0px;
 
   /* We don't want the form to take the whole space so that on mobile view
   the social login buttons will be after the sign up button
@@ -75,16 +150,21 @@
   whole form correctly.  */
   flex-grow: 0;
   flex-basis: 260px;
-
+  max-width: 300px;
+  width: 100%;
+  margin: 0 auto;
   @media (--viewportMedium) {
     flex-basis: 330px;
     margin-top: 30px;
     padding-top: 2px;
+    max-width: 470px;
+    width: 100%;
+    margin: 0 auto;
   }
 }
 
 .signupForm {
-  margin-top: 24px;
+  margin-top: 0px;
 
   /* We don't want the form to take the whole space so that on mobile view
   the social login buttons will be after the sign up button
@@ -93,11 +173,15 @@
   whole form correctly.  */
   flex-grow: 0;
   flex-basis: 340px;
+  max-width: 300px;
 
   @media (--viewportMedium) {
-    flex-basis: 410px;
+    flex-basis: 330px;
     margin-top: 30px;
     padding-top: 2px;
+    max-width: 470px;
+    width: 100%;
+    margin: 0 auto;
   }
 }
 
@@ -123,103 +207,220 @@
 
 /* userType selection */
 .userTypeSelect {
+
+max-width: 300px;
+margin: 0 auto;
+margin-bottom: 40px;
+  @media (--viewportMedium) {
+    margin-bottom: 40px;
+  }
+}
+
+/* User Type Title */
+.userTypeTitle {
+  font-family: Mulish;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  
+  color: #231F20;
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 40px;
+  @media (max-width: 768px) {
+    font-family: Mulish;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 40px;
+  }
+}
+
+/* User Type Cards Container */
+.userTypeCards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   margin-bottom: 24px;
+}
 
-  @media (--viewportMedium) {
-    margin-bottom: 32px;
+/* Individual User Type Card */
+.userTypeCard {
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: #fff;
+  border: 1px solid #D3D3D3;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 16px;
+
+  &:hover {
+    border-color: #4A90E2;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+  }
+
+  &.selected {
+    border-color: #4A90E2;
+    background: #f8fbff;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
   }
 }
 
-.selectedLabel {
-  composes: label from global;
+/* Card Content */
+.cardContent {
+  flex: 1;
 }
-.selectedValue {
-  margin-top: 0;
-  margin-bottom: 6px;
 
-  @media (--viewportMedium) {
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 2px 0 6px 0;
+.cardTitle {
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: left;
+  color: #231F20;
+  margin: 0 0 0px 0;
+  padding: 0;
+  @media (max-width: 768px) {
+    font-family: Mulish;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 12px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    
   }
 }
 
-/* ================ Hide Top bar in screens smaller than 768px  ================ */
+.cardDescription {
+  font-family: Mulish;
+font-weight: 400;
+font-style: Regular;
+font-size: 12px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+text-align: left;
+  color: #717171;
+  margin: 0;
+  padding: 0;
+  @media (max-width: 768px) {
+    font-family: Mulish;
+font-weight: 400;
+font-style: Regular;
+font-size: 10px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
 
-.hideOnMobile {
-  display: none;
-
-  @media (--viewportMedium) {
-    display: block;
   }
 }
 
-/* ================ Close icon ================ */
-
-.verifyClose {
-  composes: marketplaceModalCloseStyles from global;
-
-  /* This is not a real modal, z-index should not be modal's z-index */
-  z-index: 1;
-}
-
-.closeText {
-  composes: marketplaceModalCloseText from global;
-}
-
-.closeIcon {
-  composes: marketplaceModalCloseIcon from global;
-}
-
-/* ================ Typography ================ */
-
-/* Title of the modal */
-.modalTitle {
-  composes: marketplaceModalTitleStyles from global;
-}
-
-/* Paragraph for the Modal */
-.modalMessage {
-  composes: marketplaceModalParagraphStyles from global;
-}
-
-/* Make the email pop */
-.email {
-  font-weight: var(--fontWeightHighlightEmail);
-
-  /* fallback option */
-  word-break: break-all;
-  /* use break-word if available */
-  word-break: break-word;
-  hyphens: auto;
-}
-
-/* Helper links */
-.modalHelperLink {
-  composes: a from global;
-  composes: marketplaceModalHelperLink from global;
-}
-
-/* Helper texts for the links, not the actual links */
-.modalHelperText {
-  composes: marketplaceModalHelperText from global;
-}
-
-.modalIcon {
-  composes: marketplaceModalIconStyles from global;
-
-  /* Align the icon and rest of the content in the modal. Sign & Login doesn't use an icon, maybe we should add one? */
-  margin-top: 47px;
-
-  @media (--viewportMedium) {
-    margin-top: 0;
+/* Icons */
+.customerIcon,
+.providerIcon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media (max-width: 768px) {
+    width: 40px;
+    height: 40px;
   }
 }
 
-/* ================ Errors ================ */
+/* Selected User Type Display */
+.selectedUserType {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: #f8fbff;
+  border: 2px solid #4A90E2;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
 
+.selectedContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.selectedText {
+  display: flex;
+  flex-direction: column;
+}
+
+.selectedTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 4px 0;
+}
+
+.selectedSubtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.selectedCustomerIcon,
+.selectedProviderIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Clear Button */
+.clearButton {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #f0f0f0;
+    color: #666;
+  }
+
+  &:focus {
+    outline: 2px solid #4A90E2;
+    outline-offset: 2px;
+  }
+}
+
+/* Error Message */
 .error {
-  composes: marketplaceModalPasswordMargins from global;
+  color: #d32f2f;
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
 }
 
 /* ================ Social logins & SSO ================ */
@@ -237,19 +438,67 @@
   }
 }
 
-.confirmInfoText {
+.modalTitle{
+  font-family: Istok Web;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 34px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #151515;
+  margin: 0 0 20px;
+
+  @media (max-width: 768px) {
+    font-family: Istok Web;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 22px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    text-align: center;
+    margin-bottom: 8px;
+
+  }
 }
 
+.confirmInfoText {}
+
 .buttonIcon {
-  position: absolute;
+  /* position: absolute;
   left: 0;
-  margin-left: 20px;
+  margin-left: 0px; */
 }
 
 .socialButtonWrapper {
   margin-bottom: 6px;
+  flex: 1;
+
+  & button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    border: 1px solid #D3D3D3;
+    border-radius: 40px;
+    font-family: Mulish;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 130%;
+    letter-spacing: 0%;
+    color: #231F20;
+    flex: 1;
+    @media (max-width: 768px) {
+      font-size: 12px;
+    }
+  }
+
   @media (--viewportMedium) {
-    margin-top: 8px;
+    margin-top: 0px;
   }
 }
 
@@ -264,7 +513,7 @@
   &:after {
     content: '';
     width: 100%;
-    border-bottom: solid 1px #d2d2d2;
+    border-bottom: solid 1px #D3D3D3;
     position: absolute;
     left: 0;
     top: 50%;
@@ -275,7 +524,7 @@
 @media (--viewportMedium) {
   .socialButtonsOr {
     height: 34px;
-    margin: 15px 0;
+    margin: 30px 0;
   }
 }
 
@@ -287,4 +536,43 @@
   padding: 0 20px 0 20px;
   position: relative;
   margin: 0;
+  font-family: Mulish;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 12px;
+  leading-trim: NONE;
+  line-height: 130%;
+  letter-spacing: 0%;
+  text-align: center;
+  color: #717171;
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
+}
+
+.idpButtonsInner {
+  display: flex;
+  gap: 20px;
+  max-width: 350px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.signUpLinkText{
+  font-family: Mulish;
+font-weight: 400;
+font-style: Regular;
+font-size: 16px;
+leading-trim: NONE;
+line-height: 130%;
+letter-spacing: 0%;
+text-align: center;
+color: #151515;
+margin-top: 20px;
+@media (max-width: 768px) {
+  font-size: 12px;
+}
+& a{
+  color: #F74DF4;
+}
 }

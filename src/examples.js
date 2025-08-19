@@ -45,6 +45,7 @@ import * as IconEdit from './components/IconEdit/IconEdit.example';
 import * as IconEmailAttention from './components/IconEmailAttention/IconEmailAttention.example';
 import * as IconEmailSent from './components/IconEmailSent/IconEmailSent.example';
 import * as IconEmailSuccess from './components/IconEmailSuccess/IconEmailSuccess.example';
+import * as IconEye from './components/IconEye/IconEye.example';
 import * as IconInquiry from './components/IconInquiry/IconInquiry.example';
 import * as IconKeys from './components/IconKeys/IconKeys.example';
 import * as IconKeysSuccess from './components/IconKeysSuccess/IconKeysSuccess.example';
@@ -187,6 +188,7 @@ export {
   IconEmailAttention,
   IconEmailSent,
   IconEmailSuccess,
+  IconEye,
   IconInquiry,
   IconKeys,
   IconKeysSuccess,

@@ -1,0 +1,18 @@
+.root {
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+  color: inherit;
+  transition: color 0.2s ease;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.root:hover {
+  color: inherit;
+}
+
+.root:active {
+  color: inherit;
+} 
