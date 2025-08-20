@@ -215,7 +215,17 @@ const ListingCard = props => {
   let price;
 
   if (isRentals) {
-    if (pricee.includes('monthly')) {
+    const priceParams = checkPriceParams();
+
+    if (priceParams?.weekprice) {
+      price = weekprice;
+    } else if (priceParams?.monthprice) {
+      price = monthprice;
+    } else if (priceParams?.yearprice) {
+      price = yearprice;
+    }
+
+    else if (pricee.includes('monthly')) {
       price = monthprice;
     } else if (pricee.includes('weekly')) {
       price = weekprice;
