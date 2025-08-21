@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
+import { useDispatch } from 'react-redux';
 
 import { useConfiguration } from '../../../context/configurationContext';
 import { useRouteConfiguration } from '../../../context/routeConfigurationContext';
@@ -13,6 +14,7 @@ import { hasParentWithClassName } from './SearchMap.helpers.js';
 import * as searchMapMapbox from './SearchMapWithMapbox';
 import * as searchMapGoogleMaps from './SearchMapWithGoogleMaps';
 import ReusableMapContainer from './ReusableMapContainer';
+import { setActiveListing } from '../SearchPage.duck';
 import css from './SearchMap.module.css';
 
 const REUSABLE_MAP_HIDDEN_HANDLE = 'reusableMapHidden';
@@ -114,6 +116,15 @@ export class SearchMapComponent extends Component {
 
   onListingClicked(listings) {
     this.setState({ infoCardOpen: listings });
+
+    const { dispatch } = this.props;
+    if (Array.isArray(listings)) {
+      // For group label
+      dispatch(setActiveListing(listings[0].id));
+    } else {
+      // For single label
+      dispatch(setActiveListing(listings.id));
+    }
   }
 
   onListingInfoCardClicked(listing) {
@@ -255,11 +266,13 @@ const SearchMap = props => {
   const config = useConfiguration();
   const routeConfiguration = useRouteConfiguration();
   const history = useHistory();
+  const dispatch = useDispatch();
   return (
     <SearchMapComponent
       config={config}
       routeConfiguration={routeConfiguration}
       history={history}
+      dispatch={dispatch}
       {...props}
     />
   );
