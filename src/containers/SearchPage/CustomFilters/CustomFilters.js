@@ -445,8 +445,12 @@ function CustomFilters({
   };
 
   const handlePropertyTypeChange = propertyType => {
+    const paramValue = !propertyType || (Array.isArray(propertyType) && propertyType.length === 0) 
+      ? null 
+      : propertyType.toString();
+
     onUpdateCurrentQueryParams({
-      pub_propertytype: propertyType.toString(),
+      pub_propertytype: paramValue,
     });
     setSelectedPropertyType(propertyType);
   };
