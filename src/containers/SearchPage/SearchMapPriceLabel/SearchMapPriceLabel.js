@@ -56,7 +56,7 @@ class SearchMapPriceLabel extends Component {
 
     const rentPriceAmount =
     rentPeriodParam === 'noFilter'
-      ? priceAmount
+      ? publicData['monthprice'] ?? publicData['weekprice'] ?? publicData['yearprice'] ?? priceAmount
       : publicData[rentPeriodParam];
 
   const isRental = publicData?.categoryLevel1 === 'rentalvillas';
@@ -65,7 +65,7 @@ class SearchMapPriceLabel extends Component {
     if (formattedPriceAmount) {
       const numValue = parseFloat(formattedPriceAmount);
       const millions = numValue / 1000000; // Convert to millions
-      formattedPriceAmount = `IDR ${millions} Mil`;
+      formattedPriceAmount = `IDR ${(millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1))} Mil`;
     }
 
     // Create formatted price if currency is known or alternatively show just the unknown currency.
