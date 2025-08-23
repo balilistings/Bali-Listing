@@ -137,6 +137,11 @@ export class SearchMapComponent extends Component {
     history.push(this.createURLToListing(listing));
   }
 
+  closeInfoCard() {
+    this.setState({ infoCardOpen: null });
+    this.props.dispatch(setActiveListing(null));
+  }
+
   onMapClicked(e) {
     // Close open listing popup / infobox, unless the click is attached to a price label
     const variantHandles = getSearchMapVariantHandles(this.props.config.maps.mapProvider);
@@ -146,12 +151,12 @@ export class SearchMapComponent extends Component {
       variantHandles.infoCardHandle
     );
     if (this.state.infoCardOpen != null && !labelClicked && !infoCardClicked) {
-      this.setState({ infoCardOpen: null });
+      this.closeInfoCard();
     }
   }
 
   onCloseInfoCard() {
-    this.setState({ infoCardOpen: null });
+    this.closeInfoCard();
   }
 
   onMapLoadHandler(map) {
@@ -198,7 +203,7 @@ export class SearchMapComponent extends Component {
 
     const handleCloseInfoCard = () => {
       console.log('handleCloseInfoCard called, setting infoCardOpen to null');
-      this.setState({ infoCardOpen: null });
+      this.closeInfoCard();
     };
 
     const mapProvider = config.maps.mapProvider;
