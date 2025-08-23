@@ -459,10 +459,11 @@ padding-bottom: 0;
       width: 100%;
       display: block;
       padding: 0;
-      color: var(--colorBlack);
+      color: var(--colorBlack); /* Default color set to black */
 
       &:hover {
         border: 0;
+        /* Inherit hover color from PriorityLinks/LinksMenu styles */
       }
 
       & span {
@@ -506,16 +507,7 @@ width: 100%;
   
 }
 
-.searchPageTopbarMenu{
-  & > div:first-child{
-    & a{
-      color: #F74DF4;
-      & span{
-        color: #F74DF4
-      }
-    }
-  }
-}
+/* Removed .searchPageTopbarMenu rule that forced pink color based on currentPage */
 
 .tabs{
   display: flex;

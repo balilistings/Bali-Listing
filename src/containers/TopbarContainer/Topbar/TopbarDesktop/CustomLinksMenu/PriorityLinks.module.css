@@ -19,7 +19,8 @@
   letter-spacing: 0%;
   text-align: center;
 
-  color: #231f20;
+  /* Default color set to black */
+  color: var(--colorBlack);
 
   flex-shrink: 0;
   height: 100%;
@@ -27,7 +28,8 @@
   margin: 0;
 
   &:hover {
-    color: var(--colorBlack);
+    /* Hover effect: change color to marketplace color (pink) */
+    color: var(--marketplaceColor);
     /* border-bottom: 4px solid var(--marketplaceColor); */
     border-radius: 0;
     text-decoration: none;
@@ -40,9 +42,11 @@
 }
 
 .highlight {
-  color: #231f20;
+  /* Ensure highlight link also defaults to black */
+  color: var(--colorBlack);
   &:hover {
-    color: var(--marketplaceColorDark);
+    /* Highlight link hover uses the same marketplace color */
+    color: var(--marketplaceColor);
   }
 }
 
@@ -60,5 +64,6 @@
   letter-spacing: 0%;
   text-align: center;
 
-  color: #231f20;
+  /* Inherit color from .priorityLink parent */
+  color: inherit;
 }
