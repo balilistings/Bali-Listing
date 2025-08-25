@@ -343,7 +343,7 @@ const EditListingDetailsForm = props => (
       } = formRenderProps;
 
       const listingFieldsConfig = lFG.filter(
-        field => !['pricee', 'weekprice', 'monthprice', 'yearprice'].includes(field.key)
+        field => !['pricee', 'weekprice', 'monthprice', 'yearprice', 'priceperare'].includes(field.key)
       );
 
       const intl = useIntl();

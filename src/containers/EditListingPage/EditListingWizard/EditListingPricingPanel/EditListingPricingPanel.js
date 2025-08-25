@@ -28,6 +28,7 @@ const getInitialValues = props => {
   const { publicData, price } = listing?.attributes || {};
   const { unitType, categoryLevel1 } = publicData || {};
   const isRentals = categoryLevel1 === 'rentalvillas';
+  const isLand = categoryLevel1 === 'landforsale';
 
   if (isRentals) {
     return {
@@ -35,6 +36,11 @@ const getInitialValues = props => {
       pub_monthprice: publicData.monthprice,
       pub_weekprice: publicData.weekprice,
       pub_yearprice: publicData.yearprice,
+    };
+  } else if (isLand) {
+    return {
+      price,
+      pub_priceperare: publicData.priceperare,
     };
   } else {
     return { price };
@@ -92,6 +98,7 @@ const EditListingPricingPanel = props => {
   const unitType = listing?.attributes?.publicData?.unitType;
 
   const isRentals = publicData.categoryLevel1 === 'rentalvillas';
+  const isLand = publicData.categoryLevel1 === 'landforsale';
 
   return (
     <div className={classes}>
@@ -153,6 +160,12 @@ const EditListingPricingPanel = props => {
               initialValues = {
                 price: values.price,
               };
+              if (isLand) {
+                updateValues.publicData = {
+                  priceperare: values.pub_priceperare,
+                };
+                initialValues.pub_priceperare = values.pub_priceperare;
+              }
             }
 
             // Save the initialValues to state

@@ -130,6 +130,7 @@ export const EditListingPricingForm = props => (
       const submitDisabled = invalid || disabled || submitInProgress;
 
       const isRentals = categoryLevel1 === 'rentalvillas';
+      const isLand = categoryLevel1 === 'landforsale';
 
       let priceFieldsToShow = [];
 
@@ -144,6 +145,10 @@ export const EditListingPricingForm = props => (
           priceFieldsToShow.push('yearprice');
         }
       }
+
+      const priceperareConfig = isLand
+        ? [listingFields.find(field => field.key === 'priceperare')]
+        : null;
 
       return (
         <Form onSubmit={handleSubmit} className={classes}>
@@ -171,21 +176,32 @@ export const EditListingPricingForm = props => (
               )}
             </>
           ) : (
-            <FieldCurrencyInput
-              id={`${formId}price`}
-              name="price"
-              className={css.input}
-              autoFocus={true}
-              label={intl.formatMessage(
-                { id: 'EditListingPricingForm.pricePerProduct' },
-                { unitType }
+            <>
+              {isLand && (
+                <AddListingFields
+                  listingType={listingType}
+                  listingFieldsConfig={priceperareConfig}
+                  selectedCategories={{ categoryLevel1 }}
+                  formId={formId}
+                  intl={intl}
+                />
               )}
-              placeholder={intl.formatMessage({
-                id: 'EditListingPricingForm.priceInputPlaceholder',
-              })}
-              currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
-              validate={priceValidators}
-            />
+              <FieldCurrencyInput
+                id={`${formId}price`}
+                name="price"
+                className={css.input}
+                autoFocus={true}
+                label={intl.formatMessage(
+                  { id: 'EditListingPricingForm.pricePerProduct' },
+                  { unitType }
+                )}
+                placeholder={intl.formatMessage({
+                  id: 'EditListingPricingForm.priceInputPlaceholder',
+                })}
+                currencyConfig={appSettings.getCurrencyFormatting(marketplaceCurrency)}
+                validate={priceValidators}
+              />
+            </>
           )}
 
           <Button
