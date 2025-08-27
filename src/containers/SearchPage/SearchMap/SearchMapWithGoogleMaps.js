@@ -195,8 +195,9 @@ class SearchMapPriceLabelWithOverlay extends Component {
     const hasSameActiveStatus = this.props.isActive === nextProps.isActive;
     const hasSameRefreshToken =
       this.props.mapComponentRefreshToken === nextProps.mapComponentRefreshToken;
+    const hasSameRentPeriodParam = this.props.rentPeriodParam === nextProps.rentPeriodParam;
 
-    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken);
+    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken && hasSameRentPeriodParam);
   }
 
   render() {
@@ -210,6 +211,8 @@ class SearchMapPriceLabelWithOverlay extends Component {
       onListingClicked,
       mapComponentRefreshToken,
       config,
+      rentPeriodParam,
+      location,
     } = this.props;
 
     return (
@@ -226,6 +229,8 @@ class SearchMapPriceLabelWithOverlay extends Component {
           onListingClicked={onListingClicked}
           mapComponentRefreshToken={mapComponentRefreshToken}
           config={config}
+          rentPeriodParam={rentPeriodParam}
+          location={location}
         />
       </CustomOverlayView>
     );
@@ -288,6 +293,8 @@ const PriceLabelsAndGroups = props => {
     onListingClicked,
     mapComponentRefreshToken,
     config,
+    rentPeriodParam,
+    location,
   } = props;
   const listingArraysInLocations = reducedToArray(groupedByCoordinates(listings));
   const priceLabels = listingArraysInLocations.reverse().map(listingArr => {
@@ -322,6 +329,8 @@ const PriceLabelsAndGroups = props => {
           onListingClicked={onListingClicked}
           mapComponentRefreshToken={mapComponentRefreshToken}
           config={config}
+          rentPeriodParam={rentPeriodParam}
+          location={location}
         />
       );
     }
@@ -572,6 +581,21 @@ class SearchMapWithGoogleMaps extends Component {
     }
   }
 
+  getRentPeriodParam() {
+    const queryParams = new URLSearchParams(this.props.location?.search || window.location.search);
+    const isRentalParam = queryParams.get('pub_categoryLevel1') === 'rentalvillas';
+    
+    return queryParams.get('pub_weekprice')
+      ? 'weekprice'
+      : queryParams.get('pub_monthprice')
+      ? 'monthprice'
+      : queryParams.get('pub_yearprice')
+      ? 'yearprice'
+      : isRentalParam
+      ? 'noFilter'
+      : null;
+  }
+
   render() {
     const {
       id = 'searchMap',
@@ -584,7 +608,11 @@ class SearchMapWithGoogleMaps extends Component {
       onListingInfoCardClicked,
       createURLToListing,
       config,
+      location,
     } = this.props;
+    
+    const rentPeriodParam = this.getRentPeriodParam();
+    
     return (
       <div
         id={id}
@@ -601,6 +629,8 @@ class SearchMapWithGoogleMaps extends Component {
             onListingClicked={onListingClicked}
             mapComponentRefreshToken={mapComponentRefreshToken}
             config={config}
+            rentPeriodParam={rentPeriodParam}
+            location={location}
           />
         ) : null}
         {this.map ? (
