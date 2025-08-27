@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form as FinalForm } from 'react-final-form';
+import { Form as FinalForm, Field } from 'react-final-form';
 import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
@@ -94,34 +94,44 @@ const LoginFormComponent = props => {
                 placeholder={emailPlaceholder}
                 validate={validators.composeValidators(emailRequired, emailValid)}
               />
-              
-              {/* Custom password input with visibility toggle */}
-              <div className={css.passwordFieldWrapper}>
-                <label htmlFor={formId ? `${formId}.password` : 'password'}>
-                  {passwordLabel}
-                </label>
-                <div className={css.passwordInputWrapper}>
-                  <input
-                    className={css.passwordInput}
-                    type={showPassword ? 'text' : 'password'}
-                    id={formId ? `${formId}.password` : 'password'}
-                    name="password"
-                    autoComplete="current-password"
-                    placeholder={passwordPlaceholder}
-                    validate={passwordRequired}
-                  />
-                  <button
-                    type="button"
-                    className={css.passwordToggle}
-                    onClick={handlePasswordToggle}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    tabIndex={0}
-                  >
-                    <IconEye isVisible={showPassword} />
-                  </button>
-                </div>
-              </div>
-              
+
+              {/* Password field with visibility toggle */}
+              <Field name="password" validate={passwordRequired}>
+                {fieldRenderProps => {
+                  const { input, meta } = fieldRenderProps;
+                  const { error, touched } = meta;
+
+                  console.log('meta', meta);
+                  return (
+                    <div className={css.passwordFieldWrapper}>
+                      <label htmlFor={formId ? `${formId}.password` : 'password'}>
+                        {passwordLabel}
+                      </label>
+                      <div className={css.passwordInputWrapper}>
+                        <input
+                          {...input}
+                          className={css.passwordInput}
+                          type={showPassword ? 'text' : 'password'}
+                          id={formId ? `${formId}.password` : 'password'}
+                          autoComplete="current-password"
+                          placeholder={passwordPlaceholder}
+                        />
+                        <button
+                          type="button"
+                          className={css.passwordToggle}
+                          onClick={handlePasswordToggle}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          tabIndex={0}
+                        >
+                          <IconEye isVisible={showPassword} />
+                        </button>
+                      </div>
+                      {touched && error && <div className={css.error}>{error}</div>}
+                    </div>
+                  );
+                }}
+              </Field>
+
               <p className={css.bottomWrapperText}>
                 <span className={css.recoveryLinkInfo}>
                   <FormattedMessage
