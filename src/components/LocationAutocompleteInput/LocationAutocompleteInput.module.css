@@ -202,6 +202,7 @@ bottom of the container.
   position: relative;
   flex: 1;
   & .crossIcon{
+    margin-right: 16px;
     @media (max-width: 768px) {
     display: none;
     }
