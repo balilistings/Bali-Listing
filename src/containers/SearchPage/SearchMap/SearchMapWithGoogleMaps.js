@@ -182,6 +182,52 @@ const getPixelPositionOffset = (width, height) => {
   return { x: -1 * (width / 2), y: -1 * (height + 3) };
 };
 
+/** 
+ * Dynamic position offset based on map quadrant to prevent clipping
+ * @param {number} width - Width of the info card
+ * @param {number} height - Height of the info card
+ * @param {google.maps.LatLng} position - Position of the marker
+ * @param {google.maps.Map} map - Google Map instance
+ * @returns {Object} Offset object with x and y properties
+ */
+const getDynamicPixelPositionOffset = (width, height, position, map) => {
+  const cardWidth = width || 250;  // Default width from CSS
+  const cardHeight = height || 300;  // Approximate default height
+  
+  // Get map bounds
+  const mapBounds = map.getBounds();
+  if (!mapBounds) return { x: -1 * (cardWidth / 2), y: -1 * (cardHeight + 3) }; 
+  
+  // Get corners of the map bounds
+  const ne = mapBounds.getNorthEast();
+  const sw = mapBounds.getSouthWest();
+  
+  // Calculate center of the map
+  const centerLat = (ne.lat() + sw.lat()) / 2;
+  const centerLng = (ne.lng() + sw.lng()) / 2;
+  
+  // Determine which quadrant the marker is in
+  const isTop = position.lat() > centerLat;
+  const isRight = position.lng() > centerLng;
+  
+  // Position based on quadrant to avoid clipping
+  const distance = 20; // distance to price label
+  
+  if (isTop && isRight) {
+    // Top-right quadrant: position to bottom-left of marker
+    return { x: -1 * (cardWidth + distance), y: distance };
+  } else if (isTop && !isRight) {
+    // Top-left quadrant: position to bottom-right of marker
+    return { x: distance, y: distance };
+  } else if (!isTop && isRight) {
+    // Bottom-right quadrant: position to top-left of marker
+    return { x: -1 * (cardWidth + distance), y: -1 * (cardHeight + distance) };
+  } else {
+    // Bottom-left quadrant: position to top-right of marker
+    return { x: distance, y: -1 * (cardHeight + distance) };
+  }
+};
+
 /**
  * GoogleMaps need to use Google specific OverlayView components and therefore we need to
  * reduce flickering / rerendering of these overlays through 'shouldComponentUpdate'
@@ -399,6 +445,44 @@ const InfoCardComponent = props => {
     );
   }
 
+  // Determine caret position based on marker quadrant
+  let caretPosition = 'top-left'; // default
+  const mapBounds = map.getBounds();
+  if (mapBounds) {
+    // Get corners of the map bounds
+    const ne = mapBounds.getNorthEast();
+    const sw = mapBounds.getSouthWest();
+    
+    // Calculate center of the map
+    const centerLat = (ne.lat() + sw.lat()) / 2;
+    const centerLng = (ne.lng() + sw.lng()) / 2;
+    
+    // Determine which quadrant the marker is in
+    const isTop = latLngLiteral.lat > centerLat;
+    const isRight = latLngLiteral.lng > centerLng;
+    
+    // Set caret position based on quadrant
+    if (isTop && isRight) {
+      caretPosition = 'bottom-left';
+    } else if (isTop && !isRight) {
+      caretPosition = 'bottom-right';
+    } else if (!isTop && isRight) {
+      caretPosition = 'top-left';
+    } else {
+      caretPosition = 'top-right';
+    }
+  }
+
+  // Create a dynamic positioning function for the info card
+  const dynamicGetPixelPositionOffset = (width, height) => {
+    // Convert latLngLiteral to google.maps.LatLng
+    const position = new window.google.maps.LatLng(latLngLiteral.lat, latLngLiteral.lng);
+    // Ensure we have valid dimensions, fallback to defaults if not provided
+    const cardWidth = width && width > 0 ? width : 250;
+    const cardHeight = height && height > 0 ? height : 300;
+    return getDynamicPixelPositionOffset(cardWidth, cardHeight, position, map);
+  };
+
   // On desktop, use the overlay positioning
   return (
     <CustomOverlayView
@@ -406,7 +490,7 @@ const InfoCardComponent = props => {
       position={latLngLiteral}
       map={map}
       mapPaneName={FLOAT_PANE}
-      getPixelPositionOffset={getPixelPositionOffset}
+      getPixelPositionOffset={dynamicGetPixelPositionOffset}
       styles={{ zIndex: 1 }}
     >
       <SearchMapInfoCard
@@ -417,6 +501,7 @@ const InfoCardComponent = props => {
         createURLToListing={createURLToListing}
         onClose={onClose}
         config={config}
+        caretPosition={caretPosition}
       />
     </CustomOverlayView>
   );

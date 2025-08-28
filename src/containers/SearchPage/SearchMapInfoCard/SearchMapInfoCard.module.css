@@ -498,6 +498,7 @@ margin-right: 10px;
   left: 50%;
   margin-left: -3px;
   transform: rotate(45deg);
+  z-index: -1;
 
   /* Caret should have same bg-color and border as label */
   background-color: var(--colorWhite);
@@ -507,6 +508,35 @@ margin-right: 10px;
   border-bottom-style: solid;
   border-bottom-color: var(--colorGrey100);
   border-bottom-width: 1px;
+}
+
+/* Caret positions for different quadrants */
+.caretTopLeft {
+  bottom: -3px;
+  right: 15px;
+  left: auto;
+  transform: rotate(45deg);
+}
+
+.caretTopRight {
+  bottom: -3px;
+  left: 15px;
+  /* right: auto; */
+  transform: rotate(45deg);
+}
+
+.caretBottomLeft {
+  top: -3px;
+  right: 15px;
+  left: auto;
+  transform: rotate(225deg);
+}
+
+.caretBottomRight {
+  top: -3px;
+  left: 15px;
+  /* left: auto; */
+  transform: rotate(225deg);
 }
 
 .caretWithCarousel {
