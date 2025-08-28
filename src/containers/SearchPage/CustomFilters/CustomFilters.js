@@ -672,6 +672,7 @@ function CustomFilters({
           {availableFilters.includes('simplePrice') && (
             <SimplePriceSelector
               priceRange={simplePriceRange}
+              description="Select your price range (in millions IDR)"
               onPriceRangeChange={handleSimplePriceRangeChange}
               min={1000000}
               max={999000000000}
