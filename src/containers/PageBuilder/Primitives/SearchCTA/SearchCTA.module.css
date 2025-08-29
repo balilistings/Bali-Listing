@@ -83,10 +83,11 @@
 
   @media (--viewportLarge) {
     padding-top: 0;
-
+    
     & > * {
       border: 0;
       border-radius: 0;
+      max-height: 80%;
     }
 
     &.gridCol1 {
@@ -107,8 +108,8 @@
     }
 
     & > *:not(:last-child):not(:nth-last-child(2)) {
-      /* border-right: 1px solid var(--colorGrey200);
-      border-bottom: none; */
+      border-right: 1px solid var(--colorGrey200) !important;
+      border-bottom: none;
       border: 0;
       padding: 0;
     }
