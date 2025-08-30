@@ -40,6 +40,7 @@ import css from './OrderPanel.module.css';
 
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { useSelector } from 'react-redux';
+import { createShortUrl } from '../../util/api';
 
 const { Money } = sdkTypes;
 
@@ -528,7 +529,7 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
-  const handleWhatsappClick = () => {
+  const handleWhatsappClick = async () => {
     if (!currentUser) {
       const currentUrl = window.location.pathname + window.location.search;
       history.push({
@@ -542,12 +543,23 @@ const OrderPanel = props => {
     const cleanedNumber = phonenumber ? phonenumber.replace(/\D/g, '') : '';
 
     if (cleanedNumber) {
-      // Open WhatsApp with the cleaned phone number
       const currentUrl = window.location.href;
       const hostUrl = `${window.location.protocol}//${window.location.host}`;
-      const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${currentUrl}. Can we discuss details?`;
+      
+      // Generate short URL
+      let shortUrl = currentUrl;
+      try {
+        const response = await createShortUrl({ url: currentUrl });
+        shortUrl = response.shortUrl;
+      } catch (error) {
+        console.error('Error generating short URL:', error);
+        // If short URL generation fails, we'll use the original URL
+      }
+      
+      const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${shortUrl}. Can we discuss details?`;
       const encodedMessage = encodeURIComponent(message);
-
+      
+      // Open WhatsApp with the cleaned phone number and prefilled message
       const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
 
