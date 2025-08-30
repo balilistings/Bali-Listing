@@ -36,6 +36,7 @@ const passport = require('passport');
 
 const auth = require('./auth');
 const apiRouter = require('./apiRouter');
+const shortUrlRouter = require('./redirectRouter');
 const wellKnownRouter = require('./wellKnownRouter');
 const webmanifestResourceRoute = require('./resources/webmanifest');
 const robotsTxtRoute = require('./resources/robotsTxt');
@@ -219,6 +220,9 @@ app.use(passport.initialize());
 
 // Server-side routes that do not render the application
 app.use('/api', apiRouter);
+
+// URL Shortener redirect route
+app.use('/sh', shortUrlRouter);
 
 const noCacheHeaders = {
   'Cache-control': 'no-cache, no-store, must-revalidate',
