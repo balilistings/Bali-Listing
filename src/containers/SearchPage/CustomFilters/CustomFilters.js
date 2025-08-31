@@ -445,8 +445,12 @@ function CustomFilters({
   };
 
   const handlePropertyTypeChange = propertyType => {
+    const paramValue = !propertyType || (Array.isArray(propertyType) && propertyType.length === 0) 
+      ? null 
+      : propertyType.toString();
+
     onUpdateCurrentQueryParams({
-      pub_propertytype: propertyType.toString(),
+      pub_propertytype: paramValue,
     });
     setSelectedPropertyType(propertyType);
   };
@@ -668,6 +672,7 @@ function CustomFilters({
           {availableFilters.includes('simplePrice') && (
             <SimplePriceSelector
               priceRange={simplePriceRange}
+              description="Select your price range (in millions IDR)"
               onPriceRangeChange={handleSimplePriceRangeChange}
               min={1000000}
               max={999000000000}

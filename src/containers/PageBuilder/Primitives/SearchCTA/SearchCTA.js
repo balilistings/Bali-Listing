@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { Form as FinalForm } from 'react-final-form';
 import { useHistory } from 'react-router-dom';
@@ -66,12 +66,17 @@ export const SearchCTA = React.forwardRef((props, ref) => {
   const [isOpenBedrooms, setIsOpenBedrooms] = useState(false);
   const [isOpenPrice, setIsOpenPrice] = useState(false);
   const [isOpenLandSize, setIsOpenLandSize] = useState(false);
+  const [isFormReady, setIsFormReady] = useState(false);
 
   const { categories, dateRange, keywordSearch, locationSearch, price } = props.searchFields;
   const bedrooms = tabs[activeTab].key !== 'landforsale';
   const landSize = tabs[activeTab].key === 'landforsale';
 
   const [submitDisabled, setSubmitDisabled] = useState(false);
+
+  useEffect(() => {
+    setIsFormReady(true);
+  }, []);
 
   const categoryConfig = config.categoryConfiguration;
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -275,7 +280,7 @@ export const SearchCTA = React.forwardRef((props, ref) => {
                   'dateRange',
                 ])}
 
-                <button disabled={submitDisabled} className={css.submitButton} type="submit">
+                <button disabled={!isFormReady || submitDisabled} className={css.submitButton} type="submit">
                   <span className={css.searchIcon}>
                     <IconCollection name="search_icon" />
                   </span>

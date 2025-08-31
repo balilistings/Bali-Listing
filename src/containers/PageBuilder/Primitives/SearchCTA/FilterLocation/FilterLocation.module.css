@@ -87,6 +87,11 @@
   @media (--viewportMedium) {
     height: 56px;
   }
+
+  @media ( --viewportLarge) {
+    height: auto;
+  }
+
 }
 
 .customField {
@@ -102,6 +107,11 @@
     padding: 0 0 0 16px;
     height: 56px;
   }
+
+  @media ( --viewportLarge) {
+    height: auto;
+  }
+
 
   &>div:last-child {
     @media (max-width: 768px) {

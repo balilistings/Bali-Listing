@@ -64,6 +64,14 @@ const FormComponent = props => (
             name="textarea3"
             placeholder="Textarea without label..."
           />
+          <FieldTextInput
+            className={css.field}
+            type="password"
+            id={`${formName}.password1`}
+            name="password1"
+            label="Password field with visibility toggle:"
+            placeholder="Enter your password"
+          />
           <Button className={css.submit} type="submit" disabled={submitDisabled}>
             Submit
           </Button>

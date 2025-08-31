@@ -182,6 +182,52 @@ const getPixelPositionOffset = (width, height) => {
   return { x: -1 * (width / 2), y: -1 * (height + 3) };
 };
 
+/** 
+ * Dynamic position offset based on map quadrant to prevent clipping
+ * @param {number} width - Width of the info card
+ * @param {number} height - Height of the info card
+ * @param {google.maps.LatLng} position - Position of the marker
+ * @param {google.maps.Map} map - Google Map instance
+ * @returns {Object} Offset object with x and y properties
+ */
+const getDynamicPixelPositionOffset = (width, height, position, map) => {
+  const cardWidth = width || 250;  // Default width from CSS
+  const cardHeight = height || 300;  // Approximate default height
+  
+  // Get map bounds
+  const mapBounds = map.getBounds();
+  if (!mapBounds) return { x: -1 * (cardWidth / 2), y: -1 * (cardHeight + 3) }; 
+  
+  // Get corners of the map bounds
+  const ne = mapBounds.getNorthEast();
+  const sw = mapBounds.getSouthWest();
+  
+  // Calculate center of the map
+  const centerLat = (ne.lat() + sw.lat()) / 2;
+  const centerLng = (ne.lng() + sw.lng()) / 2;
+  
+  // Determine which quadrant the marker is in
+  const isTop = position.lat() > centerLat;
+  const isRight = position.lng() > centerLng;
+  
+  // Position based on quadrant to avoid clipping
+  const distance = 20; // distance to price label
+  
+  if (isTop && isRight) {
+    // Top-right quadrant: position to bottom-left of marker
+    return { x: -1 * (cardWidth + distance), y: distance };
+  } else if (isTop && !isRight) {
+    // Top-left quadrant: position to bottom-right of marker
+    return { x: distance, y: distance };
+  } else if (!isTop && isRight) {
+    // Bottom-right quadrant: position to top-left of marker
+    return { x: -1 * (cardWidth + distance), y: -1 * (cardHeight + distance) };
+  } else {
+    // Bottom-left quadrant: position to top-right of marker
+    return { x: distance, y: -1 * (cardHeight + distance) };
+  }
+};
+
 /**
  * GoogleMaps need to use Google specific OverlayView components and therefore we need to
  * reduce flickering / rerendering of these overlays through 'shouldComponentUpdate'
@@ -195,8 +241,9 @@ class SearchMapPriceLabelWithOverlay extends Component {
     const hasSameActiveStatus = this.props.isActive === nextProps.isActive;
     const hasSameRefreshToken =
       this.props.mapComponentRefreshToken === nextProps.mapComponentRefreshToken;
+    const hasSameRentPeriodParam = this.props.rentPeriodParam === nextProps.rentPeriodParam;
 
-    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken);
+    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken && hasSameRentPeriodParam);
   }
 
   render() {
@@ -210,6 +257,8 @@ class SearchMapPriceLabelWithOverlay extends Component {
       onListingClicked,
       mapComponentRefreshToken,
       config,
+      rentPeriodParam,
+      location,
     } = this.props;
 
     return (
@@ -226,6 +275,8 @@ class SearchMapPriceLabelWithOverlay extends Component {
           onListingClicked={onListingClicked}
           mapComponentRefreshToken={mapComponentRefreshToken}
           config={config}
+          rentPeriodParam={rentPeriodParam}
+          location={location}
         />
       </CustomOverlayView>
     );
@@ -288,6 +339,8 @@ const PriceLabelsAndGroups = props => {
     onListingClicked,
     mapComponentRefreshToken,
     config,
+    rentPeriodParam,
+    location,
   } = props;
   const listingArraysInLocations = reducedToArray(groupedByCoordinates(listings));
   const priceLabels = listingArraysInLocations.reverse().map(listingArr => {
@@ -322,6 +375,8 @@ const PriceLabelsAndGroups = props => {
           onListingClicked={onListingClicked}
           mapComponentRefreshToken={mapComponentRefreshToken}
           config={config}
+          rentPeriodParam={rentPeriodParam}
+          location={location}
         />
       );
     }
@@ -360,34 +415,93 @@ const InfoCardComponent = props => {
     mapComponentRefreshToken,
     config,
     onClose,
+    isMobile,
   } = props;
   const listingsArray = Array.isArray(infoCardOpen) ? infoCardOpen : [infoCardOpen];
 
   if (!infoCardOpen) {
     return null;
   }
+  
   // Explicit type change to object literal for Google OverlayViews (geolocation is SDK type)
   const firstListing = ensureListing(listingsArray[0]);
   const geolocation = firstListing.attributes.geolocation;
   const latLngLiteral = { lat: geolocation.lat, lng: geolocation.lng };
 
+  // On mobile, render the info card directly in the DOM instead of as an overlay
+  if (isMobile) {
+    return (
+      <div className={classNames(INFO_CARD_HANDLE, css.infoCardContainer)}>
+        <SearchMapInfoCard
+          mapComponentRefreshToken={mapComponentRefreshToken}
+          className={classNames(INFO_CARD_HANDLE, css.infoCardContainer)}
+          listings={listingsArray}
+          onListingInfoCardClicked={onListingInfoCardClicked}
+          createURLToListing={createURLToListing}
+          onClose={onClose}
+          config={config}
+        />
+      </div>
+    );
+  }
+
+  // Determine caret position based on marker quadrant
+  let caretPosition = 'top-left'; // default
+  const mapBounds = map.getBounds();
+  if (mapBounds) {
+    // Get corners of the map bounds
+    const ne = mapBounds.getNorthEast();
+    const sw = mapBounds.getSouthWest();
+    
+    // Calculate center of the map
+    const centerLat = (ne.lat() + sw.lat()) / 2;
+    const centerLng = (ne.lng() + sw.lng()) / 2;
+    
+    // Determine which quadrant the marker is in
+    const isTop = latLngLiteral.lat > centerLat;
+    const isRight = latLngLiteral.lng > centerLng;
+    
+    // Set caret position based on quadrant
+    if (isTop && isRight) {
+      caretPosition = 'bottom-left';
+    } else if (isTop && !isRight) {
+      caretPosition = 'bottom-right';
+    } else if (!isTop && isRight) {
+      caretPosition = 'top-left';
+    } else {
+      caretPosition = 'top-right';
+    }
+  }
+
+  // Create a dynamic positioning function for the info card
+  const dynamicGetPixelPositionOffset = (width, height) => {
+    // Convert latLngLiteral to google.maps.LatLng
+    const position = new window.google.maps.LatLng(latLngLiteral.lat, latLngLiteral.lng);
+    // Ensure we have valid dimensions, fallback to defaults if not provided
+    const cardWidth = width && width > 0 ? width : 250;
+    const cardHeight = height && height > 0 ? height : 300;
+    return getDynamicPixelPositionOffset(cardWidth, cardHeight, position, map);
+  };
+
+  // On desktop, use the overlay positioning
   return (
     <CustomOverlayView
       key={listingsArray[0].id.uuid}
       position={latLngLiteral}
       map={map}
       mapPaneName={FLOAT_PANE}
-      getPixelPositionOffset={getPixelPositionOffset}
+      getPixelPositionOffset={dynamicGetPixelPositionOffset}
       styles={{ zIndex: 1 }}
     >
       <SearchMapInfoCard
         mapComponentRefreshToken={mapComponentRefreshToken}
-        className={INFO_CARD_HANDLE}
+        className={classNames(INFO_CARD_HANDLE, css.infoCardContainer)}
         listings={listingsArray}
         onListingInfoCardClicked={onListingInfoCardClicked}
         createURLToListing={createURLToListing}
         onClose={onClose}
         config={config}
+        caretPosition={caretPosition}
       />
     </CustomOverlayView>
   );
@@ -419,11 +533,17 @@ class SearchMapWithGoogleMaps extends Component {
     this.map = null;
     this.viewportBounds = null;
     this.idleListener = null;
-    this.state = { mapContainer: null, isMapReady: false };
+    this.state = { mapContainer: null, isMapReady: false, isMobile: false };
 
     this.initializeMap = this.initializeMap.bind(this);
     this.onMount = this.onMount.bind(this);
     this.onIdle = this.onIdle.bind(this);
+    this.handleResize = this.handleResize.bind(this);
+  }
+
+  componentDidMount() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
   }
 
   componentDidUpdate(prevProps) {
@@ -465,7 +585,10 @@ class SearchMapWithGoogleMaps extends Component {
   }
 
   componentWillUnmount() {
-    this.idleListener.remove();
+    if (this.idleListener) {
+      this.idleListener.remove();
+    }
+    window.removeEventListener('resize', this.handleResize);
   }
 
   initializeMap() {
@@ -483,7 +606,7 @@ class SearchMapWithGoogleMaps extends Component {
         // Disable all controls except zoom
         // https://developers.google.com/maps/documentation/javascript/reference/map#MapOptions
         mapTypeControl: false,
-        scrollwheel: false,
+        scrollwheel: true,
         fullscreenControl: false,
         clickableIcons: false,
         streetViewControl: false,
@@ -506,6 +629,11 @@ class SearchMapWithGoogleMaps extends Component {
 
   onMount(element) {
     this.setState({ mapContainer: element });
+  }
+
+  handleResize() {
+    const isMobile = window.innerWidth <= 768;
+    this.setState({ isMobile });
   }
 
   onIdle(e) {
@@ -538,6 +666,21 @@ class SearchMapWithGoogleMaps extends Component {
     }
   }
 
+  getRentPeriodParam() {
+    const queryParams = new URLSearchParams(this.props.location?.search || window.location.search);
+    const isRentalParam = queryParams.get('pub_categoryLevel1') === 'rentalvillas';
+    
+    return queryParams.get('pub_weekprice')
+      ? 'weekprice'
+      : queryParams.get('pub_monthprice')
+      ? 'monthprice'
+      : queryParams.get('pub_yearprice')
+      ? 'yearprice'
+      : isRentalParam
+      ? 'noFilter'
+      : null;
+  }
+
   render() {
     const {
       id = 'searchMap',
@@ -550,7 +693,11 @@ class SearchMapWithGoogleMaps extends Component {
       onListingInfoCardClicked,
       createURLToListing,
       config,
+      location,
     } = this.props;
+    
+    const rentPeriodParam = this.getRentPeriodParam();
+    
     return (
       <div
         id={id}
@@ -567,6 +714,8 @@ class SearchMapWithGoogleMaps extends Component {
             onListingClicked={onListingClicked}
             mapComponentRefreshToken={mapComponentRefreshToken}
             config={config}
+            rentPeriodParam={rentPeriodParam}
+            location={location}
           />
         ) : null}
         {this.map ? (
@@ -578,6 +727,7 @@ class SearchMapWithGoogleMaps extends Component {
             mapComponentRefreshToken={mapComponentRefreshToken}
             config={config}
             onClose={this.props.onClose}
+            isMobile={this.state.isMobile}
           />
         ) : null}
       </div>

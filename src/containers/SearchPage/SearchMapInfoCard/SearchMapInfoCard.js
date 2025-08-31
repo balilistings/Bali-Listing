@@ -215,7 +215,17 @@ const ListingCard = props => {
   let price;
 
   if (isRentals) {
-    if (pricee.includes('monthly')) {
+    const priceParams = checkPriceParams();
+
+    if (priceParams?.weekprice) {
+      price = weekprice;
+    } else if (priceParams?.monthprice) {
+      price = monthprice;
+    } else if (priceParams?.yearprice) {
+      price = yearprice;
+    }
+
+    else if (pricee.includes('monthly')) {
       price = monthprice;
     } else if (pricee.includes('weekly')) {
       price = weekprice;
@@ -368,6 +378,7 @@ const ListingCard = props => {
  * @param {Function} props.createURLToListing - The function to create the URL to the listing
  * @param {Function} [props.onClose] - The function to handle closing the info card
  * @param {Object} props.config - The configuration
+ * @param {string} [props.caretPosition] - Position of the caret (top-left, top-right, bottom-left, bottom-right)
  * @returns {JSX.Element}
  */
 const SearchMapInfoCard = props => {
@@ -381,12 +392,30 @@ const SearchMapInfoCard = props => {
     onListingInfoCardClicked,
     onClose,
     config,
+    caretPosition,
   } = props;
   const currentListing = ensureListing(listings[currentListingIndex]);
   const hasCarousel = listings.length > 1;
 
   const classes = classNames(rootClassName || css.root, className);
-  const caretClass = classNames(css.caret, { [css.caretWithCarousel]: hasCarousel });
+
+  
+  let positionCaretClass = null;
+  if (caretPosition === 'bottom-left') {
+    positionCaretClass = css.caretBottomLeft;
+  } else if (caretPosition === 'bottom-right') {
+    positionCaretClass = css.caretBottomRight;
+  } else if (caretPosition === 'top-left') {
+    positionCaretClass = css.caretTopLeft;
+  } else if (caretPosition === 'top-right') {
+    positionCaretClass = css.caretTopRight;
+  }
+
+  const caretClass = classNames(
+    css.caret,            
+    positionCaretClass,   
+    { [css.caretWithCarousel]: hasCarousel }
+  );
 
   const handleCloseClick = e => {
     e.preventDefault();
