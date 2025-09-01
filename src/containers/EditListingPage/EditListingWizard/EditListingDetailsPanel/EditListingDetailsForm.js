@@ -23,6 +23,10 @@ import {
   Heading,
   CustomExtendedDataField,
 } from '../../../../components';
+
+// Import IconCollection
+import { IconCollection } from '../../../../components';
+
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
 
@@ -242,45 +246,130 @@ const FieldSelectCategory = props => {
   );
 };
 
+const amenities = [
+  { icon: <IconCollection name="wifi" />, name: 'Wifi', id: 'wifi' },
+  { icon: <IconCollection name="pool" />, name: 'Pool', id: 'pool' },
+  { icon: <IconCollection name="gym" />, name: 'Gym', id: 'Gym' },
+  { icon: <IconCollection name="pet" />, name: 'Pet Friendly', id: 'petfriendly' },
+  { icon: <IconCollection name="desk" />, name: 'Working desk', id: 'workingdesk' },
+  { icon: <IconCollection name="parking" />, name: 'Car parking', id: 'carparking' },
+  { icon: <IconCollection name="kitchen" />, name: 'Kitchen', id: 'kitchen' },
+  { icon: <IconCollection name="aircondition" />, name: 'Airconditioning', id: 'airco' },
+];
+
+// AmenitiesGroup component for rendering a group of amenities
+const AmenitiesGroup = ({ fields, values, formApi }) => {
+  const filteredAmenities = amenities.filter(amenity =>
+    fields.some(field => field.key.toLowerCase() === amenity.id.toLowerCase())
+  );
+
+  const handleAmenityToggle = fieldName => {
+    const currentValue = values[fieldName];
+    
+    if (fieldName.toLowerCase().includes('gym')) {
+      const newValue = currentValue === 'gymyes' ? 'gymno' : 'gymyes';
+      formApi.change(fieldName, newValue);
+    } else {
+      const newValue = currentValue === 'yes' ? 'no' : 'yes';
+      formApi.change(fieldName, newValue);
+    }
+  };
+
+  if (filteredAmenities.length === 0) return null;
+
+  return (
+    <div className={css.amenitiesGroup}>
+      <h3 className={css.amenitiesTitle}>Amenities</h3>
+      <div className={css.amenitiesGrid}>
+        {filteredAmenities.map(amenity => {
+          const field = fields.find(f => f.key.toLowerCase() === amenity.id.toLowerCase());
+          const fieldName = field?.scope === 'public' ? `pub_${amenity.id}` : `priv_${amenity.id}`;
+          const currentValue = values[fieldName];
+          
+          const isSelected = amenity.id.toLowerCase() === 'gym' ? currentValue === 'gymyes' : currentValue === 'yes';
+
+          return (
+            <button
+              key={amenity.id}
+              type="button"
+              className={classNames(css.amenityPill, {
+                [css.selected]: isSelected,
+              })}
+              onClick={() => handleAmenityToggle(fieldName)}
+            >
+              <span className={css.amenityIcon}>{amenity.icon}</span>
+              <span className={css.amenityName}>{amenity.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 // Add collect data for listing fields (both publicData and privateData) based on configuration
 export const AddListingFields = props => {
-  const { listingType, listingFieldsConfig, selectedCategories, formId, intl } = props;
+  const { listingType, listingFieldsConfig, selectedCategories, formId, intl, formApi } = props;
   const targetCategoryIds = Object.values(selectedCategories);
   const { values } = useFormState({ subscription: { values: true } });
 
-  const fields = listingFieldsConfig.reduce((pickedFields, fieldConfig) => {
-    const { key, schemaType, scope } = fieldConfig || {};
-    const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
+  // Separate amenities fields from other fields
+  const { amenityFields, otherFields } = listingFieldsConfig.reduce(
+    (acc, fieldConfig) => {
+      const { key, schemaType, scope } = fieldConfig || {};
+      const namespacedKey = scope === 'public' ? `pub_${key}` : `priv_${key}`;
 
-    const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
-    const isProviderScope = ['public', 'private'].includes(scope);
-    const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
-    const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
+      const isKnownSchemaType = EXTENDED_DATA_SCHEMA_TYPES.includes(schemaType);
+      const isProviderScope = ['public', 'private'].includes(scope);
+      const isTargetListingType = isFieldForListingType(listingType, fieldConfig);
+      const isTargetCategory = isFieldForCategory(targetCategoryIds, fieldConfig);
+      const isAmenityField = amenities.some(a => a.id.toLowerCase() === key.toLowerCase());
 
-    if (
-      hiddenListingField[key] &&
-      values[hiddenListingField[key].matchingKey] === hiddenListingField[key].matchingValue
-    ) {
-      return pickedFields;
-    }
+      if (
+        hiddenListingField[key] &&
+        values[hiddenListingField[key].matchingKey] === hiddenListingField[key].matchingValue
+      ) {
+        return acc;
+      }
 
-    return isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory
-      ? [
-          ...pickedFields,
-          <CustomExtendedDataField
-            key={namespacedKey}
-            name={namespacedKey}
-            fieldConfig={fieldConfig}
-            defaultRequiredMessage={intl.formatMessage({
-              id: 'EditListingDetailsForm.defaultRequiredMessage',
-            })}
-            formId={formId}
-          />,
-        ]
-      : pickedFields;
-  }, []);
+      if (isKnownSchemaType && isProviderScope && isTargetListingType && isTargetCategory) {
+        if (isAmenityField) {
+          return {
+            ...acc,
+            amenityFields: [...acc.amenityFields, fieldConfig],
+          };
+        } else {
+          return {
+            ...acc,
+            otherFields: [
+              ...acc.otherFields,
+              <CustomExtendedDataField
+                key={namespacedKey}
+                name={namespacedKey}
+                fieldConfig={fieldConfig}
+                defaultRequiredMessage={intl.formatMessage({
+                  id: 'EditListingDetailsForm.defaultRequiredMessage',
+                })}
+                formId={formId}
+              />,
+            ],
+          };
+        }
+      }
 
-  return <>{fields}</>;
+      return acc;
+    },
+    { amenityFields: [], otherFields: [] }
+  );
+
+  return (
+    <>
+      {otherFields}
+      {amenityFields.length > 0 && (
+        <AmenitiesGroup fields={amenityFields} values={values} formApi={formApi} />
+      )}
+    </>
+  );
 };
 
 /**
@@ -460,6 +549,7 @@ const EditListingDetailsForm = props => (
               selectedCategories={pickSelectedCategories(values)}
               formId={formId}
               intl={intl}
+              formApi={formApi}
             />
           )}
 
