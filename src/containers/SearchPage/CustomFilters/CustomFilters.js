@@ -701,6 +701,7 @@ function CustomFilters({
               selectedAmenities={selectedAmenities}
               onAmenitiesChange={handleAmenitiesChange}
               onReset={handleAmenitiesReset}
+              category={selectedCategory}
             />
           )}
 
