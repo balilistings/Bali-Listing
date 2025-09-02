@@ -105,7 +105,7 @@ const prepareServices = publicData => {
     let status = 'x';
     let displayValue = '';
 
-    if (rawValue === 'yes' || (typeof rawValue === 'number' && rawValue > 0)) {
+    if (rawValue === 'yes' || (!isNaN(rawValue) && Number(rawValue) > 0)) {
       status = 'check';
 
       // Special handling for cleaning service
