@@ -544,7 +544,6 @@ export const ListingPageComponent = props => {
                 listingFieldConfigs={listingConfig.listingFields}
                 categoryConfiguration={config.categoryConfiguration}
                 intl={intl}
-                isLandforsale={isLandforsale}
               />
             </div>
 
