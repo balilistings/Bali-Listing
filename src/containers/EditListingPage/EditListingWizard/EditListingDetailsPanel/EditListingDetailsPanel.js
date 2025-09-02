@@ -23,6 +23,7 @@ import { H3, ListingLink } from '../../../../components';
 import ErrorMessage from './ErrorMessage';
 import EditListingDetailsForm from './EditListingDetailsForm';
 import css from './EditListingDetailsPanel.module.css';
+import { useSelector } from 'react-redux';
 
 /**
  * Get listing configuration. For existing listings, it is stored to publicData.
@@ -218,12 +219,19 @@ const getInitialValues = (
   listingTypes,
   listingFields,
   listingCategories,
-  categoryKey
+  categoryKey,
+  userPhoneNumber,
 ) => {
   const { description, title, publicData, privateData } = props?.listing?.attributes || {};
   const { listingType } = publicData;
 
   const nestedCategories = pickCategoryFields(publicData, categoryKey, 1, listingCategories);
+
+  const isEditMode = !!props?.listing?.id;
+  const phoneNumberField = listingFields.find(field => field.key === 'phonenumber');
+  const shouldAddDefaultPhone = !isEditMode && phoneNumberField;
+  const defaultPhoneValue = shouldAddDefaultPhone ? userPhoneNumber : undefined;
+
   // Initial values for the form
   return {
     title,
@@ -245,6 +253,10 @@ const getInitialValues = (
       nestedCategories,
       listingFields
     ),
+    ...(shouldAddDefaultPhone 
+      ? { pub_phonenumber: defaultPhoneValue } 
+      : {}),
+    
   };
 };
 
@@ -299,13 +311,16 @@ const EditListingDetailsPanel = props => {
       return listinTypesMatch && unitTypesMatch;
     });
 
+  const userPhoneNumber = useSelector(state => state.user.currentUser.attributes.profile.protectedData.phoneNumber);
+    
   const initialValues = getInitialValues(
     props,
     existingListingTypeInfo,
     listingTypes,
     listingFields,
     listingCategories,
-    categoryKey
+    categoryKey,
+    userPhoneNumber,
   );
 
   const noListingTypesSet = listingTypes?.length === 0;
