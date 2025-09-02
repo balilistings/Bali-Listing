@@ -623,6 +623,15 @@ margin-right: 10px;
   gap: 6px;
 }
 
+.dotsCounter {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .dot {
   width: 6px;
   height: 6px;
@@ -705,6 +714,10 @@ margin-right: 10px;
         display: none;
       }
     }
+  }
+  
+  & :global(.slick-dots) button {
+    display: none;
   }
   & :global(.slick-active) {
     & .dot {
