@@ -128,6 +128,10 @@ const CustomFieldText = props => {
     placeholderMessage ||
     intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
 
+  const textMaxlength = {
+    pub_payment: 100,
+  };
+
   // Handle validation for phone number field
   const validateMaybe =
     name === 'pub_phonenumber'
@@ -164,6 +168,7 @@ const CustomFieldText = props => {
       type={showtextArea ? 'textarea' : 'text'}
       label={label}
       placeholder={placeholder}
+      maxLength={textMaxlength[name]}
       {...validateMaybe}
     />
   );

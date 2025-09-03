@@ -21,6 +21,7 @@ const FieldTextInputComponent = props => {
     isUncontrolled,
     inputRef,
     hideErrorMessage,
+    maxLength,
     ...rest
   } = props;
 
@@ -53,13 +54,12 @@ const FieldTextInputComponent = props => {
       [css.inputError]: hasError,
       [css.textarea]: isTextarea,
     });
-  const maxLength = CONTENT_MAX_LENGTH;
   const inputProps = isTextarea
     ? {
         className: inputClasses,
         id,
         rows: 1,
-        maxLength,
+        maxLength: maxLength || CONTENT_MAX_LENGTH,
         ...refMaybe,
         ...inputWithoutType,
         ...rest,
