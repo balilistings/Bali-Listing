@@ -13,6 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { handleToggleFavorites } from '../../../../util/userFavorites';
 import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
+import classNames from 'classnames';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -546,10 +547,15 @@ const PropertyCards = () => {
                         />
                       ))}
                     </Slider>
-                    <button className={styles.wishlistButton} onClick={onToggleFavorites}>
+                    {/* <button className={styles.wishlistButton} onClick={onToggleFavorites}>
                       <IconCollection
                         name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'}
                       />
+                    </button> */}
+                    <button 
+                      className={classNames(styles.wishlistButton, isFavorite ? styles.active : '')} 
+                      onClick={onToggleFavorites}>
+                      <IconCollection name="icon-waislist" />
                     </button>
                   </div>
                   <div className={styles.cardDetails}>

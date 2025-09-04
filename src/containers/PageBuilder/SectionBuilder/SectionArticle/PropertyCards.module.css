@@ -602,3 +602,19 @@
   justify-content: center;
   border: none;
 }
+
+.wishlistButton svg {
+  fill: transparent;
+  stroke: white;
+  transition: all 0.3s ease;
+}
+
+.wishlistButton.active svg {
+  fill: #FF3737;
+  stroke: #FF3737;
+}
+
+.wishlistButton:hover svg {
+  fill: #FF3737;
+  stroke: #FF3737;
+}
