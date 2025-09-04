@@ -1,15 +1,8 @@
 import React from 'react';
+import { useIntl } from 'react-intl';
 
 // Import config and utils
-import { useIntl } from '../../util/reactIntl';
-import {
-  SCHEMA_TYPE_ENUM,
-  SCHEMA_TYPE_MULTI_ENUM,
-  SCHEMA_TYPE_TEXT,
-  SCHEMA_TYPE_LONG,
-  SCHEMA_TYPE_BOOLEAN,
-  SCHEMA_TYPE_YOUTUBE,
-} from '../../util/types';
+import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_TEXT, SCHEMA_TYPE_LONG, SCHEMA_TYPE_BOOLEAN, SCHEMA_TYPE_YOUTUBE, SCHEMA_TYPE_DATE } from '../../util/types';
 import {
   required,
   nonEmptyArray,
@@ -18,6 +11,10 @@ import {
 } from '../../util/validators';
 // Import shared components
 import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '../../components';
+// Import date picker component
+import { FieldSingleDatePicker } from '../../components';
+// Import custom availableper field
+import CustomAvailablePerField from './CustomAvailablePerField';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
 
@@ -282,6 +279,31 @@ const CustomFieldYoutube = props => {
   );
 };
 
+const CustomFieldDate = props => {
+  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
+  const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
+  const label = getLabel(fieldConfig);
+  
+  const validateMaybe = isRequired
+    ? { validate: required(requiredMessage || defaultRequiredMessage) }
+    : {};
+    
+  const placeholder =
+    placeholderMessage ||
+    intl.formatMessage({ id: 'CustomExtendedDataField.placeholderDate' });
+
+  return (
+    <FieldSingleDatePicker
+      className={css.customField}
+      id={formId ? `${formId}.${name}` : name}
+      name={name}
+      label={label}
+      placeholderText={placeholder}
+      {...validateMaybe}
+    />
+  );
+};
+
 /**
  * Return Final Form field for each configuration according to schema type.
  *
@@ -294,8 +316,14 @@ const CustomFieldYoutube = props => {
  */
 const CustomExtendedDataField = props => {
   const intl = useIntl();
-  const { enumOptions = [], schemaType } = props?.fieldConfig || {};
+  const { enumOptions = [], schemaType, key } = props?.fieldConfig || {};
+  const fieldName = props.name;
   const renderFieldComponent = (FieldComponent, props) => <FieldComponent {...props} intl={intl} />;
+
+  // Special handling for availableper field - use our custom component
+  if (key === 'availableper') {
+    return <CustomAvailablePerField {...props} intl={intl} />;
+  }
 
   return schemaType === SCHEMA_TYPE_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldEnum, props)
@@ -309,6 +337,8 @@ const CustomExtendedDataField = props => {
     ? renderFieldComponent(CustomFieldBoolean, props)
     : schemaType === SCHEMA_TYPE_YOUTUBE
     ? renderFieldComponent(CustomFieldYoutube, props)
+    : schemaType === SCHEMA_TYPE_DATE
+    ? renderFieldComponent(CustomFieldDate, props)
     : null;
 };
 
