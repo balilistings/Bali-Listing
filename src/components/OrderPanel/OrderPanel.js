@@ -472,8 +472,28 @@ const OrderPanel = props => {
 
     if (cleanedNumber) {
       // Open WhatsApp with the cleaned phone number
-      const whatsappUrl = `https://wa.me/${cleanedNumber}`;
+      const currentUrl = window.location.href;
+      const hostUrl = `${window.location.protocol}//${window.location.host}`;
+      const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${currentUrl}. Can we discuss details?`;
+      const encodedMessage = encodeURIComponent(message);
+      
+      const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
+      
+      if (window.gtag) {
+        window.gtag('event', 'click_contact_owner', {
+          'event_category': 'engagement',
+          'event_label': listing.attributes.id,
+          'value': 1
+        });
+      }
+      
+      if (window.fbq) {
+        fbq('track', 'Click Contact Owner', {
+          listing_id: listing.id,
+          listing_name: listing.attributes.title,
+        });
+      }
     }
   };
 
