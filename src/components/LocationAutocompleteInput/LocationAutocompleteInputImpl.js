@@ -197,7 +197,7 @@ const LocationPredictionsList = React.forwardRef((props, ref) => {
 
   return (
     <div className={classes} ref={ref}>
-      <div className={css.closeDropdown} onClick={onCloseDropdown} />
+      {!isMobile && <div className={css.closeDropdown} onClick={onCloseDropdown} />}
       <ul className={css.predictions}>
         <li className={css.menuItemMobile}>
           <h2 className={css.menuItemMobileTitle}>
