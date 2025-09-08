@@ -26,6 +26,40 @@ const sliderSettings = {
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
+  appendDots: dots => {
+    // Show only 3 dots: previous, current, next
+    if (dots.length <= 3) {
+      return <div className={css.dots}>{dots}</div>;
+    }
+    
+    // For more than 3 slides, dynamically show 3 dots
+    // Find the currently active dot
+    const activeIndex = dots.findIndex(dot => 
+      dot.props.className && dot.props.className.includes('slick-active')
+    );
+    
+    let selectedDots = [];
+    
+    if (activeIndex === -1) {
+      // If no active dot found, show first 3
+      selectedDots = dots.slice(0, 3);
+    } else if (activeIndex === 0) {
+      // If first slide is active, show first 3
+      selectedDots = dots.slice(0, 3);
+    } else if (activeIndex === dots.length - 1) {
+      // If last slide is active, show last 3
+      selectedDots = dots.slice(-3);
+    } else {
+      // Show previous, current, next
+      selectedDots = [
+        dots[activeIndex - 1],
+        dots[activeIndex],
+        dots[activeIndex + 1]
+      ];
+    }
+    
+    return <div className={css.dots}>{selectedDots}</div>;
+  },
   lazyLoad: 'progressive',
   appendDots: dots => <div className={css.dots}>{dots}</div>,
   customPaging: i => <span className={css.dot}></span>,
@@ -181,7 +215,17 @@ const ListingCard = props => {
   let price;
 
   if (isRentals) {
-    if (pricee.includes('monthly')) {
+    const priceParams = checkPriceParams();
+
+    if (priceParams?.weekprice) {
+      price = weekprice;
+    } else if (priceParams?.monthprice) {
+      price = monthprice;
+    } else if (priceParams?.yearprice) {
+      price = yearprice;
+    }
+
+    else if (pricee.includes('monthly')) {
       price = monthprice;
     } else if (pricee.includes('weekly')) {
       price = weekprice;
@@ -334,6 +378,7 @@ const ListingCard = props => {
  * @param {Function} props.createURLToListing - The function to create the URL to the listing
  * @param {Function} [props.onClose] - The function to handle closing the info card
  * @param {Object} props.config - The configuration
+ * @param {string} [props.caretPosition] - Position of the caret (top-left, top-right, bottom-left, bottom-right)
  * @returns {JSX.Element}
  */
 const SearchMapInfoCard = props => {
@@ -347,12 +392,30 @@ const SearchMapInfoCard = props => {
     onListingInfoCardClicked,
     onClose,
     config,
+    caretPosition,
   } = props;
   const currentListing = ensureListing(listings[currentListingIndex]);
   const hasCarousel = listings.length > 1;
 
   const classes = classNames(rootClassName || css.root, className);
-  const caretClass = classNames(css.caret, { [css.caretWithCarousel]: hasCarousel });
+
+  
+  let positionCaretClass = null;
+  if (caretPosition === 'bottom-left') {
+    positionCaretClass = css.caretBottomLeft;
+  } else if (caretPosition === 'bottom-right') {
+    positionCaretClass = css.caretBottomRight;
+  } else if (caretPosition === 'top-left') {
+    positionCaretClass = css.caretTopLeft;
+  } else if (caretPosition === 'top-right') {
+    positionCaretClass = css.caretTopRight;
+  }
+
+  const caretClass = classNames(
+    css.caret,            
+    positionCaretClass,   
+    { [css.caretWithCarousel]: hasCarousel }
+  );
 
   const handleCloseClick = e => {
     e.preventDefault();

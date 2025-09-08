@@ -23,6 +23,8 @@ import { pickUserFieldsData, addScopePrefix } from '../../util/userHelpers';
 import { login, authenticationInProgress, signup, signupWithIdp } from '../../ducks/auth.duck';
 import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { sendVerificationEmail } from '../../ducks/user.duck';
+import authImage from '../../assets/auth-banner.png';
+import authImage2 from '../../assets/auth-banner-2.png';
 
 import {
   Page,
@@ -34,6 +36,7 @@ import {
   ResponsiveBackgroundImageContainer,
   Modal,
   LayoutSingleColumn,
+  NamedLink,
 } from '../../components';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
@@ -100,35 +103,35 @@ export const SocialLoginButtonsMaybe = props => {
     <div className={css.idpButtons}>
       <div className={css.socialButtonsOr}>
         <span className={css.socialButtonsOrText}>
-          <FormattedMessage id="AuthenticationPage.or" />
+          <FormattedMessage id="AuthenticationPage.or1" />
         </span>
       </div>
-
-      {showFacebookLogin ? (
-        <div className={css.socialButtonWrapper}>
-          <SocialLoginButton onClick={() => authWithFacebook()}>
-            <span className={css.buttonIcon}>{FacebookLogo}</span>
-            {isLogin ? (
-              <FormattedMessage id="AuthenticationPage.loginWithFacebook" />
-            ) : (
-              <FormattedMessage id="AuthenticationPage.signupWithFacebook" />
-            )}
-          </SocialLoginButton>
-        </div>
-      ) : null}
-
-      {showGoogleLogin ? (
-        <div className={css.socialButtonWrapper}>
-          <SocialLoginButton onClick={() => authWithGoogle()}>
-            <span className={css.buttonIcon}>{GoogleLogo}</span>
-            {isLogin ? (
-              <FormattedMessage id="AuthenticationPage.loginWithGoogle" />
-            ) : (
-              <FormattedMessage id="AuthenticationPage.signupWithGoogle" />
-            )}
-          </SocialLoginButton>
-        </div>
-      ) : null}
+      <div className={css.idpButtonsInner}>
+        {showGoogleLogin ? (
+          <div className={css.socialButtonWrapper}>
+            <SocialLoginButton onClick={() => authWithGoogle()}>
+              <span className={css.buttonIcon}>{GoogleLogo}</span>
+              {isLogin ? (
+                <FormattedMessage id="AuthenticationPage.loginWithGoogle1" />
+              ) : (
+                <FormattedMessage id="AuthenticationPage.signupWithGoogle1" />
+              )}
+            </SocialLoginButton>
+          </div>
+        ) : null}
+        {showFacebookLogin ? (
+          <div className={css.socialButtonWrapper}>
+            <SocialLoginButton onClick={() => authWithFacebook()}>
+              <span className={css.buttonIcon}>{FacebookLogo}</span>
+              {isLogin ? (
+                <FormattedMessage id="AuthenticationPage.loginWithFacebook1" />
+              ) : (
+                <FormattedMessage id="AuthenticationPage.signupWithFacebook1" />
+              )}
+            </SocialLoginButton>
+          </div>
+        ) : null}
+      </div>
     </div>
   ) : null;
 };
@@ -283,7 +286,7 @@ export const AuthenticationForms = props => {
 
   return (
     <div className={css.content}>
-      <LinkTabNavHorizontal className={css.tabs} tabs={tabs} />
+      {/* <LinkTabNavHorizontal className={css.tabs} tabs={tabs} /> */}
       {loginOrSignupError}
 
       {isLogin ? (
@@ -307,6 +310,19 @@ export const AuthenticationForms = props => {
         {...fromMaybe}
         {...userTypeMaybe}
       />
+      {isLogin ? (
+        <div className={css.signUpLink}>
+          <p className={css.signUpLinkText}>
+            Don't have an account? <NamedLink name="SignupPage">Sign up</NamedLink>
+          </p>
+        </div>
+      ) : (
+        <div className={css.signUpLink}>
+          <p className={css.signUpLinkText}>
+            Already have an account? <NamedLink name="LoginPage">Login</NamedLink>
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -337,6 +353,14 @@ const ConfirmIdProviderInfoForm = props => {
       firstName: newFirstName,
       lastName: newLastName,
       displayName,
+      selfieDocumentLink,
+      idDocumentLink,
+      companyDocumentLink,
+      pub_companyname,
+      pub_id_card_nik,
+      pub_id_npwp_nik,
+      pub_company_address,
+      pub_company_registration,
       ...rest
     } = values;
 
@@ -365,6 +389,14 @@ const ConfirmIdProviderInfoForm = props => {
             ...pickUserFieldsData(rest, 'protected', userType, userFields),
             // If the confirm form has any additional values, pass them forward as user's protected data
             ...getNonUserFieldParams(rest, userFields),
+            ...(selfieDocumentLink && { selfieDocumentLink }),
+            ...(idDocumentLink && { idDocumentLink }),
+            ...(companyDocumentLink && { companyDocumentLink }),
+            ...(pub_companyname && { companyname: pub_companyname }),
+            ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
+            ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
+            ...(pub_company_address && { company_address: pub_company_address }),
+            ...(pub_company_registration && { company_registration: pub_company_registration }),
           },
         }
       : {};
@@ -649,6 +681,9 @@ export const AuthenticationPageComponent = props => {
     </p>
   ) : null;
 
+  // const isConfirm = tab === 'confirm';
+  // const isLogin = tab === 'login';
+
   return (
     <Page
       title={schemaTitle}
@@ -665,7 +700,7 @@ export const AuthenticationPageComponent = props => {
         topbar={<TopbarContainer className={topbarClasses} />}
         footer={<FooterContainer />}
       >
-        <ResponsiveBackgroundImageContainer
+        {/* <ResponsiveBackgroundImageContainer
           className={css.root}
           childrenWrapperClassName={css.contentContainer}
           as="section"
@@ -673,6 +708,15 @@ export const AuthenticationPageComponent = props => {
           sizes="100%"
           useOverlay
         >
+       
+        </ResponsiveBackgroundImageContainer> */}
+        <div className={!showEmailVerification ? css.contentContainer : css.contentContainer2}>
+         {!showEmailVerification && (
+          <div className={css.imageContainer}>
+            <img src={tab === 'signup' ? authImage2 : authImage} alt="logo" />
+          </div>
+         )}
+      
           {showEmailVerification ? (
             <EmailVerificationInfo
               name={user.attributes.profile.firstName}
@@ -706,7 +750,7 @@ export const AuthenticationPageComponent = props => {
               }
             />
           )}
-        </ResponsiveBackgroundImageContainer>
+        </div>
       </LayoutSingleColumn>
       <Modal
         id="AuthenticationPage.tos"
@@ -789,7 +833,10 @@ const mapDispatchToProps = dispatch => ({
 // See: https://github.com/ReactTraining/react-router/issues/4671
 const AuthenticationPage = compose(
   withRouter,
-  connect(mapStateToProps, mapDispatchToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(AuthenticationPageComponent);
 
 export default AuthenticationPage;

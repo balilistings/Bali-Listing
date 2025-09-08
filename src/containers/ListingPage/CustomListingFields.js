@@ -46,6 +46,7 @@ const preparePropertyDetails = publicData => {
     no: 'No',
     open: 'Open',
     closed: 'Closed',
+    semi: 'Semi',
     // Add more transformations as needed
   };
 
@@ -70,32 +71,71 @@ const preparePropertyDetails = publicData => {
     });
 };
 
-const services = [
+const servicesConfig = [
   {
     icon: <IconCollection name="cleaning" />,
     label: 'Cleaning',
-    value: '2x Weekly cleaning',
-    status: 'check', // custom = has value, check = included, x = not included
+    key: 'cleaning_weekly',
+    valuePrefix: 'x Weekly cleaning',
   },
   {
     icon: <IconCollection name="elictricity" />,
     label: 'Electricity',
-    value: '',
-    status: 'check',
+    key: 'electricity',
   },
   {
     icon: <IconCollection name="pool" />,
     label: 'Pool maintenance',
-    value: '',
-    status: 'x',
+    key: 'pool_maintenance',
   },
 ];
 
+/**
+ * Process services data from public data
+ * @param {Object} publicData - The public data object containing service information
+ * @returns {Array} - Array of service objects with status and value
+ */
+const prepareServices = publicData => {
+  if (!publicData) return [];
+
+  return servicesConfig.map(service => {
+    const rawValue = publicData[service.key];
+
+    // Determine status based on value
+    let status = 'x';
+    let displayValue = '';
+
+    if (rawValue === 'yes' || (!isNaN(rawValue) && Number(rawValue) > 0)) {
+      status = 'check';
+
+      // Special handling for cleaning service
+      if (service.key === 'cleaning_weekly') {
+        displayValue = `${rawValue}x Weekly cleaning`;
+      } else if (service.valuePrefix) {
+        displayValue = service.valuePrefix;
+      }
+    } else if (rawValue === 'no') {
+      status = 'x';
+    }
+
+    return {
+      ...service,
+      value: displayValue,
+      status,
+    };
+  });
+};
+
 const CustomListingFields = props => {
-  const { publicData, isLandforsale } = props;
+  const { publicData } = props;
+
+  const { categoryLevel1 } = publicData;
+  const isLandforsale = categoryLevel1 === 'landforsale';
+  const isRentals = categoryLevel1 === 'rentalvillas';
 
   const availableAmenities = prepareAmenities(publicData);
   const availablePropertyDetails = preparePropertyDetails(publicData);
+  const availableServices = prepareServices(publicData);
 
   return (
     <>
@@ -110,29 +150,14 @@ const CustomListingFields = props => {
               </div>
             ))}
           </div>
-
-          <div className={css.propertyDetailsContainer}>
-            <h2 className={css.propertyDetailsTitle}>Property Details</h2>
-            <div className={css.propertyDetailList}>
-              {availablePropertyDetails.map(d => (
-                <div key={d.label} className={css.propertyDetailItem}>
-                  <span className={css.propertyDetailLabelWrapper}>
-                    <span className={css.propertyDetailIcon}>{d.icon}</span>
-                    <span className={css.propertyDetailLabel}>{d.label}</span>
-                  </span>
-                  <span className={css.propertyDetailValue}>{d.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
-      {/* Uncomment this when we have services */}
-      {/* <div className={css.servicesContainerWrapper}>
+      {isRentals && (
+        <div className={css.servicesContainerWrapper}>
           <h2 className={css.servicesTitle}>Services included</h2>
           <div className={css.servicesContainer}>
-            {services.map(s => (
+            {availableServices.map(s => (
               <div
                 key={s.label}
                 className={
@@ -159,8 +184,9 @@ const CustomListingFields = props => {
               </div>
             ))}
           </div>
-        </div> */}
-      {/* 
+        </div>
+      )}
+
       <div className={css.propertyDetailsContainer} id="propertyDetails">
         <h2 className={css.propertyDetailsTitle}>Property Details</h2>
         <div className={css.propertyDetailList}>
@@ -174,7 +200,7 @@ const CustomListingFields = props => {
             </div>
           ))}
         </div>
-      </div> */}
+      </div>
     </>
   );
 };

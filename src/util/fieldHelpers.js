@@ -270,3 +270,10 @@ export const fieldTooltipText = {
   'Wifi':
     'Select “Yes” if there’s a wifi, or “No” if there isn’t.',
 };
+  // i.e. "numberofyears" is hidden if "pub_Freehold" value is "freehold" 
+export const hiddenListingField = {
+  "numberofyears": {
+    matchingKey: "pub_Freehold",
+    matchingValue: "freehold"
+  }
+}

@@ -14,41 +14,49 @@ const locations = [
   {
     id: 'canggu',
     name: 'Canggu',
+    mapNameToUse: 'canggu, badung regency',
     mapDetails: mapDetails['canggu'],
   },
   {
     id: 'seminyak',
     name: 'Seminyak',
+    mapNameToUse: 'Seminyak Beach, Bali, Indonesia',
     mapDetails: mapDetails['seminyak'],
   },
   {
     id: 'kuta',
     name: 'Kuta',
+    mapNameToUse: 'Kuta Beach, Kuta, Badung Regency, Bali, Indonesia',
     mapDetails: mapDetails['kuta'],
   },
   {
     id: 'umalas',
     name: 'Umalas',
+    mapNameToUse: 'Jl. Umalas, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali, Indonesia',
     mapDetails: mapDetails['umalas'],
   },
   {
     id: 'denpasar',
     name: 'Denpasar',
+    mapNameToUse: 'Denpasar, Denpasar City, Bali, Indonesia',
     mapDetails: mapDetails['denpasar'],
   },
   {
     id: 'pererean',
     name: 'Pererenan',
+    mapNameToUse: 'Pererenan, Mengwi, Badung Regency, Bali, Indonesia',
     mapDetails: mapDetails['pererean'],
   },
   {
     id: 'gianyar',
     name: 'Gianyar',
+    mapNameToUse: 'Gianyar, Gianyar Regency, Bali, Indonesia',
     mapDetails: mapDetails['gianyar'],
   },
   {
     id: 'ubud',
     name: 'Ubud',
+    mapNameToUse: 'Ubud, Gianyar Regency, Bali, Indonesia',
     mapDetails: mapDetails['ubud'],
   },
 ];
@@ -58,7 +66,7 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
 
   const handleLocationsClick = async location => {
     try {
-      console.log('called', location);
+      // console.log('called', location);
       setIsActive(location);
       if (location.id === 'nearBy') {
         EventBus.emit('selectPrediction', {
@@ -66,7 +74,7 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
           predictionPlace: {},
         });
       } else {
-        EventBus.emit('selectPrediction', mapDetails[location.id]);
+        EventBus.emit('selectPrediction', location.mapNameToUse);
       }
     } catch (error) {
       console.log('errorrrrrr', error);
@@ -77,6 +85,17 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
     setIsActive(null);
     EventBus.emit('resetLocation');
     onReset();
+  };
+
+  const handleLocationChange = location => {
+    if (
+      mapDetails[(isActive?.id)] &&
+      location.selectedPlace.address === mapDetails[(isActive?.id)]['place_name_en-GB']
+    ) {
+      // console.log('location', location);
+    } else {
+      onLocationChange(location);
+    }
   };
 
   return (
@@ -99,7 +118,11 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
             >
               <>
                 <div className={css.filterField} key="locationSearch">
-                  <FilterLocation setSubmitDisabled={() => {}} Searchicon={true} />
+                  <FilterLocation
+                    setSubmitDisabled={() => {}}
+                    Searchicon={true}
+                    onUpdateLocationSelector={handleLocationChange}
+                  />
                 </div>
 
                 <div className={css.locationGrid}>

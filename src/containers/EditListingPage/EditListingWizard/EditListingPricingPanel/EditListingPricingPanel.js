@@ -13,6 +13,8 @@ import { H3, ListingLink } from '../../../../components';
 import EditListingPricingForm from './EditListingPricingForm';
 import css from './EditListingPricingPanel.module.css';
 
+const { Money } = sdkTypes;
+
 const getListingTypeConfig = (publicData, listingTypes) => {
   const selectedListingType = publicData.listingType;
   return listingTypes.find(conf => conf.listingType === selectedListingType);
@@ -26,6 +28,7 @@ const getInitialValues = props => {
   const { publicData, price } = listing?.attributes || {};
   const { unitType, categoryLevel1 } = publicData || {};
   const isRentals = categoryLevel1 === 'rentalvillas';
+  const isLand = categoryLevel1 === 'landforsale';
 
   if (isRentals) {
     return {
@@ -33,6 +36,11 @@ const getInitialValues = props => {
       pub_monthprice: publicData.monthprice,
       pub_weekprice: publicData.weekprice,
       pub_yearprice: publicData.yearprice,
+    };
+  } else if (isLand) {
+    return {
+      price,
+      pub_priceperare: publicData.priceperare,
     };
   } else {
     return { price };
@@ -90,6 +98,7 @@ const EditListingPricingPanel = props => {
   const unitType = listing?.attributes?.publicData?.unitType;
 
   const isRentals = publicData.categoryLevel1 === 'rentalvillas';
+  const isLand = publicData.categoryLevel1 === 'landforsale';
 
   return (
     <div className={classes}>
@@ -121,7 +130,14 @@ const EditListingPricingPanel = props => {
 
             if (isRentals) {
               const { pub_pricee, pub_monthprice, pub_weekprice, pub_yearprice } = values;
+              const mainPrice = pub_monthprice
+                ? pub_monthprice * 100
+                : pub_yearprice
+                ? pub_yearprice * 100
+                : pub_weekprice * 100;
+
               updateValues = {
+                price: new Money(mainPrice, marketplaceCurrency),
                 publicData: {
                   pricee: pub_pricee,
                   ...(pub_monthprice && { monthprice: pub_monthprice }),
@@ -144,6 +160,12 @@ const EditListingPricingPanel = props => {
               initialValues = {
                 price: values.price,
               };
+              if (isLand) {
+                updateValues.publicData = {
+                  priceperare: values.pub_priceperare,
+                };
+                initialValues.pub_priceperare = values.pub_priceperare;
+              }
             }
 
             // Save the initialValues to state

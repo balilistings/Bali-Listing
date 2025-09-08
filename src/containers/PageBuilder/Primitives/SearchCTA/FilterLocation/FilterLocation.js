@@ -82,11 +82,16 @@ const FilterLocation = props => {
     setIsOpenLandSize = () => {},
     landSize,
     isMobile,
+    onUpdateLocationSelector = () => {},
     ...restOfProps
   } = props;
   const classes = classNames(rootClassName || css.root, className);
 
   const onChange = location => {
+    if (onUpdateLocationSelector && location?.selectedPlace) {
+      onUpdateLocationSelector(location);
+    }
+
     if (location?.search?.length > 0 && !location?.selectedPlace) {
       setSubmitDisabled(true);
     } else if (location?.name === 'location') {

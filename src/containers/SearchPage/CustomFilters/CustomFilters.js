@@ -324,7 +324,10 @@ function CustomFilters({
   };
 
   const handleLocationChange = location => {
-    setSelectedLocation(location);
+    onUpdateCurrentQueryParams({
+      address: location.selectedPlace.address,
+      bounds: location.selectedPlace.bounds,
+    });
   };
 
   const handleLocationReset = () => {
@@ -352,11 +355,27 @@ function CustomFilters({
       pub_yearprice = range.toString();
     }
 
-    onUpdateCurrentQueryParams({
+    const paramsToUpdate = {
       pub_weekprice,
       pub_monthprice,
       pub_yearprice,
-    });
+    };
+
+    // Update price sorting
+    const currentSort = currentQueryParams.sort;
+    if (currentSort && currentSort.includes('price')) {
+      const isAscending = currentSort.startsWith('-');
+      const priceKeyMap = {
+        weekly: 'pub_weekprice',
+        monthly: 'pub_monthprice',
+        yearly: 'pub_yearprice',
+      };
+      const newSortKey = priceKeyMap[period];
+      if (newSortKey) {
+        paramsToUpdate.sort = isAscending ? `-${newSortKey}` : newSortKey;
+      }
+    }
+    onUpdateCurrentQueryParams(paramsToUpdate);
   };
 
   const handleSimplePriceRangeChange = range => {
@@ -426,8 +445,12 @@ function CustomFilters({
   };
 
   const handlePropertyTypeChange = propertyType => {
+    const paramValue = !propertyType || (Array.isArray(propertyType) && propertyType.length === 0) 
+      ? null 
+      : propertyType.toString();
+
     onUpdateCurrentQueryParams({
-      pub_propertytype: propertyType.toString(),
+      pub_propertytype: paramValue,
     });
     setSelectedPropertyType(propertyType);
   };
@@ -478,6 +501,8 @@ function CustomFilters({
           livingTypes.push('closed');
         } else if (detail === 'furnished') {
           furnishedTypes.push('yes');
+        } else if (detail === 'semi-furnished') {
+          furnishedTypes.push('Semi');
         } else if (detail === 'unfurnished') {
           furnishedTypes.push('no');
         }
@@ -647,6 +672,7 @@ function CustomFilters({
           {availableFilters.includes('simplePrice') && (
             <SimplePriceSelector
               priceRange={simplePriceRange}
+              description="Select your price range (in millions IDR)"
               onPriceRangeChange={handleSimplePriceRangeChange}
               min={1000000}
               max={999000000000}
@@ -675,6 +701,7 @@ function CustomFilters({
               selectedAmenities={selectedAmenities}
               onAmenitiesChange={handleAmenitiesChange}
               onReset={handleAmenitiesReset}
+              category={selectedCategory}
             />
           )}
 

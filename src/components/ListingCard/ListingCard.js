@@ -28,6 +28,40 @@ const sliderSettings = {
   speed: 500,
   slidesToShow: 1,
   slidesToScroll: 1,
+  appendDots: dots => {
+    // Show only 3 dots: previous, current, next
+    if (dots.length <= 3) {
+      return <div className={css.dots}>{dots}</div>;
+    }
+    
+    // For more than 3 slides, dynamically show 3 dots
+    // Find the currently active dot
+    const activeIndex = dots.findIndex(dot => 
+      dot.props.className && dot.props.className.includes('slick-active')
+    );
+    
+    let selectedDots = [];
+    
+    if (activeIndex === -1) {
+      // If no active dot found, show first 3
+      selectedDots = dots.slice(0, 3);
+    } else if (activeIndex === 0) {
+      // If first slide is active, show first 3
+      selectedDots = dots.slice(0, 3);
+    } else if (activeIndex === dots.length - 1) {
+      // If last slide is active, show last 3
+      selectedDots = dots.slice(-3);
+    } else {
+      // Show previous, current, next
+      selectedDots = [
+        dots[activeIndex - 1],
+        dots[activeIndex],
+        dots[activeIndex + 1]
+      ];
+    }
+    
+    return <div className={css.dots}>{selectedDots}</div>;
+  },
   lazyLoad: 'progressive',
   appendDots: dots => <div className={css.dots}>{dots}</div>,
   customPaging: i => <span className={css.dot}></span>,
@@ -108,7 +142,7 @@ export const checkPriceParams = () => {
 
 const PriceMaybe = props => {
   const { price, publicData, config, isRentals } = props;
-  const { listingType } = publicData || {};
+  const { listingType, weekprice, monthprice, yearprice } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showPrice = displayPrice(foundListingTypeConfig);
@@ -116,9 +150,29 @@ const PriceMaybe = props => {
     return null;
   }
 
-  const formattedPrice = price ? formatPriceInMillions(price) : null;
-
   const priceParams = checkPriceParams();
+
+  let rentalPrice = price;
+  if (isRentals) {
+    // Check if priceParams is available
+    if (priceParams?.yearprice) {
+      rentalPrice = yearprice;
+    } else if (priceParams?.monthprice) {
+      rentalPrice = monthprice;
+    } else if (priceParams?.weekprice) {
+      rentalPrice = weekprice;
+    }
+    // Check if publicData is available
+    else if (publicData?.monthprice) {
+      rentalPrice = monthprice;
+    } else if (publicData?.weekprice) {
+      rentalPrice = weekprice;
+    } else if (publicData?.yearprice) {
+      rentalPrice = yearprice;
+    }
+  }
+
+  const formattedPrice = rentalPrice ? formatPriceInMillions(rentalPrice) : null;
 
   let suffix;
   if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
@@ -179,9 +233,6 @@ export const ListingCard = props => {
     categoryLevel1,
     landzone,
     landsize,
-    weekprice,
-    monthprice,
-    yearprice,
     Freehold,
   } = publicData;
   const tags = sortTags(pricee);
@@ -191,19 +242,7 @@ export const ListingCard = props => {
   const routeLocation = useLocation();
   const routes = useRouteConfiguration();
 
-  let price;
-
-  if (isRentals) {
-    if (pricee.includes('monthly')) {
-      price = monthprice;
-    } else if (pricee.includes('weekly')) {
-      price = weekprice;
-    } else if (pricee.includes('yearly')) {
-      price = yearprice;
-    }
-  } else {
-    price = p.amount / 100;
-  }
+  const price = isRentals ? null : p.amount / 100;
 
   const setActivePropsMaybe = setActiveListing
     ? {
@@ -237,8 +276,10 @@ export const ListingCard = props => {
 
   return (
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
-      <button className={css.wishlistButton} onClick={onToggleFavorites}>
-        <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
+      <button 
+        className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
+        onClick={onToggleFavorites}>
+        <IconCollection name="icon-waislist" />
       </button>
 
       <div className={css.imageWrapper}>
