@@ -14,7 +14,7 @@ import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '.
 // Import date picker component
 import { FieldSingleDatePicker } from '../../components';
 // Import custom availableper field
-import CustomAvailablePerField from './CustomAvailablePerField';
+import CustomAvailablePerField from './CustomAvailablePerField/CustomAvailablePerField';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
 import { Field } from 'react-final-form';
@@ -284,14 +284,13 @@ const CustomFieldDate = props => {
   const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
   const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
   const label = getLabel(fieldConfig);
-  
+
   const validateMaybe = isRequired
     ? { validate: required(requiredMessage || defaultRequiredMessage) }
     : {};
-    
+
   const placeholder =
-    placeholderMessage ||
-    intl.formatMessage({ id: 'CustomExtendedDataField.placeholderDate' });
+    placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderDate' });
 
   return (
     <FieldSingleDatePicker
@@ -302,6 +301,19 @@ const CustomFieldDate = props => {
       placeholderText={placeholder}
       {...validateMaybe}
     />
+  );
+};
+
+// Special component for availableper field when schema type is text
+const CustomFieldAvailablePer = props => {
+  const {fieldName, intl, fieldConfig} = props;
+  const label = getLabel(fieldConfig);
+
+
+  return (
+    <Field name={fieldName} {...props}>
+      {fieldProps => <CustomAvailablePerField {...fieldProps} label={label} intl={intl} />}
+    </Field>
   );
 };
 
@@ -318,19 +330,11 @@ const CustomFieldDate = props => {
 const CustomExtendedDataField = props => {
   const intl = useIntl();
   const { enumOptions = [], schemaType, key } = props?.fieldConfig || {};
-  const fieldName = props.name;
   const renderFieldComponent = (FieldComponent, props) => <FieldComponent {...props} intl={intl} />;
 
-  // Special handling for availableper field if the schema type is updated into text
-  if (key === 'availableper' && schemaType === SCHEMA_TYPE_TEXT) {
-    return (
-      <Field name={fieldName} {...props}>
-        {fieldProps => <CustomAvailablePerField {...fieldProps} intl={intl} />}
-      </Field>
-    );
-  }
-
-  return schemaType === SCHEMA_TYPE_ENUM && enumOptions
+  return key === 'availableper' && schemaType === SCHEMA_TYPE_TEXT
+    ? renderFieldComponent(CustomFieldAvailablePer, props)
+    : schemaType === SCHEMA_TYPE_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldEnum, props)
     : schemaType === SCHEMA_TYPE_MULTI_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldMultiEnum, props)
