@@ -13,13 +13,14 @@
 }
 
 .img {
-  color: transparent;
+  color: #333;
+  opacity: 0.25;
   cursor: pointer;
-  transition: color 0.2s ease-out;
+  transition: all 0.5s ease-out;
 }
 
 .labelAndGuide:hover .img {
-  color: #333;
+  opacity: 1;
 }
 
 .tooltip {

@@ -80,7 +80,7 @@ const FieldTextInputComponent = props => {
   const classes = classNames(rootClassName || css.root, className);
   return (
     <div className={classes}>
-      {label ? <LabelWithTooltip label={label} htmlFor={id} /> : null}
+      {label ? <LabelWithTooltip label={label} id={id} /> : null}
       {isTextarea ? <ExpandingTextarea {...inputProps} /> : <input {...inputProps} />}
       {hideErrorMessage ? null : <ValidationError fieldMeta={fieldMeta} />}
     </div>

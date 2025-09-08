@@ -50,7 +50,7 @@ const FieldSelectComponent = props => {
       {label ? (
         <LabelWithTooltip
           label={label}
-          htmlFor={id}
+          id={id}
           className={classNames({ [css.labelDisabled]: showLabelAsDisabled })}
         />
       ) : null}
