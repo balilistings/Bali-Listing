@@ -1,55 +1,62 @@
 import React, { useState } from 'react';
 import { useIntl } from '../../util/reactIntl';
-import { FieldSingleDatePicker } from '../../components';
 import css from './CustomExtendedDataField.module.css';
+import SingleDatePicker from '../DatePicker/DatePickers/SingleDatePicker';
 
 const CustomAvailablePerField = props => {
   const intl = useIntl();
-  const { 
-    input,
-    label,
-    formId,
-    name
-  } = props;
-  
-  // Get the current field value
+  const { input, label, formId, name } = props;
+
   const fieldValue = input?.value;
-  
-  // Determine initial selection based on field value
+
+  // Determine initial selection based on field values
   const getInitialSelection = () => {
-    // If we have a date value, user has selected "no" (specific date)
-    if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      return 'no';
+    if (fieldValue === 'yes' || fieldValue === 'no') {
+      return fieldValue;
     }
-    // Default to "yes" (available now)
+
+    // Handle new date format
+    if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
+      const date = new Date(fieldValue);
+      if (date instanceof Date && !isNaN(date)) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
+
+        return date <= today ? 'yes' : 'no';
+      }
+    }
     return 'yes';
   };
-  
-  // Determine initial date based on field value
+
+  // Determine initial date based on field values
   const getInitialDate = () => {
-    if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}$/)) {
-      // Parse the date string
+    if (fieldValue === 'yes' || fieldValue === 'no') {
+      return null;
+    }
+
+    if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
       const date = new Date(fieldValue);
-      // Check if it's a valid date
       if (date instanceof Date && !isNaN(date)) {
         return date;
       }
     }
+
     return null;
   };
 
   // State to track which option is selected
   const [selection, setSelection] = useState(getInitialSelection());
-  
+
   // State to track the selected date
   const [selectedDate, setSelectedDate] = useState(getInitialDate());
 
   // Handle dropdown selection change
-  const handleSelectChange = (e) => {
+  const handleSelectChange = e => {
     // For native select, we get the value directly
     const value = e.target.value;
     setSelection(value);
-    
+
     // If user selects "yes", set today's date as the value
     if (value === 'yes') {
       const today = new Date();
@@ -57,7 +64,7 @@ const CustomAvailablePerField = props => {
       setSelectedDate(today);
       // Update the form field value to today's date
       input.onChange(todayString);
-    } 
+    }
     // If user selects "no", clear the date value initially
     else if (value === 'no') {
       setSelectedDate(null);
@@ -66,7 +73,7 @@ const CustomAvailablePerField = props => {
   };
 
   // Handle date picker change
-  const handleDateChange = (date) => {
+  const handleDateChange = date => {
     if (date instanceof Date && !isNaN(date)) {
       setSelectedDate(date);
       // Format date as YYYY-MM-DD string
@@ -82,9 +89,7 @@ const CustomAvailablePerField = props => {
     <div className={css.customField}>
       <div className={css.fieldSelect}>
         {label && (
-          <label htmlFor={formId ? `${formId}.${name}-select` : `${name}-select`}>
-            {label}
-          </label>
+          <label htmlFor={formId ? `${formId}.${name}-select` : `${name}-select`}>{label}</label>
         )}
         <select
           id={formId ? `${formId}.${name}-select` : `${name}-select`}
@@ -100,16 +105,23 @@ const CustomAvailablePerField = props => {
           </option>
         </select>
       </div>
-      
+
       {selection === 'no' && (
         <div style={{ marginTop: '16px' }}>
-          <FieldSingleDatePicker
+          <SingleDatePicker
             id={formId ? `${formId}.${name}-date` : `${name}-date`}
+            name={name}
             label={intl.formatMessage({ id: 'CustomExtendedDataField.availablePerDateLabel' })}
-            placeholderText={intl.formatMessage({ id: 'CustomExtendedDataField.availablePerDatePlaceholder' })}
+            placeholderText={intl.formatMessage({
+              id: 'CustomExtendedDataField.availablePerDatePlaceholder',
+            })}
             value={selectedDate}
             onChange={handleDateChange}
-            name={name}
+            isDayBlocked={day => {
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              return day < today;
+            }}
           />
         </div>
       )}

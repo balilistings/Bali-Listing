@@ -17,6 +17,7 @@ import { FieldSingleDatePicker } from '../../components';
 import CustomAvailablePerField from './CustomAvailablePerField';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
+import { Field } from 'react-final-form';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
@@ -320,9 +321,13 @@ const CustomExtendedDataField = props => {
   const fieldName = props.name;
   const renderFieldComponent = (FieldComponent, props) => <FieldComponent {...props} intl={intl} />;
 
-  // Special handling for availableper field - use our custom component
-  if (key === 'availableper') {
-    return <CustomAvailablePerField {...props} intl={intl} />;
+  // Special handling for availableper field if the schema type is updated into text
+  if (key === 'availableper' && schemaType === SCHEMA_TYPE_TEXT) {
+    return (
+      <Field name={fieldName} {...props}>
+        {fieldProps => <CustomAvailablePerField {...fieldProps} intl={intl} />}
+      </Field>
+    );
   }
 
   return schemaType === SCHEMA_TYPE_ENUM && enumOptions
