@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { useIntl } from '../../util/reactIntl';
-import css from './CustomExtendedDataField.module.css';
-import SingleDatePicker from '../DatePicker/DatePickers/SingleDatePicker';
+import moment from 'moment';
+import css from './CustomAvailablePerField.module.css';
+import SingleDatePicker from '../../DatePicker/DatePickers/SingleDatePicker';
+import LabelWithTooltip from '../../LabelWithTooltip/LabelWithTooltip';
 
 const CustomAvailablePerField = props => {
-  const intl = useIntl();
-  const { input, label, formId, name } = props;
+  const { input, label, formId, name, intl } = props;
 
   const fieldValue = input?.value;
 
@@ -17,13 +17,10 @@ const CustomAvailablePerField = props => {
 
     // Handle new date format
     if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
-      const date = new Date(fieldValue);
-      if (date instanceof Date && !isNaN(date)) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        date.setHours(0, 0, 0, 0);
-
-        return date <= today ? 'yes' : 'no';
+      const date = moment.utc(fieldValue);
+      if (date.isValid()) {
+        const today = moment.utc().startOf('day');
+        return date.isSameOrBefore(today) ? 'yes' : 'no';
       }
     }
     return 'yes';
@@ -36,37 +33,29 @@ const CustomAvailablePerField = props => {
     }
 
     if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
-      const date = new Date(fieldValue);
-      if (date instanceof Date && !isNaN(date)) {
-        return date;
+      const date = moment.utc(fieldValue);
+      if (date.isValid()) {
+        return date.toDate();
       }
     }
 
     return null;
   };
 
-  // State to track which option is selected
   const [selection, setSelection] = useState(getInitialSelection());
-
-  // State to track the selected date
   const [selectedDate, setSelectedDate] = useState(getInitialDate());
 
   // Handle dropdown selection change
   const handleSelectChange = e => {
-    // For native select, we get the value directly
     const value = e.target.value;
     setSelection(value);
 
-    // If user selects "yes", set today's date as the value
     if (value === 'yes') {
-      const today = new Date();
-      const todayString = today.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-      setSelectedDate(today);
-      // Update the form field value to today's date
+      const today = moment.utc().startOf('day');
+      const todayString = today.format('YYYY-MM-DD');
+      setSelectedDate(today.toDate());
       input.onChange(todayString);
-    }
-    // If user selects "no", clear the date value initially
-    else if (value === 'no') {
+    } else if (value === 'no') {
       setSelectedDate(null);
       input.onChange(null);
     }
@@ -74,10 +63,10 @@ const CustomAvailablePerField = props => {
 
   // Handle date picker change
   const handleDateChange = date => {
-    if (date instanceof Date && !isNaN(date)) {
-      setSelectedDate(date);
-      // Format date as YYYY-MM-DD string
-      const dateString = date.toISOString().split('T')[0];
+    if (date) {
+      const momentDate = moment(date);
+      setSelectedDate(momentDate.toDate());
+      const dateString = momentDate.format('YYYY-MM-DD');
       input.onChange(dateString);
     } else {
       setSelectedDate(null);
@@ -88,21 +77,15 @@ const CustomAvailablePerField = props => {
   return (
     <div className={css.customField}>
       <div className={css.fieldSelect}>
-        {label && (
-          <label htmlFor={formId ? `${formId}.${name}-select` : `${name}-select`}>{label}</label>
-        )}
+        {label ? <LabelWithTooltip label={label} id={'id'} /> : null}
         <select
           id={formId ? `${formId}.${name}-select` : `${name}-select`}
           value={selection}
           onChange={handleSelectChange}
           className={css.select}
         >
-          <option value="yes">
-            {intl.formatMessage({ id: 'CustomExtendedDataField.availablePerYes' })}
-          </option>
-          <option value="no">
-            {intl.formatMessage({ id: 'CustomExtendedDataField.availablePerNo' })}
-          </option>
+          <option value="yes">{intl.formatMessage({ id: 'FieldBoolean.yes' })}</option>
+          <option value="no">{intl.formatMessage({ id: 'FieldBoolean.no' })}</option>
         </select>
       </div>
 
@@ -118,9 +101,8 @@ const CustomAvailablePerField = props => {
             value={selectedDate}
             onChange={handleDateChange}
             isDayBlocked={day => {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-              return day < today;
+              const today = moment().startOf('day');
+              return moment(day).isBefore(today);
             }}
           />
         </div>

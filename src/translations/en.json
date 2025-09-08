@@ -160,8 +160,6 @@
   "CustomExtendedDataField.numberTooSmall": "The number must be greater than or equal to {min}",
   "CustomExtendedDataField.numberTooBig": "The number must be less than or equal to {max}",
   "CustomExtendedDataField.availablePerLabel": "Availability",
-  "CustomExtendedDataField.availablePerYes": "Available now",
-  "CustomExtendedDataField.availablePerNo": "Available from a specific date",
   "CustomExtendedDataField.availablePerDateLabel": "Available from date",
   "CustomExtendedDataField.availablePerDatePlaceholder": "Select date…",
   "DatePicker.clearButton": "Clear value",
