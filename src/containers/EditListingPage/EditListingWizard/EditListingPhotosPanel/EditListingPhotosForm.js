@@ -85,7 +85,7 @@ export const FieldAddImage = props => {
 
 // Component that shows listing images from "images" field array
 const FieldListingImage = props => {
-  const { name, intl, onRemoveImage, aspectWidth, aspectHeight, variantPrefix } = props;
+  const { name, intl, onRemoveImage, onSetCoverPhoto, isCoverPhoto, index, aspectWidth, aspectHeight, variantPrefix } = props;
   return (
     <Field name={name}>
       {fieldProps => {
@@ -100,6 +100,9 @@ const FieldListingImage = props => {
               id: 'EditListingPhotosForm.savedImageAltText',
             })}
             onRemoveImage={() => onRemoveImage(image?.id)}
+            onSetCoverPhoto={onSetCoverPhoto}
+            isCoverPhoto={isCoverPhoto}
+            index={index}
             aspectWidth={aspectWidth}
             aspectHeight={aspectHeight}
             variantPrefix={variantPrefix}
@@ -159,7 +162,19 @@ export const EditListingPhotosForm = props => {
   return (
     <FinalForm
       {...props}
-      mutators={{ ...arrayMutators }}
+      mutators={{ 
+        ...arrayMutators,
+        moveImage: (args, state, utils) => {
+          const [from, to] = args;
+          const images = state.formState.values.images || [];
+          if (from < images.length && to < images.length) {
+            const newImages = [...images];
+            const [movedImage] = newImages.splice(from, 1);
+            newImages.splice(to, 0, movedImage);
+            utils.changeValue(state, 'images', () => newImages);
+          }
+        }
+      }}
       render={formRenderProps => {
         const {
           form,
@@ -202,6 +217,13 @@ export const EditListingPhotosForm = props => {
 
         const classes = classNames(css.root, className);
 
+        // Function to set an image as cover (move it to the first position)
+        const handleSetCoverPhoto = (index) => {
+          if (index > 0) {
+            form.mutators.moveImage(index, 0);
+          }
+        };
+
         return (
           <Form
             className={classes}
@@ -232,10 +254,13 @@ export const EditListingPhotosForm = props => {
                     <FieldListingImage
                       key={name}
                       name={name}
+                      index={index}
+                      isCoverPhoto={index === 0}
                       onRemoveImage={imageId => {
                         fields.remove(index);
                         onRemoveImage(imageId);
                       }}
+                      onSetCoverPhoto={handleSetCoverPhoto}
                       intl={intl}
                       aspectWidth={aspectWidth}
                       aspectHeight={aspectHeight}
