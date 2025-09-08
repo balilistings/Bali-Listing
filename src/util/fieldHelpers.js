@@ -223,7 +223,7 @@ export const isValidCurrencyForTransactionProcess = (
   }
 };
 
-  // i.e. "numberofyears" is hidden if "pub_Freehold" value is "freehold" 
+// i.e. "numberofyears" is hidden if "pub_Freehold" value is "freehold"
 export const hiddenListingField = {
   "numberofyears": {
     matchingKey: "pub_Freehold",

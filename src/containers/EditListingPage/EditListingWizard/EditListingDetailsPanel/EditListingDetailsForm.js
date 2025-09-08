@@ -29,6 +29,7 @@ import { IconCollection } from '../../../../components';
 
 // Import modules from this directory
 import css from './EditListingDetailsForm.module.css';
+import LabelWithTooltip from '../../../../components/LabelWithTooltip/LabelWithTooltip';
 
 const TITLE_MAX_LENGTH = 60;
 
@@ -265,7 +266,7 @@ const AmenitiesGroup = ({ fields, values, formApi }) => {
 
   const handleAmenityToggle = fieldName => {
     const currentValue = values[fieldName];
-    
+
     if (fieldName.toLowerCase().includes('gym')) {
       const newValue = currentValue === 'gymyes' ? 'gymno' : 'gymyes';
       formApi.change(fieldName, newValue);
@@ -279,14 +280,15 @@ const AmenitiesGroup = ({ fields, values, formApi }) => {
 
   return (
     <div className={css.amenitiesGroup}>
-      <h3 className={css.amenitiesTitle}>Amenities</h3>
+      <LabelWithTooltip id="amenities" label='Amenities'/>
       <div className={css.amenitiesGrid}>
         {filteredAmenities.map(amenity => {
           const field = fields.find(f => f.key.toLowerCase() === amenity.id.toLowerCase());
           const fieldName = field?.scope === 'public' ? `pub_${amenity.id}` : `priv_${amenity.id}`;
           const currentValue = values[fieldName];
-          
-          const isSelected = amenity.id.toLowerCase() === 'gym' ? currentValue === 'gymyes' : currentValue === 'yes';
+
+          const isSelected =
+            amenity.id.toLowerCase() === 'gym' ? currentValue === 'gymyes' : currentValue === 'yes';
 
           return (
             <button
