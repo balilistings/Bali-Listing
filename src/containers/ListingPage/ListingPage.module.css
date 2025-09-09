@@ -987,8 +987,8 @@
 }
 
 .backButton {
-  width: 38px;
-  height: 38px;
+  width: 28px;
+  height: 28px;
   border-radius: 25px;
 
 
@@ -998,23 +998,30 @@
   justify-content: center;
 
   cursor: pointer;
-
+  @media (--viewportSmall) {
+    width: 38px;
+    height: 38px;
+  }
 }
 
 .backButtonContainer {
   display: flex;
   justify-content: space-between;
-  top: 18px;
+  top: 12px;
   left: 18px;
   right: 18px;
   position: absolute;
   z-index: 2;
+
+  @media (--viewportSmall) {
+    top: 18px;
+  }
 }
 
 .wishlistButton {
   backdrop-filter: blur(9.399999618530273px);
-  width: 38px;
-  height: 38px;
+  width: 30px;
+  height: 30px;
   border-radius: 25px;
   background-color: #0202020D !important;
   display: flex;
@@ -1022,6 +1029,11 @@
   justify-content: center;
   cursor: pointer;
   border: none;
+
+  @media (--viewportSmall) {
+    width: 38px;
+    height: 38px;
+  }
 }
 
 .wishlistButton svg {
