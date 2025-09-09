@@ -525,11 +525,6 @@ const PropertyCards = () => {
                         />
                       ))}
                     </Slider>
-                    {/* <button className={styles.wishlistButton} onClick={onToggleFavorites}>
-                      <IconCollection
-                        name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'}
-                      />
-                    </button> */}
                     <button 
                       className={classNames(styles.wishlistButton, isFavorite ? styles.active : '')} 
                       onClick={onToggleFavorites}>

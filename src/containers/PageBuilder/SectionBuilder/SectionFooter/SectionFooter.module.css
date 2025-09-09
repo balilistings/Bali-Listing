@@ -86,7 +86,7 @@
     color: #191f1b;
     white-space: pre;
     @media (max-width: 1023px) {
-      font-size: 9px;
+      font-size: 12px;
     }
     & strong {
       font-family: Istok Web;
@@ -97,7 +97,7 @@
       color: #f74df4;
       display: block;
       @media (max-width: 1023px) {
-        font-size: 9px;
+        font-size: 12px;
       }
     }
     &:nth-child(1) {
@@ -216,7 +216,7 @@ background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox=
         letter-spacing: 0%;
         color: #8d8d8d;
         @media (max-width: 1023px) {
-          font-size: 9px;
+          font-size: 12px;
         }
       }
     }
@@ -235,7 +235,7 @@ background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox=
   color: #8d8d8d;
   display: block;
   @media (max-width: 767px) {
-    font-size: 10px;
+    font-size: 12px;
     line-height: 12px;
   }
 }

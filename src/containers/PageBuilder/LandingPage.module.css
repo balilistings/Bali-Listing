@@ -103,7 +103,7 @@
       @media (max-width: 767px) {
         font-family: Mulish;
         font-weight: 400;
-        font-size: 11px;
+        font-size: 12px;
         line-height: 130%;
         letter-spacing: 0%;
         text-align: center;
@@ -204,8 +204,8 @@
           right: 16px;
           bottom: 43px;
           @media (max-width: 1023px) {
-            padding: 6px 44px 6px 32px;
-            font-size: 6px;
+            padding: 6px 32px 6px 32px;
+            font-size: 8px;
             border-radius: 8.62px;
             right: 25px;
             bottom: 15px;
@@ -219,7 +219,7 @@
             color: #231f20;
             display: block;
             @media (max-width: 1023px) {
-              font-size: 8px;
+              font-size: 10px;
             }
           }
         }
@@ -251,7 +251,7 @@
             padding: 4px 0 4px 39px;
             white-space: pre;
             @media (max-width: 1200px) {
-              font-size: 9px;
+              font-size: 10px;
               padding: 4px 0 4px 17px;
             }
           }
@@ -380,7 +380,7 @@ text-align: center;
 color: #8D8D8D;
 padding: 0;
 @media (max-width: 1023px) {
-  font-size: 11px;
+  font-size: 12px;
  
 }
     }
@@ -428,7 +428,7 @@ text-align: center;
 color: #8D8D8D;
 padding: 0;
 @media (max-width: 1023px) {
-  font-size: 11px;
+  font-size: 12px;
 }
     }
 
@@ -655,7 +655,7 @@ padding: 0;
           letter-spacing: 0%;
           color: #8d8d8d;
           @media (max-width: 1023px) {
-            font-size: 11px;
+            font-size: 12px;
           
           }
       

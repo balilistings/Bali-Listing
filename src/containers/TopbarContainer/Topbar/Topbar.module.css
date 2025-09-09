@@ -83,13 +83,16 @@
 }
 .addListing {
   background-color: #f74df4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   box-shadow: 0px 4px 10px 0px #0000001a;
   border-radius: 5px;
   height: 28px;
   padding: 8px 11px;
   font-family: Mulish;
   font-weight: 700;
-  font-size: 9px;
+  font-size: 12px;
   line-height: 130%;
   letter-spacing: 0%;
   color: #fff;
