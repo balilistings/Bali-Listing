@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .labelAndGuide {
   display: flex;
   align-items: center;
@@ -23,6 +25,10 @@
   opacity: 1;
 }
 
+.imgWrapper.active .img {
+  opacity: 1;
+}
+
 .tooltip {
   visibility: hidden;
   opacity: 0;
@@ -35,14 +41,25 @@
   bottom: 100%; 
   left: 0.7rem; 
   transform: translateY(4px);
-  white-space: nowrap;
+  width: 300px;
   transition: opacity 0.3s ease;
   z-index: 10;
   border: 1px solid black;
   font-size: 12px;
+  pointer-events: none;
+
+  @media (--viewportSmall) {
+    width: 400px; 
+  }
 }
 
 .imgWrapper:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.imgWrapper.active .tooltip,
+.tooltip.visible {
   visibility: visible;
   opacity: 1;
 }
