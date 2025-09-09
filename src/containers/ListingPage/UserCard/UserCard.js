@@ -89,7 +89,7 @@ const UserCard = props => {
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
   const isCurrentUser =
     ensuredUser.id && ensuredCurrentUser.id && ensuredUser.id.uuid === ensuredCurrentUser.id.uuid;
-  const { displayName, bio } = ensuredUser.attributes.profile;
+  const { displayName, bio, publicData: userPublicData } = ensuredUser.attributes.profile;
 
   const handleContactUserClick = () => {
     onContactUser(user);
@@ -159,7 +159,7 @@ const UserCard = props => {
          
           {/* {links} */}
           <p className={css.owner}>
-          Owner
+          {`${userPublicData.userType} - ${userPublicData.companyname || userPublicData.role || ""}`}
           </p>
         </div>
       </div>
