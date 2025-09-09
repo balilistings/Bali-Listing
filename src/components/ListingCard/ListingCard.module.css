@@ -506,7 +506,7 @@ margin-right: 10px;
   border-radius: 25px;
   background-color: #0202020D;
   top: 18px;
-  right: 18px;
+  right: 28px;
   position: absolute;
   z-index: 2;
   cursor: pointer;
@@ -514,6 +514,11 @@ margin-right: 10px;
   align-items: center;
   justify-content: center;
   border: none;
+
+  @media (--viewportSmall) {
+    top: 18px;
+    right: 18px;
+  }
 }
 
 .wishlistButton svg {
