@@ -126,6 +126,15 @@ const prepareServices = publicData => {
   });
 };
 
+const hasActiveServices = publicData => {
+  if (!publicData) return false;
+
+  return servicesConfig.some(service => {
+    const rawValue = publicData[service.key];
+    return rawValue === 'yes';
+  });
+};
+
 const CustomListingFields = props => {
   const { publicData } = props;
 
@@ -153,7 +162,7 @@ const CustomListingFields = props => {
         </div>
       )}
 
-      {isRentals && (
+      {isRentals && hasActiveServices(publicData) && (
         <div className={css.servicesContainerWrapper}>
           <h2 className={css.servicesTitle}>Services included</h2>
           <div className={css.servicesContainer}>
