@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { ValidationError, ExpandingTextarea } from '../../components';
 
 import css from './FieldTextInput.module.css';
+import LabelWithTooltip from '../LabelWithTooltip/LabelWithTooltip';
 
 const CONTENT_MAX_LENGTH = 5000;
 
@@ -79,7 +80,7 @@ const FieldTextInputComponent = props => {
   const classes = classNames(rootClassName || css.root, className);
   return (
     <div className={classes}>
-      {label ? <label htmlFor={id}>{label}</label> : null}
+      {label ? <LabelWithTooltip label={label} id={id} /> : null}
       {isTextarea ? <ExpandingTextarea {...inputProps} /> : <input {...inputProps} />}
       {hideErrorMessage ? null : <ValidationError fieldMeta={fieldMeta} />}
     </div>

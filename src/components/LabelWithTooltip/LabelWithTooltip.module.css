@@ -1,0 +1,65 @@
+@import '../../styles/customMediaQueries.css';
+
+.labelAndGuide {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.imgWrapper {
+  position: relative;
+  display: flex;
+  margin-bottom: 12px;
+  cursor: pointer;
+}
+
+.img {
+  color: #333;
+  opacity: 0.25;
+  cursor: pointer;
+  transition: all 0.5s ease-out;
+}
+
+.labelAndGuide:hover .img {
+  opacity: 1;
+}
+
+.imgWrapper.active .img {
+  opacity: 1;
+}
+
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  background-color: #fff;
+  color:  #333;
+  padding: 6px 10px;
+  border-radius: 6px 6px 6px 0;
+  position: absolute;
+  top: auto;
+  bottom: 100%; 
+  left: 0.7rem; 
+  transform: translateY(4px);
+  width: 300px;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+  border: 1px solid black;
+  font-size: 12px;
+  pointer-events: none;
+
+  @media (--viewportSmall) {
+    width: 400px; 
+  }
+}
+
+.imgWrapper:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.imgWrapper.active .tooltip,
+.tooltip.visible {
+  visibility: visible;
+  opacity: 1;
+}
