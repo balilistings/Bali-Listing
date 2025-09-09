@@ -276,8 +276,10 @@ export const ListingCard = props => {
 
   return (
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
-      <button className={css.wishlistButton} onClick={onToggleFavorites}>
-        <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
+      <button 
+        className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
+        onClick={onToggleFavorites}>
+        <IconCollection name="icon-waislist" />
       </button>
 
       <div className={css.imageWrapper}>

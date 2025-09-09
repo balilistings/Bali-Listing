@@ -4,6 +4,7 @@ import ListingImageGallery from './ListingImageGallery/ListingImageGallery';
 import css from './ListingPage.module.css';
 import IconCollection from '../../components/IconCollection/IconCollection';
 import { useHistory } from 'react-router-dom';
+import classNames from 'classnames';
 
 const SectionGallery = props => {
   const { listing, variantPrefix, onToggleFavorites, currentUser } = props;
@@ -23,8 +24,10 @@ const SectionGallery = props => {
         <div className={css.backButton} onClick={() => history.goBack()}>
           <IconCollection name="icon-back" />
         </div>
-        <button className={css.wishlistButton} onClick={toggleFavorites}>
-          <IconCollection name={isFavorite ? 'icon-waislist-active' : 'icon-waislist'} />
+        <button 
+          className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
+          onClick={toggleFavorites}>
+          <IconCollection name="icon-waislist" />
         </button>
       </div>
       <ListingImageGallery

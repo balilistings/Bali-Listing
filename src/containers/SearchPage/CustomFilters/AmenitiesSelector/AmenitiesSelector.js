@@ -2,7 +2,7 @@ import React from 'react';
 import css from './AmenitiesSelector.module.css';
 import { IconCollection } from '../../../../components';
 
-const amenities = [
+const rentalAmenities = [
   { icon: <IconCollection name="wifi" />, name: 'Wifi', id: 'wifi' },
   { icon: <IconCollection name="pool" />, name: 'Pool', id: 'pool' },
   { icon: <IconCollection name="gym" />, name: 'Gym', id: 'gym' },
@@ -13,7 +13,14 @@ const amenities = [
   { icon: <IconCollection name="aircondition" />, name: 'Airconditioning', id: 'airco' },
 ];
 
-function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset }) {
+const villaAmenities = [
+  { icon: <IconCollection name="pool" />, name: 'Pool', id: 'pool' },
+  { icon: <IconCollection name="gym" />, name: 'Gym', id: 'gym' },
+  { icon: <IconCollection name="parking" />, name: 'Car parking', id: 'carparking' },
+];
+
+function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset, category }) {
+  const amenities = category === 'rentalvillas' ? rentalAmenities : villaAmenities;
   const handleAmenityToggle = amenityId => {
     const newSelectedAmenities = selectedAmenities.includes(amenityId)
       ? selectedAmenities.filter(id => id !== amenityId)

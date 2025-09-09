@@ -1016,12 +1016,28 @@
   width: 38px;
   height: 38px;
   border-radius: 25px;
-  background-color: #0202020D;
+  background-color: #0202020D !important;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   border: none;
+}
+
+.wishlistButton svg {
+  fill: transparent;
+  stroke: white;
+  transition: all 0.3s ease;
+}
+
+.wishlistButton.active > svg {
+  fill: #FF3737;
+  stroke: #FF3737;
+}
+
+.wishlistButton:hover svg {
+  fill: #FF3737;
+  stroke: #FF3737;
 }
 
 .productGallery {
@@ -1540,9 +1556,9 @@
   &:nth-child(odd) {
     background-color: #F2F2F2;
   }
-  @media screen and (max-width: 768px) {
+  /* @media screen and (max-width: 768px) {
     border-radius: ;
-  }
+  } */
 }
 
 .termLabel {
