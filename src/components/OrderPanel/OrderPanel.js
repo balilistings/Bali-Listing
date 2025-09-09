@@ -265,7 +265,6 @@ const isAvailableNow = (availableper) => {
     return availableDate <= today;
   }
   
-  // Default case
   return false;
 };
 
@@ -540,10 +539,7 @@ const OrderPanel = props => {
     }
   };
 
-  // Check if the listing is available now
   const listingIsAvailableNow = isAvailableNow(availableper);
-  
-  // Get the availability display text
   const availabilityDisplayText = getAvailabilityDisplay(availableper, intl);
 
   return (

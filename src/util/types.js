@@ -49,7 +49,6 @@ export const SCHEMA_TYPE_TEXT = 'text';
 export const SCHEMA_TYPE_LONG = 'long';
 export const SCHEMA_TYPE_BOOLEAN = 'boolean';
 export const SCHEMA_TYPE_YOUTUBE = 'youtubeVideoUrl';
-export const SCHEMA_TYPE_DATE = 'date';
 export const EXTENDED_DATA_SCHEMA_TYPES = [
   SCHEMA_TYPE_ENUM,
   SCHEMA_TYPE_MULTI_ENUM,
@@ -57,7 +56,6 @@ export const EXTENDED_DATA_SCHEMA_TYPES = [
   SCHEMA_TYPE_LONG,
   SCHEMA_TYPE_BOOLEAN,
   SCHEMA_TYPE_YOUTUBE,
-  SCHEMA_TYPE_DATE,
 ];
 
 const propTypes = {};

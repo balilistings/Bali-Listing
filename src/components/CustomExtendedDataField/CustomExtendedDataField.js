@@ -11,9 +11,6 @@ import {
 } from '../../util/validators';
 // Import shared components
 import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '../../components';
-// Import date picker component
-import { FieldSingleDatePicker } from '../../components';
-// Import custom availableper field
 import CustomAvailablePerField from './CustomAvailablePerField/CustomAvailablePerField';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
@@ -280,30 +277,6 @@ const CustomFieldYoutube = props => {
   );
 };
 
-const CustomFieldDate = props => {
-  const { name, fieldConfig, defaultRequiredMessage, formId, intl } = props;
-  const { placeholderMessage, isRequired, requiredMessage } = fieldConfig?.saveConfig || {};
-  const label = getLabel(fieldConfig);
-
-  const validateMaybe = isRequired
-    ? { validate: required(requiredMessage || defaultRequiredMessage) }
-    : {};
-
-  const placeholder =
-    placeholderMessage || intl.formatMessage({ id: 'CustomExtendedDataField.placeholderDate' });
-
-  return (
-    <FieldSingleDatePicker
-      className={css.customField}
-      id={formId ? `${formId}.${name}` : name}
-      name={name}
-      label={label}
-      placeholderText={placeholder}
-      {...validateMaybe}
-    />
-  );
-};
-
 // Special component for availableper field when schema type is text
 const CustomFieldAvailablePer = props => {
   const {fieldName, intl, fieldConfig} = props;
@@ -346,8 +319,6 @@ const CustomExtendedDataField = props => {
     ? renderFieldComponent(CustomFieldBoolean, props)
     : schemaType === SCHEMA_TYPE_YOUTUBE
     ? renderFieldComponent(CustomFieldYoutube, props)
-    : schemaType === SCHEMA_TYPE_DATE
-    ? renderFieldComponent(CustomFieldDate, props)
     : null;
 };
 
