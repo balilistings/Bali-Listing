@@ -405,6 +405,15 @@ margin-right: 10px;
   gap: 6px;
 }
 
+.dotsCounter {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .dot {
   width: 6px;
   height: 6px;
@@ -482,6 +491,10 @@ margin-right: 10px;
       }
     }
   }
+  
+  & :global(.slick-dots) button {
+    display: none;
+  }
   & :global(.slick-active) {
     & .dot {
       background: #f74df4;
@@ -506,7 +519,7 @@ margin-right: 10px;
   border-radius: 25px;
   background-color: #0202020D;
   top: 18px;
-  right: 18px;
+  right: 28px;
   position: absolute;
   z-index: 2;
   cursor: pointer;
@@ -514,6 +527,11 @@ margin-right: 10px;
   align-items: center;
   justify-content: center;
   border: none;
+
+  @media (--viewportSmall) {
+    top: 18px;
+    right: 18px;
+  }
 }
 
 .wishlistButton svg {
