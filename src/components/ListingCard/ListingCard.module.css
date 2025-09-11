@@ -346,12 +346,10 @@ margin-right: 10px;
   background: #f5f5f5;
   aspect-ratio: 388 / 282;
 
-  max-width: calc(57.5vw - 32.5vw);
-  @media (min-width: 1240px) {
-    /* max-width: calc(57.5vw - 41vw); */
-  }
+  max-width: 37vw;
+
   @media (max-width: 1024px) {
-    /* max-width: calc(57.5vw - 15.5vw); */
+    max-width: calc(50vw - 12px);
   }
   @media (max-width: 767px) {
     aspect-ratio: 336 / 173;

@@ -159,7 +159,7 @@ const UserCard = props => {
          
           {/* {links} */}
           <p className={css.owner}>
-          {`${userPublicData.userType} - ${userPublicData.companyname || userPublicData.role || ""}`}
+          {`Owner - ${userPublicData.companyname || userPublicData.role || ""}`}
           </p>
         </div>
       </div>

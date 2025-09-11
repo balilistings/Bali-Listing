@@ -56,14 +56,14 @@
 
 .listingCard {
   width: 100%;
-  @media (max-width: 767px) {
-    width: 100%;
-  }
+
   @media (min-width: 550px) {
-    width: calc(50% - 12px);
+    width: calc(100% - 12px);
   }
   @media (min-width: 1240px) {
-    width: calc(33.33% - 13.33px);
+    width: calc(50% - 12px);
+
+
   }
 }
 
