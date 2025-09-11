@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Heading } from '../../components';
 import { richText } from '../../util/richText';
 import ReactDOMServer from 'react-dom/server';
@@ -11,6 +11,11 @@ const MAX_VISIBLE_CHARS = 300; // Characters to show before "Read More"
 const SectionTextMaybe = props => {
   const { text, heading, showAsIngress = false } = props;
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const textClass = showAsIngress ? css.ingress : css.text;
 
@@ -26,8 +31,8 @@ const SectionTextMaybe = props => {
   });
 
   // Get the display content
-  let displayContent = fullContent;
-  if (needsReadMore && !isExpanded && typeof window !== 'undefined' && window?.document) {
+  let displayContent = '';
+  if (needsReadMore && !isExpanded && isClient) {
     // Convert React elements to HTML string
     const htmlString = ReactDOMServer.renderToString(<span>{fullContent}</span>);
 
@@ -50,6 +55,8 @@ const SectionTextMaybe = props => {
 
       // Create simple HTML with the truncated text
       displayContent = `<span>${truncatedText}</span>`;
+    } else {
+      displayContent = htmlString;
     }
   }
 
@@ -65,7 +72,7 @@ const SectionTextMaybe = props => {
         </Heading>
       ) : null}
       <div className={textClass}>
-        {needsReadMore && !isExpanded ? (
+        {needsReadMore && !isExpanded && isClient ? (
           <span dangerouslySetInnerHTML={{ __html: displayContent }} />
         ) : (
           <span>{fullContent}</span>
