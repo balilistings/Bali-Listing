@@ -236,6 +236,11 @@
 
   margin: 10px 0 4px 0;
   color: #000000;
+  @media (min-width: 768px) {
+    height: 52px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   @media (max-width: 767px) {
     font-size: 16px;
   }
