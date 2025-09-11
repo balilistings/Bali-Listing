@@ -80,7 +80,6 @@ const SectionHeading = props => {
         {existingListingFields.map(detail =>
           detail.key === 'propertytype' ? (
             <div key={detail.key} className={css.detailsTypeRow}>
-             
               <svg
                 width="15"
                 height="14"
@@ -144,10 +143,7 @@ const SectionHeading = props => {
                   </clipPath>
                 </defs>
               </svg>
-
-              <span>
-                <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
-              </span>
+              <span className={css.detailTypeValue}>{detail.value}</span>
             </div>
           ) : null
         )}
@@ -166,7 +162,6 @@ const SectionHeading = props => {
               fill="#818181"
             />
           </svg>
-
           {location}
         </div>
       </div>
@@ -181,10 +176,7 @@ const SectionHeading = props => {
                 ) : (
                   <IconCollection name="bathroom_icon" />
                 )}
-                <span>
-                  <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
-                  <span className={css.detailTypeLabel}>{detail.label}</span>
-                </span>
+                <span className={css.detailTypeValue}>{detail.value} {detail.label}</span>
               </li>
             ) : detail.key === 'landsize' || detail.key === 'landzone' ? (
               <li key={detail.key} className={css.detailsTypeRow}>
@@ -193,12 +185,7 @@ const SectionHeading = props => {
                 ) : (
                   <IconCollection name="zone_icon" />
                 )}
-                <span>
-                  <span className={css.detailTypeValue}> {detail.value} &nbsp;</span>
-                  <span className={css.detailTypeLabel}>
-                    {detail.key === 'landsize' ? 'm2' : 'zone'}
-                  </span>
-                </span>
+                <span className={css.detailTypeValue}>{detail.value} {detail.key === 'landsize' ? 'm2' : 'zone'}</span>
               </li>
             ) : null
           )}
