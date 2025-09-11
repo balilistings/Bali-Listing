@@ -163,7 +163,7 @@ const CustomListingFields = props => {
       )}
 
       {isRentals && hasActiveServices(publicData) && (
-        <div className={css.servicesContainerWrapper}>
+        <div className={css.amenitiesContainer}>
           <h2 className={css.servicesTitle}>Services included</h2>
           <div className={css.servicesContainer}>
             {availableServices.map(s => (
