@@ -97,34 +97,11 @@ const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 
 const { UUID } = sdkTypes;
 
-const SECTIONS = [
-  { id: 'description', label: 'Description' },
-  { id: 'amenities', label: 'Amenities' },
-  { id: 'location', label: 'Location' },
-  { id: 'rentalTerms', label: 'Rental Terms' },
-  { id: 'listedBy', label: 'Listed By' },
-];
-
-const prepareSections = isLandforsale => {
-  if (isLandforsale) {
-    return SECTIONS.map(section => {
-      if (section.id === 'amenities') {
-        return { id: 'propertyDetails', label: 'Property Details' };
-      }
-      return section;
-    });
-  }
-
-  return SECTIONS;
-};
-
 export const ListingPageComponent = props => {
   const [inquiryModalOpen, setInquiryModalOpen] = useState(
     props.inquiryModalOpenForListingId === props.params.id
   );
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState(SECTIONS[0].id);
-  const [showTabsShadow, setShowTabsShadow] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -136,19 +113,6 @@ export const ListingPageComponent = props => {
       });
     }
   }, []);
-
-  // Scroll to section on tab click with offset from top
-  const handleTabClick = id => {
-    const el = document.getElementById(id);
-    if (el) {
-      const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
-      window.scrollTo({
-        top: elementPosition - 120, // Offset by 200px from top
-        behavior: 'smooth',
-      });
-      setActiveTab(id);
-    }
-  };
 
   const {
     isAuthenticated,
@@ -209,38 +173,9 @@ export const ListingPageComponent = props => {
   } = currentListing.attributes;
 
   const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
-  const isLandforsale = categoryLevel1 === 'landforsale';
   const isRentals = categoryLevel1 === 'rentalvillas';
   const isVillaSale = categoryLevel1 === 'villaforsale';
 
-  const preparedSections = prepareSections(isLandforsale);
-
-  // Scrollspy: update active tab on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      let found = activeTab || preparedSections[0].id;
-      for (const section of preparedSections) {
-        const el = document.getElementById(section.id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= 80) {
-            // adjust offset for sticky header if needed
-            found = section.id;
-          }
-        }
-      }
-      setActiveTab(found);
-
-      // Check if scroll position has reached bottomDescription
-      const bottomDescriptionEl = document.getElementById('bottomDescription');
-      if (bottomDescriptionEl) {
-        const rect = bottomDescriptionEl.getBoundingClientRect();
-        setShowTabsShadow(rect.top <= 130);
-      }
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // If a /pending-approval URL is shared, the UI requires
   // authentication and attempts to fetch the listing from own
