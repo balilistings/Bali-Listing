@@ -590,9 +590,9 @@ const OrderPanel = props => {
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-        {!listingIsAvailableNow && !hideTabs && (
+        {/* {!listingIsAvailableNow && !hideTabs && (
           <div className={css.availableFrom}>{availabilityDisplayText}</div>
-        )}
+        )} */}
         {priceperare && (
           <div className={css.availableFrom}>
             Price per are:{' '}
@@ -723,9 +723,9 @@ const OrderPanel = props => {
                   marketplaceCurrency={marketplaceCurrency}
                   showCurrencyMismatch
                 />
-                {!listingIsAvailableNow && !hideTabs && (
+                {/* {!listingIsAvailableNow && !hideTabs && (
                   <div className={css.availableFrom}>{availabilityDisplayText}</div>
-                )}
+                )} */}
               </div>
               {isClosed ? (
                 <div className={css.closedListingButton}>
