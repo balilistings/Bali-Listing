@@ -10,6 +10,7 @@
   width: 100%;
   height: 100%;
   display: grid;
+  align-items: center;
   user-select: none;
   padding: 0 0px;
 
@@ -89,7 +90,7 @@
   font-family: Mulish;
   font-weight: 700;
   font-style: Bold;
-  font-size: 10px;
+  font-size: 12px;
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
@@ -104,19 +105,15 @@
   font-family: Mulish;
   font-weight: 400;
   font-style: Regular;
-  font-size: 10px;
+  font-size: 12px;
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-  color: #d3d3d3;
+  color: #9CA3AF;
 
   @media (--viewportMedium) {
     font-size: 14px;
   }
-}
-
-.toggleButton.unselected .subLabel {
-  color: #d3d3d3;
 }
 
 .toggleButton.selected .subLabel {
