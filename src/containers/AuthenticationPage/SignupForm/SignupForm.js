@@ -125,7 +125,14 @@ const SignupFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
-      const providerDisabled = userType === 'provider' ? !selfieDocumentLink : false;
+      
+      let providerDisabled = false;
+      if (userType === 'provider') {
+        providerDisabled = pub_role === 'company'
+          ? !values.companyDocumentLink
+          : !values.idDocumentLink || !selfieDocumentLink;
+      }
+      
       const submitDisabled = invalid || submitInProgress || providerDisabled;
 
       const handleSelfieDocument = file => {
@@ -270,7 +277,7 @@ const SignupFormComponent = props => (
               </div>
             ) : null}
 
-            {userType === 'provider' && pub_role ? (
+            {userType === 'provider' && pub_role && pub_role !== 'company' ? (
               <ImageUploader
                 label="Add a selfie of you holding your ID card"
                 columns={1}
