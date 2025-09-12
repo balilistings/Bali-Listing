@@ -30,7 +30,7 @@
   }
 
   &:hover::placeholder {
-    color: #d3d3d3;
+    color: #9CA3AF;
     transition: 0.1s all;
     font-weight: 400;
   }
@@ -42,7 +42,7 @@
   }
 
   &::placeholder {
-    color: #d3d3d3;
+    color: #9CA3AF;
     transition: 0.1s all;
     font-weight: 400;
   }
