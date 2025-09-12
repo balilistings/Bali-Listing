@@ -27,7 +27,7 @@ const categoryFilterConfig = {
     'amenities',
     'propertyType',
     'availability',
-    // 'services',
+    'services',
     'propertyDetails',
     'hostType',
   ],
@@ -118,6 +118,23 @@ const initialisePropertyDetail = () => {
   }
 };
 
+const allPubAmentiesKeys = [
+  'pub_pool',
+  'pub_wifi',
+  'pub_gym',
+  'pub_workingdesk',
+  'pub_carparking',
+  'pub_airco',
+  'pub_kitchen',
+  'pub_petfriendly',
+];
+
+const allPubServicesKeys = [
+  'pub_cleaning_weekly',
+  'pub_electricity',
+  'pub_pool_maintenance',
+];
+
 const initialiseAmenities = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
@@ -148,6 +165,29 @@ const initialiseAmenities = () => {
 
     return amenities;
   }
+};
+
+const initialiseServices = () => {
+  if (typeof window !== 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const services = [];
+    allPubServicesKeys.forEach(key => {
+      const value = urlParams.get(key);
+      if (value) {
+        if (key === 'pub_cleaning_weekly') {
+          if (value === '1,2,3,4,5,6,7') {
+            services.push(key.replace('pub_', ''));
+          }
+        } else {
+          if (value === 'yes') {
+            services.push(key.replace('pub_', ''));
+          }
+        }
+      }
+    });
+    return services;
+  }
+  return [];
 };
 
 const initialiseLandSize = () => {
@@ -226,17 +266,6 @@ const initialiseLandZones = () => {
   }
 };
 
-const allPubAmentiesKeys = [
-  'pub_pool',
-  'pub_wifi',
-  'pub_gym',
-  'pub_workingdesk',
-  'pub_carparking',
-  'pub_airco',
-  'pub_kitchen',
-  'pub_petfriendly',
-];
-
 function CustomFilters({
   onClose,
   onReset = () => {},
@@ -257,7 +286,7 @@ function CustomFilters({
   const [selectedAmenities, setSelectedAmenities] = useState(initialiseAmenities);
   const [selectedPropertyType, setSelectedPropertyType] = useState(initialisePropertyType);
   const [selectedAvailability, setSelectedAvailability] = useState(initialiseAvailability);
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedServices, setSelectedServices] = useState(initialiseServices);
   const [selectedPropertyDetail, setSelectedPropertyDetail] = useState(initialisePropertyDetail);
   const [selectedHostType, setSelectedHostType] = useState(initialiseHostType);
   const [selectedTenure, setSelectedTenure] = useState(initialiseTenure);
@@ -304,7 +333,7 @@ function CustomFilters({
       setSelectedAvailability(null);
     }
     if (!newAvailableFilters.includes('services')) {
-      setSelectedService(null);
+      setSelectedServices([]);
     }
     if (!newAvailableFilters.includes('propertyDetails')) {
       setSelectedPropertyDetail([]);
@@ -476,12 +505,36 @@ function CustomFilters({
     setSelectedAvailability(null);
   };
 
-  const handleServiceChange = service => {
-    setSelectedService(service);
+  const handleServiceChange = services => {
+    const params = {};
+    const addPub = services.map(elm => `pub_${elm}`);
+
+    allPubServicesKeys.forEach(key => {
+      if (addPub.includes(key)) {
+        // service is selected
+        if (key === 'pub_cleaning_weekly') {
+          params[key] = '1,2,3,4,5,6,7';
+        } else {
+          params[key] = 'yes';
+        }
+      } else {
+        // service is not selected
+        params[key] = null;
+      }
+    });
+
+    onUpdateCurrentQueryParams(params);
+
+    setSelectedServices(services);
   };
 
   const handleServiceReset = () => {
-    setSelectedService(null);
+    const params = {};
+    allPubServicesKeys.forEach(elm => {
+      params[elm] = null;
+    });
+    onUpdateCurrentQueryParams(params);
+    setSelectedServices([]);
   };
 
   const handlePropertyDetailChange = propertyDetail => {
@@ -596,7 +649,7 @@ function CustomFilters({
     setSelectedAmenities([]);
     setSelectedPropertyType(null);
     setSelectedAvailability(null);
-    setSelectedService(null);
+    setSelectedServices([]);
     setSelectedPropertyDetail(null);
     setSelectedHostType(null);
     setSelectedTenure(null);
@@ -723,7 +776,7 @@ function CustomFilters({
 
           {availableFilters.includes('services') && (
             <ServicesSelector
-              selectedService={selectedService}
+              selectedServices={selectedServices}
               onServiceChange={handleServiceChange}
               onReset={handleServiceReset}
             />
