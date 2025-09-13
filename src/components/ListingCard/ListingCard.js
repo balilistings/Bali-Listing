@@ -286,54 +286,56 @@ export const ListingCard = props => {
               longWordClass: css.longWord,
             })}
           </div>
-          <div className={css.location}>
-            {!isLand && (
-              <>
-                <span className={css.typeIcon}>
-                  <IconCollection name="typeIcon" />
-                </span>
-                <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
-              </>
-            )}
+          <div className={css.cardDetailsBottom}>
+            <div className={css.location}>
+              {!isLand && (
+                <>
+                  <span className={css.typeIcon}>
+                    <IconCollection name="typeIcon" />
+                  </span>
+                  <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
+                </>
+              )}
 
-            <span className={css.locationWrapper}>
-              <span className={css.locationIcon}>
-                <IconCollection name="locationIcon" />
+              <span className={css.locationWrapper}>
+                <span className={css.locationIcon}>
+                  <IconCollection name="locationIcon" />
+                </span>
+                {location?.address}
               </span>
-              {location?.address}
-            </span>
-          </div>
-          <div className={css.bottomContent}>
-            <div className={css.icons}>
-              {!!bedrooms && (
-                <span className={css.iconItem}>
-                  <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
-                </span>
-              )}
-              {!!bathrooms && (
-                <span className={css.iconItem}>
-                  <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
-                </span>
-              )}
-
-              {!!landsize && isLand && (
-                <span className={css.iconItem}>
-                  <Icon type="land" /> {landsize} m2
-                </span>
-              )}
-              {!!landzone && isLand && (
-                <span className={css.iconItem}>
-                  <Icon type="zone" /> {landzone} Zone
-                </span>
-              )}
             </div>
-            <PriceMaybe
-              price={price}
-              publicData={publicData}
-              config={config}
-              intl={intl}
-              isRentals={isRentals}
-            />
+            <div className={css.bottomContent}>
+              <div className={css.icons}>
+                {!!bedrooms && (
+                  <span className={css.iconItem}>
+                    <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
+                  </span>
+                )}
+                {!!bathrooms && (
+                  <span className={css.iconItem}>
+                    <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                  </span>
+                )}
+
+                {!!landsize && isLand && (
+                  <span className={css.iconItem}>
+                    <Icon type="land" /> {landsize} m2
+                  </span>
+                )}
+                {!!landzone && isLand && (
+                  <span className={css.iconItem}>
+                    <Icon type="zone" /> {landzone} Zone
+                  </span>
+                )}
+              </div>
+              <PriceMaybe
+                price={price}
+                publicData={publicData}
+                config={config}
+                intl={intl}
+                isRentals={isRentals}
+              />
+            </div>
           </div>
         </div>
       </div>

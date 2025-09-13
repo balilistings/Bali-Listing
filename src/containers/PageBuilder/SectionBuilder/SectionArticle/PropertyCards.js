@@ -532,79 +532,82 @@ const PropertyCards = () => {
                     </button>
                   </div>
                   <div className={styles.cardDetails}>
-                    <div className={styles.tags}>
-                      {tags?.map(tag => (
-                        <span className={styles.tag} key={tag}>
-                          {tag}
-                        </span>
-                      ))}
-                      {!!Freehold && (
-                        <span className={styles.tag}>{capitaliseFirstLetter(Freehold)}</span>
-                      )}
-                      <NamedLink
-                        className={styles.listedBy}
-                        name="ProfilePage"
-                        params={{ id: author.id.uuid }}
-                      >
-                        <span className={styles.listedBy}>
-                          Listed by:{' '}
-                          <span className={styles.listedByName}>
-                            {author.attributes.profile.displayName}
+                    <div className={styles.cardDetailsTop}>
+                      <div className={styles.tags}>
+                        {tags?.map(tag => (
+                          <span className={styles.tag} key={tag}>
+                            {tag}
                           </span>
-                        </span>
-                      </NamedLink>
-                    </div>
-                    <div className={styles.title}>{title}</div>
-                    <div className={styles.location}>
-                      {propertytype && (
-                        <>
-                          <span className={styles.typeIcon}>
-                            <IconCollection name="typeIcon" />
-                          </span>
-                          <span className={styles.type}>{capitaliseFirstLetter(propertytype)}</span>
-                        </>
-                      )}
-                      <span className={styles.locationWrapper}>
-                        <span className={styles.locationIcon}>
-                          <IconCollection name="locationIcon" />
-                        </span>
-                        {location?.address}
-                      </span>
-                    </div>
-                    {/* <div className={styles.description}>{description}</div> */}
-                    <div className={styles.bottomContent}>
-                      <div className={styles.icons}>
-                        {!!bedrooms && (
-                          <span className={styles.iconItem}>
-                            <Icon type="bed" /> {bedrooms} bedroom
-                            {bedrooms > 1 ? 's' : ''}
-                          </span>
+                        ))}
+                        {!!Freehold && (
+                          <span className={styles.tag}>{capitaliseFirstLetter(Freehold)}</span>
                         )}
-                        {!!bathrooms && (
-                          <span className={styles.iconItem}>
-                            <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                        <NamedLink
+                          className={styles.listedBy}
+                          name="ProfilePage"
+                          params={{ id: author.id.uuid }}
+                        >
+                          <span className={styles.listedBy}>
+                            Listed by:{' '}
+                            <span className={styles.listedByName}>
+                              {author.attributes.profile.displayName}
+                            </span>
                           </span>
-                        )}
-                        {!!landsize && isLand && (
-                          <span className={styles.iconItem}>
-                            <Icon type="land" /> {landsize} m2
-                          </span>
-                        )}
-                        {!!landzone && isLand && (
-                          <span className={styles.iconItem}>
-                            <Icon type="zone" /> {landzone} Zone
-                          </span>
-                        )}
+                        </NamedLink>
                       </div>
-                      <div className={styles.price}>
-                        <span className={styles.priceValue}>
-                          {formatPriceInMillions(price)} IDR
-                        </span>
-                        {isRentals && (
-                          <span className={styles.priceUnit}>
-                            {monthprice ? '/ monthly' : weekprice ? '/ weekly' : '/ yearly'}
-                          </span>
+                      <div className={styles.title}>{title}</div>
+                    </div>
+                    <div className={styles.cardDetailsBottom}>
+                      <div className={styles.location}>
+                        {propertytype && (
+                          <>
+                            <span className={styles.typeIcon}>
+                              <IconCollection name="typeIcon" />
+                            </span>
+                            <span className={styles.type}>{capitaliseFirstLetter(propertytype)}</span>
+                          </>
                         )}
+                        <span className={styles.locationWrapper}>
+                          <span className={styles.locationIcon}>
+                            <IconCollection name="locationIcon" />
+                          </span>
+                          {location?.address}
+                        </span>
+                      </div>
+                      <div className={styles.bottomContent}>
+                        <div className={styles.icons}>
+                          {!!bedrooms && (
+                            <span className={styles.iconItem}>
+                              <Icon type="bed" /> {bedrooms} bedroom
+                              {bedrooms > 1 ? 's' : ''}
+                            </span>
+                          )}
+                          {!!bathrooms && (
+                            <span className={styles.iconItem}>
+                              <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                            </span>
+                          )}
+                          {!!landsize && isLand && (
+                            <span className={styles.iconItem}>
+                              <Icon type="land" /> {landsize} m2
+                            </span>
+                          )}
+                          {!!landzone && isLand && (
+                            <span className={styles.iconItem}>
+                              <Icon type="zone" /> {landzone} Zone
+                            </span>
+                          )}
+                        </div>
+                        <div className={styles.price}>
+                          <span className={styles.priceValue}>
+                            {formatPriceInMillions(price)} IDR
+                          </span>
+                          {isRentals && (
+                            <span className={styles.priceUnit}>
+                              {monthprice ? '/ monthly' : weekprice ? '/ weekly' : '/ yearly'}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
