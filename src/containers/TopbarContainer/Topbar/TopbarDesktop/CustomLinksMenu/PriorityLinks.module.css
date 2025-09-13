@@ -10,7 +10,7 @@
 
 .priorityLink {
   border-bottom: 0px solid;
-  transition: var(--transitionStyleButton);
+  transition: var(--transitionStyle);
 
   font-family: Mulish;
   font-weight: 700;
@@ -19,7 +19,7 @@
   letter-spacing: 0%;
   text-align: center;
 
-  color: #231f20;
+  color: var(--colorBlack);
 
   flex-shrink: 0;
   height: 100%;
@@ -27,7 +27,7 @@
   margin: 0;
 
   &:hover {
-    color: var(--colorBlack);
+    color: var(--marketplaceColor);
     /* border-bottom: 4px solid var(--marketplaceColor); */
     border-radius: 0;
     text-decoration: none;
@@ -40,9 +40,9 @@
 }
 
 .highlight {
-  color: #231f20;
+  color: var(--colorBlack);
   &:hover {
-    color: var(--marketplaceColorDark);
+    color: var(--marketplaceColor);
   }
 }
 
@@ -60,5 +60,5 @@
   letter-spacing: 0%;
   text-align: center;
 
-  color: #231f20;
+  color: inherit;
 }

@@ -250,6 +250,48 @@ const preparePriceTabs = (publicData, marketplaceCurrency) => {
     });
 };
 
+// Helper function to check if a listing is available now based on availableper value
+const isAvailableNow = (availableper) => {
+  // Handle legacy "yes"/"no" values
+  if (availableper === 'yes') return true;
+  if (availableper === 'no') return false;
+  
+  // Handle date strings (ISO format: "YYYY-MM-DD")
+  if (typeof availableper === 'string' && availableper.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const availableDate = new Date(availableper);
+    availableDate.setHours(0, 0, 0, 0);
+    return availableDate <= today;
+  }
+  
+  return false;
+};
+
+// Helper function to get the availability display text
+const getAvailabilityDisplay = (availableper, intl) => {
+  // Handle legacy "yes"/"no" values
+  if (availableper === 'yes') return 'Available Now!';
+  if (availableper === 'no') return 'Available soon!';
+  
+  // Handle date strings (ISO format: "YYYY-MM-DD")
+  if (typeof availableper === 'string' && availableper.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const availableDate = new Date(availableper);
+    availableDate.setHours(0, 0, 0, 0);
+    
+    if (availableDate <= today) {
+      return 'Available Now!';
+    } else {
+      return `Available from ${intl.formatDate(availableDate, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+    }
+  }
+  
+  // Default case
+  return 'Available soon!';
+};
+
 /**
  * @typedef {Object} ListingTypeConfig
  * @property {string} listingType - The type of the listing
@@ -497,9 +539,12 @@ const OrderPanel = props => {
     }
   };
 
+  const listingIsAvailableNow = isAvailableNow(availableper);
+  const availabilityDisplayText = getAvailabilityDisplay(availableper, intl);
+
   return (
     <div className={classes}>
-      {availableper === 'yes' && (
+      {listingIsAvailableNow && (
         <div className={classNames(css.availableNowButton, css.availableNowButtonDesktop)}>
           Available Now!
         </div>
@@ -545,9 +590,9 @@ const OrderPanel = props => {
           intl={intl}
           marketplaceCurrency={marketplaceCurrency}
         />
-        {availableper !== 'yes' && !hideTabs && (
-          <div className={css.availableFrom}>Available soon!</div>
-        )}
+        {/* {!listingIsAvailableNow && !hideTabs && (
+          <div className={css.availableFrom}>{availabilityDisplayText}</div>
+        )} */}
         {priceperare && (
           <div className={css.availableFrom}>
             Price per are:{' '}
@@ -645,7 +690,7 @@ const OrderPanel = props => {
       <div className={css.openOrderForm}>
         <div className={css.openOrderFormContainer}>
           <div>
-            {availableper === 'yes' && (
+            {listingIsAvailableNow && (
               <div className={classNames(css.availableNowButton, css.availableNowButtonMobile)}>
                 Available Now!
               </div>
@@ -678,9 +723,9 @@ const OrderPanel = props => {
                   marketplaceCurrency={marketplaceCurrency}
                   showCurrencyMismatch
                 />
-                {availableper !== 'yes' && !hideTabs && (
-                  <div className={css.availableFrom}>Available soon!</div>
-                )}
+                {/* {!listingIsAvailableNow && !hideTabs && (
+                  <div className={css.availableFrom}>{availabilityDisplayText}</div>
+                )} */}
               </div>
               {isClosed ? (
                 <div className={css.closedListingButton}>

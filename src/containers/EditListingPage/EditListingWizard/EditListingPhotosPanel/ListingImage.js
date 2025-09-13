@@ -40,6 +40,17 @@ const RemoveImageButton = props => {
   );
 };
 
+// Cover photo indicator component
+const CoverPhotoIndicator = props => {
+  const { className, rootClassName } = props;
+  const classes = classNames(rootClassName || css.coverPhotoIndicator, className);
+  return (
+    <div className={classes}>
+      <span>Cover</span>
+    </div>
+  );
+};
+
 /**
  * Cropped "thumbnail" of given listing image.
  * The image might be one already uploaded and attached to listing entity
@@ -51,6 +62,9 @@ const RemoveImageButton = props => {
  * @param {Object} props.image - The image object
  * @param {string} props.savedImageAltText - The saved image alt text
  * @param {Function} props.onRemoveImage - The remove image function
+ * @param {Function} props.onSetCoverPhoto - The set cover photo function
+ * @param {boolean} props.isCoverPhoto - Whether this image is the cover photo
+ * @param {number} [props.index] - The index of the image in the array
  * @param {number} [props.aspectWidth] - The aspect width
  * @param {number} [props.aspectHeight] - The aspect height
  * @param {string} [props.variantPrefix] - The variant prefix
@@ -62,6 +76,9 @@ const ListingImage = props => {
     image,
     savedImageAltText,
     onRemoveImage,
+    onSetCoverPhoto,
+    isCoverPhoto,
+    index,
     aspectWidth = 1,
     aspectHeight = 1,
     variantPrefix = 'listing-card',
@@ -69,6 +86,11 @@ const ListingImage = props => {
   const handleRemoveClick = e => {
     e.stopPropagation();
     onRemoveImage(image.id);
+  };
+
+  const handleSetCoverClick = e => {
+    e.stopPropagation();
+    onSetCoverPhoto(index);
   };
 
   if (image.file && !image.attributes) {
@@ -92,6 +114,7 @@ const ListingImage = props => {
       >
         {removeButton}
         {uploadingOverlay}
+        {isCoverPhoto && <CoverPhotoIndicator />}
       </ImageFromFile>
     );
   } else {
@@ -132,6 +155,13 @@ const ListingImage = props => {
             />
           </AspectRatioWrapper>
           <RemoveImageButton onClick={handleRemoveClick} />
+          {isCoverPhoto ? (
+            <CoverPhotoIndicator />
+          ) : (
+            <button className={css.setCoverButton} onClick={handleSetCoverClick}>
+              Set as cover
+            </button>
+          )}
         </div>
       </div>
     );

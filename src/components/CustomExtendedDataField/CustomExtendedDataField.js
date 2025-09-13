@@ -1,15 +1,8 @@
 import React from 'react';
+import { useIntl } from 'react-intl';
 
 // Import config and utils
-import { useIntl } from '../../util/reactIntl';
-import {
-  SCHEMA_TYPE_ENUM,
-  SCHEMA_TYPE_MULTI_ENUM,
-  SCHEMA_TYPE_TEXT,
-  SCHEMA_TYPE_LONG,
-  SCHEMA_TYPE_BOOLEAN,
-  SCHEMA_TYPE_YOUTUBE,
-} from '../../util/types';
+import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_TEXT, SCHEMA_TYPE_LONG, SCHEMA_TYPE_BOOLEAN, SCHEMA_TYPE_YOUTUBE, SCHEMA_TYPE_DATE } from '../../util/types';
 import {
   required,
   nonEmptyArray,
@@ -18,8 +11,10 @@ import {
 } from '../../util/validators';
 // Import shared components
 import { FieldCheckboxGroup, FieldSelect, FieldTextInput, FieldBoolean } from '../../components';
+import CustomAvailablePerField from './CustomAvailablePerField/CustomAvailablePerField';
 // Import modules from this directory
 import css from './CustomExtendedDataField.module.css';
+import { Field } from 'react-final-form';
 
 const createFilterOptions = options => options.map(o => ({ key: `${o.option}`, label: o.label }));
 
@@ -128,6 +123,10 @@ const CustomFieldText = props => {
     placeholderMessage ||
     intl.formatMessage({ id: 'CustomExtendedDataField.placeholderText' });
 
+  const textMaxlength = {
+    pub_payment: 100,
+  };
+
   // Handle validation for phone number field
   const validateMaybe =
     name === 'pub_phonenumber'
@@ -164,6 +163,7 @@ const CustomFieldText = props => {
       type={showtextArea ? 'textarea' : 'text'}
       label={label}
       placeholder={placeholder}
+      maxLength={textMaxlength[name]}
       {...validateMaybe}
     />
   );
@@ -277,6 +277,19 @@ const CustomFieldYoutube = props => {
   );
 };
 
+// Special component for availableper field when schema type is text
+const CustomFieldAvailablePer = props => {
+  const {fieldName, intl, fieldConfig} = props;
+  const label = getLabel(fieldConfig);
+
+
+  return (
+    <Field name={fieldName} {...props}>
+      {fieldProps => <CustomAvailablePerField {...fieldProps} label={label} intl={intl} />}
+    </Field>
+  );
+};
+
 /**
  * Return Final Form field for each configuration according to schema type.
  *
@@ -289,10 +302,12 @@ const CustomFieldYoutube = props => {
  */
 const CustomExtendedDataField = props => {
   const intl = useIntl();
-  const { enumOptions = [], schemaType } = props?.fieldConfig || {};
+  const { enumOptions = [], schemaType, key } = props?.fieldConfig || {};
   const renderFieldComponent = (FieldComponent, props) => <FieldComponent {...props} intl={intl} />;
 
-  return schemaType === SCHEMA_TYPE_ENUM && enumOptions
+  return key === 'availableper' && schemaType === SCHEMA_TYPE_TEXT
+    ? renderFieldComponent(CustomFieldAvailablePer, props)
+    : schemaType === SCHEMA_TYPE_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldEnum, props)
     : schemaType === SCHEMA_TYPE_MULTI_ENUM && enumOptions
     ? renderFieldComponent(CustomFieldMultiEnum, props)

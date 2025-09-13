@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 15px;
 }
 
 .icon {
@@ -291,7 +291,7 @@ bottom of the container.
   font-family: Mulish;
   font-weight: 700;
   font-style: Bold;
-  font-size: 10px;
+  font-size: 12px;
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
@@ -528,11 +528,11 @@ bottom of the container.
   font-family: Mulish;
   font-weight: 400;
   font-style: Regular;
-  font-size: 10px;
+  font-size: 12px;
   leading-trim: NONE;
   line-height: 130%;
   letter-spacing: 0%;
-  color: #D3D3D3;
+  color: #9CA3AF;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
