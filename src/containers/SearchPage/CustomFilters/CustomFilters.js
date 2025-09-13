@@ -774,7 +774,7 @@ function CustomFilters({
             />
           )}
 
-          {availableFilters.includes('services') && (
+          {availableFilters.includes('services') && (process.env.DISPLAY_FILTER_SERVICES === 'true') && (
             <ServicesSelector
               selectedServices={selectedServices}
               onServiceChange={handleServiceChange}
