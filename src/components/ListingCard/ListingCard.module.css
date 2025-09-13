@@ -258,7 +258,7 @@
 .iconItem {
   font-family: Istok Web;
   font-weight: 400;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -344,12 +344,15 @@ margin-right: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width:140px ;
+  max-width: 220px ;
+
   text-align: left;
   color: #818181;
- @media (--viewportLarge) {
-  font-size: 12px;
- }
+  
+  @media (--viewportLarge) {
+    font-size: 12px;
+    max-width: 100%;
+  }
 
   @media (max-width: 767px) {
     font-size:10px;
