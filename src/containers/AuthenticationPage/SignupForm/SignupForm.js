@@ -118,6 +118,10 @@ const SignupFormComponent = props => (
 
       const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
 
+      // Separate fields based on pub_role value
+      const roleSpecificField = userFieldProps.find(({ key }) => key === 'pub_role');
+      const otherUserFields = userFieldProps.filter(({ key }) => key !== 'pub_role');
+
       const noUserTypes = !userType && !(userTypes?.length > 0);
       const userTypeConfig = userTypes.find(config => config.userType === userType);
       const showDefaultUserFields = userType || noUserTypes;
@@ -125,14 +129,15 @@ const SignupFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
-      
+
       let providerDisabled = false;
       if (userType === 'provider') {
-        providerDisabled = pub_role === 'company'
-          ? !values.companyDocumentLink
-          : !values.idDocumentLink || !selfieDocumentLink;
+        providerDisabled =
+          pub_role === 'company'
+            ? !values.companyDocumentLink
+            : !values.idDocumentLink || !selfieDocumentLink;
       }
-      
+
       const submitDisabled = invalid || submitInProgress || providerDisabled;
 
       const handleSelfieDocument = file => {
@@ -168,7 +173,6 @@ const SignupFormComponent = props => (
                 })
               )}
             />
-
             {showDefaultUserFields ? (
               <div className={css.defaultUserFields}>
                 <FieldTextInput
@@ -253,7 +257,12 @@ const SignupFormComponent = props => (
                 />
               </div>
             ) : null}
-
+            {/* Render the pub_role field separately if it exists */}
+            {roleSpecificField ? (
+              <div className={css.customFields}>
+                <CustomExtendedDataField key={roleSpecificField.key} {...roleSpecificField} formId={formId} />
+              </div>
+            ) : null}
             {userType === 'provider' ? (
               <ImageUploader
                 label={
@@ -268,15 +277,14 @@ const SignupFormComponent = props => (
                 onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
               />
             ) : null}
-
-            {showCustomUserFields ? (
+            {/* Render all other custom fields except pub_role */}
+            {otherUserFields.length > 0 ? (
               <div className={css.customFields}>
-                {userFieldProps.map(({ key, ...fieldProps }) => (
+                {otherUserFields.map(({ key, ...fieldProps }) => (
                   <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
                 ))}
               </div>
             ) : null}
-
             {userType === 'provider' && pub_role && pub_role !== 'company' ? (
               <ImageUploader
                 label="Add a selfie of you holding your ID card"
@@ -287,7 +295,6 @@ const SignupFormComponent = props => (
                 onProfileChange={handleSelfieDocument}
               />
             ) : null}
-
             <div className={css.bottomWrapper}>
               {termsAndConditions}
               <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
