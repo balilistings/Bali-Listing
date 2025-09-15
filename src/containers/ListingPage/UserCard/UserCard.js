@@ -10,6 +10,7 @@ import { propTypes } from '../../../util/types';
 import { AvatarLarge, NamedLink, InlineTextButton } from '../../../components';
 import IconCollection from '../../../components/IconCollection/IconCollection';
 import css from './UserCard.module.css';
+import { useSelector } from 'react-redux';
 
 // Approximated collapsed size so that there are ~three lines of text
 // in the desktop layout in the author section of the ListingPage.
@@ -81,7 +82,7 @@ const UserCard = props => {
     setMounted(true);
   }, []);
 
-  const { rootClassName, className, user, currentUser, onContactUser, showContact = true } = props;
+  const { rootClassName, className, user, currentUser, onContactUser, showContact = true, listingId } = props;
 
   const userIsCurrentUser = user && user.type === 'currentUser';
   const ensuredUser = userIsCurrentUser ? ensureCurrentUser(user) : ensureUser(user);
@@ -90,6 +91,7 @@ const UserCard = props => {
   const isCurrentUser =
     ensuredUser.id && ensuredCurrentUser.id && ensuredUser.id.uuid === ensuredCurrentUser.id.uuid;
   const { displayName, bio, publicData: userPublicData } = ensuredUser.attributes.profile;
+  const agentorowner = useSelector(state => state.marketplaceData.entities.listing[listingId]?.attributes.publicData?.agentorowner);
 
   const handleContactUserClick = () => {
     onContactUser(user);
@@ -112,7 +114,9 @@ const UserCard = props => {
       onClick={handleContactUserClick}
       enforcePagePreloadFor="SignupPage"
     >
-      <FormattedMessage id="UserCard.contactUser" />
+      <FormattedMessage id="UserCard.contactUser" values={{ 
+        userType: agentorowner === 'agent' ? 'Agent' : 'Owner' 
+      }} />
     </InlineTextButton>
   ) : null;
 
@@ -159,7 +163,7 @@ const UserCard = props => {
          
           {/* {links} */}
           <p className={css.owner}>
-          {`Owner - ${userPublicData.companyname || userPublicData.role || ""}`}
+            {agentorowner === 'agent' ? 'Agent' : 'Owner'}
           </p>
         </div>
       </div>
