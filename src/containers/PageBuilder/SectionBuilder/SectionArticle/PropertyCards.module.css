@@ -256,9 +256,10 @@
   margin-top: 6px;
   color: #000000;
   @media (min-width: 768px) {
-    max-height: 52px;
+    max-height: 26px;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
   @media (max-width: 767px) {
     font-size: 16px;

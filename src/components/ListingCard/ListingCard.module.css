@@ -148,6 +148,10 @@
 
   @media (--viewportLarge) {
     font-size: 20px;
+    max-height: 26px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   @media (max-width: 767px) {
