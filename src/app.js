@@ -203,10 +203,6 @@ const EnvironmentVariableWarning = props => {
   );
 };
 
-const ConnectedCookieConsent = () => {
-  return <CookieConsent />;
-};
-
 export const ClientApp = props => {
   const { store, hostedTranslations = {}, hostedConfig = {} } = props;
   const appConfig = mergeConfig(hostedConfig, defaultConfig);
@@ -257,7 +253,7 @@ export const ClientApp = props => {
             <IncludeScripts config={appConfig} />
             <BrowserRouter>
               <Routes logLoadDataCalls={logLoadDataCalls} />
-              <ConnectedCookieConsent />
+              <CookieConsent />
             </BrowserRouter>
           </HelmetProvider>
         </Provider>

@@ -62,20 +62,7 @@ const defaultConfig = {
 
   // Cookie consent configuration for GDPR compliance
   cookieConsent: {
-    // Enable or disable cookie consent feature
-    enabled: true,
-    
-    // Text to display in the cookie consent banner
-    message: 'We use cookies to improve your experience on our site. By continuing to browse, you accept our use of cookies.',
-    
-    // Text for the accept button
-    acceptButtonText: 'Accept',
-    
-    // Text for the privacy policy link
-    privacyPolicyLinkText: 'Learn more',
-    
-    // Position of the banner (bottom or top)
-    position: 'bottom',
+    enabled: process.env.REACT_APP_COOKIE_CONSENT_ENABLED === 'true',
   },
 
   // Note: Facebook app id is used for Facebook login, but it is also used for tracking:

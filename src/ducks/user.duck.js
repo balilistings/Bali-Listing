@@ -5,9 +5,11 @@ import { LISTING_STATE_DRAFT } from '../util/types';
 import { storableError } from '../util/errors';
 import { isUserAuthorized } from '../util/userHelpers';
 import { getTransitionsNeedingProviderAttention } from '../transactions/transaction';
+import Cookies from 'js-cookie';
 
 import { authInfo } from './auth.duck';
 import { stripeAccountCreateSuccess } from './stripeConnectAccount.duck';
+import { saveCookieConsent } from './cookieConsent.duck';
 
 // ================ Action types ================ //
 
@@ -398,6 +400,33 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
       // If currentUser is not active (e.g. in 'pending-approval' state),
       // then they don't have listings or transactions that we care about.
       if (isUserAuthorized(currentUser)) {
+        // Check if user just logged in and has cookie consent data from anonymous session
+        if (afterLogin) {
+          const cookieConsent = Cookies.get('cookieConsent');
+          const userCookieConsent = Cookies.get('userCookieConsent');
+          
+          // If user had accepted cookies as anonymous user, transfer that consent to their profile
+          if (cookieConsent === 'accepted' && !userCookieConsent && 
+              (!currentUser.attributes?.profile?.protectedData?.cookieConsent)) {
+            try {
+              // Create consent data object
+              const consentData = {
+                accepted: true,
+                timestamp: new Date().toISOString(),
+              };
+              
+              // Store in user protected data
+              Cookies.set('userCookieConsent', JSON.stringify(consentData), { expires: 365 });
+              dispatch(saveCookieConsent(consentData));
+              
+              // Clear the cookie consent cookie since we've transferred the data
+              Cookies.remove('cookieConsent');
+            } catch (e) {
+              log.error(e, 'failed-to-transfer-cookie-consent');
+            }
+          }
+        }
+        
         if (currentUserHasListings === false && updateHasListings !== false) {
           dispatch(fetchCurrentUserHasListings());
         }
