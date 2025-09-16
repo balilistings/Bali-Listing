@@ -403,26 +403,24 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
         // Check if user just logged in and has cookie consent data from anonymous session
         if (afterLogin) {
           const cookieConsent = Cookies.get('cookieConsent');
-          const userCookieConsent = Cookies.get('userCookieConsent');
           
-          // If user had accepted cookies as anonymous user, transfer that consent to their profile
-          if (cookieConsent === 'accepted' && !userCookieConsent && 
-              (!currentUser.attributes?.profile?.protectedData?.cookieConsent)) {
+          // If user had cookie consent data as anonymous user, clear the cookie regardless
+          // of whether their account already has consent data or not
+          if (cookieConsent === 'accepted' || cookieConsent === 'rejected') {
             try {
-              // Create consent data object
-              const consentData = {
-                accepted: true,
-                timestamp: new Date().toISOString(),
-              };
-              
-              // Store in user protected data
-              Cookies.set('userCookieConsent', JSON.stringify(consentData), { expires: 365 });
-              dispatch(saveCookieConsent(consentData));
-              
-              // Clear the cookie consent cookie since we've transferred the data
               Cookies.remove('cookieConsent');
+              
+              if (!currentUser.attributes?.profile?.protectedData?.cookieConsent) {
+                const consentData = {
+                  accepted: cookieConsent === 'accepted',
+                  timestamp: new Date().toISOString(),
+                };
+                
+                // Store in user protected data
+                dispatch(saveCookieConsent(consentData));
+              }
             } catch (e) {
-              log.error(e, 'failed-to-transfer-cookie-consent');
+              log.error(e, 'failed-to-handle-cookie-consent');
             }
           }
         }
@@ -450,6 +448,7 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
       dispatch(currentUserShowError(storableError(e)));
     });
 };
+
 
 export const sendVerificationEmail = () => (dispatch, getState, sdk) => {
   if (verificationSendingInProgress(getState())) {

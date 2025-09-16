@@ -12,7 +12,6 @@ import { saveCookieConsent } from '../../ducks/cookieConsent.duck';
 import css from './CookieConsent.module.css';
 
 const COOKIE_CONSENT_KEY = 'cookieConsent';
-const USER_COOKIE_CONSENT_KEY = 'userCookieConsent';
 
 const CookieConsent = () => {
   const [showConsent, setShowConsent] = useState(false);
@@ -23,18 +22,14 @@ const CookieConsent = () => {
   const intl = useIntl();
 
   useEffect(() => {
-    let hasConsent = false;
-
     if (currentUser && currentUser.attributes?.profile?.protectedData?.cookieConsent) {
-      hasConsent = true;
-    }
-    else {
-      const cookieConsent = Cookies.get(COOKIE_CONSENT_KEY);
-      if (cookieConsent === 'accepted') {
-        hasConsent = true;
-      }
+      setShowConsent(false);
+      return;
     }
 
+    const cookieConsentValue = Cookies.get(COOKIE_CONSENT_KEY);
+    const hasConsent = cookieConsentValue === 'accepted' || cookieConsentValue === 'rejected';
+    
     setShowConsent(!hasConsent);
   }, [currentUser]);
 
@@ -44,11 +39,25 @@ const CookieConsent = () => {
       timestamp: new Date().toISOString(),
     };
 
-    Cookies.set(COOKIE_CONSENT_KEY, 'accepted', { expires: 365 });
+    if (currentUser) {
+      dispatch(saveCookieConsent(consentData));
+    } else {
+      Cookies.set(COOKIE_CONSENT_KEY, 'accepted', { expires: 365 });
+    }
+
+    setShowConsent(false);
+  };
+
+  const handleReject = () => {
+    const consentData = {
+      accepted: false,
+      timestamp: new Date().toISOString(),
+    };
 
     if (currentUser) {
-      Cookies.set(USER_COOKIE_CONSENT_KEY, JSON.stringify(consentData), { expires: 365 });
       dispatch(saveCookieConsent(consentData));
+    } else {
+      Cookies.set(COOKIE_CONSENT_KEY, 'rejected', { expires: 365 });
     }
 
     setShowConsent(false);
@@ -70,8 +79,11 @@ const CookieConsent = () => {
           </div>
         </div>
         <div className={css.buttonWrapper}>
+          <button className={css.rejectButton} onClick={handleReject}>
+          {<FormattedMessage id="CookieConsent.reject" />}
+          </button>
           <button className={css.acceptButton} onClick={handleAccept}>
-            {<FormattedMessage id="CookieConsent.accept" />}
+          {<FormattedMessage id="CookieConsent.accept" />}
           </button>
         </div>
       </div>

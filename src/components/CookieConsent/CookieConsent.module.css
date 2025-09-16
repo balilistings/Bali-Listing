@@ -1,5 +1,4 @@
-/* @import '../../styles/customMedia.css';
-@import '../../styles/mixins.css'; */
+@import '../../styles/customMediaQueries.css';
 
 .cookieConsent {
   position: fixed;
@@ -70,15 +69,41 @@
 
 .buttonWrapper {
   flex-shrink: 0;
+  display: flex;
+  gap: 12px;
 }
 
 .acceptButton {
   composes: buttonPrimary from global;
   padding: 0 24px;
   height: 40px;
+  min-height: auto;
   font-size: 14px;
   line-height: 18px;
   border-radius: 4px;
+
+  @media (--viewportMedium) {
+    padding: 0 32px;
+    height: 48px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
+
+.rejectButton {
+  composes: button from global;
+  padding: 0 24px;
+  height: 40px;
+  font-size: 14px;
+  line-height: 18px;
+  border-radius: 4px;
+  background-color: var(--colorGrey100);
+  color: var(--colorGrey700);
+  border: 1px solid var(--colorGrey300);
+
+  &:hover {
+    background-color: var(--colorGrey200);
+  }
 
   @media (--viewportMedium) {
     padding: 0 32px;

@@ -1,9 +1,35 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import Cookies from 'js-cookie';
 import { DeferredScriptLoader } from './deferredScriptLoader';
 
 const MAPBOX_SCRIPT_ID = 'mapbox_GL_JS';
 const GOOGLE_MAPS_SCRIPT_ID = 'GoogleMapsApi';
+
+
+const hasUserAcceptedCookies = () => {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    const storedUser = window.localStorage.getItem('sharetribeSdkUser');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      if (user?.attributes?.profile?.protectedData?.cookieConsent?.accepted !== undefined) {
+        return user.attributes.profile.protectedData.cookieConsent.accepted;
+      }
+    }
+  } catch (e) {
+    // If we can't parse the user data, continue to cookie check
+  }
+
+  const cookieConsent = Cookies.get('cookieConsent');
+  const isCookieConsentAccepted = cookieConsent === 'accepted';
+  const isDevEnvironment = process.env.NODE_ENV !== 'production';
+
+  return isCookieConsentAccepted || isDevEnvironment;
+};
 
 /**
  * Include scripts (like Map Provider).
@@ -23,6 +49,9 @@ export const IncludeScripts = props => {
   const { mapProvider, googleMapsAPIKey, mapboxAccessToken } = maps || {};
   const isGoogleMapsInUse = mapProvider === 'googleMaps';
   const isMapboxInUse = mapProvider === 'mapbox';
+
+  // Check if user has accepted cookies before loading analytics
+  const userHasAcceptedCookies = hasUserAcceptedCookies();
 
   // Add Google Analytics script if correct id exists (it should start with 'G-' prefix)
   // See: https://developers.google.com/analytics/devguides/collection/gtagjs
@@ -73,72 +102,75 @@ export const IncludeScripts = props => {
     );
   }
 
-  if (googleAnalyticsId && hasGoogleAnalyticsv4Id) {
-    // Google Analytics: gtag.js
-    // NOTE: This template is a single-page application (SPA).
-    //       gtag.js sends initial page_view event after page load.
-    //       but we need to handle subsequent events for in-app navigation.
-    //       This is done in src/analytics/handlers.js
-    analyticsLibraries.push(
-      <script
-        key="gtag.js"
-        async
-        src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-        crossOrigin
-      ></script>
-    );
+  // Only load analytics libraries if user has accepted cookies
+  if (userHasAcceptedCookies) {
+    if (googleAnalyticsId && hasGoogleAnalyticsv4Id) {
+      // Google Analytics: gtag.js
+      // NOTE: This template is a single-page application (SPA).
+      //       gtag.js sends initial page_view event after page load.
+      //       but we need to handle subsequent events for in-app navigation.
+      //       This is done in src/analytics/handlers.js
+      analyticsLibraries.push(
+        <script
+          key="gtag.js"
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+          crossOrigin
+        ></script>
+      );
 
-    if (typeof window !== 'undefined') {
-      window.dataLayer = window.dataLayer || [];
-      // Ensure that gtag function is found from window scope
-      window.gtag = function gtag() {
-        dataLayer.push(arguments);
-      };
-      gtag('js', new Date());
-      gtag('config', googleAnalyticsId, {
-        cookie_flags: 'SameSite=None;Secure',
-      });
+      if (typeof window !== 'undefined') {
+        window.dataLayer = window.dataLayer || [];
+        // Ensure that gtag function is found from window scope
+        window.gtag = function gtag() {
+          dataLayer.push(arguments);
+        };
+        gtag('js', new Date());
+        gtag('config', googleAnalyticsId, {
+          cookie_flags: 'SameSite=None;Secure',
+        });
+      }
     }
-  }
 
-  if (plausibleDomains) {
-    // If plausibleDomains is not an empty string, include their script too.
-    analyticsLibraries.push(
-      <script
-        key="plausible"
-        defer
-        src="https://plausible.io/js/script.js"
-        data-domain={plausibleDomains}
-        crossOrigin
-      ></script>
-    );
-  }
+    if (plausibleDomains) {
+      // If plausibleDomains is not an empty string, include their script too.
+      analyticsLibraries.push(
+        <script
+          key="plausible"
+          defer
+          src="https://plausible.io/js/script.js"
+          data-domain={plausibleDomains}
+          crossOrigin
+        ></script>
+      );
+    }
 
-  if (facebookPixelId) {
-    // Facebook Pixel script
-    analyticsLibraries.push(
-      <script key="facebook-pixel">
-        {`
-          !function(f,b,e,v,n,t,s)
-          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-          n.queue=[];t=b.createElement(e);t.async=!0;
-          t.src=v;s=b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t,s)}(window, document,'script',
-          'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${facebookPixelId}');
-          fbq('track', 'PageView');
-        `}
-      </script>
-    );
+    if (facebookPixelId) {
+      // Facebook Pixel script
+      analyticsLibraries.push(
+        <script key="facebook-pixel">
+          {`
+            !function(f,b,e,v,n,t,s)
+            {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+            fbq('init', '${facebookPixelId}');
+            fbq('track', 'PageView');
+          `}
+        </script>
+      );
 
-    // Facebook Pixel noscript fallback
-    analyticsLibraries.push(
-      <noscript key="facebook-pixel-noscript">
-        {`<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${facebookPixelId}&ev=PageView&noscript=1" />`}
-      </noscript>
-    );
+      // Facebook Pixel noscript fallback
+      analyticsLibraries.push(
+        <noscript key="facebook-pixel-noscript">
+          {`<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${facebookPixelId}&ev=PageView&noscript=1" />`}
+        </noscript>
+      );
+    }
   }
 
   const isBrowser = typeof window !== 'undefined';
