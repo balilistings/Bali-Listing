@@ -60,6 +60,24 @@ const defaultConfig = {
   // By default, it doesn't add anything.
   analytics,
 
+  // Cookie consent configuration for GDPR compliance
+  cookieConsent: {
+    // Enable or disable cookie consent feature
+    enabled: true,
+    
+    // Text to display in the cookie consent banner
+    message: 'We use cookies to improve your experience on our site. By continuing to browse, you accept our use of cookies.',
+    
+    // Text for the accept button
+    acceptButtonText: 'Accept',
+    
+    // Text for the privacy policy link
+    privacyPolicyLinkText: 'Learn more',
+    
+    // Position of the banner (bottom or top)
+    position: 'bottom',
+  },
+
   // Note: Facebook app id is used for Facebook login, but it is also used for tracking:
   // Facebook counts shares with app or page associated by this id
   // Currently it is unset, but you can read more about fb:app_id from

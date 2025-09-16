@@ -142,6 +142,7 @@ export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/
 export { default as LayoutComposer, LayoutSingleColumn, LayoutSideNavigation } from './LayoutComposer';
 export { default as MaintenanceMode } from './MaintenanceMode/MaintenanceMode';
 export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';
+export { default as CookieConsent } from './CookieConsent';
 
 export { default as IconCollection } from './IconCollection/IconCollection';
 export { default as TestmonialSlider } from './TestmonialSlider/TestmonialSlider';

@@ -22,7 +22,7 @@ import { IntlProvider } from './util/reactIntl';
 import { includeCSSProperties } from './util/style';
 import { IncludeScripts } from './util/includeScripts';
 
-import { MaintenanceMode } from './components';
+import { MaintenanceMode, CookieConsent } from './components';
 
 // routing
 import routeConfiguration from './routing/routeConfiguration';
@@ -203,6 +203,10 @@ const EnvironmentVariableWarning = props => {
   );
 };
 
+const ConnectedCookieConsent = () => {
+  return <CookieConsent />;
+};
+
 export const ClientApp = props => {
   const { store, hostedTranslations = {}, hostedConfig = {} } = props;
   const appConfig = mergeConfig(hostedConfig, defaultConfig);
@@ -253,6 +257,7 @@ export const ClientApp = props => {
             <IncludeScripts config={appConfig} />
             <BrowserRouter>
               <Routes logLoadDataCalls={logLoadDataCalls} />
+              <ConnectedCookieConsent />
             </BrowserRouter>
           </HelmetProvider>
         </Provider>
