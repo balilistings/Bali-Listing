@@ -51,6 +51,7 @@
   display: flex;
   flex-direction: column;
   padding: 10px 0 2px 0;
+  flex: 1;
 }
 
 .price {
@@ -122,6 +123,14 @@
 .mainInfo {
   display: flex;
   flex-direction: column;
+  flex: 1;
+}
+
+.cardDetailsBottom {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  flex: 1;
 }
 
 .title {
@@ -139,6 +148,10 @@
 
   @media (--viewportLarge) {
     font-size: 20px;
+    max-height: 26px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   @media (max-width: 767px) {
@@ -258,7 +271,7 @@
 .iconItem {
   font-family: Istok Web;
   font-weight: 400;
-  font-size: 8px;
+  font-size: 10px;
   line-height: 130%;
   letter-spacing: 0%;
 
@@ -321,9 +334,7 @@
 margin-right: 10px;
   color: #818181;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100px;
+  max-width: 150px;
   @media (--viewportLarge) {
     font-size: 12px;
   }
@@ -344,12 +355,15 @@ margin-right: 10px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width:140px ;
+  max-width: 220px ;
+
   text-align: left;
   color: #818181;
- @media (--viewportLarge) {
-  font-size: 12px;
- }
+  
+  @media (--viewportLarge) {
+    font-size: 12px;
+    max-width: 100%;
+  }
 
   @media (max-width: 767px) {
     font-size:10px;

@@ -42,6 +42,7 @@ const SectionAuthorMaybe = props => {
         currentUser={currentUser}
         onContactUser={onContactUser}
         showContact={!isInquiryProcess}
+        listingId={listing.id.uuid}
       />
       </div>
   
