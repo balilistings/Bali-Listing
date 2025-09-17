@@ -10,6 +10,7 @@ import { saveCookieConsent } from '../../ducks/cookieConsent.duck';
 import css from './CookieConsent.module.css';
 
 const COOKIE_CONSENT_KEY = 'cookieConsent';
+const COOKIE_CONSENT_DURATION_DAYS = 30;
 
 const CookieConsent = () => {
   const [showConsent, setShowConsent] = useState(false);
@@ -39,7 +40,7 @@ const CookieConsent = () => {
     if (currentUser) {
       dispatch(saveCookieConsent(consentData));
     } else {
-      Cookies.set(COOKIE_CONSENT_KEY, 'accepted', { expires: 365 });
+      Cookies.set(COOKIE_CONSENT_KEY, 'accepted', { expires: COOKIE_CONSENT_DURATION_DAYS });
     }
 
     setShowConsent(false);
@@ -54,7 +55,7 @@ const CookieConsent = () => {
     if (currentUser) {
       dispatch(saveCookieConsent(consentData));
     } else {
-      Cookies.set(COOKIE_CONSENT_KEY, 'rejected', { expires: 365 });
+      Cookies.set(COOKIE_CONSENT_KEY, 'rejected', { expires: COOKIE_CONSENT_DURATION_DAYS });
     }
 
     setShowConsent(false);

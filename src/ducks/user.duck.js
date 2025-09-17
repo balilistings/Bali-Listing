@@ -404,21 +404,24 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
         if (afterLogin) {
           const cookieConsent = Cookies.get('cookieConsent');
           
-          // If user had cookie consent data as anonymous user, clear the cookie regardless
-          // of whether their account already has consent data or not
+          // If user had cookie consent data as anonymous user, clear the cookie
           if (cookieConsent === 'accepted' || cookieConsent === 'rejected') {
             try {
               Cookies.remove('cookieConsent');
               
-              if (!currentUser.attributes?.profile?.protectedData?.cookieConsent) {
+              // Auto-convert to accepted if user had accepted as anonymous
+              // But don't auto-convert if they rejected, allowing re-prompting
+              if (cookieConsent === 'accepted' && !currentUser.attributes?.profile?.protectedData?.cookieConsent) {
                 const consentData = {
-                  accepted: cookieConsent === 'accepted',
+                  accepted: true,
                   timestamp: new Date().toISOString(),
                 };
                 
                 // Store in user protected data
                 dispatch(saveCookieConsent(consentData));
               }
+              // Note: When cookieConsent === 'rejected', we simply remove the cookie
+              // and don't store anything in user profile, allowing re-prompting
             } catch (e) {
               log.error(e, 'failed-to-handle-cookie-consent');
             }
