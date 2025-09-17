@@ -3,6 +3,7 @@ import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage } from '../../util/reactIntl';
 import { NamedLink } from '../../components';
 import { useConfiguration } from '../../context/configurationContext';
+import { useLocation } from 'react-router-dom';
 import Cookies from 'js-cookie';
 
 import { saveCookieConsent } from '../../ducks/cookieConsent.duck';
@@ -18,6 +19,12 @@ const CookieConsent = () => {
   const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
   const config = useConfiguration();
   const { cookieConsent } = config;
+  const location = useLocation();
+
+  const isAuthPage =
+    location.pathname === '/login' ||
+    location.pathname === '/signup' ||
+    location.pathname.startsWith('/signup/');
 
   useEffect(() => {
     if (currentUser && currentUser.attributes?.profile?.protectedData?.cookieConsent) {
@@ -61,7 +68,8 @@ const CookieConsent = () => {
     setShowConsent(false);
   };
 
-  if (!showConsent || !cookieConsent?.enabled) {
+  // Don't show cookie consent on login/signup pages or if disabled
+  if (!showConsent || !cookieConsent?.enabled || isAuthPage) {
     return null;
   }
 
