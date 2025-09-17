@@ -22,7 +22,7 @@ import { IntlProvider } from './util/reactIntl';
 import { includeCSSProperties } from './util/style';
 import { IncludeScripts } from './util/includeScripts';
 
-import { MaintenanceMode } from './components';
+import { MaintenanceMode, CookieConsent } from './components';
 
 // routing
 import routeConfiguration from './routing/routeConfiguration';
@@ -253,6 +253,7 @@ export const ClientApp = props => {
             <IncludeScripts config={appConfig} />
             <BrowserRouter>
               <Routes logLoadDataCalls={logLoadDataCalls} />
+              <CookieConsent />
             </BrowserRouter>
           </HelmetProvider>
         </Provider>

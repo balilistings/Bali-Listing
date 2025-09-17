@@ -60,6 +60,11 @@ const defaultConfig = {
   // By default, it doesn't add anything.
   analytics,
 
+  // Cookie consent configuration for GDPR compliance
+  cookieConsent: {
+    enabled: process.env.REACT_APP_COOKIE_CONSENT_ENABLED === 'true',
+  },
+
   // Note: Facebook app id is used for Facebook login, but it is also used for tracking:
   // Facebook counts shares with app or page associated by this id
   // Currently it is unset, but you can read more about fb:app_id from
