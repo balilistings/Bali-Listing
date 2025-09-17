@@ -1,0 +1,84 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+}
+
+.label {
+  display: block;
+  font-weight: var(--fontWeightMedium);
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--colorBlack);
+  margin-bottom: 6px;
+}
+
+.phoneInput {
+  width: 100%;
+}
+
+.phoneInput :global(.react-phone-number-input) {
+  width: 100%;
+}
+
+.phoneInput :global(.react-phone-number-input__input) {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--colorGrey300);
+  border-radius: var(--borderRadius);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--colorBlack);
+  transition: border-color 0.2s ease;
+}
+
+.phoneInput :global(.react-phone-number-input__input:focus) {
+  outline: none;
+  border-color: var(--colorGrey700);
+  box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.25);
+}
+
+.phoneInputError :global(.react-phone-number-input__input) {
+  border-color: var(--colorFail);
+}
+
+.phoneInput :global(.react-phone-number-input__country-select) {
+  border: 1px solid var(--colorGrey300);
+  border-radius: var(--borderRadius);
+  padding: 8px 10px;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--colorBlack);
+  background-color: white;
+}
+
+.phoneInput :global(.react-phone-number-input__country-select:focus) {
+  outline: none;
+  border-color: var(--colorGrey700);
+  box-shadow: 0 0 0 2px rgba(128, 128, 128, 0.25);
+}
+
+/* Desktop styles - larger font size for better readability on bigger screens */
+@media (--viewportMedium) {
+  .phoneInput :global(.react-phone-number-input__input),
+  .phoneInput :global(.react-phone-number-input__country-select) {
+    font-size: 16px;
+    line-height: 24px;
+    padding: 10px 12px;
+  }
+}
+
+.error {
+  font-family: Mulish;
+  margin-top: 6px;
+  color: var(--colorFail);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* Desktop styles for error message */
+@media (--viewportMedium) {
+  .error {
+    font-size: 12px;
+    line-height: 16px;
+  }
+}

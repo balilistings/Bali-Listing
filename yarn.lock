@@ -6504,6 +6504,11 @@ cosmiconfig@^7.0.0:
     path-type "^4.0.0"
     yaml "^1.10.0"
 
+country-flag-icons@^1.5.17:
+  version "1.5.20"
+  resolved "https://registry.yarnpkg.com/country-flag-icons/-/country-flag-icons-1.5.20.tgz#a373b13f2b2899a2ef85a4b6fb6a80b8f38f9a01"
+  integrity sha512-ldchBFYlw2dXXGXO6q/xCYaFiiK/eg5qSctBRDzUTDvHqAdIMOVTj1sp0OWVo7g6h+RURTjlu+5BhtGwIbe9tg==
+
 cross-env@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-7.0.3.tgz#865264b29677dc015ba8418918965dd232fc54cf"
@@ -8846,6 +8851,13 @@ inline-style-parser@0.1.1:
   resolved "https://registry.yarnpkg.com/inline-style-parser/-/inline-style-parser-0.1.1.tgz#ec8a3b429274e9c0a1f1c4ffa9453a7fef72cea1"
   integrity sha512-7NXolsK4CAS5+xvdj5OMMbI962hU/wvwoxk+LWR9Ek9bVtyuuYScDN6eS0rUm6TxApFpw7CX1o4uJzcd4AyD3Q==
 
+input-format@^0.3.10:
+  version "0.3.14"
+  resolved "https://registry.yarnpkg.com/input-format/-/input-format-0.3.14.tgz#7aea985e2a5b258d2cdd853ac7cc10bac1b2a8b8"
+  integrity sha512-gHMrgrbCgmT4uK5Um5eVDUohuV9lcs95ZUUN9Px2Y0VIfjTzT2wF8Q3Z4fwLFm7c5Z2OXCm53FHoovj6SlOKdg==
+  dependencies:
+    prop-types "^15.8.1"
+
 inquirer@^8.2.6:
   version "8.2.6"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.2.6.tgz#733b74888195d8d400a67ac332011b5fae5ea562"
@@ -10158,6 +10170,11 @@ levn@~0.3.0:
   dependencies:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
+
+libphonenumber-js@^1.11.20:
+  version "1.12.17"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.17.tgz#ec01c8f1cf123748923746925bdb6f379b0d3f35"
+  integrity sha512-bsxi8FoceAYR/bjHcLYc2ShJ/aVAzo5jaxAYiMHF0BD+NTp47405CGuPNKYpw+lHadN9k/ClFGc9X5vaZswIrA==
 
 lilconfig@^2.0.3, lilconfig@^2.0.5:
   version "2.0.5"
@@ -12338,6 +12355,17 @@ react-moment-proptypes@^1.8.1:
   integrity sha512-Er940DxWoObfIqPrZNfwXKugjxMIuk1LAuEzn23gytzV6hKS/sw108wibi9QubfMN4h+nrlje8eUCSbQRJo2fQ==
   dependencies:
     moment ">=1.6.0"
+
+react-phone-number-input@^3.4.12:
+  version "3.4.12"
+  resolved "https://registry.yarnpkg.com/react-phone-number-input/-/react-phone-number-input-3.4.12.tgz#0e8cfdf3cba36239290640bc25163c49addca753"
+  integrity sha512-Raob77KdtLGm49iC6nuOX9qy6Mg16idkgC7Y1mHmvG2WBYoauHpzxYNlfmFskQKeiztrJIwPhPzBhjFwjenNCA==
+  dependencies:
+    classnames "^2.5.1"
+    country-flag-icons "^1.5.17"
+    input-format "^0.3.10"
+    libphonenumber-js "^1.11.20"
+    prop-types "^15.8.1"
 
 react-redux@^8.1.2:
   version "8.1.3"
