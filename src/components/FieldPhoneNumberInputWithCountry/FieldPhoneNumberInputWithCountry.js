@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Field } from 'react-final-form';
 import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
 import classNames from 'classnames';
 
 import css from './FieldPhoneNumberInputWithCountry.module.css';
