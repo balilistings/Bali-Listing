@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import classNames from 'classnames';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { FormattedMessage, useIntl } from '../../util/reactIntl';
-import { propTypes } from '../../util/types';
+import { FormattedMessage } from '../../util/reactIntl';
 import { NamedLink } from '../../components';
 import { useConfiguration } from '../../context/configurationContext';
 import Cookies from 'js-cookie';
@@ -19,7 +17,6 @@ const CookieConsent = () => {
   const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
   const config = useConfiguration();
   const { cookieConsent } = config;
-  const intl = useIntl();
 
   useEffect(() => {
     if (currentUser && currentUser.attributes?.profile?.protectedData?.cookieConsent) {
@@ -29,7 +26,7 @@ const CookieConsent = () => {
 
     const cookieConsentValue = Cookies.get(COOKIE_CONSENT_KEY);
     const hasConsent = cookieConsentValue === 'accepted' || cookieConsentValue === 'rejected';
-    
+
     setShowConsent(!hasConsent);
   }, [currentUser]);
 
@@ -80,10 +77,10 @@ const CookieConsent = () => {
         </div>
         <div className={css.buttonWrapper}>
           <button className={css.rejectButton} onClick={handleReject}>
-          {<FormattedMessage id="CookieConsent.reject" />}
+            {<FormattedMessage id="CookieConsent.reject" />}
           </button>
           <button className={css.acceptButton} onClick={handleAccept}>
-          {<FormattedMessage id="CookieConsent.accept" />}
+            {<FormattedMessage id="CookieConsent.accept" />}
           </button>
         </div>
       </div>

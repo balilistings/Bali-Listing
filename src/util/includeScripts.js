@@ -2,10 +2,10 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Cookies from 'js-cookie';
 import { DeferredScriptLoader } from './deferredScriptLoader';
+import { useConfiguration } from '../context/configurationContext';
 
 const MAPBOX_SCRIPT_ID = 'mapbox_GL_JS';
 const GOOGLE_MAPS_SCRIPT_ID = 'GoogleMapsApi';
-
 
 const hasUserAcceptedCookies = () => {
   if (typeof window === 'undefined') {
@@ -51,6 +51,8 @@ export const IncludeScripts = props => {
   const isMapboxInUse = mapProvider === 'mapbox';
 
   // Check if user has accepted cookies before loading analytics
+  const config = useConfiguration();
+  const { cookieConsent } = config;
   const userHasAcceptedCookies = hasUserAcceptedCookies();
 
   // Add Google Analytics script if correct id exists (it should start with 'G-' prefix)
@@ -103,7 +105,7 @@ export const IncludeScripts = props => {
   }
 
   // Only load analytics libraries if user has accepted cookies
-  if (userHasAcceptedCookies) {
+  if (!cookieConsent?.enabled || userHasAcceptedCookies) {
     if (googleAnalyticsId && hasGoogleAnalyticsv4Id) {
       // Google Analytics: gtag.js
       // NOTE: This template is a single-page application (SPA).
@@ -212,8 +214,13 @@ export const IncludeScripts = props => {
 
   return (
     <>
-      <Helmet onChangeClientState={onChangeClientState}>{[...analyticsLibraries, ...mapLibraries]}</Helmet>
-      <DeferredScriptLoader scripts={deferredMapLibraries} onChangeClientState={onChangeClientState} />
+      <Helmet onChangeClientState={onChangeClientState}>
+        {[...analyticsLibraries, ...mapLibraries]}
+      </Helmet>
+      <DeferredScriptLoader
+        scripts={deferredMapLibraries}
+        onChangeClientState={onChangeClientState}
+      />
     </>
   );
 };
