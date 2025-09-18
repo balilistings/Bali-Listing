@@ -78,6 +78,11 @@ const SortByPopup = props => {
       onToggleActive={onToggleActive}
       isOpen={isOpen}
       preferScreenWidthOnMobile
+      onContentClick={mode === 'mobile' ? (e) => {
+        if (e.target === e.currentTarget) {
+          setIsOpen(false);
+        }
+      } : undefined}
     >
       <MenuLabel rootClassName={menuLabelClasses}>
         {
@@ -108,7 +113,7 @@ const SortByPopup = props => {
             </span>
             Sort by
           </h2>
-          <span className={css.closeIcon}>
+          <span className={css.closeIcon} onClick={() => setIsOpen(false)}>
           <IconCollection name="close_icon" />
           </span>
         </MenuItem>

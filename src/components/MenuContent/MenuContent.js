@@ -18,6 +18,7 @@ import css from './MenuContent.module.css';
  * @param {Function} props.contentRef
  * @param {boolean} props.isOpen
  * @param {Object?} props.style
+ * @param {Function?} props.onClick
  * @returns {JSX.Element} content container
  */
 const MenuContent = props => {
@@ -28,6 +29,7 @@ const MenuContent = props => {
     contentClassName,
     contentRef,
     isOpen,
+    onClick,
     rootClassName,
     style,
   } = props;
@@ -59,7 +61,7 @@ const MenuContent = props => {
   });
 
   return (
-    <div className={classes} ref={contentRef} style={style}>
+    <div className={classes} ref={contentRef} style={style} onClick={onClick}>
       {arrow}
       <ul className={contentClasses}>{children}</ul>
     </div>
