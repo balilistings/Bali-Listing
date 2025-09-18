@@ -38,6 +38,9 @@ const FieldPhoneNumberInputWithCountryComponent = props => {
         value={value}
         onChange={onChange}
         defaultCountry="ID" // Set Indonesia as the default country
+        international
+        withCountryCallingCode
+        countryCallingCodeEditable={false}
         {...inputProps}
         {...rest}
       />
