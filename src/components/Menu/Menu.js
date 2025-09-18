@@ -41,6 +41,7 @@ const isControlledMenu = (isOpenProp, onToggleActiveProp) => {
  * @param {boolean} props.useArrow
  * @param {boolean} props.preferScreenWidthOnMobile
  * @param {Function?} props.onToggleActive
+ * @param {Function?} props.onContentClick
  * @returns {JSX.Element} menu component
  */
 class Menu extends Component {
@@ -162,7 +163,7 @@ class Menu extends Component {
     }
 
     return React.Children.map(this.props.children, child => {
-      const { isOpen: isOpenProp, onToggleActive = null } = this.props;
+      const { isOpen: isOpenProp, onToggleActive = null, onContentClick } = this.props;
       const isOpen = isControlledMenu(isOpenProp || null, onToggleActive)
         ? isOpenProp
         : this.state.isOpen;
@@ -182,14 +183,21 @@ class Menu extends Component {
         const arrowPosition = useArrow
           ? this.positionStyleForArrow(positionStyles.right != null)
           : null;
-        return React.cloneElement(child, {
+        
+        const contentProps = {
           arrowPosition,
           contentRef: node => {
             this.menuContent = node;
           },
           isOpen,
           style: { ...child.props.style, ...positionStyles },
-        });
+        };
+        
+        if (onContentClick) {
+          contentProps.onClick = onContentClick;
+        }
+        
+        return React.cloneElement(child, contentProps);
       } else {
         throw new Error('Menu has an unknown child. Only MenuLabel and MenuContent are allowed.');
       }
