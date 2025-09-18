@@ -5,6 +5,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 import mapValues from 'lodash/mapValues';
 import loadable from '@loadable/component';
+import HelpWidget from './HelpWidget';
+
 
 // Configs and store setup
 import defaultConfig from './config/configDefault';
@@ -168,6 +170,7 @@ export const ClientApp = props => {
             <AppInitializers />
             <IncludeScripts config={appConfig} />
             <LocaleBrowserRouter>
+              <HelpWidget/>
               <Routes logLoadDataCalls={logLoadDataCalls} />
               <CookieConsent />
             </LocaleBrowserRouter>
