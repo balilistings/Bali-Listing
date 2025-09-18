@@ -106,10 +106,9 @@ const SortByPopup = props => {
         <MenuItem key="reset" className={css.menuItemMobile}>
           <h2 className={css.menuItemMobileTitle}>
             <span className={css.menuItemMobileTitleIcon}>
-              <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 0.750002C10.0663 0.750002 12.0913 0.924002 14.0623 1.2585C14.462 1.326 14.75 1.6755 14.75 2.0805V2.8635C14.75 3.08511 14.7064 3.30455 14.6216 3.50928C14.5367 3.71402 14.4124 3.90005 14.2557 4.05675L10.1818 8.13075C10.0251 8.28745 9.90075 8.47348 9.81595 8.67822C9.73114 8.88296 9.6875 9.1024 9.6875 9.324V11.5193C9.68756 11.8327 9.6003 12.14 9.43551 12.4067C9.27071 12.6734 9.0349 12.8888 8.7545 13.029L6.3125 14.25V9.324C6.3125 9.1024 6.26886 8.88296 6.18405 8.67822C6.09925 8.47348 5.97495 8.28745 5.81825 8.13075L1.74425 4.05675C1.58755 3.90005 1.46325 3.71402 1.37845 3.50928C1.29364 3.30455 1.25 3.08511 1.25 2.8635V2.0805C1.25 1.6755 1.538 1.326 1.93775 1.2585C3.94068 0.919392 5.96857 0.749293 8 0.750002Z" stroke="#F74DF4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.52344 1.375H12.2109M1.52344 4.75H8.83594M1.52344 8.125H8.83594M12.2109 4.75V13.75M12.2109 13.75L9.39844 10.9375M12.2109 13.75L15.0234 10.9375" stroke="#F74DF4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
-              
             </span>
             Sort by
           </h2>
