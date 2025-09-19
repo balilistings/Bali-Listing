@@ -8,6 +8,8 @@ import { propTypes } from '../util/types';
 import * as log from '../util/log';
 import { canonicalRoutePath } from '../util/routes';
 import { useConfiguration } from '../context/configurationContext';
+import { useLocale } from '../context/localeContext';
+import { removeLocaleFromPath } from './LocaleRouter';
 
 import { locationChanged } from '../ducks/routing.duck';
 
@@ -197,6 +199,20 @@ const Routes = (props, context) => {
   const routeConfiguration = useRouteConfiguration();
   const config = useConfiguration();
   const { isAuthenticated, logoutInProgress, logLoadDataCalls } = props;
+  const { SUPPORTED_LOCALES } = useLocale();
+
+  // Create locale-aware routes by adding optional locale prefix to each route
+  const localeAwareRoutes = routeConfiguration.map(route => {
+    // Create a version with optional locale prefix
+    const localePath = route.path === '/' 
+      ? `/:locale(${SUPPORTED_LOCALES.join('|')})?${route.path}` 
+      : `/:locale(${SUPPORTED_LOCALES.join('|')})?${route.path}`;
+    
+    return {
+      ...route,
+      path: localePath
+    };
+  });
 
   const toRouteComponent = route => {
     const renderProps = {
@@ -216,21 +232,29 @@ const Routes = (props, context) => {
         key={route.name}
         path={route.path}
         exact={isExact}
-        render={matchProps => (
-          <RouteComponentContainer
-            {...renderProps}
-            match={matchProps.match}
-            location={matchProps.location}
-            staticContext={matchProps.staticContext}
-          />
-        )}
+        render={matchProps => {
+          // Remove locale from the location pathname for canonical route path calculation
+          const locationWithoutLocale = {
+            ...matchProps.location,
+            pathname: removeLocaleFromPath(matchProps.location.pathname, SUPPORTED_LOCALES)
+          };
+          
+          return (
+            <RouteComponentContainer
+              {...renderProps}
+              match={matchProps.match}
+              location={locationWithoutLocale}
+              staticContext={matchProps.staticContext}
+            />
+          );
+        }}
       />
     );
   };
 
   return (
     <Switch>
-      {routeConfiguration.map(toRouteComponent)}
+      {localeAwareRoutes.map(toRouteComponent)}
       <Route component={NotFoundPage} />
     </Switch>
   );

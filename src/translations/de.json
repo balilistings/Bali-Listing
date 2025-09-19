@@ -532,7 +532,7 @@
   "LoginForm.passwordLabel": "Passwort",
   "LoginForm.passwordPlaceholder": "Passwort eingeben…",
   "LoginForm.passwordRequired": "Dieses Feld ist erforderlich.",
-  "MainPanelHeader.foundResults": "{count, number} {count, plural, one {Ergebnis} other {Ergebnisse}}",
+  "MainPanelHeader.foundResults": "Wir haben {count, number} {count, plural, one {Ergebnis} other {Ergebnisse}}",
   "MainPanelHeader.loadingResults": "Suchergebnisse werden geladen…",
   "MainPanelHeader.sortBy": "Sortieren nach:",
   "ManageListingCard.actionFailed": "Hoppla! Etwas ist schiefgelaufen. Bitte aktualisiere die Seite und versuche es erneut.",

@@ -72,7 +72,8 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
   const isPrivateMarketplace = accessControlConfig?.marketplace?.private === true;
   const authForPrivateMarketplace = isPrivateMarketplace ? { auth: true } : {};
   
-  return [
+  // Base routes without locale prefix
+  const baseRoutes = [
     {
       path: '/',
       name: 'LandingPage',
@@ -411,6 +412,8 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       component: PreviewResolverPage ,
     },
   ];
+
+  return baseRoutes;
 };
 
 export default routeConfiguration;

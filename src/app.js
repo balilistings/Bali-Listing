@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { any, string } from 'prop-types';
 
 import { HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter, StaticRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import loadable from '@loadable/component';
 import difference from 'lodash/difference';
@@ -17,6 +16,7 @@ import configureStore from './store';
 // utils
 import { RouteConfigurationProvider } from './context/routeConfigurationContext';
 import { ConfigurationProvider } from './context/configurationContext';
+import { LocaleProvider, useLocale } from './context/localeContext';
 import { mergeConfig } from './util/configHelpers';
 import { IntlProvider } from './util/reactIntl';
 import { includeCSSProperties } from './util/style';
@@ -27,6 +27,7 @@ import { MaintenanceMode, CookieConsent } from './components';
 // routing
 import routeConfiguration from './routing/routeConfiguration';
 import Routes from './routing/Routes';
+import { LocaleBrowserRouter, LocaleStaticRouter } from './routing/LocaleRouter';
 
 // Sharetribe Web Template uses English translations as default translations.
 import defaultMessages from './translations/en.json';
@@ -92,10 +93,6 @@ const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) 
 };
 
 // Get default messages for a given locale.
-//
-// Note: Locale should not affect the tests. We ensure this by providing
-//       messages with the key as the value of each message and discard the value.
-//       { 'My.translationKey1': 'My.translationKey1', 'My.translationKey2': 'My.translationKey2' }
 const isTestEnv = process.env.NODE_ENV === 'test';
 const localeMessages = isTestEnv
   ? mapValues(defaultMessages, (val, key) => key)
@@ -152,6 +149,64 @@ const Configurations = props => {
         <RouteConfigurationProvider value={routeConfig}>{children}</RouteConfigurationProvider>
       </MomentLocaleLoader>
     </ConfigurationProvider>
+  );
+};
+
+// IntlProvider that updates based on the current locale from LocaleContext
+const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
+  const { locale, DEFAULT_LOCALE } = useLocale();
+  const [messages, setMessages] = useState({});
+
+  useEffect(() => {
+    // Load messages for the current locale
+    const loadLocaleMessages = async () => {
+      try {
+        let localeMessages = {};
+        
+        // Dynamically import the translation file based on locale
+        // For all locales including default, we'll load the appropriate file
+        if (locale === DEFAULT_LOCALE) {
+          // For default locale, we use the messagesInLocale variable
+          localeMessages = messagesInLocale;
+        } else {
+          // For other locales, we dynamically import the JSON file
+          const messagesModule = await import(`./translations/${locale}.json`);
+          localeMessages = messagesModule.default || messagesModule;
+        }
+        
+        // Add missing translations from default messages
+        // Note: hostedTranslations only supports English, so we only use them for the default locale
+        const finalMessages = addMissingTranslations(defaultMessages, {
+          ...localeMessages,
+          ...(locale === DEFAULT_LOCALE ? hostedTranslations : {}),
+        });
+        
+        setMessages(finalMessages);
+      } catch (error) {
+        console.warn(`Failed to load messages for locale "${locale}", falling back to English`);
+        const finalMessages = addMissingTranslations(defaultMessages, {
+          ...messagesInLocale,
+          ...(locale === DEFAULT_LOCALE ? hostedTranslations : {}),
+        });
+        setMessages(finalMessages);
+      }
+    };
+
+    loadLocaleMessages();
+  }, [locale, hostedTranslations, DEFAULT_LOCALE]);
+
+  // Adding a key prop that changes with the locale will force the IntlProvider
+  // and all its children to remount when the locale changes, ensuring that
+  // all FormattedMessage components get the new translations
+  return (
+    <IntlProvider
+      key={locale} // This is the key addition - it forces remounting when locale changes
+      locale={locale}
+      messages={messages}
+      textComponent="span"
+    >
+      {children}
+    </IntlProvider>
   );
 };
 
@@ -242,23 +297,21 @@ export const ClientApp = props => {
   const logLoadDataCalls = appSettings?.env !== 'test';
 
   return (
-    <Configurations appConfig={appConfig}>
-      <IntlProvider
-        locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
-        textComponent="span"
-      >
-        <Provider store={store}>
-          <HelmetProvider>
-            <IncludeScripts config={appConfig} />
-            <BrowserRouter>
-              <Routes logLoadDataCalls={logLoadDataCalls} />
-              <CookieConsent />
-            </BrowserRouter>
-          </HelmetProvider>
-        </Provider>
-      </IntlProvider>
-    </Configurations>
+    <LocaleProvider>
+      <Configurations appConfig={appConfig}>
+        <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
+          <Provider store={store}>
+            <HelmetProvider>
+              <IncludeScripts config={appConfig} />
+              <LocaleBrowserRouter>
+                <Routes logLoadDataCalls={logLoadDataCalls} />
+                <CookieConsent />
+              </LocaleBrowserRouter>
+            </HelmetProvider>
+          </Provider>
+        </LocaleAwareIntlProvider>
+      </Configurations>
+    </LocaleProvider>
   );
 };
 
@@ -281,22 +334,20 @@ export const ServerApp = props => {
   }
 
   return (
-    <Configurations appConfig={appConfig}>
-      <IntlProvider
-        locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
-        textComponent="span"
-      >
-        <Provider store={store}>
-          <HelmetProvider context={helmetContext}>
-            <IncludeScripts config={appConfig} />
-            <StaticRouter location={url} context={context}>
-              <Routes />
-            </StaticRouter>
-          </HelmetProvider>
-        </Provider>
-      </IntlProvider>
-    </Configurations>
+    <LocaleProvider>
+      <Configurations appConfig={appConfig}>
+        <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
+          <Provider store={store}>
+            <HelmetProvider context={helmetContext}>
+              <IncludeScripts config={appConfig} />
+              <LocaleStaticRouter location={url} context={context}>
+                <Routes />
+              </LocaleStaticRouter>
+            </HelmetProvider>
+          </Provider>
+        </LocaleAwareIntlProvider>
+      </Configurations>
+    </LocaleProvider>
   );
 };
 
