@@ -19,6 +19,7 @@ import {
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
+import LanguageSelector from './LanguageSelector';
 
 import css from './TopbarDesktop.module.css';
 
@@ -400,6 +401,7 @@ const TopbarDesktop = props => {
             hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
             showCreateListingsLink={showCreateListingsLink}
           />
+          <LanguageSelector />
           {profileMenuMaybe}
         </div>
       </div>

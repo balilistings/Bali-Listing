@@ -533,7 +533,7 @@
   "LoginForm.passwordLabel": "Contraseña",
   "LoginForm.passwordPlaceholder": "Introduce tu contraseña…",
   "LoginForm.passwordRequired": "Este campo es obligatorio.",
-  "MainPanelHeader.foundResults": "{count, number} {count, plural, one {resultado} other {resultados}}",
+  "MainPanelHeader.foundResults": "Tenemos {count, number} {count, plural, one {resultado} other {resultados}}",
   "MainPanelHeader.loadingResults": "Cargando los resultados de la búsqueda…",
   "MainPanelHeader.sortBy": "Ordenar por:",
   "ManageListingCard.actionFailed": "Algo salió mal. Actualiza la página e inténtalo de nuevo.",
