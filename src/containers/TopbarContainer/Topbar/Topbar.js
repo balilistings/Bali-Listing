@@ -29,6 +29,10 @@ import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
 import css from './Topbar.module.css';
 import { getCurrentUserTypeRoles, showCreateListingLinkForUser } from '../../../util/userHelpers';
 
+// Import locale helper functions
+import { removeLocaleFromPath } from '../../../routing/LocaleRouter';
+import { useLocale } from '../../../context/localeContext';
+
 const MAX_MOBILE_SCREEN_WIDTH = 1024;
 
 const SEARCH_DISPLAY_ALWAYS = 'always';
@@ -102,8 +106,10 @@ const isInboxPage = found =>
   found.route?.name === 'InboxPage' ? `InboxPage:${found.params?.tab}` : null;
 // Find the name of the current route/pathname.
 // It's used as handle for currentPage check.
-const getResolvedCurrentPage = (location, routeConfiguration) => {
-  const matchedRoutes = matchPathname(location.pathname, routeConfiguration);
+const getResolvedCurrentPage = (location, routeConfiguration, SUPPORTED_LOCALES) => {
+  const cleanPathname = removeLocaleFromPath(location.pathname, SUPPORTED_LOCALES);
+  
+  const matchedRoutes = matchPathname(cleanPathname, routeConfiguration);
   if (matchedRoutes.length > 0) {
     const found = matchedRoutes[0];
     const cmsPageName = isCMSPage(found);
@@ -156,6 +162,8 @@ const TopbarComponent = props => {
     routeConfiguration,
     openCustomFilters
   } = props;
+
+  const { SUPPORTED_LOCALES } = useLocale();
 
   const handleSubmit = values => {
     const { currentSearchParams, history, location, config, routeConfiguration } = props;
@@ -235,7 +243,7 @@ const TopbarComponent = props => {
   // Custom links are sorted so that group="primary" are always at the beginning of the list.
   const sortedCustomLinks = sortCustomLinks(config.topbar?.customLinks);
   const customLinks = getResolvedCustomLinks(sortedCustomLinks, routeConfiguration);
-  const resolvedCurrentPage = currentPage || getResolvedCurrentPage(location, routeConfiguration);
+  const resolvedCurrentPage = currentPage || getResolvedCurrentPage(location, routeConfiguration, SUPPORTED_LOCALES);
 
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
 

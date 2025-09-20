@@ -88,8 +88,11 @@ export const fetchFeaturedListings = (
   }
 };
 
-export const loadData = (params, search) => dispatch => {
-  const pageAsset = { landingPage: `content/pages/${ASSET_NAME}.json` };
+export const loadData = (params, search, config, match) => dispatch => {
+  const locale = match?.params?.locale;
+  const assetName = locale ? `${ASSET_NAME}-${locale}` : ASSET_NAME;
+  const pageAsset = { landingPage: `content/pages/${assetName}.json` };
+
   return dispatch(fetchPageAssets(pageAsset, true))
     .then(() => {
       dispatch(fetchFeaturedListings());
