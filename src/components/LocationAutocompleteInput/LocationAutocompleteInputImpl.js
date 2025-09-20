@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import debounce from 'lodash/debounce';
 
 import { useConfiguration } from '../../context/configurationContext';
-import { FormattedMessage } from '../../util/reactIntl';
+import { FormattedMessage, useIntl } from '../../util/reactIntl';
 
 import { IconCollection, IconSpinner } from '../../components';
 
@@ -762,7 +762,7 @@ class LocationAutocompleteInputImplementation extends Component {
           )}
         </div>
         <div className={css.inputContainer}>
-          <label className={css.label}>Location</label>
+          <label className={css.label}>{this.props.intl.formatMessage({ id: 'PageBuilder.SearchCTA.location' })}</label>
           {isMobile ? (
             <span
               className={classNames(
@@ -937,8 +937,9 @@ class LocationAutocompleteInputImplementation extends Component {
  */
 const LocationAutocompleteInputImpl = props => {
   const config = useConfiguration();
+  const intl = useIntl();
 
-  return <LocationAutocompleteInputImplementation config={config} {...props} />;
+  return <LocationAutocompleteInputImplementation config={config} intl={intl} {...props} />;
 };
 
 export default LocationAutocompleteInputImpl;
