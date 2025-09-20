@@ -95,6 +95,7 @@ const DisplayNameMaybe = props => {
  * @param {propTypes.error} [props.uploadImageError] - The upload image error
  * @param {boolean} props.updateInProgress - Whether the update is in progress
  * @param {propTypes.error} [props.updateProfileError] - The update profile error
+ * @param {Object} props.initialValues - The initial values for the form
  * @param {intlShape} props.intl - The intl object
  * @returns {JSX.Element}
  */
@@ -148,6 +149,7 @@ class ProfileSettingsFormComponent extends Component {
             values,
             userFields,
             userTypeConfig,
+            initialValues,
           } = fieldRenderProps;
 
           const user = ensureCurrentUser(currentUser);
@@ -402,15 +404,14 @@ class ProfileSettingsFormComponent extends Component {
                 </p>
               </div>
               <div className={classNames(css.sectionContainer, css.lastSection)}>
-                {userFieldProps.map(({ key, ...fieldProps }) => {
-                  let fP = { ...fieldProps };
-
-                  if (fieldProps.name === 'pub_role') {
-                    fP.disabled = true;
-                  }
-
-                  return <CustomExtendedDataField key={key} {...fP} formId={formId} />;
-                })}
+                {userFieldProps.map(({ key, ...fieldProps }) => (
+                  <CustomExtendedDataField
+                    key={key}
+                    {...fieldProps}
+                    formId={formId}
+                    disabled={fieldProps.name === 'pub_role' && !!initialValues?.[fieldProps.name]}
+                  />
+                ))}
               </div>
               {submitError}
               <Button
