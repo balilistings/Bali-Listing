@@ -69,7 +69,7 @@ const LoginFormComponent = props => {
                 values?.email && !errors?.email ? `email=${encodeURIComponent(values.email)}` : '',
             }}
           >
-            <FormattedMessage id="LoginForm.forgotPassword1" />
+            <FormattedMessage id="LoginForm.forgotPassword" />
           </NamedLink>
         );
 
@@ -135,7 +135,7 @@ const LoginFormComponent = props => {
               <p className={css.bottomWrapperText}>
                 <span className={css.recoveryLinkInfo}>
                   <FormattedMessage
-                    id="LoginForm.forgotPasswordInfo1"
+                    id="LoginForm.forgotPasswordInfo"
                     values={{ passwordRecoveryLink }}
                   />
                 </span>

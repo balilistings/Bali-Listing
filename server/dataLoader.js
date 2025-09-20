@@ -44,7 +44,7 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
     return matchedRoutes.reduce((calls, match) => {
       const { route, params } = match;
       if (typeof route.loadData === 'function' && !route.auth) {
-        calls.push(store.dispatch(route.loadData(params, search, config)));
+        calls.push(store.dispatch(route.loadData(params, search, config, match)));
       }
       return calls;
     }, []);

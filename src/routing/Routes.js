@@ -37,7 +37,7 @@ const callLoadData = props => {
     typeof loadData === 'function' && canShowComponent(props) && !logoutInProgress;
 
   if (shouldLoadData) {
-    dispatch(loadData(match.params, location.search, config))
+    dispatch(loadData(match.params, location.search, config, match))
       .then(() => {
         if (props.logLoadDataCalls) {
           // This gives good input for debugging issues on live environments, but with test it's not needed.
