@@ -9,7 +9,7 @@ const sortTags = (tags = []) => {
 
   const capitalizedTags = sortedTags.map(capitaliseFirstLetter);
 
-  return capitalizedTags;
+  return sortedTags;
 };
 
 const capitaliseFirstLetter = str => {

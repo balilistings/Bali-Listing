@@ -115,7 +115,7 @@ export const checkPriceParams = () => {
 };
 
 const PriceMaybe = props => {
-  const { price, publicData, config, isRentals } = props;
+  const { price, publicData, config, isRentals, intl } = props;
   const { listingType, weekprice, monthprice, yearprice } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -151,19 +151,19 @@ const PriceMaybe = props => {
   let suffix;
   if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
     if (priceParams.weekprice) {
-      suffix = '/ weekly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
     } else if (priceParams.monthprice) {
-      suffix = '/ monthly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
     } else if (priceParams.yearprice) {
-      suffix = '/ yearly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
     }
   } else {
     if (publicData?.monthprice) {
-      suffix = '/ monthly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
     } else if (publicData?.weekprice) {
-      suffix = '/ weekly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
     } else if (publicData?.yearprice) {
-      suffix = '/ yearly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
     }
   }
 
