@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RangeSlider } from '../../../../components';
 import css from './SimplePriceSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const formatPrice = (price, isSize = false) => {
   return isSize ? `${price}` : `${price / 1000000}M`;
@@ -171,17 +172,19 @@ function SimplePriceSelector({
     }
   };
 
-  // console.log('inisdeeee range', range);
-  // console.log('inisdeeee min', min);
-  // console.log('inisdeeee max', max);
-  // console.log('inisdeeee step', step);
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>{title}</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id="PriceFilter.label" />
+        </h3>
       </div>
 
-      {description && <div className={css.description}>{description}</div>}
+      {description && (
+        <div className={css.description}>
+          <FormattedMessage id={description} />
+        </div>
+      )}
 
       {/* Range Slider */}
       <div className={css.sliderSection}>
@@ -198,7 +201,9 @@ function SimplePriceSelector({
         {/* Min/Max Values */}
         <div className={css.priceValues}>
           <div className={css.priceValue}>
-            <span className={css.priceLabel}>minimum</span>
+            <span className={css.priceLabel}>
+              <FormattedMessage id="PageBuilder.SearchCTA.PriceFilter.minimum" />
+            </span>
             <input
               type="number"
               className={css.priceAmount}
@@ -211,7 +216,9 @@ function SimplePriceSelector({
             />
           </div>
           <div className={css.priceValue}>
-            <span className={css.priceLabel}>maximum</span>
+            <span className={css.priceLabel}>
+              <FormattedMessage id="PageBuilder.SearchCTA.PriceFilter.maximum" />
+            </span>
             <input
               type="number"
               className={css.priceAmount}

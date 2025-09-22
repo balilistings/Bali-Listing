@@ -713,7 +713,7 @@ function CustomFilters({
               priceRange={landSizeRange}
               onPriceRangeChange={handleLandSizeRangeChange}
               title="Land size"
-              description="Choose your preferred range in square meters"
+              description="PriceFilter.landDescription"
               formatValue={value => `${value} m²`}
               min={100}
               max={50000}
@@ -725,7 +725,7 @@ function CustomFilters({
           {availableFilters.includes('simplePrice') && (
             <SimplePriceSelector
               priceRange={simplePriceRange}
-              description="Select your price range (in millions IDR)"
+              description="PriceFilter.simplePriceDescription"
               onPriceRangeChange={handleSimplePriceRangeChange}
               min={1000000}
               max={999000000000}

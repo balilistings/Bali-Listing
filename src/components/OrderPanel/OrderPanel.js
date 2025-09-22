@@ -254,11 +254,11 @@ const preparePriceTabs = (publicData, marketplaceCurrency, intl) => {
 };
 
 // Helper function to check if a listing is available now based on availableper value
-const isAvailableNow = (availableper) => {
+const isAvailableNow = availableper => {
   // Handle legacy "yes"/"no" values
   if (availableper === 'yes') return true;
   if (availableper === 'no') return false;
-  
+
   // Handle date strings (ISO format: "YYYY-MM-DD")
   if (typeof availableper === 'string' && availableper.match(/^\d{4}-\d{2}-\d{2}$/)) {
     const today = new Date();
@@ -267,7 +267,7 @@ const isAvailableNow = (availableper) => {
     availableDate.setHours(0, 0, 0, 0);
     return availableDate <= today;
   }
-  
+
   return false;
 };
 
@@ -276,21 +276,25 @@ const getAvailabilityDisplay = (availableper, intl) => {
   // Handle legacy "yes"/"no" values
   if (availableper === 'yes') return 'Available Now!';
   if (availableper === 'no') return 'Available soon!';
-  
+
   // Handle date strings (ISO format: "YYYY-MM-DD")
   if (typeof availableper === 'string' && availableper.match(/^\d{4}-\d{2}-\d{2}$/)) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const availableDate = new Date(availableper);
     availableDate.setHours(0, 0, 0, 0);
-    
+
     if (availableDate <= today) {
       return 'Available Now!';
     } else {
-      return `Available from ${intl.formatDate(availableDate, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+      return `Available from ${intl.formatDate(availableDate, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })}`;
     }
   }
-  
+
   // Default case
   return 'Available soon!';
 };
@@ -341,8 +345,10 @@ const OrderPanel = props => {
   const intl = useIntl();
   const location = useLocation();
   const history = useHistory();
-  const [tabs, setTabs] = useState(
-    preparePriceTabs(props.listing?.attributes?.publicData, props.marketplaceCurrency, intl)
+  const tabs = preparePriceTabs(
+    props.listing?.attributes?.publicData,
+    props.marketplaceCurrency,
+    intl
   );
   const [selectedTab, setSelectedTab] = useState(tabs[tabs.length - 1]);
 
@@ -521,19 +527,19 @@ const OrderPanel = props => {
       const hostUrl = `${window.location.protocol}//${window.location.host}`;
       const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${currentUrl}. Can we discuss details?`;
       const encodedMessage = encodeURIComponent(message);
-      
+
       const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
-      
+
       if (window.gtag) {
         window.gtag('event', 'click_contact_owner', {
-          'category': 'engagement',
-          'listing_id': listing.attributes.id,
-          'clicker': currentUser.attributes.email,
-          'contact_value': 1
-        });        
+          category: 'engagement',
+          listing_id: listing.attributes.id,
+          clicker: currentUser.attributes.email,
+          contact_value: 1,
+        });
       }
-      
+
       if (window.fbq) {
         fbq('track', 'Click Contact Owner', {
           listing_id: listing.id,
@@ -544,13 +550,13 @@ const OrderPanel = props => {
   };
 
   const listingIsAvailableNow = isAvailableNow(availableper);
-  const availabilityDisplayText = getAvailabilityDisplay(availableper, intl);
+  // const availabilityDisplayText = getAvailabilityDisplay(availableper, intl);
 
   return (
     <div className={classes}>
       {listingIsAvailableNow && (
         <div className={classNames(css.availableNowButton, css.availableNowButtonDesktop)}>
-          Available Now!
+          {intl.formatMessage({ id: 'OrderPanel.availableNow' })}
         </div>
       )}
       <ModalInMobile
@@ -586,7 +592,7 @@ const OrderPanel = props => {
             ))}
           </div>
         )}
-        <h4 className={css.priceHeading}>Price</h4>
+        <h4 className={css.priceHeading}>{intl.formatMessage({ id: 'OrderPanel.priceTitle' })}</h4>
         <PriceMaybe
           price={hideTabs ? price : selectedTab?.price}
           publicData={publicData}
@@ -599,7 +605,7 @@ const OrderPanel = props => {
         )} */}
         {priceperare && (
           <div className={css.availableFrom}>
-            Price per are:{' '}
+            {intl.formatMessage({ id: 'OrderPanel.pricePerAre' })}:{' '}
             {formatMoneyIfSupportedCurrency(
               new Money(
                 convertUnitToSubUnit(priceperare, unitDivisor(marketplaceCurrency)),
@@ -696,7 +702,7 @@ const OrderPanel = props => {
           <div>
             {listingIsAvailableNow && (
               <div className={classNames(css.availableNowButton, css.availableNowButtonMobile)}>
-                Available Now!
+                {intl.formatMessage({ id: 'OrderPanel.availableNow' })}
               </div>
             )}
             {!hideTabs && (
@@ -764,7 +770,11 @@ const OrderPanel = props => {
                           fill="white"
                         />
                       </svg>
-                      Contact {agentorowner === 'agent' ? ' Agent' : 'Owner'}
+                      {agentorowner === 'agent' ? (
+                        <FormattedMessage id="OrderPanel.contactAgent" />
+                      ) : (
+                        <FormattedMessage id="OrderPanel.contactOwner" />
+                      )}
                     </>
                   )}
                 </PrimaryButton>
