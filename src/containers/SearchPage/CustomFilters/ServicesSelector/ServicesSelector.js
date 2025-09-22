@@ -1,10 +1,11 @@
 import React from 'react';
 import css from '../AmenitiesSelector/AmenitiesSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const servicesOptions = [
-  { name: 'Cleaning', id: 'cleaning_weekly' },
-  { name: 'Electricity', id: 'electricity' },
-  { name: 'Pool maintenance', id: 'pool_maintenance' },
+  { name: 'Cleaning', id: 'CustomFilter.Services.cleaning_weekly' },
+  { name: 'Electricity', id: 'CustomFilter.Services.electricity' },
+  { name: 'Pool maintenance', id: 'CustomFilter.Services.pool_maintenance' },
 ];
 
 function ServicesSelector({ selectedServices = [], onServiceChange, onReset }) {
@@ -24,7 +25,9 @@ function ServicesSelector({ selectedServices = [], onServiceChange, onReset }) {
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>Services included</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id="CustomFilter.Services.title" />
+        </h3>
         <button onClick={handleReset} className={css.resetButton}>
           Reset
         </button>
@@ -39,7 +42,9 @@ function ServicesSelector({ selectedServices = [], onServiceChange, onReset }) {
             }`}
             onClick={() => handleServiceToggle(service.id)}
           >
-            <span className={css.amenityName}>{service.name}</span>
+            <span className={css.amenityName}>
+              <FormattedMessage id={service.name} />
+            </span>
           </button>
         ))}
       </div>

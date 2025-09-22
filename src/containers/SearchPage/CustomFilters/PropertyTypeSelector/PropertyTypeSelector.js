@@ -1,5 +1,6 @@
 import React from 'react';
 import css from './PropertyTypeSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const propertyTypeOptions = [
   { id: 'villa', name: 'Villa' },
@@ -25,7 +26,9 @@ function PropertyTypeSelector({ selectedPropertyType, onPropertyTypeChange, onRe
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>Property Type</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id="CustomFilter.PropertyType.title" />
+        </h3>
         <button onClick={handleReset} className={css.resetButton}>
           Reset
         </button>

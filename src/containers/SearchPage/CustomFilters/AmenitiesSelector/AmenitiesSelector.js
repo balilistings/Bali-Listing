@@ -1,6 +1,7 @@
 import React from 'react';
 import css from './AmenitiesSelector.module.css';
 import { IconCollection } from '../../../../components';
+import { FormattedMessage } from 'react-intl';
 
 const rentalAmenities = [
   { icon: <IconCollection name="wifi" />, name: 'Wifi', id: 'wifi' },
@@ -37,7 +38,9 @@ function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset,
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>Amenities</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id="CustomFilter.Amenities.title" />
+        </h3>
         <button onClick={handleReset} className={css.resetButton}>
           Reset
         </button>

@@ -1,5 +1,6 @@
 import React from 'react';
 import DropdownSelector from '../DropdownSelector/DropdownSelector';
+import { useIntl } from 'react-intl';
 
 const landTitleOptions = [
   { id: 'hakmilik', label: 'Right of ownership (Hak Milik)' },
@@ -14,10 +15,12 @@ const landTitleOptions = [
 ];
 
 function LandTitleSelector({ selectedLandTitles, onLandTitlesChange, onReset }) {
+  const intl = useIntl();
+
   return (
     <DropdownSelector
-      title="Land title"
-      description="Select the legal ownership type"
+      title={intl.formatMessage({ id: 'CustomFilter.LandTitle.title' })}
+      description={intl.formatMessage({ id: 'CustomFilter.LandTitle.description' })}
       options={landTitleOptions}
       selectedOptions={selectedLandTitles}
       onSelectionChange={onLandTitlesChange}

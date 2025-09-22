@@ -1,5 +1,6 @@
 import React from 'react';
 import DropdownSelector from '../DropdownSelector/DropdownSelector';
+import { useIntl } from 'react-intl';
 
 const landZoneOptions = [
   { id: 'Green', label: 'Green' },
@@ -10,10 +11,12 @@ const landZoneOptions = [
 ];
 
 function LandZoneSelector({ selectedLandZones, onLandZonesChange, onReset }) {
+  const intl = useIntl();
+
   return (
     <DropdownSelector
-      title="Land zone"
-      description="Select the zoning category that fits your purpose"
+      title={intl.formatMessage({ id: 'CustomFilter.LandZone.title' })}
+      description={intl.formatMessage({ id: 'CustomFilter.LandZone.description' })}
       options={landZoneOptions}
       selectedOptions={selectedLandZones}
       onSelectionChange={onLandZonesChange}

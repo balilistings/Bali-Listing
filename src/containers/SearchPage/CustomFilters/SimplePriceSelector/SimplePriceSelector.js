@@ -10,7 +10,7 @@ const formatPrice = (price, isSize = false) => {
 function SimplePriceSelector({
   priceRange,
   onPriceRangeChange,
-  title = 'Price',
+  title = 'PriceFilter.label',
   description,
   formatValue,
   min = 1000000,
@@ -176,7 +176,7 @@ function SimplePriceSelector({
     <div className={css.container}>
       <div className={css.header}>
         <h3 className={css.title}>
-          <FormattedMessage id="PriceFilter.label" />
+          <FormattedMessage id={title} />
         </h3>
       </div>
 
