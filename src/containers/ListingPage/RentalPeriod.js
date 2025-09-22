@@ -19,11 +19,11 @@ import css from './ListingPage.module.css';
  * - SectionMultiEnumMaybe is used if schemaType is 'multi-enum'
  * - SectionTextMaybe is used if schemaType is 'text'
  *
- * @param {*} props include publicData, metadata, listingFieldConfigs, categoryConfiguration
+ * @param {*} props include publicData, metadata, listingFieldConfigs, categoryConfiguration, intl
  * @returns React.Fragment containing aforementioned components
  */
 const RentalPeriod = props => {
-  const { publicData, metadata, listingFieldConfigs, categoryConfiguration } = props;
+  const { publicData, metadata, listingFieldConfigs, categoryConfiguration, intl } = props;
 
   const { key: categoryPrefix, categories: listingCategoriesConfig } = categoryConfiguration;
   const categoriesObj = pickCategoryFields(publicData, categoryPrefix, 1, listingCategoriesConfig);
@@ -41,21 +41,32 @@ const RentalPeriod = props => {
       'listingType',
       isFieldForSelectedCategories
     ) || [];
+  
+  // Filter to only include multi-enum fields
+  const multiEnumFields = propsForCustomFields.filter(
+    customFieldProps => customFieldProps.schemaType === SCHEMA_TYPE_MULTI_ENUM
+  );
 
   return (
     <>
-      {propsForCustomFields.map(customFieldProps => {
+      {multiEnumFields.map(customFieldProps => {
         const { schemaType, key, ...fieldProps } = customFieldProps;
-        return schemaType === SCHEMA_TYPE_MULTI_ENUM ? (
+        // Translate option labels
+        const translatedOptions = fieldProps.options.map(option => ({
+          ...option,
+          label: intl.formatMessage({ id: `PageBuilder.SearchCTA.PriceFilter.${option.key}` }),
+        }));
+        return (
           <PropertyGroup
+            key={key}
             id="ListingPage.amenities"
-            options={fieldProps.options}
+            options={translatedOptions}
             selectedOptions={fieldProps.selectedOptions}
             twoColumns={fieldProps.options.length > 5}
             showUnselectedOptions={fieldProps.showUnselectedOptions}
             rootClassName={css.rentalPeriod}
           />
-        ) : null;
+        );
       })}
 
       {(publicData.Freehold === 'leasehold' || publicData.Freehold === 'freehold') && (

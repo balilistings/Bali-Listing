@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const LocaleContext = createContext();
 
-const SUPPORTED_LOCALES = ['en', 'fr', 'de', 'es'];
+const SUPPORTED_LOCALES = ['en', 'fr', 'de', 'es', 'id'];
 const DEFAULT_LOCALE = 'en';
 
 export const LocaleProvider = ({ children }) => {

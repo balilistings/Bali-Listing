@@ -34,6 +34,7 @@ const LanguageSelector = () => {
     { code: 'fr', name: 'Français' },
     { code: 'de', name: 'Deutsch' },
     { code: 'es', name: 'Español' },
+    { code: 'id', name: 'Bahasa Indonesia' },
   ];
 
   // Get current language name

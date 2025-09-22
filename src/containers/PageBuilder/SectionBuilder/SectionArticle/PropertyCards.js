@@ -538,7 +538,7 @@ const PropertyCards = () => {
                       <div className={styles.tags}>
                         {tags?.map(tag => (
                           <span className={styles.tag} key={tag}>
-                            {intl.formatMessage({ id: `ListingCard.${tag}` })}
+                            {intl.formatMessage({ id: tag })}
                           </span>
                         ))}
                         {!!Freehold && (
