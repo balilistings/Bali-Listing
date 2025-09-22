@@ -1,5 +1,6 @@
 import React from 'react';
 import css from './PillSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 function PillSelector({ title, options, selectedOption, onOptionChange, onReset }) {
   const handleOptionSelect = optionId => {
@@ -15,7 +16,9 @@ function PillSelector({ title, options, selectedOption, onOptionChange, onReset 
     <div className={css.container}>
       {/* Header */}
       <div className={css.header}>
-        <h3 className={css.title}>{title}</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id={title} />
+        </h3>
         <button onClick={handleReset} className={css.resetButton}>
           Reset
         </button>
@@ -29,7 +32,7 @@ function PillSelector({ title, options, selectedOption, onOptionChange, onReset 
             className={`${css.pill} ${selectedOption === option.id ? css.selected : ''}`}
             onClick={() => handleOptionSelect(option.id)}
           >
-            {option.label}
+            <FormattedMessage id={option.label} />
           </button>
         ))}
       </div>
