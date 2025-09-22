@@ -224,7 +224,7 @@ const hasValidPriceVariants = priceVariants => {
   return variantsHaveNames && namesAreUnique;
 };
 
-const preparePriceTabs = (publicData, marketplaceCurrency) => {
+const preparePriceTabs = (publicData, marketplaceCurrency, intl) => {
   if (publicData.categoryLevel1 === 'villaforsale' || publicData.categoryLevel1 === 'landforsale') {
     return [];
   }
@@ -242,9 +242,12 @@ const preparePriceTabs = (publicData, marketplaceCurrency) => {
         item === 'weekly' ? 'weekprice' : item === 'monthly' ? 'monthprice' : 'yearprice';
       const price = publicData?.[priceKey] || null;
 
+      // Use translated labels with the specified prefix
+      const translationKey = `PageBuilder.SearchCTA.PriceFilter.${item}`;
+
       return {
         key: item,
-        label: item.charAt(0).toUpperCase() + item.slice(1).toLowerCase(),
+        label: intl.formatMessage({ id: translationKey }),
         price: price ? new Money(price * 100, marketplaceCurrency) : null,
       };
     });
@@ -339,7 +342,7 @@ const OrderPanel = props => {
   const location = useLocation();
   const history = useHistory();
   const [tabs, setTabs] = useState(
-    preparePriceTabs(props.listing?.attributes?.publicData, props.marketplaceCurrency)
+    preparePriceTabs(props.listing?.attributes?.publicData, props.marketplaceCurrency, intl)
   );
   const [selectedTab, setSelectedTab] = useState(tabs[tabs.length - 1]);
 

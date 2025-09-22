@@ -171,12 +171,14 @@ const SectionHeading = props => {
           {existingListingFields.map(detail =>
             detail.key === 'bedrooms' || detail.key === 'bathrooms' ? (
               <li key={detail.key} className={css.detailsTypeRow}>
-                {detail.key === 'bedrooms' ? (
-                  <IconCollection name="bed_icon" />
-                ) : (
-                  <IconCollection name="bathroom_icon" />
-                )}
-                <span className={css.detailTypeValue}>{detail.value} {detail.label}</span>
+                <IconCollection name={detail.key === 'bedrooms' ? 'bed_icon' : 'bathroom_icon'} />
+                <span className={css.detailTypeValue}>
+                  {detail.value}{' '}
+                  {intl.formatMessage(
+                    { id: `ListingCard.${detail.key === 'bedrooms' ? 'bedroom' : 'bathroom'}` },
+                    { count: Number(detail.value) }
+                  )}
+                </span>
               </li>
             ) : detail.key === 'landsize' || detail.key === 'landzone' ? (
               <li key={detail.key} className={css.detailsTypeRow}>
@@ -185,7 +187,9 @@ const SectionHeading = props => {
                 ) : (
                   <IconCollection name="zone_icon" />
                 )}
-                <span className={css.detailTypeValue}>{detail.value} {detail.key === 'landsize' ? 'm2' : 'zone'}</span>
+                <span className={css.detailTypeValue}>
+                  {detail.value} {detail.key === 'landsize' ? 'm2' : 'zone'}
+                </span>
               </li>
             ) : null
           )}

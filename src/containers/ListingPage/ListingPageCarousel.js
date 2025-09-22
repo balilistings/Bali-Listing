@@ -449,7 +449,7 @@ export const ListingPageComponent = props => {
             </div>
             <div className={css.descriptionContainer}>
               <div id="description">
-                <h4 className={css.descriptionHeading}>Description</h4>
+                <h4 className={css.descriptionHeading}>{intl.formatMessage({ id: 'ListingPage.description' })}</h4>
                 <div id="bottomDescription" />
                 <SectionTextMaybe text={description} showAsIngress />
               </div>

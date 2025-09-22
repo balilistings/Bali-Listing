@@ -135,8 +135,14 @@ const hasActiveServices = publicData => {
   });
 };
 
+/**
+ * Custom listing fields component that displays amenities, services, and property details
+ * @param {Object} props - Component props
+ * @param {Object} props.publicData - Public data from the listing
+ * @param {Object} props.intl - Intl object for translations
+ */
 const CustomListingFields = props => {
-  const { publicData } = props;
+  const { publicData, intl } = props;
 
   const { categoryLevel1 } = publicData;
   const isLandforsale = categoryLevel1 === 'landforsale';
@@ -150,7 +156,7 @@ const CustomListingFields = props => {
     <>
       {!isLandforsale && (
         <div className={css.amenitiesContainer} id="amenities">
-          <h2 className={css.amenitiesTitle}>Amenities</h2>
+          <h2 className={css.amenitiesTitle}>{intl.formatMessage({ id: 'ListingPage.amenitiesTitle' })}</h2>
           <div className={css.amenitiesGrid}>
             {availableAmenities.map(a => (
               <div key={a.label} className={css.amenityItem}>
@@ -164,7 +170,7 @@ const CustomListingFields = props => {
 
       {isRentals && hasActiveServices(publicData) && (
         <div className={css.amenitiesContainer}>
-          <h2 className={css.servicesTitle}>Services included</h2>
+          <h2 className={css.servicesTitle}>{intl.formatMessage({ id: 'ListingPage.servicesTitle' })}</h2>
           <div className={css.servicesContainer}>
             {availableServices.map(s => (
               <div
@@ -197,7 +203,7 @@ const CustomListingFields = props => {
       )}
 
       <div className={css.propertyDetailsContainer} id="propertyDetails">
-        <h2 className={css.propertyDetailsTitle}>Property Details</h2>
+        <h2 className={css.propertyDetailsTitle}>{intl.formatMessage({ id: 'ListingPage.propertyDetailsTitle' })}</h2>
         <div className={css.propertyDetailList}>
           {availablePropertyDetails.map(d => (
             <div key={d.label} className={css.propertyDetailItem}>

@@ -7,9 +7,8 @@ const sortTags = (tags = []) => {
     return aIndex - bIndex;
   });
 
-  const capitalizedTags = sortedTags.map(capitaliseFirstLetter);
-
-  return sortedTags;
+  // Map tags to the format "ListingCard.tag"
+  return sortedTags.map(tag => `PageBuilder.SearchCTA.PriceFilter.${tag}`);
 };
 
 const capitaliseFirstLetter = str => {
