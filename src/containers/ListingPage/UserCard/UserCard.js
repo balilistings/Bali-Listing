@@ -163,7 +163,7 @@ const UserCard = props => {
          
           {/* {links} */}
           <p className={css.owner}>
-            {agentorowner === 'agent' ? 'Agent' : 'Owner'}
+            <FormattedMessage id={agentorowner === 'agent' ? 'UserCard.Agent' : 'UserCard.Owner'} />
           </p>
         </div>
       </div>

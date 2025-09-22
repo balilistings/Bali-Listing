@@ -479,7 +479,7 @@ export const ListingPageComponent = props => {
             )}
 
             <div id="rentalTerms">
-              <SectionTerms publicData={publicData} />
+              <SectionTerms publicData={publicData} intl={intl}/>
             </div>
 
             <SectionAuthorMaybe

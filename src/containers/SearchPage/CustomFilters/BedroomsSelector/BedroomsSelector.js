@@ -1,12 +1,15 @@
 import React from 'react';
 import CounterSelector from '../CounterSelector/CounterSelector';
+import { useIntl } from 'react-intl';
 
 function BedroomsSelector({ bedrooms, onBedroomsChange, onReset }) {
+  const intl = useIntl();
+
   return (
     <CounterSelector
-      title="Bedrooms"
-      subtitle="Bedrooms number"
-      description="Select the number of bedrooms you need"
+      title={intl.formatMessage({ id: "PageBuilder.SearchCTA.BedroomFilter.mainLabel" })}
+      subtitle={intl.formatMessage({ id: 'CustomFilter.Bedroom.label' })}
+      description={intl.formatMessage({ id: 'CustomFilter.Bedroom.description' })}
       value={bedrooms}
       onValueChange={onBedroomsChange}
       onReset={onReset}
