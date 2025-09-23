@@ -1,22 +1,23 @@
 import React from 'react';
 import css from './ListingPage.module.css';
 import { IconCollection } from '../../components/index.js';
+import { FormattedDate, FormattedMessage } from 'react-intl';
 
 // Static array of amenities to display
 const amenitiesConfig = [
-  { icon: <IconCollection name="wifi" />, label: 'Wifi', key: 'wifi' },
-  { icon: <IconCollection name="pool" />, label: 'Pool', key: 'pool' },
-  { icon: <IconCollection name="gym" />, label: 'Gym', key: 'Gym' },
-  { icon: <IconCollection name="pet" />, label: 'Pet Friendly', key: 'petfriendly' },
-  { icon: <IconCollection name="desk" />, label: 'Working desk', key: 'workingdesk' },
-  { icon: <IconCollection name="parking" />, label: 'Car parking', key: 'carparking' },
-  { icon: <IconCollection name="kitchen" />, label: 'Kitchen', key: 'kitchen' },
-  { icon: <IconCollection name="aircondition" />, label: 'Airconditioning', key: 'airco' },
+  { icon: <IconCollection name="wifi" />, label: 'ListingPage.customListingField.wifi', key: 'wifi' },
+  { icon: <IconCollection name="pool" />, label: 'ListingPage.customListingField.pool', key: 'pool' },
+  { icon: <IconCollection name="gym" />, label: 'ListingPage.customListingField.gym', key: 'Gym' },
+  { icon: <IconCollection name="pet" />, label: 'ListingPage.customListingField.petFriendly', key: 'petfriendly' },
+  { icon: <IconCollection name="desk" />, label: 'ListingPage.customListingField.workingDesk', key: 'workingdesk' },
+  { icon: <IconCollection name="parking" />, label: 'ListingPage.customListingField.carParking', key: 'carparking' },
+  { icon: <IconCollection name="kitchen" />, label: 'ListingPage.customListingField.kitchen', key: 'kitchen' },
+  { icon: <IconCollection name="aircondition" />, label: 'ListingPage.customListingField.airconditioning', key: 'airco' },
 ];
 
 const amenitiesConfig2 = [
-  { icon: <IconCollection name="pool" />, label: 'Pool', key: 'pool' },
-  { icon: <IconCollection name="gym" />, label: 'Gym', key: 'Gym' },
+  { icon: <IconCollection name="pool" />, label: 'ListingPage.customListingField.pool', key: 'pool' },
+  { icon: <IconCollection name="gym" />, label: 'ListingPage.customListingField.gym', key: 'Gym' },
 ];
 
 const prepareAmenities = publicData => {
@@ -33,20 +34,20 @@ const prepareAmenities = publicData => {
 };
 
 const propertyDetailsConfig = [
-  { icon: <IconCollection name="living" />, label: 'Living', key: 'living' },
-  { icon: <IconCollection name="furnished" />, label: 'Furnished', key: 'furnished' },
-  { icon: <IconCollection name="land_size" />, label: 'Land Size', key: 'landsize' },
-  { icon: <IconCollection name="building_size" />, label: 'Building Size', key: 'buildingsize' },
+  { icon: <IconCollection name="living" />, label: 'ListingPage.customListingField.living', key: 'living' },
+  { icon: <IconCollection name="furnished" />, label: 'ListingPage.customListingField.furnished', key: 'furnished' },
+  { icon: <IconCollection name="land_size" />, label: 'ListingPage.customListingField.landSize', key: 'landsize' },
+  { icon: <IconCollection name="building_size" />, label: 'ListingPage.customListingField.buildingSize', key: 'buildingsize' },
 ];
 
 const preparePropertyDetails = publicData => {
   // Value transformations for display
   const valueTransformations = {
-    yes: 'Yes',
-    no: 'No',
-    open: 'Open',
-    closed: 'Closed',
-    semi: 'Semi',
+    yes: 'ListingPage.customListingField.yes',
+    no: 'ListingPage.customListingField.no',
+    open: 'ListingPage.customListingField.open',
+    closed: 'ListingPage.customListingField.closed',
+    semi: 'ListingPage.customListingField.semi',
     // Add more transformations as needed
   };
 
@@ -57,16 +58,17 @@ const preparePropertyDetails = publicData => {
     .filter(detail => publicData[detail.key]) // Only include if the key exists and has a value
     .map(detail => {
       const rawValue = `${publicData[detail.key]}`;
-      const displayValue = valueTransformations[rawValue.toLowerCase()];
+      const displayValueKey = valueTransformations[rawValue.toLowerCase()];
 
       const finalValue =
         detail.key === 'landsize' || detail.key === 'buildingsize'
           ? `${rawValue} m2`
-          : displayValue;
+          : displayValueKey;
 
       return {
         ...detail,
         value: finalValue,
+        isTranslationKey: !(detail.key === 'landsize' || detail.key === 'buildingsize'), // Flag to indicate if value is a translation key
       };
     });
 };
@@ -74,18 +76,18 @@ const preparePropertyDetails = publicData => {
 const servicesConfig = [
   {
     icon: <IconCollection name="cleaning" />,
-    label: 'Cleaning',
+    label: 'ListingPage.customListingField.cleaning',
     key: 'cleaning_weekly',
     valuePrefix: 'x Weekly cleaning',
   },
   {
     icon: <IconCollection name="elictricity" />,
-    label: 'Electricity',
+    label: 'ListingPage.customListingField.electricity',
     key: 'electricity',
   },
   {
     icon: <IconCollection name="pool" />,
-    label: 'Pool maintenance',
+    label: 'ListingPage.customListingField.pool_maintenance',
     key: 'pool_maintenance',
   },
 ];
@@ -161,7 +163,9 @@ const CustomListingFields = props => {
             {availableAmenities.map(a => (
               <div key={a.label} className={css.amenityItem}>
                 <span className={css.amenityIcon}>{a.icon}</span>
-                <span className={css.amenityLabel}>{a.label}</span>
+                <span className={css.amenityLabel}>
+                  <FormattedMessage id={a.label} />
+                </span>
               </div>
             ))}
           </div>
@@ -181,7 +185,9 @@ const CustomListingFields = props => {
               >
                 <div>
                   <span className={css.serviceIcon}>{s.icon}</span>
-                  <span className={css.serviceLabel}>{s.label}:</span>
+                  <span className={css.serviceLabel}>
+                    <FormattedMessage id={s.label} />
+                  </span>
                 </div>
 
                 <div className={css.serviceValueContainer}>
@@ -209,9 +215,13 @@ const CustomListingFields = props => {
             <div key={d.label} className={css.propertyDetailItem}>
               <span className={css.propertyDetailLabelWrapper}>
                 <span className={css.propertyDetailIcon}>{d.icon}</span>
-                <span className={css.propertyDetailLabel}>{d.label}</span>
+                <span className={css.propertyDetailLabel}>
+                  <FormattedMessage id={d.label} />
+                </span>
               </span>
-              <span className={css.propertyDetailValue}>{d.value}</span>
+              <span className={css.propertyDetailValue}>
+                {d.isTranslationKey ? <FormattedMessage id={d.value} /> : d.value}
+              </span>
             </div>
           ))}
         </div>
