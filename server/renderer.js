@@ -124,6 +124,11 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor, no
     // Add nonce to server-side rendered script tags
     const nonceParamMaybe = nonce ? { nonce } : {};
 
+    const serializedTranslations = JSON.stringify(translations).replace(/</g, '\\u003c');
+    const translationsScript = `
+      <script ${nonceMaybe}>window.__TRANSLATIONS__ = ${JSON.stringify(serializedTranslations)};</script>
+    `;
+
     return template({
       htmlAttributes: head.htmlAttributes.toString(),
       title: head.title.toString(),
@@ -131,6 +136,7 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor, no
       meta: head.meta.toString(),
       script: head.script.toString(),
       preloadedStateScript,
+      translationsScript,
       ssrStyles: webExtractor.getStyleTags(),
       ssrLinks: webExtractor.getLinkTags(),
       ssrScripts: webExtractor.getScriptTags(nonceParamMaybe),
