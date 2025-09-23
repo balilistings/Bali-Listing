@@ -152,7 +152,6 @@ const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
 
   return (
     <IntlProvider
-      key={locale}
       locale={locale}
       messages={finalMessages}
       textComponent="span"
