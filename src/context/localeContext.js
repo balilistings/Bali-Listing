@@ -1,8 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+const { getSupportedLocales } = require('../util/translation');
+
 const LocaleContext = createContext();
 
-const SUPPORTED_LOCALES = ['en', 'fr', 'de', 'es', 'id'];
+const SUPPORTED_LOCALES = getSupportedLocales();
 const DEFAULT_LOCALE = 'en';
 
 const getInitialLocale = () => {

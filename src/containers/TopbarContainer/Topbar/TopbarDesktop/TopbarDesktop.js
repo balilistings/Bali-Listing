@@ -20,6 +20,7 @@ import {
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
 import LanguageSelector from './LanguageSelector';
+import { useLocale } from '../../../../context/localeContext';
 
 import css from './TopbarDesktop.module.css';
 
@@ -221,6 +222,7 @@ const TopbarDesktop = props => {
   const [activeCategory, setActiveCategory] = useState(null);
   const lastScrollState = useRef(false);
   const debounceTimeout = useRef(null);
+  const { SUPPORTED_LOCALES } = useLocale();
 
   // Parse URL parameters to determine active tab
   const urlParams = parse(location?.search || '');
@@ -401,7 +403,9 @@ const TopbarDesktop = props => {
             hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
             showCreateListingsLink={showCreateListingsLink}
           />
-          <LanguageSelector />
+          {SUPPORTED_LOCALES.length > 1 && currentPage !== 'EditListingPage' ? (
+            <LanguageSelector />
+          ) : null}
           {profileMenuMaybe}
         </div>
       </div>
