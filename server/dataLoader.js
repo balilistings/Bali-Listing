@@ -4,6 +4,8 @@ const { URL } = require('node:url');
 const log = require('./log');
 const { getRootURL } = require('./api-util/rootURL');
 
+const { getSupportedLocales } = require('../src/util/translation');
+
 const PREVENT_DATA_LOADING_IN_SSR = process.env.PREVENT_DATA_LOADING_IN_SSR === 'true';
 
 const extractHostedConfig = configAssets => {
@@ -24,7 +26,7 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
   } = appInfo;
   const { pathname, search } = new URL(`${getRootURL()}${requestUrl}`);
 
-  const SUPPORTED_LOCALES = ['en', 'fr', 'de', 'es', 'id'];
+  const SUPPORTED_LOCALES = getSupportedLocales();
   const pathParts = pathname.split('/').filter(p => p);
   const locale = pathParts.length > 0 && SUPPORTED_LOCALES.includes(pathParts[0]) ? pathParts[0] : 'en';
 

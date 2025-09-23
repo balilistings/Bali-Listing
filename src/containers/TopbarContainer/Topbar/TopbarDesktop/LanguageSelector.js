@@ -6,6 +6,14 @@ import { useLocale } from '../../../../context/localeContext';
 
 import css from './LanguageSelector.module.css';
 
+const languageNames = {
+  en: 'English',
+  fr: 'Français',
+  de: 'Deutsch',
+  es: 'Español',
+  id: 'Bahasa Indonesia',
+};
+
 const LanguageSelector = () => {
   const { locale, updateLocale, updateMessages, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
   const intl = useIntl();
@@ -27,13 +35,10 @@ const LanguageSelector = () => {
     };
   }, []);
 
-  const languageOptions = [
-    { code: 'en', name: 'English' },
-    { code: 'fr', name: 'Français' },
-    { code: 'de', name: 'Deutsch' },
-    { code: 'es', name: 'Español' },
-    { code: 'id', name: 'Bahasa Indonesia' },
-  ];
+  const languageOptions = SUPPORTED_LOCALES.map(code => ({
+    code,
+    name: languageNames[code] || code,
+  }));
 
   const currentLanguage = languageOptions.find(lang => lang.code === locale) || languageOptions[0];
 
