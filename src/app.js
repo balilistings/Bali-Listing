@@ -82,7 +82,6 @@ const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) 
   return missingKeys.reduce(addMissingTranslation, targetLangTranslations);
 };
 
-// For test environment, we use keys as translations.
 const isTestEnv = process.env.NODE_ENV === 'test';
 
 // For customized apps, this dynamic loading of locale files is not necessary.
@@ -139,24 +138,18 @@ const Configurations = props => {
   );
 };
 
-// IntlProvider that updates based on the current locale from LocaleContext
 const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
-  const { locale, DEFAULT_LOCALE } = useLocale();
+  const { locale, messages, DEFAULT_LOCALE } = useLocale();
 
-  // Select messages synchronously from the imported messages object.
   const localeMessages = isTestEnv
     ? mapValues(defaultMessages, (val, key) => key)
-    : allMessages[locale] || allMessages[DEFAULT_LOCALE];
+    : messages;
 
-  // Add missing translations from default messages
-  // Note: hostedTranslations from Sharetribe Console only supports the default locale.
   const finalMessages = addMissingTranslations(defaultMessages, {
     ...localeMessages,
     ...(locale === DEFAULT_LOCALE ? hostedTranslations : {}),
   });
 
-  // Using a key on IntlProvider is a good practice to ensure all children
-  // remount and re-translate when the locale changes.
   return (
     <IntlProvider
       key={locale}
@@ -250,7 +243,7 @@ export const ClientApp = props => {
     return (
       <MaintenanceModeError
         locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
+        messages={{ ...hostedTranslations }}
       />
     );
   }
@@ -296,7 +289,7 @@ export const ServerApp = props => {
     return (
       <MaintenanceModeError
         locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
+        messages={{ ...hostedTranslations }}
         helmetContext={helmetContext}
       />
     );

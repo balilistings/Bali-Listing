@@ -5,24 +5,29 @@ const LocaleContext = createContext();
 const SUPPORTED_LOCALES = ['en', 'fr', 'de', 'es', 'id'];
 const DEFAULT_LOCALE = 'en';
 
+const getInitialLocale = () => {
+  if (typeof window === 'undefined') {
+    return DEFAULT_LOCALE;
+  }
+
+  const pathParts = window.location.pathname.split('/').filter(p => p);
+  if (pathParts.length > 0 && SUPPORTED_LOCALES.includes(pathParts[0])) {
+    return pathParts[0];
+  }
+
+  return DEFAULT_LOCALE;
+};
+
 export const LocaleProvider = ({ children }) => {
-  const [locale, setLocale] = useState(DEFAULT_LOCALE);
-
-  // Load saved locale from localStorage on initial render
-  useEffect(() => {
-    const savedLocale = localStorage.getItem('locale');
-    if (savedLocale && SUPPORTED_LOCALES.includes(savedLocale)) {
-      setLocale(savedLocale);
-    } else {
-      // Detect browser locale as fallback
-      const browserLocale = navigator.language.split('-')[0];
-      if (SUPPORTED_LOCALES.includes(browserLocale)) {
-        setLocale(browserLocale);
-      }
+  const [locale, setLocale] = useState(getInitialLocale());
+  const [messages, setMessages] = useState(() => {
+    try {
+      return JSON.parse(window.__TRANSLATIONS__);
+    } catch (e) {
+      return {};
     }
-  }, []);
+  });
 
-  // Save locale to localStorage whenever it changes
   useEffect(() => {
     if (locale !== DEFAULT_LOCALE) {
       localStorage.setItem('locale', locale);
@@ -37,8 +42,12 @@ export const LocaleProvider = ({ children }) => {
     }
   };
 
+  const updateMessages = newMessages => {
+    setMessages(newMessages);
+  };
+
   return (
-    <LocaleContext.Provider value={{ locale, updateLocale, SUPPORTED_LOCALES, DEFAULT_LOCALE }}>
+    <LocaleContext.Provider value={{ locale, messages, updateLocale, updateMessages, SUPPORTED_LOCALES, DEFAULT_LOCALE }}>
       {children}
     </LocaleContext.Provider>
   );

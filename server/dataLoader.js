@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const { URL } = require('node:url');
 const log = require('./log');
 const { getRootURL } = require('./api-util/rootURL');
@@ -22,18 +24,26 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
   } = appInfo;
   const { pathname, search } = new URL(`${getRootURL()}${requestUrl}`);
 
-  let translations = {};
+  const SUPPORTED_LOCALES = ['en', 'fr', 'de', 'es', 'id'];
+  const pathParts = pathname.split('/').filter(p => p);
+  const locale = pathParts.length > 0 && SUPPORTED_LOCALES.includes(pathParts[0]) ? pathParts[0] : 'en';
+
+  let translations;
+  try {
+    const translationPath = path.join(__dirname, '..', 'src', 'translations', `${locale}.json`);
+    translations = JSON.parse(fs.readFileSync(translationPath, 'utf8'));
+  } catch (e) {
+    const defaultTranslationPath = path.join(__dirname, '..', 'src', 'translations', 'en.json');
+    translations = JSON.parse(fs.readFileSync(defaultTranslationPath, 'utf8'));
+  }
   let hostedConfig = {};
 
   const store = configureStore({}, sdk);
 
   if (PREVENT_DATA_LOADING_IN_SSR) {
-    // This might help certain temporary scenarios, where DDOS attack adds load to server.
-    // Note: This is not a meaningful mitigation against DDOS attacks.
-    //       Consider adding some kind of edge protection and rate limiter.
     return Promise.resolve({
       preloadedState: store.getState(),
-      translations: {},
+      translations,
       hostedConfig: {},
     });
   }
@@ -50,21 +60,10 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
     }, []);
   };
 
-  // First fetch app-wide assets
-  // Then make loadData calls
-  // And return object containing preloaded state and translations
-  // This order supports other asset (in the future) that should be fetched before data calls.
   return store
     .dispatch(fetchAppAssets(defaultConfig.appCdnAssets))
     .then(fetchedAppAssets => {
-      const { translations: translationsRaw, ...rest } = fetchedAppAssets || {};
-
-      // We'll handle translations as a separate data.
-      // It's given to React Intl instead of pushing to config Context
-      translations = translationsRaw?.data || {};
-
-      // Rest of the assets are considered as hosted configs
-      // This structure just gives possibilities to add initial config data
+      const { ...rest } = fetchedAppAssets || {};
       hostedConfig = { ...hostedConfig, ...extractHostedConfig(rest) };
       return Promise.all(dataLoadingCalls(hostedConfig));
     })
@@ -73,10 +72,6 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
     })
     .catch(e => {
       log.error(e, 'server-side-data-load-failed');
-
-      // Call to loadData failed, let client handle the data loading errors.
-      // (It might be recoverable error like lost connection.)
-      // Return "empty" store.
       return { preloadedState: store.getState(), translations, hostedConfig };
     });
 };
