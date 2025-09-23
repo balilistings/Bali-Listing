@@ -31,6 +31,7 @@ import { LocaleBrowserRouter, LocaleStaticRouter } from './routing/LocaleRouter'
 
 // Sharetribe Web Template uses English translations as default translations.
 import defaultMessages from './translations/en.json';
+import allMessages from './translations';
 
 // If you want to change the language of default (fallback) translations,
 // change the imports to match the wanted locale:
@@ -58,21 +59,10 @@ import defaultMessages from './translations/en.json';
 // Step 3:
 // The "./translations/en.json" has generic English translations
 // that should work as a default translation if some translation keys are missing
-// from the hosted translation.json (which can be edited in Console). The other files
-// (e.g. en.json) in that directory has Biketribe themed translations.
-//
-// If you are using a non-english locale, point `messagesInLocale` to correct <lang>.json file.
-// That way the priority order would be:
-//   1. hosted translation.json
-//   2. <lang>.json
-//   3. en.json
-//
-// I.e. remove "const messagesInLocale" and add import for the correct locale:
-// import messagesInLocale from './translations/fr.json';
-const messagesInLocale = {};
+// from the hosted translation.json (which can be edited in Console).
 
-// If translation key is missing from `messagesInLocale` (e.g. fr.json),
-// corresponding key will be added to messages from `defaultMessages` (en.json)
+// If translation key is missing from a locale's messages,
+// corresponding key will be added from `defaultMessages` (en.json)
 // to prevent missing translation key errors.
 const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) => {
   const sourceKeys = Object.keys(sourceLangTranslations);
@@ -92,11 +82,8 @@ const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) 
   return missingKeys.reduce(addMissingTranslation, targetLangTranslations);
 };
 
-// Get default messages for a given locale.
+// For test environment, we use keys as translations.
 const isTestEnv = process.env.NODE_ENV === 'test';
-const localeMessages = isTestEnv
-  ? mapValues(defaultMessages, (val, key) => key)
-  : addMissingTranslations(defaultMessages, messagesInLocale);
 
 // For customized apps, this dynamic loading of locale files is not necessary.
 // It helps locale change from configDefault.js file or hosted configs, but customizers should probably
@@ -155,54 +142,26 @@ const Configurations = props => {
 // IntlProvider that updates based on the current locale from LocaleContext
 const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
   const { locale, DEFAULT_LOCALE } = useLocale();
-  const [messages, setMessages] = useState({});
 
-  useEffect(() => {
-    // Load messages for the current locale
-    const loadLocaleMessages = async () => {
-      try {
-        let localeMessages = {};
-        
-        // Dynamically import the translation file based on locale
-        // For all locales including default, we'll load the appropriate file
-        if (locale === DEFAULT_LOCALE) {
-          // For default locale, we use the messagesInLocale variable
-          localeMessages = messagesInLocale;
-        } else {
-          // For other locales, we dynamically import the JSON file
-          const messagesModule = await import(`./translations/${locale}.json`);
-          localeMessages = messagesModule.default || messagesModule;
-        }
-        
-        // Add missing translations from default messages
-        // Note: hostedTranslations only supports English, so we only use them for the default locale
-        const finalMessages = addMissingTranslations(defaultMessages, {
-          ...localeMessages,
-          ...(locale === DEFAULT_LOCALE ? hostedTranslations : {}),
-        });
-        
-        setMessages(finalMessages);
-      } catch (error) {
-        console.warn(`Failed to load messages for locale "${locale}", falling back to English`);
-        const finalMessages = addMissingTranslations(defaultMessages, {
-          ...messagesInLocale,
-          ...(locale === DEFAULT_LOCALE ? hostedTranslations : {}),
-        });
-        setMessages(finalMessages);
-      }
-    };
+  // Select messages synchronously from the imported messages object.
+  const localeMessages = isTestEnv
+    ? mapValues(defaultMessages, (val, key) => key)
+    : allMessages[locale] || allMessages[DEFAULT_LOCALE];
 
-    loadLocaleMessages();
-  }, [locale, hostedTranslations, DEFAULT_LOCALE]);
+  // Add missing translations from default messages
+  // Note: hostedTranslations from Sharetribe Console only supports the default locale.
+  const finalMessages = addMissingTranslations(defaultMessages, {
+    ...localeMessages,
+    ...(locale === DEFAULT_LOCALE ? hostedTranslations : {}),
+  });
 
-  // Adding a key prop that changes with the locale will force the IntlProvider
-  // and all its children to remount when the locale changes, ensuring that
-  // all FormattedMessage components get the new translations
+  // Using a key on IntlProvider is a good practice to ensure all children
+  // remount and re-translate when the locale changes.
   return (
     <IntlProvider
-      key={locale} // This is the key addition - it forces remounting when locale changes
+      key={locale}
       locale={locale}
-      messages={messages}
+      messages={finalMessages}
       textComponent="span"
     >
       {children}
@@ -211,9 +170,19 @@ const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
 };
 
 const MaintenanceModeError = props => {
-  const { locale, messages, helmetContext } = props;
+  const { locale, helmetContext, hostedTranslations = {} } = props;
+
+  const localeMessages = isTestEnv
+    ? mapValues(defaultMessages, (val, key) => key)
+    : allMessages[locale] || allMessages['en'];
+
+  const finalMessages = addMissingTranslations(defaultMessages, {
+    ...localeMessages,
+    ...hostedTranslations,
+  });
+
   return (
-    <IntlProvider locale={locale} messages={messages} textComponent="span">
+    <IntlProvider locale={locale} messages={finalMessages} textComponent="span">
       <HelmetProvider context={helmetContext}>
         <MaintenanceMode />
       </HelmetProvider>
