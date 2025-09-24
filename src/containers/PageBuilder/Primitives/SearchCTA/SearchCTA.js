@@ -34,9 +34,9 @@ const GRID_CONFIG = [
 ];
 
 const tabs = [
-  { label: 'Rentals', key: 'rentalvillas' },
-  { label: 'For Sale', key: 'villaforsale' },
-  { label: 'Land', key: 'landforsale' },
+  { label: 'PageBuilder.SearchCTA.rentals', key: 'rentalvillas' },
+  { label: 'PageBuilder.SearchCTA.forSale', key: 'villaforsale' },
+  { label: 'PageBuilder.SearchCTA.land', key: 'landforsale' },
 ];
 
 const getGridCount = numberOfFields => {
@@ -255,7 +255,7 @@ export const SearchCTA = React.forwardRef((props, ref) => {
             onClick={() => setActiveTab(idx)}
             type="button"
           >
-            {tab.label}
+            <FormattedMessage id={tab.label} />
           </button>
         ))}
       </div>
