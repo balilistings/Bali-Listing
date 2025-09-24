@@ -3,7 +3,7 @@ import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
-import { getSupportedLocales } from '../../util/translation';
+import { constructLocalizedPageAssets } from '../../util/localeAssetUtils';
 import { customLocationBounds } from '../PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 
 export const ASSET_NAME = 'landing-page';
@@ -91,55 +91,11 @@ export const fetchFeaturedListings = (
 };
 
 export const loadData = (params, search, config, match) => dispatch => {
-  const urlLocale = match?.params?.locale;
+  const assetMap = {
+    landingPage: ASSET_NAME,
+  };
 
-  // If there's a locale in the URL, use it directly
-  if (urlLocale) {
-    const assetName = `${ASSET_NAME}-${urlLocale}`;
-    const pageAsset = { landingPage: `content/pages/${assetName}.json` };
-
-    return dispatch(fetchPageAssets(pageAsset, true))
-      .then(() => {
-        dispatch(fetchFeaturedListings());
-        return true;
-      })
-      .catch(e => {
-        log.error(e, 'landing-page-fetch-failed');
-      });
-  }
-
-  // If no locale in URL, check if we need to redirect based on saved locale
-  const savedLocale = typeof window !== 'undefined' ? localStorage.getItem('locale') : null;
-  const useDefaultLocale =
-    typeof window !== 'undefined' ? localStorage.getItem('useDefaultLocale') === 'true' : false;
-
-  // Get supported locales dynamically
-  const SUPPORTED_LOCALES = getSupportedLocales();
-  const DEFAULT_LOCALE = 'en';
-
-  // Check if we would redirect to a locale-prefixed URL
-  if (
-    savedLocale &&
-    SUPPORTED_LOCALES.includes(savedLocale) &&
-    savedLocale !== DEFAULT_LOCALE &&
-    !useDefaultLocale
-  ) {
-    // If we would redirect, use the saved locale to fetch content immediately
-    const assetName = `${ASSET_NAME}-${savedLocale}`;
-    const pageAsset = { landingPage: `content/pages/${assetName}.json` };
-
-    return dispatch(fetchPageAssets(pageAsset, true))
-      .then(() => {
-        dispatch(fetchFeaturedListings());
-        return true;
-      })
-      .catch(e => {
-        log.error(e, 'landing-page-fetch-failed');
-      });
-  }
-
-  const assetName = ASSET_NAME;
-  const pageAsset = { landingPage: `content/pages/${assetName}.json` };
+  const pageAsset = constructLocalizedPageAssets(assetMap, match);
 
   return dispatch(fetchPageAssets(pageAsset, true))
     .then(() => {
