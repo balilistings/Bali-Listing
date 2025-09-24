@@ -14,7 +14,7 @@ const languageNames = {
   id: 'Bahasa Indonesia',
 };
 
-const LanguageSelector = () => {
+const LanguageSelector = ({ isMobile = false }) => {
   const { locale, updateLocale, updateMessages, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
   const intl = useIntl();
   const location = useLocation();
@@ -38,6 +38,7 @@ const LanguageSelector = () => {
   const languageOptions = SUPPORTED_LOCALES.map(code => ({
     code,
     name: languageNames[code] || code,
+    shortName: code, // Use the code as the short name
   }));
 
   const currentLanguage = languageOptions.find(lang => lang.code === locale) || languageOptions[0];
@@ -94,7 +95,9 @@ const LanguageSelector = () => {
         aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <span className={css.currentLanguage}>{currentLanguage.name}</span>
+        <span className={css.currentLanguage}>
+          {isMobile ? currentLanguage.shortName : currentLanguage.name}
+        </span>
         <span className={css.arrow}>▼</span>
       </button>
 
@@ -109,7 +112,7 @@ const LanguageSelector = () => {
                   })}
                   onClick={() => handleLanguageChange(language.code)}
                 >
-                  {language.name}
+                  {isMobile ? language.shortName : language.name}
                   {language.code === locale && <span className={css.checkmark}>✓</span>}
                 </button>
               </li>

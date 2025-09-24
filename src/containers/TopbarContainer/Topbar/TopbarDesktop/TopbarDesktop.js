@@ -404,7 +404,7 @@ const TopbarDesktop = props => {
             showCreateListingsLink={showCreateListingsLink}
           />
           {SUPPORTED_LOCALES.length > 1 && currentPage !== 'EditListingPage' ? (
-            <LanguageSelector />
+            <LanguageSelector isMobile={false} />
           ) : null}
           {profileMenuMaybe}
         </div>
