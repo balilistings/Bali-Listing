@@ -106,6 +106,7 @@ export const getPropsForCustomUserFieldInputs = (
   userType = null,
   isSignup = true
 ) => {
+  
   return (
     userFieldsConfig?.reduce((pickedFields, fieldConfig) => {
       const { key, userTypeConfig, schemaType, scope, saveConfig = {} } = fieldConfig || {};

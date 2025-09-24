@@ -51,6 +51,7 @@ const LabelWithTooltip = ({ className, label, id }) => {
   const tooltipId = id.replace('EditListingDetailsForm.pub_', '');
   const tooltipIntlKey = `EditListingTooltip.${tooltipId}`;
   const hasTooltipMessage = !!intl.messages[tooltipIntlKey];
+  const translatedLabel = intl.messages[label] ? intl.messages[label] : label;
 
   const toggleTooltip = (e) => {
     if (isMobile) {
@@ -62,7 +63,7 @@ const LabelWithTooltip = ({ className, label, id }) => {
   return (
     <div className={css.labelAndGuide}>
       <label htmlFor={id} className={className}>
-        {label}
+        {translatedLabel}
       </label>
       {hasTooltipMessage ? (
         <div 
