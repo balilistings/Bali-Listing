@@ -14,7 +14,7 @@ import { handleToggleFavorites } from '../../../../util/userFavorites';
 import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import classNames from 'classnames';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -626,7 +626,7 @@ const PropertyCards = () => {
         className={styles.browseAllButton}
         onClick={() => history.push('/s?pub_categoryLevel1=rentalvillas')}
       >
-        Browse all listings
+        <FormattedMessage id="FeaturedListing.browseAllListings" />
       </button>
     </div>
   );

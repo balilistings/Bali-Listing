@@ -97,7 +97,7 @@ const servicesConfig = [
  * @param {Object} publicData - The public data object containing service information
  * @returns {Array} - Array of service objects with status and value
  */
-const prepareServices = publicData => {
+const prepareServices = (publicData, intl) => {
   if (!publicData) return [];
 
   return servicesConfig.map(service => {
@@ -112,7 +112,7 @@ const prepareServices = publicData => {
 
       // Special handling for cleaning service
       if (service.key === 'cleaning_weekly') {
-        displayValue = `${rawValue}x Weekly cleaning`;
+        displayValue = `${rawValue}x ${intl.formatMessage({ id: 'ListingPage.customListingField.weeklyCleaning' })}`;
       } else if (service.valuePrefix) {
         displayValue = service.valuePrefix;
       }
@@ -152,7 +152,7 @@ const CustomListingFields = props => {
 
   const availableAmenities = prepareAmenities(publicData);
   const availablePropertyDetails = preparePropertyDetails(publicData);
-  const availableServices = prepareServices(publicData);
+  const availableServices = prepareServices(publicData, intl);
 
   return (
     <>

@@ -3,9 +3,9 @@ import css from '../AmenitiesSelector/AmenitiesSelector.module.css';
 import { FormattedMessage } from 'react-intl';
 
 const servicesOptions = [
-  { name: 'Cleaning', id: 'CustomFilter.Services.cleaning_weekly' },
-  { name: 'Electricity', id: 'CustomFilter.Services.electricity' },
-  { name: 'Pool maintenance', id: 'CustomFilter.Services.pool_maintenance' },
+  { name: 'CustomFilter.Services.cleaning_weekly', id: 'cleaning_weekly' },
+  { name: 'CustomFilter.Services.electricity', id: 'electricity' },
+  { name: 'CustomFilter.Services.pool_maintenance', id: 'pool_maintenance' },
 ];
 
 function ServicesSelector({ selectedServices = [], onServiceChange, onReset }) {
