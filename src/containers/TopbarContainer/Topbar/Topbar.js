@@ -25,6 +25,7 @@ import SearchIcon from './SearchIcon';
 import TopbarSearchForm from './TopbarSearchForm/TopbarSearchForm';
 import TopbarMobileMenu from './TopbarMobileMenu/TopbarMobileMenu';
 import TopbarDesktop from './TopbarDesktop/TopbarDesktop';
+import LanguageSelector from './TopbarDesktop/LanguageSelector';
 
 import css from './Topbar.module.css';
 import { getCurrentUserTypeRoles, showCreateListingLinkForUser } from '../../../util/userHelpers';
@@ -337,6 +338,9 @@ const TopbarComponent = props => {
           <NamedLink name="NewListingPage" className={css.addListing}>
             <FormattedMessage id="TopbarDesktop.addListing" />
           </NamedLink>
+          {SUPPORTED_LOCALES.length > 1 && resolvedCurrentPage !== 'EditListingPage' && (
+            <LanguageSelector isMobile={true} />
+          )}
           <Button
             rootClassName={css.menu}
             onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}

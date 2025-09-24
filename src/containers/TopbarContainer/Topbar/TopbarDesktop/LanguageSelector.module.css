@@ -75,3 +75,32 @@
 .checkmark {
   color: #007bff;
 }
+
+/* Mobile-specific styles */
+@media (max-width: 1023px) {
+  .languageSelector {
+    margin-right: 5px;
+  }
+
+  .selectorButton {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .currentLanguage {
+    margin-right: 4px;
+  }
+
+  .arrow {
+    font-size: 9px;
+  }
+
+  .dropdown {
+    min-width: 120px;
+  }
+
+  .languageOption {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
