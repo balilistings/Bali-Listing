@@ -136,7 +136,7 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
                       }`}
                       onClick={() => handleLocationsClick(location)}
                     >
-                      <FormattedMessage id={location.name} />
+                      {location.id === 'nearBy' ? <FormattedMessage id={location.name} /> : location.name}
                     </button>
                   ))}
                 </div>
