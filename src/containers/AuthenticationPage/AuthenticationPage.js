@@ -313,13 +313,19 @@ export const AuthenticationForms = props => {
       {isLogin ? (
         <div className={css.signUpLink}>
           <p className={css.signUpLinkText}>
-            Don't have an account? <NamedLink name="SignupPage">Sign up</NamedLink>
+            <FormattedMessage id="AuthenticationPage.dontHaveAccount" /> {' '}
+            <NamedLink name="SignupPage">
+              <FormattedMessage id="AuthenticationPage.signupLinkText" />
+            </NamedLink>
           </p>
         </div>
       ) : (
         <div className={css.signUpLink}>
           <p className={css.signUpLinkText}>
-            Already have an account? <NamedLink name="LoginPage">Login</NamedLink>
+            <FormattedMessage id="AuthenticationPage.alreadyHaveAccount" /> {' '}
+            <NamedLink name="LoginPage">
+              <FormattedMessage id="AuthenticationPage.loginLinkText" />
+            </NamedLink>
           </p>
         </div>
       )}

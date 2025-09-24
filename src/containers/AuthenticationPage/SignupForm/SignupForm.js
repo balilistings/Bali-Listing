@@ -155,10 +155,11 @@ const SignupFormComponent = props => (
       return (
         <Form className={classes} onSubmit={handleSubmit}>
           <div className={css.formTitle}>
-            <h2>Sign Up</h2>
+            <h2>
+              <FormattedMessage id="SignupForm.signUp" />
+            </h2>
             <p>
-              Create your account and get started. Whether you’re looking for a place or offering
-              one.
+              <FormattedMessage id="SignupForm.description" />
             </p>
           </div>
           <div className={css.formContent}>
@@ -260,15 +261,15 @@ const SignupFormComponent = props => (
             {/* Render the pub_role field separately if it exists */}
             {roleSpecificField ? (
               <div className={css.customFields}>
-                <CustomExtendedDataField key={roleSpecificField.key} {...roleSpecificField} formId={formId} />
+                <CustomExtendedDataField {...roleSpecificField} formId={formId} />
               </div>
             ) : null}
             {userType === 'provider' ? (
               <ImageUploader
                 label={
                   pub_role === 'company'
-                    ? 'Screenshot/Picture NIB or NPWP Mentioning Company Name'
-                    : 'ID Document (KTP/Driving License/Passport)'
+                    ? intl.formatMessage({ id: 'SignupForm.companyNib' })
+                    : intl.formatMessage({ id: 'SignupForm.idDocument' })
                 }
                 columns={1}
                 dropzoneHeight="100px"
@@ -287,7 +288,7 @@ const SignupFormComponent = props => (
             ) : null}
             {userType === 'provider' && pub_role && pub_role !== 'company' ? (
               <ImageUploader
-                label="Add a selfie of you holding your ID card"
+                label={intl.formatMessage({ id: 'SignupForm.selfieDocument' })}
                 columns={1}
                 dropzoneHeight="100px"
                 labelText=""
