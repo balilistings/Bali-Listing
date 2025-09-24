@@ -237,17 +237,17 @@ const TopbarDesktop = props => {
   const tabCategories = [
     {
       id: 'rentalvillas',
-      name: 'Rentals',
+      name: 'PageBuilder.SearchCTA.rentals',
       icon: 'rentals_icon'
     },
     {
       id: 'villaforsale', 
-      name: 'For Sale',
+      name: 'PageBuilder.SearchCTA.forSale',
       icon: 'sale_icon'
     },
     {
       id: 'landforsale',
-      name: 'Land', 
+      name: 'PageBuilder.SearchCTA.land', 
       icon: 'icon_Land'
     }
   ];
@@ -382,7 +382,7 @@ const TopbarDesktop = props => {
                   <IconCollection name={category.icon} />
                 </div> : null}
                 <div className={css.tabText}>
-                  {category.name}
+                  <FormattedMessage id={category.name} />
                 </div>
               </div>
             ))}

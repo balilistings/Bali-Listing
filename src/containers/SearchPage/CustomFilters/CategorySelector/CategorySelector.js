@@ -6,17 +6,17 @@ import { FormattedMessage } from 'react-intl';
 const categories = [
   {
     id: 'rentalvillas',
-    name: 'Rentals',
+    name: 'PageBuilder.SearchCTA.rentals',
     icon: <IconCollection name="rentals_icon" />,
   },
   {
     id: 'villaforsale',
-    name: 'For Sale',
+    name: 'PageBuilder.SearchCTA.forSale',
     icon: <IconCollection name="sale_icon" />,
   },
   {
     id: 'landforsale',
-    name: 'Land',
+    name: 'PageBuilder.SearchCTA.land',
     icon: <IconCollection name="icon_Land" />,
   },
 ];
@@ -44,7 +44,9 @@ function CategorySelector({ selectedCategory, onCategoryChange, history }) {
                 <span className={css.icon}>{category.icon}</span>
               </div>
             </div>
-            <span className={css.categoryName}>{category.name}</span>
+            <span className={css.categoryName}>
+              <FormattedMessage id={category.name} />
+            </span>
           </div>
         ))}
       </div>
