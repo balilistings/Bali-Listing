@@ -3,10 +3,16 @@ const FETCH_CONVERSION_RATE_REQUEST = 'app/currency/FETCH_CONVERSION_RATE_REQUES
 const FETCH_CONVERSION_RATE_SUCCESS = 'app/currency/FETCH_CONVERSION_RATE_SUCCESS';
 const FETCH_CONVERSION_RATE_ERROR = 'app/currency/FETCH_CONVERSION_RATE_ERROR';
 
+const SET_CURRENCY = 'app/currency/SET_CURRENCY';
+
 const initialState = {
-  conversionRate: null,
+  conversionRate: {
+    USD: 0.00005982,
+    IDR: 1,
+  },
   fetchConversionRateInProgress: false,
   fetchConversionRateError: null,
+  selectedCurrency: 'IDR',
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -29,6 +35,11 @@ export default function reducer(state = initialState, action = {}) {
         fetchConversionRateInProgress: false,
         fetchConversionRateError: action.payload,
       };
+    case SET_CURRENCY:
+      return {
+        ...state,
+        selectedCurrency: action.payload,
+      };
     default:
       return state;
   }
@@ -42,6 +53,11 @@ export const fetchConversionRateSuccess = rate => ({
 export const fetchConversionRateError = error => ({
   type: FETCH_CONVERSION_RATE_ERROR,
   payload: error,
+});
+
+export const setCurrency = currency => ({
+  type: SET_CURRENCY,
+  payload: currency,
 });
 
 export const fetchConversionRate = () => (dispatch, getState, sdk) => {

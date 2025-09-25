@@ -17,6 +17,7 @@ import css from './ListingCard.module.css';
 import { handleToggleFavorites } from '../../util/userFavorites';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -104,6 +105,22 @@ export const formatPriceInMillions = actualPrice => {
   return `${actualPrice.toLocaleString()}`;
 };
 
+// Helper function to format price with currency, handling millions appropriately
+export const formatPriceWithCurrency = (actualPrice, currency = 'IDR') => {
+  if (actualPrice) {
+    // Check if the price is greater than 1 million
+    if (actualPrice > 1_000_000) {
+      const millions = Number(actualPrice) / 1_000_000;
+      const formattedMillions = millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1);
+      return `${currency} ${formattedMillions}M`;
+    } else {
+      // For smaller amounts, show the actual price with currency
+      return `${currency} ${Number(actualPrice).toLocaleString()}`;
+    }
+  }
+  return null;
+};
+
 export const checkPriceParams = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
@@ -117,6 +134,9 @@ export const checkPriceParams = () => {
 
 const PriceMaybe = props => {
   const { price, publicData, config, isRentals, intl } = props;
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
   const { listingType, weekprice, monthprice, yearprice } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -145,6 +165,10 @@ const PriceMaybe = props => {
     } else if (publicData?.yearprice) {
       rentalPrice = yearprice;
     }
+
+    if (needPriceConversion) {
+      rentalPrice *=  USDConversionRate;
+    }
   }
 
   const formattedPrice = rentalPrice ? formatPriceInMillions(rentalPrice) : null;
@@ -171,7 +195,7 @@ const PriceMaybe = props => {
   return (
     <div className={css.price}>
       <span className={css.priceValue}>
-        {formattedPrice} IDR
+        {formattedPrice} {needPriceConversion ? 'USD' : 'IDR'}
         {isRentals && <span>{suffix}</span>}
       </span>
     </div>

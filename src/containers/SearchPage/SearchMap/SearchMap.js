@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import { useConfiguration } from '../../../context/configurationContext';
 import { useRouteConfiguration } from '../../../context/routeConfigurationContext';
@@ -239,6 +239,7 @@ export class SearchMapComponent extends Component {
           reusableMapHiddenHandle={REUSABLE_MAP_HIDDEN_HANDLE}
           zoom={zoom}
           config={config}
+          currencyConversion={this.props.currencyConversion}
         />
       </ReusableMapContainer>
     ) : (
@@ -272,12 +273,15 @@ const SearchMap = props => {
   const routeConfiguration = useRouteConfiguration();
   const history = useHistory();
   const dispatch = useDispatch();
+  const currencyConversion = useSelector(state => state.currency, shallowEqual);
+
   return (
     <SearchMapComponent
       config={config}
       routeConfiguration={routeConfiguration}
       history={history}
       dispatch={dispatch}
+      currencyConversion={currencyConversion}
       {...props}
     />
   );
