@@ -3,6 +3,7 @@ const fs = require('fs');
 const { URL } = require('node:url');
 const log = require('./log');
 const { getRootURL } = require('./api-util/rootURL');
+const { fetchConversionRate } = require('../src/ducks/currency');
 
 const { getSupportedLocales } = require('../src/util/translation');
 
@@ -53,13 +54,14 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
   const dataLoadingCalls = hostedConfigAsset => {
     const config = mergeConfig(hostedConfigAsset, defaultConfig);
     const matchedRoutes = matchPathname(pathname, routeConfiguration(config.layout));
+    const calls = [store.dispatch(fetchConversionRate())];
     return matchedRoutes.reduce((calls, match) => {
       const { route, params } = match;
       if (typeof route.loadData === 'function' && !route.auth) {
         calls.push(store.dispatch(route.loadData(params, search, config, match)));
       }
       return calls;
-    }, []);
+    }, calls);
   };
 
   return store

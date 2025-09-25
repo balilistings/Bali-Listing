@@ -4,6 +4,7 @@ const Decimal = require('decimal.js');
 const log = require('../log');
 const sharetribeSdk = require('sharetribe-flex-sdk');
 const { S3Client } = require('@aws-sdk/client-s3');
+const { fetchRate } = require('./currencyLogic');
 
 const CLIENT_ID = process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID;
 const CLIENT_SECRET = process.env.SHARETRIBE_SDK_CLIENT_SECRET;
@@ -103,7 +104,7 @@ exports.handleError = (res, error) => {
 // The access token is read from cookie (request) and potentially saved into the cookie (response).
 // This keeps session updated between server and browser even if the token is re-issued.
 exports.getSdk = (req, res) => {
-  return sharetribeSdk.createInstance({
+  const sdk = sharetribeSdk.createInstance({
     transitVerbose: TRANSIT_VERBOSE,
     clientId: CLIENT_ID,
     httpAgent,
@@ -118,6 +119,14 @@ exports.getSdk = (req, res) => {
     ...baseUrlMaybe,
     ...assetCdnBaseUrlMaybe,
   });
+
+  const currency = {
+    getConversionRate: () => {
+      return fetchRate().then(data => ({ data }));
+    },
+  };
+
+  return { ...sdk, currency };
 };
 
 // Trusted token is powerful, it should not be passed away from the server.
