@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './PropertyCards.module.css';
 import IconCollection from '../../../../components/IconCollection/IconCollection';
 import Slider from 'react-slick';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { getListingsById } from '../../../../ducks/marketplaceData.duck';
 import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
@@ -297,20 +297,15 @@ export const customLocationBounds = [
 ];
 
 const PropertyCards = () => {
-  const state = useSelector(state => state);
-  const {
-    featuredListingIds,
-    featuredListingsInProgress,
-    featuredListingsError,
-  } = state.LandingPage;
-  const currentUser = useSelector(state => state.user.currentUser);
-  const l = getListingsById(state, featuredListingIds);
+  const { featuredListingIds, featuredListingsInProgress } = useSelector(state => state.LandingPage, shallowEqual);
+  const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
+  const entities = useSelector(state => state.marketplaceData.entities, shallowEqual);
+  const listings = getListingsById(entities, featuredListingIds);
   const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
 
   const [activeTab, setActiveTab] = useState('canggu');
-  // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
@@ -318,9 +313,6 @@ const PropertyCards = () => {
   const history = useHistory();
   const routeLocation = useLocation();
   const routes = useRouteConfiguration();
-
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const listings = isMobile ? l.slice(0, 2) : l;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {

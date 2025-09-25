@@ -39,8 +39,7 @@ export default function marketplaceDataReducer(state = initialState, action = {}
  * @param {Object} state the full Redux store
  * @param {Array<UUID>} listingIds listing IDs to select from the store
  */
-export const getListingsById = (state, listingIds) => {
-  const { entities } = state.marketplaceData;
+export const getListingsById = (entities, listingIds) => {
   const resources = listingIds.map(id => ({
     id,
     type: 'listing',
