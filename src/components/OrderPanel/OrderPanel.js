@@ -364,6 +364,10 @@ const OrderPanel = props => {
   );
   const [selectedTab, setSelectedTab] = useState(tabs[tabs.length - 1]);
 
+    const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -620,8 +624,8 @@ const OrderPanel = props => {
             {intl.formatMessage({ id: 'OrderPanel.pricePerAre' })}:{' '}
             {formatMoneyIfSupportedCurrency(
               new Money(
-                convertUnitToSubUnit(priceperare, unitDivisor(marketplaceCurrency)),
-                marketplaceCurrency
+                convertUnitToSubUnit(needPriceConversion ? Math.ceil(priceperare * USDConversionRate) : priceperare, unitDivisor(marketplaceCurrency)),
+                selectedCurrency
               ),
               intl
             )}

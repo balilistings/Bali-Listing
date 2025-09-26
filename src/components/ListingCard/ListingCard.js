@@ -137,66 +137,79 @@ const PriceMaybe = props => {
   const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
-  const { listingType, weekprice, monthprice, yearprice } = publicData || {};
+
+  const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showPrice = displayPrice(foundListingTypeConfig);
-  if (!showPrice && price) {
+
+  if (!showPrice) {
     return null;
   }
 
-  const priceParams = checkPriceParams();
+  let priceToDisplay = isRentals ? null : price;
+  let suffix = null;
 
-  let rentalPrice = price;
   if (isRentals) {
-    // Check if priceParams is available
-    if (priceParams?.yearprice) {
-      rentalPrice = yearprice;
-    } else if (priceParams?.monthprice) {
-      rentalPrice = monthprice;
-    } else if (priceParams?.weekprice) {
-      rentalPrice = weekprice;
-    }
-    // Check if publicData is available
-    else if (publicData?.monthprice) {
-      rentalPrice = monthprice;
-    } else if (publicData?.weekprice) {
-      rentalPrice = weekprice;
-    } else if (publicData?.yearprice) {
-      rentalPrice = yearprice;
+    const priceParams = checkPriceParams();
+    const periodPriority = ['yearprice', 'monthprice', 'weekprice'];
+    let activePeriodKey = '';
+
+    // Prioritize URL params for determining which period to show
+    for (const p of periodPriority) {
+      if (priceParams && priceParams[p]) {
+        activePeriodKey = p;
+        break;
+      }
     }
 
-    if (needPriceConversion) {
-      rentalPrice *=  USDConversionRate;
+    // Fallback to publicData if no relevant URL param
+    if (!activePeriodKey) {
+      for (const p of periodPriority) {
+        if (publicData && publicData[p]) {
+          activePeriodKey = p;
+          break;
+        }
+      }
+    }
+
+    if (activePeriodKey) {
+      priceToDisplay = publicData[activePeriodKey];
+      suffix = `/ ${activePeriodKey.replace('price', '')}`;
     }
   }
 
-  const formattedPrice = rentalPrice ? formatPriceInMillions(rentalPrice) : null;
+  // Apply conversion if needed. This now correctly handles non-rentals.
+  const finalPrice =
+    needPriceConversion && priceToDisplay ? priceToDisplay * USDConversionRate : priceToDisplay;
 
-  let suffix;
-  if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
-    if (priceParams.weekprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
-    } else if (priceParams.monthprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
-    } else if (priceParams.yearprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
+  const formatDisplayPrice = (priceValue, currency) => {
+    if (priceValue === null || priceValue === undefined) return null;
+
+    if (currency === 'USD') {
+      return `$${Math.round(priceValue).toLocaleString('en-US')}`;
     }
-  } else {
-    if (publicData?.monthprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
-    } else if (publicData?.weekprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
-    } else if (publicData?.yearprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
+
+    // IDR logic
+    if (priceValue >= 1000000) {
+      const millions = priceValue / 1000000;
+      const value = millions % 1 === 0 ? millions : millions.toFixed(1);
+      return `${value}M IDR`;
     }
+    return `${priceValue.toLocaleString()} IDR`;
+  };
+
+  const formattedPrice = formatDisplayPrice(finalPrice, selectedCurrency);
+
+  if (!formattedPrice) {
+    return null;
   }
 
   return (
     <div className={css.price}>
       <span className={css.priceValue}>
-        {formattedPrice} {needPriceConversion ? 'USD' : 'IDR'}
-        {isRentals && <span>{suffix}</span>}
+        {formattedPrice}
+        {isRentals && suffix && <span>{suffix}</span>}
       </span>
     </div>
   );

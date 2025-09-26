@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { RangeSlider } from '../../../../components';
 import css from './PriceSelector.module.css';
 import { FormattedMessage } from 'react-intl';
@@ -12,52 +13,69 @@ const tabs = [
 const getRangeConfig = tabId => {
   const configs = {
     weekly: { min: 1000000, max: 150000000, step: 1000000 }, // 1M-150M
-    monthly: { min: 1000000, max: 500000000, step: 5000000 }, // 1M-500M
+    monthly: { min: 1000000, max: 500000000, step: 1000000 }, // 1M-500M
     yearly: { min: 50000000, max: 5000000000, step: 50000000 }, // 50M-5000M
   };
   return configs[tabId] || configs.monthly;
 };
 
-const formatPrice = price => {
-  return `${price / 1000000}M`;
+const toDisplayValue = (value, currency, conversionRate) => {
+  if (currency === 'IDR') {
+    return value / 1000000;
+  }
+  return Math.round(value * conversionRate);
+};
+
+const fromDisplayValue = (value, currency, conversionRate) => {
+  if (currency === 'IDR') {
+    return value * 1000000;
+  }
+  return value / conversionRate;
 };
 
 function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRangeChange }) {
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const currency = useSelector(state => state.currency.selectedCurrency);
+
   const [activeTab, setActiveTab] = useState(selectedPeriod || 'monthly');
   const [range, setRange] = useState(priceRange || [1000000, 500000000]);
   const debounceRef = useRef(null);
-
-  // Add separate state for input values to allow intermediate editing
-  const getInitialConfig = () => getRangeConfig(selectedPeriod || 'monthly');
-  const initialConfig = getInitialConfig();
-  const [minInputValue, setMinInputValue] = useState(
-    (priceRange?.[0] || initialConfig.min) / 1000000
-  );
-  const [maxInputValue, setMaxInputValue] = useState(
-    (priceRange?.[1] || initialConfig.max) / 1000000
-  );
   const [isTabChanging, setIsTabChanging] = useState(false);
 
-  // Debounced function to call onPriceRangeChange
+  const getInitialConfig = () => getRangeConfig(selectedPeriod || 'monthly');
+  const initialConfig = getInitialConfig();
+
+  const [minInputValue, setMinInputValue] = useState(
+    toDisplayValue(
+      priceRange ? priceRange[0] : initialConfig.min,
+      currency,
+      USDConversionRate
+    )
+  );
+  const [maxInputValue, setMaxInputValue] = useState(
+    toDisplayValue(
+      priceRange ? priceRange[1] : initialConfig.max,
+      currency,
+      USDConversionRate
+    )
+  );
+
   const debouncedPriceRangeChange = newRange => {
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
     }
     debounceRef.current = setTimeout(() => {
       onPriceRangeChange(newRange, activeTab);
-    }, 300); // 300ms debounce
+    }, 300);
   };
 
-  // Update input values when range changes (e.g., from slider)
-  // But don't interfere when tab is changing
   useEffect(() => {
     if (!isTabChanging) {
-      setMinInputValue(range[0] / 1000000);
-      setMaxInputValue(range[1] / 1000000);
+      setMinInputValue(toDisplayValue(range[0], currency, USDConversionRate));
+      setMaxInputValue(toDisplayValue(range[1], currency, USDConversionRate));
     }
-  }, [range, isTabChanging]);
+  }, [range, currency, isTabChanging, USDConversionRate]);
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (debounceRef.current) {
@@ -72,13 +90,9 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
     const config = getRangeConfig(tabId);
     const newRange = [config.min, config.max];
     setRange(newRange);
-    setMinInputValue(config.min / 1000000);
-    setMaxInputValue(config.max / 1000000);
     onPeriodChange(tabId);
-    // Immediate call for tab change, no debouncing
     onPriceRangeChange(newRange, tabId);
 
-    // Reset the flag after a brief delay to allow the change to complete
     setTimeout(() => {
       setIsTabChanging(false);
     }, 100);
@@ -89,104 +103,64 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
     debouncedPriceRangeChange(handles);
   };
 
-  const handleMinInputChange = e => {
+  const handleInputChange = (e, isMin) => {
     const inputValue = e.target.value;
-    const config = getRangeConfig(activeTab);
+    const setInput = isMin ? setMinInputValue : setMaxInputValue;
+    setInput(inputValue);
 
-    // Prevent typing values beyond absolute max limit
     if (inputValue !== '' && !isNaN(inputValue)) {
-      const numValue = parseFloat(inputValue);
-      if (numValue > config.max / 1000000) {
-        return; // Don't update input if beyond max limit
-      }
-    }
-
-    setMinInputValue(inputValue);
-
-    // Only update the range if we have a valid number and it's within absolute limits
-    if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
-
-      // Validate against absolute config limits and current max
-      if (value >= config.min && value <= config.max && value <= range[1]) {
-        const newRange = [value, range[1]];
-        setRange(newRange);
-        debouncedPriceRangeChange(newRange);
-      }
-    }
-    // Don't call debounced function for empty values - wait for blur or valid input
-  };
-
-  const handleMaxInputChange = e => {
-    const inputValue = e.target.value;
-    const config = getRangeConfig(activeTab);
-
-    // Prevent typing values beyond absolute max limit
-    if (inputValue !== '' && !isNaN(inputValue)) {
-      const numValue = parseFloat(inputValue);
-      if (numValue > config.max / 1000000) {
-        return; // Don't update input if beyond max limit
-      }
-    }
-
-    setMaxInputValue(inputValue);
-
-    // Only update the range if we have a valid number and it's within absolute limits
-    if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
-
-      // Validate against absolute config limits and current min
-      if (value <= config.max && value >= config.min && value >= range[0]) {
-        const newRange = [range[0], value];
-        setRange(newRange);
-        debouncedPriceRangeChange(newRange);
-      }
-    }
-    // Don't call debounced function for empty values - wait for blur or valid input
-  };
-
-  // Add blur handlers to apply final validation
-  const handleMinInputBlur = e => {
-    const inputValue = e.target.value;
-    if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
+      const value = fromDisplayValue(parseFloat(inputValue), currency, USDConversionRate);
       const config = getRangeConfig(activeTab);
-      const clampedValue = Math.max(config.min, Math.min(value, range[1]));
+
+      const [currentMin, currentMax] = range;
+      let newRange;
+      if (isMin) {
+        if (value >= config.min && value <= config.max && value <= currentMax) {
+          newRange = [value, currentMax];
+        }
+      } else {
+        if (value <= config.max && value >= config.min && value >= currentMin) {
+          newRange = [currentMin, value];
+        }
+      }
+
+      if (newRange) {
+        setRange(newRange);
+        debouncedPriceRangeChange(newRange);
+      }
+    }
+  };
+
+  const handleInputBlur = (e, isMin) => {
+    const inputValue = e.target.value;
+    const setInput = isMin ? setMinInputValue : setMaxInputValue;
+
+    if (inputValue !== '' && !isNaN(inputValue)) {
+      const value = fromDisplayValue(parseFloat(inputValue), currency, USDConversionRate);
+      const config = getRangeConfig(activeTab);
+      const [currentMin, currentMax] = range;
+
+      const clampedValue = isMin
+        ? Math.max(config.min, Math.min(value, currentMax))
+        : Math.min(config.max, Math.max(value, currentMin));
 
       if (clampedValue !== value) {
-        // Update input display to show clamped value
-        setMinInputValue(clampedValue / 1000000);
-        const newRange = [clampedValue, range[1]];
+        setInput(toDisplayValue(clampedValue, currency, USDConversionRate));
+        const newRange = isMin ? [clampedValue, currentMax] : [currentMin, clampedValue];
         setRange(newRange);
         debouncedPriceRangeChange(newRange);
       }
     } else if (inputValue === '') {
-      // If empty on blur, reset to current range value
-      setMinInputValue(range[0] / 1000000);
-    }
-  };
-
-  const handleMaxInputBlur = e => {
-    const inputValue = e.target.value;
-    if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
-      const config = getRangeConfig(activeTab);
-      const clampedValue = Math.min(config.max, Math.max(value, range[0]));
-
-      if (clampedValue !== value) {
-        // Update input display to show clamped value
-        setMaxInputValue(clampedValue / 1000000);
-        const newRange = [range[0], clampedValue];
-        setRange(newRange);
-        debouncedPriceRangeChange(newRange);
-      }
-    } else if (inputValue === '') {
-      // If empty on blur, reset to current range value
-      setMaxInputValue(range[1] / 1000000);
+      setInput(toDisplayValue(isMin ? range[0] : range[1], currency, USDConversionRate));
     }
   };
 
   const config = getRangeConfig(activeTab);
+  const displayConfig = {
+    min: toDisplayValue(config.min, currency, USDConversionRate),
+    max: toDisplayValue(config.max, currency, USDConversionRate),
+    step: currency === 'IDR' ? config.step / 1000000 : 10,
+  };
 
   return (
     <div className={css.container}>
@@ -199,7 +173,6 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
         </p>
       </div>
 
-      {/* Tabs */}
       <div className={css.tabsContainer}>
         <div className={css.tabsWrapper}>
           {tabs.map(tab => (
@@ -221,7 +194,6 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
         </div>
       </div>
 
-      {/* Range Slider */}
       <div className={css.sliderSection}>
         <div className={css.sliderWrapper}>
           <RangeSlider
@@ -233,7 +205,6 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
           />
         </div>
 
-        {/* Min/Max Values */}
         <div className={css.priceValues}>
           <div className={css.priceValue}>
             <span className={css.priceLabel}>
@@ -243,11 +214,11 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
               type="number"
               className={css.priceAmount}
               value={minInputValue}
-              onChange={handleMinInputChange}
-              onBlur={handleMinInputBlur}
-              min={config.min / 1000000}
-              max={config.max / 1000000}
-              step={config.step / 1000000}
+              onChange={e => handleInputChange(e, true)}
+              onBlur={e => handleInputBlur(e, true)}
+              min={displayConfig.min}
+              max={displayConfig.max}
+              step={displayConfig.step}
             />
           </div>
           <div className={css.priceValue}>
@@ -258,11 +229,11 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
               type="number"
               className={css.priceAmount}
               value={maxInputValue}
-              onChange={handleMaxInputChange}
-              onBlur={handleMaxInputBlur}
-              min={config.min / 1000000}
-              max={config.max / 1000000}
-              step={config.step / 1000000}
+              onChange={e => handleInputChange(e, false)}
+              onBlur={e => handleInputBlur(e, false)}
+              min={displayConfig.min}
+              max={displayConfig.max}
+              step={displayConfig.step}
             />
           </div>
         </div>
