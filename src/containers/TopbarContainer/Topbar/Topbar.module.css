@@ -192,27 +192,58 @@
 
 /* ================ Modal ================ */
 
+.isClosed {
+  pointer-events: none;
+  height: 0;
+  overflow: hidden;
+}
+
+.modalScrollLayer {
+  background-color: transparent;
+  transition: background-color 0.3s ease-in-out;
+  height: 0;
+}
+
+.modalScrollLayerOpen {
+  background-color: rgba(0, 0, 0, 0.4);
+  height: 100vh;
+}
+
 .modalContainer {
   composes: marketplaceModalInMobileBaseStyles from global;
-  padding: 0;
   padding: var(--modalPadding);
+  width: 60%;
+  margin-left: auto;
+  height: 100vh;  
+
+  background-color: var(--colorWhite);
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(100%);
 
   @media (--viewportMedium) {
-    flex-basis: 576px;
-    flex-grow: 1;
-    min-height: max(100%, 100vh);
-    height: auto;
-    padding: 24px;
+    flex-grow: 0;
     background-color: var(--colorWhite);
+    padding: var(--modalPadding);
     border-bottom: none;
   }
 }
+
+.modalContainerOpen {
+  transform: translateX(0);
+}
+
 .modalContainerSearchForm {
   composes: modalContainer;
   padding: 0;
   @media (--viewportMedium) {
     padding: var(--modalPaddingMedium);
   }
+}
+
+.modal {
+  z-index: -1;
+  top: auto;
+  bottom: auto;
 }
 
 .missingInformationModal {
