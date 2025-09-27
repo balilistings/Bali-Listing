@@ -12,6 +12,8 @@ import { checkIsCustomer } from '../../../../util/userHelpers';
 
 import {
   AvatarLarge,
+  AvatarMedium,
+  AvatarSmall,
   ExternalLink,
   InlineTextButton,
   NamedLink,
@@ -92,12 +94,6 @@ const TopbarMobileMenu = props => {
     );
   });
 
-  const createListingsLinkMaybe = showCreateListingsLink ? (
-    <NamedLink className={css.createNewListingLink} name="NewListingPage">
-      <FormattedMessage id="TopbarMobileMenu.newListingLink" />
-    </NamedLink>
-  ) : null;
-
   if (!isAuthenticated) {
     const signup = (
       <NamedLink name="SignupPage" className={css.signupLink}>
@@ -130,7 +126,6 @@ const TopbarMobileMenu = props => {
 
           <div className={css.spacer} />
         </div>
-        <div className={css.footer}>{createListingsLinkMaybe}</div>
       </div>
     );
   }
@@ -172,7 +167,7 @@ const TopbarMobileMenu = props => {
 
   return (
     <div className={css.root}>
-      <AvatarLarge className={css.avatar} user={currentUser} />
+      <AvatarMedium className={css.avatar} user={currentUser} />
       <div className={css.content}>
         <span className={css.greeting}>
           <FormattedMessage id="TopbarMobileMenu.greeting" values={{ displayName }} />
@@ -211,7 +206,6 @@ const TopbarMobileMenu = props => {
         <div className={css.customLinksWrapper}>{extraLinks}</div>
         <div className={css.spacer} />
       </div>
-      <div className={css.footer}>{createListingsLinkMaybe}</div>
     </div>
   );
 };

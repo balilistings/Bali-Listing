@@ -135,6 +135,12 @@ export class ModalComponent extends Component {
     window.document.documentElement.style.setProperty('--vh', `${this.vh}px`);
   }
 
+  handleScrollLayerClick = (e) => {
+    if (e.target === e.currentTarget) {
+      this.handleClose(e);
+    }
+  }
+
   render() {
     const {
       children,
@@ -149,6 +155,7 @@ export class ModalComponent extends Component {
       isOpen,
       usePortal,
       closeButtonClassName,
+      showCloseButton = true,
     } = this.props;
 
     const closeModalMessage = intl.formatMessage({ id: 'Modal.closeModal' });
@@ -156,7 +163,7 @@ export class ModalComponent extends Component {
       [css.closeLight]: lightCloseButton,
       [closeButtonClassName]: closeButtonClassName,
     });
-    const closeBtn = isOpen ? (
+    const closeBtn = isOpen && showCloseButton ? (
       <Button
         onClick={this.handleClose}
         rootClassName={closeButtonClasses}
@@ -188,7 +195,7 @@ export class ModalComponent extends Component {
 
     return !usePortal ? (
       <div className={classes}>
-        <div className={scrollLayerClasses}>
+        <div className={scrollLayerClasses} onClick={this.handleScrollLayerClick}>
           <div className={containerClasses}>
             {closeBtn}
             <div className={classNames(contentClassName || css.content)}>{children}</div>
@@ -198,7 +205,7 @@ export class ModalComponent extends Component {
     ) : portalRoot ? (
       <Portal portalRoot={portalRoot}>
         <div className={classes}>
-          <div className={scrollLayerClasses}>
+          <div className={scrollLayerClasses} onClick={this.handleScrollLayerClick}>
             <div
               className={classNames(containerClasses, css.focusedDiv)}
               ref={this.refDiv}

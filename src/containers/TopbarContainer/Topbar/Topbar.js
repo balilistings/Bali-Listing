@@ -320,6 +320,16 @@ const TopbarComponent = props => {
     <div className={css.searchMenu} />
   );
 
+  const modalContainerClasses = classNames(
+    css.modalContainer,
+    isMobileMenuOpen && css.modalContainerOpen
+  );
+
+  const scrollLayerClasses = classNames(
+    css.modalScrollLayer,
+    isMobileMenuOpen && css.modalScrollLayerOpen
+  );
+
   return (
     <div className={classes}>
       <LimitedAccessBanner
@@ -349,7 +359,10 @@ const TopbarComponent = props => {
           )} */}
           <Button
             rootClassName={css.menu}
-            onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
+            onClick={isMobileMenuOpen
+              ? () => redirectToURLWithoutModalState(history, location, 'mobilemenu')
+              : () => redirectToURLWithModalState(history, location, 'mobilemenu')
+            }
             title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
           >
             <MenuIcon className={css.menuIcon} />
@@ -383,11 +396,14 @@ const TopbarComponent = props => {
       </div>
       <Modal
         id="TopbarMobileMenu"
-        containerClassName={css.modalContainer}
+        className={css.modal}
+        containerClassName={modalContainerClasses}
+        scrollLayerClassName={scrollLayerClasses}
         isOpen={isMobileMenuOpen}
         onClose={() => redirectToURLWithoutModalState(history, location, 'mobilemenu')}
-        usePortal
         onManageDisableScrolling={onManageDisableScrolling}
+        isClosedClassName={css.isClosed}
+        showCloseButton={false}
       >
         {authInProgress ? null : mobileMenu}
       </Modal>
