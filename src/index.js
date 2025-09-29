@@ -147,6 +147,7 @@ if (typeof window !== 'undefined') {
   const store = configureStore(initialState, sdk, analyticsHandlers);
 
   require('./util/polyfills');
+  require('react-phone-number-input/style.css');
   render(store, !!window.__PRELOADED_STATE__);
 
   if (appSettings.dev) {

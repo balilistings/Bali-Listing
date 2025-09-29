@@ -52,7 +52,6 @@
     padding: 6px 25px 6px 10px;
     min-height: 68px;
     position: relative;
-    z-index: 1;
 
     &.gridCol1 {
       width: 576px;

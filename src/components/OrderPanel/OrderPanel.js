@@ -524,10 +524,11 @@ const OrderPanel = props => {
       
       if (window.gtag) {
         window.gtag('event', 'click_contact_owner', {
-          'event_category': 'engagement',
-          'event_label': listing.attributes.id,
-          'value': 1
-        });
+          'category': 'engagement',
+          'listing_id': listing.attributes.id,
+          'clicker': currentUser.attributes.email,
+          'contact_value': 1
+        });        
       }
       
       if (window.fbq) {

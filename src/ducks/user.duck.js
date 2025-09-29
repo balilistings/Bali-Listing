@@ -5,9 +5,11 @@ import { LISTING_STATE_DRAFT } from '../util/types';
 import { storableError } from '../util/errors';
 import { isUserAuthorized } from '../util/userHelpers';
 import { getTransitionsNeedingProviderAttention } from '../transactions/transaction';
+import Cookies from 'js-cookie';
 
 import { authInfo } from './auth.duck';
 import { stripeAccountCreateSuccess } from './stripeConnectAccount.duck';
+import { saveCookieConsent } from './cookieConsent.duck';
 
 // ================ Action types ================ //
 
@@ -398,6 +400,34 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
       // If currentUser is not active (e.g. in 'pending-approval' state),
       // then they don't have listings or transactions that we care about.
       if (isUserAuthorized(currentUser)) {
+        // Check if user just logged in and has cookie consent data from anonymous session
+        if (afterLogin) {
+          const cookieConsent = Cookies.get('cookieConsent');
+          
+          // If user had cookie consent data as anonymous user, clear the cookie
+          if (cookieConsent === 'accepted' || cookieConsent === 'rejected') {
+            try {
+              Cookies.remove('cookieConsent');
+              
+              // Auto-convert to accepted if user had accepted as anonymous
+              // But don't auto-convert if they rejected, allowing re-prompting
+              if (cookieConsent === 'accepted' && !currentUser.attributes?.profile?.protectedData?.cookieConsent) {
+                const consentData = {
+                  accepted: true,
+                  timestamp: new Date().toISOString(),
+                };
+                
+                // Store in user protected data
+                dispatch(saveCookieConsent(consentData));
+              }
+              // Note: When cookieConsent === 'rejected', we simply remove the cookie
+              // and don't store anything in user profile, allowing re-prompting
+            } catch (e) {
+              log.error(e, 'failed-to-handle-cookie-consent');
+            }
+          }
+        }
+        
         if (currentUserHasListings === false && updateHasListings !== false) {
           dispatch(fetchCurrentUserHasListings());
         }
@@ -421,6 +451,7 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
       dispatch(currentUserShowError(storableError(e)));
     });
 };
+
 
 export const sendVerificationEmail = () => (dispatch, getState, sdk) => {
   if (verificationSendingInProgress(getState())) {
