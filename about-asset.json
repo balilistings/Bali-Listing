@@ -1,0 +1,115 @@
+{
+  "about": {
+    "path": "content/pages/about.json",
+    "data": {
+      "meta": {
+        "pageTitle": {
+          "fieldType": "metaTitle",
+          "content": "About Bali Listings – Your Trusted Bali Rental Platform"
+        },
+        "pageDescription": {
+          "fieldType": "metaDescription",
+          "content": "Bali Listings makes finding rentals easy, safe & direct. Learn about our mission to simplify Bali housing."
+        },
+        "socialSharing": {
+          "fieldType": "openGraphData",
+          "image": {
+            "id": "e8635872-982a-5f42-83a5-89f67d8f56de",
+            "type": "imageAsset",
+            "attributes": {
+              "variants": {
+                "social600": {
+                  "height": 213,
+                  "width": 600,
+                  "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/35/bb8d2f5687803f74131263215dccfeb10c4d8e?auto=format&fit=clip&h=600&w=600&s=e58e1146c3ae6bb4933c0d43af36f17b",
+                  "name": "social600"
+                },
+                "social1200": {
+                  "height": 427,
+                  "width": 1200,
+                  "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/35/bb8d2f5687803f74131263215dccfeb10c4d8e?auto=format&fit=clip&h=1200&w=1200&s=c06a89e2e592336c6478f38c22dca695",
+                  "name": "social1200"
+                }
+              },
+              "assetPath": "/content/pages/about/social-image-0198b6f1-bb67-8fcc-b280-77b2d9048e0d.png"
+            }
+          },
+          "description": "Bali Listings makes finding rentals easy, safe & direct. Learn about our mission to simplify Bali housing.",
+          "title": "About Bali Listings – Your Trusted Bali Rental Platform"
+        }
+      },
+      "sections": [
+        {
+          "title": { "fieldType": "heading1", "content": "The Birth of Bali Listings" },
+          "description": { "fieldType": "paragraph", "content": "About Us" },
+          "callToAction": {
+            "fieldType": "none",
+            "content": "Go to Pages",
+            "href": "https://flex-console.sharetribe.com/content/pages"
+          },
+          "appearance": { "fieldType": "defaultAppearance" },
+          "blocks": [
+            {
+              "media": {
+                "fieldType": "image",
+                "image": {
+                  "id": "cfae2912-b059-582f-95df-45aa791e24bf",
+                  "type": "imageAsset",
+                  "attributes": {
+                    "variants": {
+                      "landscape400": {
+                        "height": 225,
+                        "width": 400,
+                        "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=225&w=400&s=73e7f4671ede9c237d7225678d955529",
+                        "name": "landscape400"
+                      },
+                      "landscape800": {
+                        "height": 450,
+                        "width": 800,
+                        "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=450&w=800&s=dcc5be17e7f9a6b41e5ffc5411850737",
+                        "name": "landscape800"
+                      },
+                      "landscape1200": {
+                        "height": 675,
+                        "width": 1200,
+                        "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=675&w=1200&s=0eab2256c47fcdf75f324b66ce2c68ea",
+                        "name": "landscape1200"
+                      },
+                      "landscape2400": {
+                        "height": 1350,
+                        "width": 2400,
+                        "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=1350&w=2400&s=5733224be0c09536fe46d5b7fa6dcbeb",
+                        "name": "landscape2400"
+                      }
+                    },
+                    "assetPath": "/content/pages/about/block-media-0194a5b4-747d-888b-a93f-23516a6d7b34.jpg"
+                  }
+                },
+                "aspectRatio": "16/9",
+                "link": { "fieldType": "none" },
+                "alt": "Road"
+              },
+              "title": { "fieldType": "heading2", "content": "" },
+              "text": {
+                "fieldType": "markdown",
+                "content": "At **Bali Listings**, we know how challenging it can be to find the perfect place to call home in Bali, especially for **medium to long-term rentals**. Traditional methods, like scrolling endlessly through Facebook groups, are frustrating, time-consuming, and unreliable. That’s why we created **Bali Listings**—to make your search **simple, direct, and hassle-free**.\n\n## Our Mission ##\nWe believe finding a rental in Bali should be **easy and transparent**. Our platform is designed to connect renters and property owners **directly**, eliminating unnecessary middlemen and reducing the risk of scams.\n\n## What Makes BaliListings Different? ##\n> ✔ **Smart Search** – Filter by location, price, and amenities to find exactly what you need—no more clutter.\\\n> ✔ **Community-Driven** – Whether you're listing a property or searching for one, your participation helps shape our platform.\\\n> ✔ **Direct & Transparent** – No more waiting on slow responses or dealing with unclear listings—connect instantly with owners or agents.\\\n> ✔ **User-Friendly** – Our platform is designed to be intuitive, so you can focus on finding a home that fits your lifestyle.\n\nJoin us in making Bali rentals safer, easier, and stress-free."
+              },
+              "callToAction": {
+                "fieldType": "internalButtonLink",
+                "href": "/s?address=Bali%2C%20Indonesië&bounds=-8.061681832168201%2C115.7115280717693%2C-8.849260962830986%2C114.4316260102816",
+                "content": "Browse Listings"
+              },
+              "alignment": "left",
+              "blockType": "defaultBlock",
+              "blockId": "",
+              "blockName": "Story content"
+            }
+          ],
+          "sectionType": "article",
+          "sectionId": "",
+          "sectionName": "Our story"
+        }
+      ]
+    }
+  }
+}

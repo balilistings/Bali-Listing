@@ -15,6 +15,9 @@ export const CMSPageComponent = props => {
   const { params, pageAssetsData, inProgress, error } = props;
   const pageId = params.pageId || props.pageId;
 
+console.log(JSON.stringify(pageAssetsData));
+
+
   if (!inProgress && error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;
   }
