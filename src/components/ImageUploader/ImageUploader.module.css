@@ -165,3 +165,10 @@
 .successIcon {
   font-weight: bold;
 }
+
+.rejectionError {
+  color: #c72520;
+  margin-top: 8px;
+  font-size: 0.875rem;
+  text-align: center;
+}
