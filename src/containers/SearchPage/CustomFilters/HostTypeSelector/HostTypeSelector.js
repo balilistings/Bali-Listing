@@ -1,15 +1,20 @@
 import React from 'react';
 import PillSelector from '../PillSelector/PillSelector';
+import { useIntl } from 'react-intl';
 
-const hostTypeOptions = [
-  { id: 'agent', label: 'Agent' },
-  { id: 'owner', label: 'Owner' },
-];
+
 
 function HostTypeSelector({ selectedHostType, onHostTypeChange, onReset }) {
+  const intl = useIntl();
+
+  const hostTypeOptions = [
+    { id: 'agent', label: intl.formatMessage({ id: 'UserCard.Agent' }) },
+    { id: 'owner', label: intl.formatMessage({ id: 'UserCard.Owner' }) },
+  ];
+
   return (
     <PillSelector
-      title="Host type"
+      title={intl.formatMessage({ id: 'CustomFilter.HostType.title' })}
       options={hostTypeOptions}
       selectedOption={selectedHostType}
       onOptionChange={onHostTypeChange}

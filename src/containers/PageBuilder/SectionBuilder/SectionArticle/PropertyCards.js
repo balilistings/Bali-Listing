@@ -14,6 +14,7 @@ import { handleToggleFavorites } from '../../../../util/userFavorites';
 import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import classNames from 'classnames';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -309,6 +310,7 @@ const PropertyCards = () => {
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
+  const intl = useIntl();
   const history = useHistory();
   const routeLocation = useLocation();
   const routes = useRouteConfiguration();
@@ -536,7 +538,7 @@ const PropertyCards = () => {
                       <div className={styles.tags}>
                         {tags?.map(tag => (
                           <span className={styles.tag} key={tag}>
-                            {tag}
+                            {intl.formatMessage({ id: tag })}
                           </span>
                         ))}
                         {!!Freehold && (
@@ -548,7 +550,7 @@ const PropertyCards = () => {
                           params={{ id: author.id.uuid }}
                         >
                           <span className={styles.listedBy}>
-                            Listed by:{' '}
+                            {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle'})}:{' '}
                             <span className={styles.listedByName}>
                               {author.attributes.profile.displayName}
                             </span>
@@ -578,13 +580,12 @@ const PropertyCards = () => {
                         <div className={styles.icons}>
                           {!!bedrooms && (
                             <span className={styles.iconItem}>
-                              <Icon type="bed" /> {bedrooms} bedroom
-                              {bedrooms > 1 ? 's' : ''}
+                              <Icon type="bed" /> {bedrooms} {intl.formatMessage({ id: 'ListingCard.bedroom' }, { count: bedrooms })}
                             </span>
                           )}
                           {!!bathrooms && (
                             <span className={styles.iconItem}>
-                              <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                              <Icon type="bath" /> {bathrooms} {intl.formatMessage({ id: 'ListingCard.bathroom' }, { count: bathrooms })}
                             </span>
                           )}
                           {!!landsize && isLand && (
@@ -604,7 +605,11 @@ const PropertyCards = () => {
                           </span>
                           {isRentals && (
                             <span className={styles.priceUnit}>
-                              {monthprice ? '/ monthly' : weekprice ? '/ weekly' : '/ yearly'}
+                              {monthprice 
+                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' }) 
+                                : weekprice 
+                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' }) 
+                                : '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' })}
                             </span>
                           )}
                         </div>
@@ -621,7 +626,7 @@ const PropertyCards = () => {
         className={styles.browseAllButton}
         onClick={() => history.push('/s?pub_categoryLevel1=rentalvillas')}
       >
-        Browse all listings
+        <FormattedMessage id="FeaturedListing.browseAllListings" />
       </button>
     </div>
   );

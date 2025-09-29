@@ -1,22 +1,23 @@
 import React from 'react';
 import css from './AmenitiesSelector.module.css';
 import { IconCollection } from '../../../../components';
+import { FormattedMessage } from 'react-intl';
 
 const rentalAmenities = [
-  { icon: <IconCollection name="wifi" />, name: 'Wifi', id: 'wifi' },
-  { icon: <IconCollection name="pool" />, name: 'Pool', id: 'pool' },
-  { icon: <IconCollection name="gym" />, name: 'Gym', id: 'gym' },
-  { icon: <IconCollection name="pet" />, name: 'Pet Friendly', id: 'petfriendly' },
-  { icon: <IconCollection name="desk" />, name: 'Working desk', id: 'workingdesk' },
-  { icon: <IconCollection name="parking" />, name: 'Car parking', id: 'carparking' },
-  { icon: <IconCollection name="kitchen" />, name: 'Kitchen', id: 'kitchen' },
-  { icon: <IconCollection name="aircondition" />, name: 'Airconditioning', id: 'airco' },
+  { icon: <IconCollection name="wifi" />, label: 'ListingPage.customListingField.wifi', id: 'wifi' },
+  { icon: <IconCollection name="pool" />, label: 'ListingPage.customListingField.pool', id: 'pool' },
+  { icon: <IconCollection name="gym" />, label: 'ListingPage.customListingField.gym', id: 'gym' },
+  { icon: <IconCollection name="pet" />, label: 'ListingPage.customListingField.petFriendly', id: 'petfriendly' },
+  { icon: <IconCollection name="desk" />, label: 'ListingPage.customListingField.workingDesk', id: 'workingdesk' },
+  { icon: <IconCollection name="parking" />, label: 'ListingPage.customListingField.carParking', id: 'carparking' },
+  { icon: <IconCollection name="kitchen" />, label: 'ListingPage.customListingField.kitchen', id: 'kitchen' },
+  { icon: <IconCollection name="aircondition" />, label: 'ListingPage.customListingField.airconditioning', id: 'airco' },
 ];
 
 const villaAmenities = [
-  { icon: <IconCollection name="pool" />, name: 'Pool', id: 'pool' },
-  { icon: <IconCollection name="gym" />, name: 'Gym', id: 'gym' },
-  { icon: <IconCollection name="parking" />, name: 'Car parking', id: 'carparking' },
+  { icon: <IconCollection name="pool" />, label: 'ListingPage.customListingField.pool', id: 'pool' },
+  { icon: <IconCollection name="gym" />, label: 'ListingPage.customListingField.gym', id: 'gym' },
+  { icon: <IconCollection name="parking" />, label: 'ListingPage.customListingField.carParking', id: 'carparking' },
 ];
 
 function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset, category }) {
@@ -37,7 +38,9 @@ function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset,
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>Amenities</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id="CustomFilter.Amenities.title" />
+        </h3>
         <button onClick={handleReset} className={css.resetButton}>
           Reset
         </button>
@@ -53,7 +56,7 @@ function AmenitiesSelector({ selectedAmenities = [], onAmenitiesChange, onReset,
             onClick={() => handleAmenityToggle(amenity.id)}
           >
             <span className={css.amenityIcon}>{amenity.icon}</span>
-            <span className={css.amenityName}>{amenity.name}</span>
+            <span className={css.amenityName}><FormattedMessage id={amenity.label} /></span>
           </button>
         ))}
       </div>

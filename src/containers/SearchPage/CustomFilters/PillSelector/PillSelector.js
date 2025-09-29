@@ -1,5 +1,6 @@
 import React from 'react';
 import css from './PillSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 function PillSelector({ title, options, selectedOption, onOptionChange, onReset }) {
   const handleOptionSelect = optionId => {

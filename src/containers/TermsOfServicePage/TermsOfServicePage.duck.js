@@ -1,7 +1,14 @@
 import { fetchPageAssets } from '../../ducks/hostedAssets.duck';
+import { constructLocalizedPageAssets } from '../../util/localeAssetUtils';
+
 export const ASSET_NAME = 'terms-of-service';
 
-export const loadData = (params, search) => dispatch => {
-  const pageAsset = { termsOfService: `content/pages/${ASSET_NAME}.json` };
+export const loadData = (params, search, config, match) => dispatch => {
+  const assetMap = {
+    termsOfService: ASSET_NAME,
+  };
+
+  const pageAsset = constructLocalizedPageAssets(assetMap, match);
+  
   return dispatch(fetchPageAssets(pageAsset, true));
 };
