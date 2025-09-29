@@ -175,7 +175,7 @@ const PriceMaybe = props => {
 
     if (activePeriodKey) {
       priceToDisplay = publicData[activePeriodKey];
-      suffix = `/ ${activePeriodKey.replace('price', '')}`;
+      suffix = `/ ${intl.formatMessage({ id: 'ListingCard.' + activePeriodKey.replace('price', 'ly') })}`;
     }
   }
 
