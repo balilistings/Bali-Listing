@@ -38,7 +38,11 @@ const renderForm = formRenderProps => {
               fill="white"
             />
           </svg>
-          Contact {agentorowner === 'agent' ? ' Agent' : 'Owner'}
+          {agentorowner === 'agent' ? (
+            <FormattedMessage id="OrderPanel.contactAgent" />
+          ) : (
+            <FormattedMessage id="OrderPanel.contactOwner" />
+          )}
         </PrimaryButton>
       </div>
     </Form>

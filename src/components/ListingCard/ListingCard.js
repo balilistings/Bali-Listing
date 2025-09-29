@@ -32,9 +32,10 @@ const sliderSettings = {
   appendDots: dots => (
     <div className={css.dots}>
       <span className={css.dotsCounter}>
-        {dots.findIndex(dot => 
-          dot.props.className && dot.props.className.includes('slick-active')
-        ) + 1}/{dots.length}
+        {dots.findIndex(
+          dot => dot.props.className && dot.props.className.includes('slick-active')
+        ) + 1}
+        /{dots.length}
       </span>
     </div>
   ),
@@ -115,7 +116,7 @@ export const checkPriceParams = () => {
 };
 
 const PriceMaybe = props => {
-  const { price, publicData, config, isRentals } = props;
+  const { price, publicData, config, isRentals, intl } = props;
   const { listingType, weekprice, monthprice, yearprice } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -151,19 +152,19 @@ const PriceMaybe = props => {
   let suffix;
   if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
     if (priceParams.weekprice) {
-      suffix = '/ weekly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
     } else if (priceParams.monthprice) {
-      suffix = '/ monthly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
     } else if (priceParams.yearprice) {
-      suffix = '/ yearly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
     }
   } else {
     if (publicData?.monthprice) {
-      suffix = '/ monthly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
     } else if (publicData?.weekprice) {
-      suffix = '/ weekly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
     } else if (publicData?.yearprice) {
-      suffix = '/ yearly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
     }
   }
 
@@ -250,9 +251,10 @@ export const ListingCard = props => {
 
   return (
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
-      <button 
-        className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
-        onClick={onToggleFavorites}>
+      <button
+        className={classNames(css.wishlistButton, isFavorite ? css.active : '')}
+        onClick={onToggleFavorites}
+      >
         <IconCollection name="icon-waislist" />
       </button>
 
@@ -267,13 +269,13 @@ export const ListingCard = props => {
         <div className={css.tags}>
           {tags?.map(tag => (
             <span className={css.tag} key={tag}>
-              {tag}
+              {intl.formatMessage({ id: tag })}
             </span>
           ))}
           {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
           <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
             <span className={css.listedBy}>
-              Listed by:{' '}
+              {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle'})}:{' '}
               <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
             </span>
           </NamedLink>
@@ -296,7 +298,6 @@ export const ListingCard = props => {
                   <span className={css.type}>{capitaliseFirstLetter(propertytype)}</span>
                 </>
               )}
-
               <span className={css.locationWrapper}>
                 <span className={css.locationIcon}>
                   <IconCollection name="locationIcon" />
@@ -308,12 +309,14 @@ export const ListingCard = props => {
               <div className={css.icons}>
                 {!!bedrooms && (
                   <span className={css.iconItem}>
-                    <Icon type="bed" /> {bedrooms} bedroom{bedrooms > 1 ? 's' : ''}
+                    <Icon type="bed" /> {bedrooms}{' '}
+                    {intl.formatMessage({ id: 'ListingCard.bedroom' }, { count: bedrooms })}
                   </span>
                 )}
                 {!!bathrooms && (
                   <span className={css.iconItem}>
-                    <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                    <Icon type="bath" /> {bathrooms}{' '}
+                    {intl.formatMessage({ id: 'ListingCard.bathroom' }, { count: bathrooms })}
                   </span>
                 )}
 

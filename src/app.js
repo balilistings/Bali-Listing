@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { any, string } from 'prop-types';
 
 import { HelmetProvider } from 'react-helmet-async';
-import { BrowserRouter, StaticRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import loadable from '@loadable/component';
 import difference from 'lodash/difference';
@@ -17,6 +16,7 @@ import configureStore from './store';
 // utils
 import { RouteConfigurationProvider } from './context/routeConfigurationContext';
 import { ConfigurationProvider } from './context/configurationContext';
+import { LocaleProvider, useLocale } from './context/localeContext';
 import { mergeConfig } from './util/configHelpers';
 import { IntlProvider } from './util/reactIntl';
 import { includeCSSProperties } from './util/style';
@@ -27,9 +27,11 @@ import { MaintenanceMode, CookieConsent } from './components';
 // routing
 import routeConfiguration from './routing/routeConfiguration';
 import Routes from './routing/Routes';
+import { LocaleBrowserRouter, LocaleStaticRouter } from './routing/LocaleRouter';
 
 // Sharetribe Web Template uses English translations as default translations.
 import defaultMessages from './translations/en.json';
+import allMessages from './translations';
 
 // If you want to change the language of default (fallback) translations,
 // change the imports to match the wanted locale:
@@ -57,21 +59,10 @@ import defaultMessages from './translations/en.json';
 // Step 3:
 // The "./translations/en.json" has generic English translations
 // that should work as a default translation if some translation keys are missing
-// from the hosted translation.json (which can be edited in Console). The other files
-// (e.g. en.json) in that directory has Biketribe themed translations.
-//
-// If you are using a non-english locale, point `messagesInLocale` to correct <lang>.json file.
-// That way the priority order would be:
-//   1. hosted translation.json
-//   2. <lang>.json
-//   3. en.json
-//
-// I.e. remove "const messagesInLocale" and add import for the correct locale:
-// import messagesInLocale from './translations/fr.json';
-const messagesInLocale = {};
+// from the hosted translation.json (which can be edited in Console).
 
-// If translation key is missing from `messagesInLocale` (e.g. fr.json),
-// corresponding key will be added to messages from `defaultMessages` (en.json)
+// If translation key is missing from a locale's messages,
+// corresponding key will be added from `defaultMessages` (en.json)
 // to prevent missing translation key errors.
 const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) => {
   const sourceKeys = Object.keys(sourceLangTranslations);
@@ -91,15 +82,7 @@ const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) 
   return missingKeys.reduce(addMissingTranslation, targetLangTranslations);
 };
 
-// Get default messages for a given locale.
-//
-// Note: Locale should not affect the tests. We ensure this by providing
-//       messages with the key as the value of each message and discard the value.
-//       { 'My.translationKey1': 'My.translationKey1', 'My.translationKey2': 'My.translationKey2' }
 const isTestEnv = process.env.NODE_ENV === 'test';
-const localeMessages = isTestEnv
-  ? mapValues(defaultMessages, (val, key) => key)
-  : addMissingTranslations(defaultMessages, messagesInLocale);
 
 // For customized apps, this dynamic loading of locale files is not necessary.
 // It helps locale change from configDefault.js file or hosted configs, but customizers should probably
@@ -155,10 +138,43 @@ const Configurations = props => {
   );
 };
 
-const MaintenanceModeError = props => {
-  const { locale, messages, helmetContext } = props;
+const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
+  const { locale, messages, DEFAULT_LOCALE } = useLocale();
+
+  const localeMessages = isTestEnv
+    ? mapValues(defaultMessages, (val, key) => key)
+    : messages;
+
+  const finalMessages = addMissingTranslations(defaultMessages, {
+    ...localeMessages,
+    ...(locale === DEFAULT_LOCALE ? hostedTranslations : {}),
+  });
+
   return (
-    <IntlProvider locale={locale} messages={messages} textComponent="span">
+    <IntlProvider
+      locale={locale}
+      messages={finalMessages}
+      textComponent="span"
+    >
+      {children}
+    </IntlProvider>
+  );
+};
+
+const MaintenanceModeError = props => {
+  const { locale, helmetContext, hostedTranslations = {} } = props;
+
+  const localeMessages = isTestEnv
+    ? mapValues(defaultMessages, (val, key) => key)
+    : allMessages[locale] || allMessages['en'];
+
+  const finalMessages = addMissingTranslations(defaultMessages, {
+    ...localeMessages,
+    ...hostedTranslations,
+  });
+
+  return (
+    <IntlProvider locale={locale} messages={finalMessages} textComponent="span">
       <HelmetProvider context={helmetContext}>
         <MaintenanceMode />
       </HelmetProvider>
@@ -226,7 +242,7 @@ export const ClientApp = props => {
     return (
       <MaintenanceModeError
         locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
+        messages={{ ...hostedTranslations }}
       />
     );
   }
@@ -242,23 +258,21 @@ export const ClientApp = props => {
   const logLoadDataCalls = appSettings?.env !== 'test';
 
   return (
-    <Configurations appConfig={appConfig}>
-      <IntlProvider
-        locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
-        textComponent="span"
-      >
-        <Provider store={store}>
-          <HelmetProvider>
-            <IncludeScripts config={appConfig} />
-            <BrowserRouter>
-              <Routes logLoadDataCalls={logLoadDataCalls} />
-              <CookieConsent />
-            </BrowserRouter>
-          </HelmetProvider>
-        </Provider>
-      </IntlProvider>
-    </Configurations>
+    <LocaleProvider>
+      <Configurations appConfig={appConfig}>
+        <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
+          <Provider store={store}>
+            <HelmetProvider>
+              <IncludeScripts config={appConfig} />
+              <LocaleBrowserRouter>
+                <Routes logLoadDataCalls={logLoadDataCalls} />
+                <CookieConsent />
+              </LocaleBrowserRouter>
+            </HelmetProvider>
+          </Provider>
+        </LocaleAwareIntlProvider>
+      </Configurations>
+    </LocaleProvider>
   );
 };
 
@@ -274,29 +288,27 @@ export const ServerApp = props => {
     return (
       <MaintenanceModeError
         locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
+        messages={{ ...hostedTranslations }}
         helmetContext={helmetContext}
       />
     );
   }
 
   return (
-    <Configurations appConfig={appConfig}>
-      <IntlProvider
-        locale={appConfig.localization.locale}
-        messages={{ ...localeMessages, ...hostedTranslations }}
-        textComponent="span"
-      >
-        <Provider store={store}>
-          <HelmetProvider context={helmetContext}>
-            <IncludeScripts config={appConfig} />
-            <StaticRouter location={url} context={context}>
-              <Routes />
-            </StaticRouter>
-          </HelmetProvider>
-        </Provider>
-      </IntlProvider>
-    </Configurations>
+    <LocaleProvider>
+      <Configurations appConfig={appConfig}>
+        <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
+          <Provider store={store}>
+            <HelmetProvider context={helmetContext}>
+              <IncludeScripts config={appConfig} />
+              <LocaleStaticRouter location={url} context={context}>
+                <Routes />
+              </LocaleStaticRouter>
+            </HelmetProvider>
+          </Provider>
+        </LocaleAwareIntlProvider>
+      </Configurations>
+    </LocaleProvider>
   );
 };
 

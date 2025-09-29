@@ -19,6 +19,8 @@ import {
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
+import LanguageSelector from './LanguageSelector';
+import { useLocale } from '../../../../context/localeContext';
 
 import css from './TopbarDesktop.module.css';
 
@@ -220,6 +222,7 @@ const TopbarDesktop = props => {
   const [activeCategory, setActiveCategory] = useState(null);
   const lastScrollState = useRef(false);
   const debounceTimeout = useRef(null);
+  const { SUPPORTED_LOCALES } = useLocale();
 
   // Parse URL parameters to determine active tab
   const urlParams = parse(location?.search || '');
@@ -234,17 +237,17 @@ const TopbarDesktop = props => {
   const tabCategories = [
     {
       id: 'rentalvillas',
-      name: 'Rentals',
+      name: 'PageBuilder.SearchCTA.rentals',
       icon: 'rentals_icon'
     },
     {
       id: 'villaforsale', 
-      name: 'For Sale',
+      name: 'PageBuilder.SearchCTA.forSale',
       icon: 'sale_icon'
     },
     {
       id: 'landforsale',
-      name: 'Land', 
+      name: 'PageBuilder.SearchCTA.land', 
       icon: 'icon_Land'
     }
   ];
@@ -379,7 +382,7 @@ const TopbarDesktop = props => {
                   <IconCollection name={category.icon} />
                 </div> : null}
                 <div className={css.tabText}>
-                  {category.name}
+                  <FormattedMessage id={category.name} />
                 </div>
               </div>
             ))}
@@ -400,6 +403,9 @@ const TopbarDesktop = props => {
             hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
             showCreateListingsLink={showCreateListingsLink}
           />
+          {SUPPORTED_LOCALES.length > 1 && currentPage !== 'EditListingPage' ? (
+            <LanguageSelector isMobile={false} />
+          ) : null}
           {profileMenuMaybe}
         </div>
       </div>

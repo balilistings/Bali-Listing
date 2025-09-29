@@ -4,6 +4,7 @@ import { LinkedLogo } from '../../../../components';
 
 import Field from '../../Field';
 import BlockBuilder from '../../BlockBuilder';
+import TranslatedMarkdownField from '../../Field/TranslatedMarkdownField';
 
 import SectionContainer from '../SectionContainer';
 import css from './SectionFooter.module.css';
@@ -87,7 +88,37 @@ const SectionFooter = props => {
   // If external mapping has been included for fields
   // E.g. { h1: { component: MyAwesomeHeader } }
   const fieldComponents = options?.fieldComponents;
-  const fieldOptions = { fieldComponents };
+  
+  // Create custom field components for the footer that use translated markdown
+  const customFieldComponents = {
+    ...fieldComponents,
+    // Replace markdown field component with translated version
+    markdown: {
+      component: TranslatedMarkdownField,
+      pickValidProps: (data) => ({ content: data?.content }),
+      options: {
+        components: {
+          // Default components for markdown processing
+          ul: 'ul',
+          ol: 'ol',
+          li: 'li',
+          h1: 'h1',
+          h2: 'h2',
+          h3: 'h3',
+          h4: 'h4',
+          h5: 'h5',
+          h6: 'h6',
+          p: 'p',
+          span: 'span',
+          img: 'img',
+          code: 'code',
+          pre: 'pre',
+        },
+      },
+    },
+  };
+  
+  const fieldOptions = { fieldComponents: customFieldComponents };
   const linksWithBlockId = socialMediaLinks?.map(sml => {
     return {
       ...sml,
@@ -141,7 +172,7 @@ const SectionFooter = props => {
               <BlockBuilder
                 blocks={blocks.filter(b => b.blockId !== 'last_privacy_block')}
                 sectionId={sectionId}
-                options={options}
+                options={fieldOptions}
               />
             </div>
           </div>
@@ -150,7 +181,7 @@ const SectionFooter = props => {
               <BlockBuilder
                 blocks={blocks.filter(b => b.blockId === 'contact_block')}
                 sectionId={sectionId}
-                options={options}
+                options={fieldOptions}
               />
             </div>
           </div>
@@ -160,7 +191,7 @@ const SectionFooter = props => {
               <BlockBuilder
                 blocks={blocks.filter(b => b.blockId === 'last_privacy_block')}
                 sectionId={sectionId}
-                options={options}
+                options={fieldOptions}
               />
             </div>
           </div>

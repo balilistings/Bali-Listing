@@ -6,7 +6,7 @@ const prepareTerms = publicData => {
 
   if (publicData.minimum) {
     t.push({
-      label: 'Minimum rental period:',
+      label: 'ListingPage.minimum',
       value: publicData.minimum,
       key: 'minimum',
     });
@@ -14,7 +14,7 @@ const prepareTerms = publicData => {
 
   if (publicData.payment) {
     t.push({
-      label: 'Payment terms:',
+      label: 'ListingPage.payment',
       value: publicData.payment,
       key: 'payment',
     });
@@ -22,7 +22,7 @@ const prepareTerms = publicData => {
 
   if (publicData.Freehold !== 'freehold' && publicData.numberofyears) {
     t.push({
-      label: 'Lease duration:',
+      label: 'ListingPage.numberofyears',
       value: publicData.numberofyears,
       key: 'numberofyears',
     });
@@ -31,16 +31,18 @@ const prepareTerms = publicData => {
   return t;
 };
 
-const SectionTerms = ({ publicData }) => {
+const SectionTerms = ({ publicData, intl }) => {
   const terms = prepareTerms(publicData);
 
   return (
     <section className={styles.sectionTermsWrapper}>
-      <h2 className={styles.sectionTitle}>Rental Terms</h2>
+      <h2 className={styles.sectionTitle}>
+        {intl.formatMessage({ id: 'ListingPage.rentalTermsTitle' })}
+      </h2>
       <div className={styles.termsList}>
         {terms.map(term => (
           <div className={styles.termRow} key={term.key}>
-            <div className={styles.termLabel}>{term.label}</div>
+            <div className={styles.termLabel}>{intl.formatMessage({ id: term.label })}:</div>
             <div className={styles.termValue}>{term.value}</div>
           </div>
         ))}

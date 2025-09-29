@@ -69,7 +69,7 @@ const LoginFormComponent = props => {
                 values?.email && !errors?.email ? `email=${encodeURIComponent(values.email)}` : '',
             }}
           >
-            <FormattedMessage id="LoginForm.forgotPassword1" />
+            <FormattedMessage id="LoginForm.forgotPassword" />
           </NamedLink>
         );
 
@@ -81,8 +81,12 @@ const LoginFormComponent = props => {
         return (
           <Form className={classes} onSubmit={handleSubmit}>
             <div className={css.formTitle}>
-              <h2>Login</h2>
-              <p>Whether you're listing or looking. Log in to manage it all.</p>
+              <h2>
+                <FormattedMessage id="LoginForm.logIn" />
+              </h2>
+              <p>
+                <FormattedMessage id="LoginForm.description" />
+              </p>
             </div>
             <div className={css.formFields}>
               <FieldTextInput
@@ -101,7 +105,6 @@ const LoginFormComponent = props => {
                   const { input, meta } = fieldRenderProps;
                   const { error, touched } = meta;
 
-                  console.log('meta', meta);
                   return (
                     <div className={css.passwordFieldWrapper}>
                       <label htmlFor={formId ? `${formId}.password` : 'password'}>
@@ -135,7 +138,7 @@ const LoginFormComponent = props => {
               <p className={css.bottomWrapperText}>
                 <span className={css.recoveryLinkInfo}>
                   <FormattedMessage
-                    id="LoginForm.forgotPasswordInfo1"
+                    id="LoginForm.forgotPasswordInfo"
                     values={{ passwordRecoveryLink }}
                   />
                 </span>

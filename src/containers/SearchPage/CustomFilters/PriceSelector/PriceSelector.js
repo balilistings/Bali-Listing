@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RangeSlider } from '../../../../components';
 import css from './PriceSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const tabs = [
-  { id: 'weekly', label: 'Weekly' },
-  { id: 'monthly', label: 'Monthly' },
-  { id: 'yearly', label: 'Yearly' },
+  { id: 'weekly', label: 'PageBuilder.SearchCTA.PriceFilter.weekly' },
+  { id: 'monthly', label: 'PageBuilder.SearchCTA.PriceFilter.monthly' },
+  { id: 'yearly', label: 'PageBuilder.SearchCTA.PriceFilter.yearly' },
 ];
 
 const getRangeConfig = tabId => {
@@ -187,15 +188,15 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
 
   const config = getRangeConfig(activeTab);
 
-  // console.log('config', config);
-  // console.log('selectedPeriod', selectedPeriod);
-  // console.log('priceRange', priceRange);
-
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>Price</h3>
-        <p className={css.description}>Select a price range per week, month, or year</p>
+        <h3 className={css.title}>
+          <FormattedMessage id="PriceFilter.label" />
+        </h3>
+        <p className={css.description}>
+          <FormattedMessage id="PriceFilter.description" />
+        </p>
       </div>
 
       {/* Tabs */}
@@ -208,7 +209,7 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
               onClick={() => handleTabChange(tab.id)}
               className={`${css.tab} ${activeTab === tab.id ? css.activeTab : ''}`}
             >
-              {tab.label}
+              <FormattedMessage id={tab.label} />
             </button>
           ))}
           <div
@@ -235,7 +236,9 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
         {/* Min/Max Values */}
         <div className={css.priceValues}>
           <div className={css.priceValue}>
-            <span className={css.priceLabel}>minimum</span>
+            <span className={css.priceLabel}>
+              <FormattedMessage id="PageBuilder.SearchCTA.PriceFilter.minimum" />
+            </span>
             <input
               type="number"
               className={css.priceAmount}
@@ -248,7 +251,9 @@ function PriceSelector({ selectedPeriod, onPeriodChange, priceRange, onPriceRang
             />
           </div>
           <div className={css.priceValue}>
-            <span className={css.priceLabel}>maximum</span>
+            <span className={css.priceLabel}>
+              <FormattedMessage id="PageBuilder.SearchCTA.PriceFilter.maximum" />
+            </span>
             <input
               type="number"
               className={css.priceAmount}
