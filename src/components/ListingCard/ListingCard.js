@@ -17,6 +17,7 @@ import css from './ListingCard.module.css';
 import { handleToggleFavorites } from '../../util/userFavorites';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -104,6 +105,22 @@ export const formatPriceInMillions = actualPrice => {
   return `${actualPrice.toLocaleString()}`;
 };
 
+// Helper function to format price with currency, handling millions appropriately
+export const formatPriceWithCurrency = (actualPrice, currency = 'IDR') => {
+  if (actualPrice) {
+    // Check if the price is greater than 1 million
+    if (actualPrice > 1_000_000) {
+      const millions = Number(actualPrice) / 1_000_000;
+      const formattedMillions = millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1);
+      return `${currency} ${formattedMillions}M`;
+    } else {
+      // For smaller amounts, show the actual price with currency
+      return `${currency} ${Number(actualPrice).toLocaleString()}`;
+    }
+  }
+  return null;
+};
+
 export const checkPriceParams = () => {
   if (typeof window !== 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
@@ -117,62 +134,82 @@ export const checkPriceParams = () => {
 
 const PriceMaybe = props => {
   const { price, publicData, config, isRentals, intl } = props;
-  const { listingType, weekprice, monthprice, yearprice } = publicData || {};
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
+
+  const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showPrice = displayPrice(foundListingTypeConfig);
-  if (!showPrice && price) {
+
+  if (!showPrice) {
     return null;
   }
 
-  const priceParams = checkPriceParams();
+  let priceToDisplay = isRentals ? null : price;
+  let suffix = null;
 
-  let rentalPrice = price;
   if (isRentals) {
-    // Check if priceParams is available
-    if (priceParams?.yearprice) {
-      rentalPrice = yearprice;
-    } else if (priceParams?.monthprice) {
-      rentalPrice = monthprice;
-    } else if (priceParams?.weekprice) {
-      rentalPrice = weekprice;
+    const priceParams = checkPriceParams();
+    const periodPriority = ['yearprice', 'monthprice', 'weekprice'];
+    let activePeriodKey = '';
+
+    // Prioritize URL params for determining which period to show
+    for (const p of periodPriority) {
+      if (priceParams && priceParams[p]) {
+        activePeriodKey = p;
+        break;
+      }
     }
-    // Check if publicData is available
-    else if (publicData?.monthprice) {
-      rentalPrice = monthprice;
-    } else if (publicData?.weekprice) {
-      rentalPrice = weekprice;
-    } else if (publicData?.yearprice) {
-      rentalPrice = yearprice;
+
+    // Fallback to publicData if no relevant URL param
+    if (!activePeriodKey) {
+      for (const p of periodPriority) {
+        if (publicData && publicData[p]) {
+          activePeriodKey = p;
+          break;
+        }
+      }
+    }
+
+    if (activePeriodKey) {
+      priceToDisplay = publicData[activePeriodKey];
+      suffix = `/ ${intl.formatMessage({ id: 'ListingCard.' + activePeriodKey.replace('price', 'ly') })}`;
     }
   }
 
-  const formattedPrice = rentalPrice ? formatPriceInMillions(rentalPrice) : null;
+  // Apply conversion if needed. This now correctly handles non-rentals.
+  const finalPrice =
+    needPriceConversion && priceToDisplay ? priceToDisplay * USDConversionRate : priceToDisplay;
 
-  let suffix;
-  if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
-    if (priceParams.weekprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
-    } else if (priceParams.monthprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
-    } else if (priceParams.yearprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
+  const formatDisplayPrice = (priceValue, currency) => {
+    if (priceValue === null || priceValue === undefined) return null;
+
+    if (currency === 'USD') {
+      return `$${Math.round(priceValue).toLocaleString('en-US')}`;
     }
-  } else {
-    if (publicData?.monthprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
-    } else if (publicData?.weekprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
-    } else if (publicData?.yearprice) {
-      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
+
+    // IDR logic
+    if (priceValue >= 1000000) {
+      const millions = priceValue / 1000000;
+      const value = millions % 1 === 0 ? millions : millions.toFixed(1);
+      return `${value}M IDR`;
     }
+    return `${priceValue.toLocaleString()} IDR`;
+  };
+
+  const formattedPrice = formatDisplayPrice(finalPrice, selectedCurrency);
+
+  if (!formattedPrice) {
+    return null;
   }
 
   return (
     <div className={css.price}>
       <span className={css.priceValue}>
-        {formattedPrice} IDR
-        {isRentals && <span>{suffix}</span>}
+        {formattedPrice}
+        {isRentals && suffix && <span>{suffix}</span>}
       </span>
     </div>
   );

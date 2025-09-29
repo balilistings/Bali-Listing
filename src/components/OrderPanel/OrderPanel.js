@@ -39,6 +39,7 @@ import PriceVariantPicker from './PriceVariantPicker/PriceVariantPicker';
 import css from './OrderPanel.module.css';
 
 import { types as sdkTypes } from '../../util/sdkLoader';
+import { useSelector } from 'react-redux';
 
 const { Money } = sdkTypes;
 
@@ -142,6 +143,10 @@ const PriceMaybe = props => {
   } = props;
   const { listingType, unitType } = publicData || {};
 
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
+
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showPrice = displayPrice(foundListingTypeConfig);
   const isPriceVariationsInUse = !!publicData?.priceVariationsEnabled;
@@ -153,8 +158,15 @@ const PriceMaybe = props => {
 
   // Get formatted price or currency code if the currency does not match with marketplace currency
   const { formattedPrice, priceTitle } = priceData(price, marketplaceCurrency, intl);
+
+  const convertedPrice = new Money(price.amount, price.currency);
+  if (needPriceConversion) {
+    convertedPrice.amount *= USDConversionRate;
+    convertedPrice.currency = 'USD';
+  }
+
   const priceValue = (
-    <span className={css.priceValue}>{formatMoneyIfSupportedCurrency(price, intl)}</span>
+    <span className={css.priceValue}>{formatMoneyIfSupportedCurrency(convertedPrice, intl)}</span>
   );
   const pricePerUnit = (
     <span className={css.perUnit}>
@@ -351,6 +363,10 @@ const OrderPanel = props => {
     intl
   );
   const [selectedTab, setSelectedTab] = useState(tabs[tabs.length - 1]);
+
+    const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
 
   useEffect(() => {
     setMounted(true);
@@ -608,8 +624,8 @@ const OrderPanel = props => {
             {intl.formatMessage({ id: 'OrderPanel.pricePerAre' })}:{' '}
             {formatMoneyIfSupportedCurrency(
               new Money(
-                convertUnitToSubUnit(priceperare, unitDivisor(marketplaceCurrency)),
-                marketplaceCurrency
+                convertUnitToSubUnit(needPriceConversion ? Math.ceil(priceperare * USDConversionRate) : priceperare, unitDivisor(marketplaceCurrency)),
+                selectedCurrency
               ),
               intl
             )}

@@ -305,6 +305,10 @@ const PropertyCards = () => {
   } = state.LandingPage;
   const currentUser = useSelector(state => state.user.currentUser);
   const l = getListingsById(state, featuredListingIds);
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
+
   const [activeTab, setActiveTab] = useState('canggu');
   // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
@@ -490,6 +494,10 @@ const PropertyCards = () => {
                 price = p.amount / 100;
               }
 
+              if (needPriceConversion) {
+                price = price * USDConversionRate;
+              }
+
               const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
                 card.id.uuid
               );
@@ -601,7 +609,7 @@ const PropertyCards = () => {
                         </div>
                         <div className={styles.price}>
                           <span className={styles.priceValue}>
-                            {formatPriceInMillions(price)} IDR
+                            {formatPriceInMillions(price)} {needPriceConversion ? "USD" : "IDR"}
                           </span>
                           {isRentals && (
                             <span className={styles.priceUnit}>

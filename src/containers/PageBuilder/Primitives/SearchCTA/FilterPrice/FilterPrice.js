@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Field } from 'react-final-form';
+import { useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { FormattedMessage } from '../../../../../util/reactIntl';
 
@@ -13,14 +14,10 @@ const tabs = [
   { id: 'yearly', label: <FormattedMessage id="PageBuilder.SearchCTA.PriceFilter.yearly" /> },
 ];
 
-const formatPrice = price => {
-  return `${price / 1000000}M`;
-};
-
 const getRangeConfig = tabId => {
   const configs = {
     weekly: { min: 1000000, max: 150000000, step: 1000000 }, // 1M-150M
-    monthly: { min: 1000000, max: 500000000, step: 5000000 }, // 1M-500M
+    monthly: { min: 1000000, max: 500000000, step: 1000000 }, // 1M-500M
     yearly: { min: 50000000, max: 5000000000, step: 50000000 }, // 50M-5000M
   };
   return configs[tabId] || configs.monthly;
@@ -28,6 +25,20 @@ const getRangeConfig = tabId => {
 
 const getNonRentalConfig = () => {
   return { min: 1000000, max: 999000000000, step: 1000000 }; // 1M-9999000M
+};
+
+const toDisplayValue = (value, currency, conversionRate) => {
+  if (currency === 'IDR') {
+    return value / 1000000;
+  }
+  return Math.round(value * conversionRate);
+};
+
+const fromDisplayValue = (value, currency, conversionRate) => {
+  if (currency === 'IDR') {
+    return value * 1000000;
+  }
+  return value / conversionRate;
 };
 
 const PriceDropdown = ({
@@ -39,13 +50,15 @@ const PriceDropdown = ({
   isOpen,
   setIsOpen,
 }) => {
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const currency = useSelector(state => state.currency.selectedCurrency);
+
   const [activeTab, setActiveTab] = useState('monthly');
   const showTabsInPrice = activeTabKey === 'rentalvillas';
 
-  // Get initial config based on active tab
   const getInitialConfig = () => {
     if (showTabsInPrice) {
-      return getRangeConfig('monthly'); // Default to monthly
+      return getRangeConfig('monthly');
     }
     return getNonRentalConfig();
   };
@@ -53,34 +66,27 @@ const PriceDropdown = ({
   const initialConfig = getInitialConfig();
   const [priceRange, setPriceRange] = useState([initialConfig.min, initialConfig.max]);
 
-  // Add separate state for input values to allow intermediate editing
-  const [minInputValue, setMinInputValue] = useState(initialConfig.min / 1000000);
-  const [maxInputValue, setMaxInputValue] = useState(initialConfig.max / 1000000);
+  const [minInputValue, setMinInputValue] = useState(
+    toDisplayValue(initialConfig.min, currency, USDConversionRate)
+  );
+  const [maxInputValue, setMaxInputValue] = useState(
+    toDisplayValue(initialConfig.max, currency, USDConversionRate)
+  );
   const [isTabChanging, setIsTabChanging] = useState(false);
 
   useEffect(() => {
-    if (showTabsInPrice) {
-      // Reset to monthly defaults when switching to rental villas
-      const config = getRangeConfig('monthly');
-      setPriceRange([config.min, config.max]);
-      setMinInputValue(config.min / 1000000);
-      setMaxInputValue(config.max / 1000000);
-    } else {
-      const config = getNonRentalConfig();
-      setPriceRange([config.min, config.max]);
-      setMinInputValue(config.min / 1000000);
-      setMaxInputValue(config.max / 1000000);
-    }
-  }, [showTabsInPrice]);
+    const config = showTabsInPrice ? getRangeConfig('monthly') : getNonRentalConfig();
+    setPriceRange([config.min, config.max]);
+    setMinInputValue(toDisplayValue(config.min, currency, USDConversionRate));
+    setMaxInputValue(toDisplayValue(config.max, currency, USDConversionRate));
+  }, [showTabsInPrice, currency, USDConversionRate]);
 
-  // Update input values when priceRange changes (e.g., from slider)
-  // But don't interfere when tab is changing
   useEffect(() => {
     if (!isTabChanging) {
-      setMinInputValue(priceRange[0] / 1000000);
-      setMaxInputValue(priceRange[1] / 1000000);
+      setMinInputValue(toDisplayValue(priceRange[0], currency, USDConversionRate));
+      setMaxInputValue(toDisplayValue(priceRange[1], currency, USDConversionRate));
     }
-  }, [priceRange, isTabChanging]);
+  }, [priceRange, isTabChanging, currency, USDConversionRate]);
 
   const toggleDropdown = () => {
     setIsOpen(prev => !prev);
@@ -94,12 +100,12 @@ const PriceDropdown = ({
     setIsTabChanging(true);
     setActiveTab(tab);
     const config = getRangeConfig(tab);
-    setPriceRange([config.min, config.max]);
-    setMinInputValue(config.min / 1000000);
-    setMaxInputValue(config.max / 1000000);
-    handleRangeChange([config.min, config.max]);
+    const newRange = [config.min, config.max];
+    setPriceRange(newRange);
+    setMinInputValue(toDisplayValue(config.min, currency, USDConversionRate));
+    setMaxInputValue(toDisplayValue(config.max, currency, USDConversionRate));
+    handleRangeChange(newRange);
 
-    // Reset the flag after a brief delay to allow the change to complete
     setTimeout(() => {
       setIsTabChanging(false);
     }, 100);
@@ -107,7 +113,6 @@ const PriceDropdown = ({
 
   const handleRangeChange = handles => {
     setPriceRange(handles);
-    // Update the form value with the range and period
     input.onChange({
       period: activeTab,
       minPrice: handles[0],
@@ -119,21 +124,18 @@ const PriceDropdown = ({
     const inputValue = e.target.value;
     const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
 
-    // Prevent typing values beyond absolute max limit
     if (inputValue !== '' && !isNaN(inputValue)) {
       const numValue = parseFloat(inputValue);
-      if (numValue > config.max / 1000000) {
-        return; // Don't update input if beyond max limit
+      if (numValue > toDisplayValue(config.max, currency, USDConversionRate)) {
+        return;
       }
     }
 
     setMinInputValue(inputValue);
 
-    // Only update the range if we have a valid number and it's within absolute limits
     if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
+      const value = fromDisplayValue(parseFloat(inputValue), currency, USDConversionRate);
 
-      // Validate against absolute config limits and current max
       if (value >= config.min && value <= config.max && value <= priceRange[1]) {
         const newRange = [value, priceRange[1]];
         setPriceRange(newRange);
@@ -146,21 +148,18 @@ const PriceDropdown = ({
     const inputValue = e.target.value;
     const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
 
-    // Prevent typing values beyond absolute max limit
     if (inputValue !== '' && !isNaN(inputValue)) {
       const numValue = parseFloat(inputValue);
-      if (numValue > config.max / 1000000) {
-        return; // Don't update input if beyond max limit
+      if (numValue > toDisplayValue(config.max, currency, USDConversionRate)) {
+        return;
       }
     }
 
     setMaxInputValue(inputValue);
 
-    // Only update the range if we have a valid number and it's within absolute limits
     if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
+      const value = fromDisplayValue(parseFloat(inputValue), currency, USDConversionRate);
 
-      // Validate against absolute config limits and current min
       if (value <= config.max && value >= config.min && value >= priceRange[0]) {
         const newRange = [priceRange[0], value];
         setPriceRange(newRange);
@@ -169,17 +168,15 @@ const PriceDropdown = ({
     }
   };
 
-  // Add blur handlers to apply final validation
   const handleMinInputBlur = e => {
     const inputValue = e.target.value;
     if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
+      const value = fromDisplayValue(parseFloat(inputValue), currency, USDConversionRate);
       const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
       const clampedValue = Math.max(config.min, Math.min(value, priceRange[1]));
 
       if (clampedValue !== value) {
-        // Update input display to show clamped value
-        setMinInputValue(clampedValue / 1000000);
+        setMinInputValue(toDisplayValue(clampedValue, currency, USDConversionRate));
         const newRange = [clampedValue, priceRange[1]];
         setPriceRange(newRange);
         handleRangeChange(newRange);
@@ -190,13 +187,12 @@ const PriceDropdown = ({
   const handleMaxInputBlur = e => {
     const inputValue = e.target.value;
     if (inputValue !== '' && !isNaN(inputValue)) {
-      const value = parseFloat(inputValue) * 1000000;
+      const value = fromDisplayValue(parseFloat(inputValue), currency, USDConversionRate);
       const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
       const clampedValue = Math.min(config.max, Math.max(value, priceRange[0]));
 
       if (clampedValue !== value) {
-        // Update input display to show clamped value
-        setMaxInputValue(clampedValue / 1000000);
+        setMaxInputValue(toDisplayValue(clampedValue, currency, USDConversionRate));
         const newRange = [priceRange[0], clampedValue];
         setPriceRange(newRange);
         handleRangeChange(newRange);
@@ -204,9 +200,21 @@ const PriceDropdown = ({
     }
   };
 
+  const formatPrice = (price, currency, conversionRate) => {
+    const displayValue = toDisplayValue(price, currency, conversionRate);
+    if (currency === 'IDR') {
+      return `${displayValue}M`;
+    }
+    return `$${displayValue.toLocaleString('en-US')}`;
+  };
+
   const getCurrentValue = () => {
     if (input.value && priceRange.length > 0) {
-      return `${formatPrice(priceRange[0] || 0)} - ${formatPrice(priceRange[1])}`;
+      return `${formatPrice(priceRange[0] || 0, currency, USDConversionRate)} - ${formatPrice(
+        priceRange[1],
+        currency,
+        USDConversionRate
+      )}`;
     }
     return null;
   };
@@ -218,7 +226,14 @@ const PriceDropdown = ({
   const rootClass = rootClassName || css.root;
   const classes = classNames(rootClass, className);
 
-  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+  const priceUnit = currency === 'IDR' ? '(in millions IDR)' : '(in USD)';
+
+  const config = showTabsInPrice ? getRangeConfig(activeTab) : getNonRentalConfig();
+  const displayConfig = {
+    min: toDisplayValue(config.min, currency, USDConversionRate),
+    max: toDisplayValue(config.max, currency, USDConversionRate),
+    step: currency === 'IDR' ? config.step / 1000000 : 10,
+  };
 
   return (
     <OutsideClickHandler className={classes} onOutsideClick={() => setIsOpen(false)}>
@@ -248,7 +263,6 @@ const PriceDropdown = ({
             </span>
             <span className={css.subLabel}>{labelText}</span>
           </div>
-          {/* <span className={classNames(css.chevron, isOpen && css.isOpen)} /> */}
         </div>
 
         {isOpen && (
@@ -306,8 +320,8 @@ const PriceDropdown = ({
                 </h2>
                 <p className={css.menuItemMobileSubtitle}>
                   {showTabsInPrice
-                    ? 'Select a price range per week, month or year (in millions IDR)'
-                    : 'Select your price range (in millions IDR)'}
+                    ? `Select a price range per week, month or year ${priceUnit}`
+                    : `Select your price range ${priceUnit}`}
                 </p>
                 <span className={css.closeIcon} onClick={closeDropdown}>
                   <IconCollection name="close_icon" />
@@ -338,7 +352,6 @@ const PriceDropdown = ({
                 </div>
               )}
 
-              {/* Price Range Slider */}
               <div
                 className={classNames(css.sliderSection, {
                   [css.sliderSectionNoTabs]: !showTabsInPrice,
@@ -346,22 +359,19 @@ const PriceDropdown = ({
               >
                 <p className={css.menuItemSubtitle}>
                   {showTabsInPrice
-                    ? 'Select a price range per week, month or year (in millions IDR)'
-                    : 'Select your price range (in millions IDR)'}
+                    ? `Select a price range per week, month or year ${priceUnit}`
+                    : `Select your price range ${priceUnit}`}
                 </p>
                 <div className={css.sliderWrapper}>
                   <RangeSlider
-                    min={showTabsInPrice ? getRangeConfig(activeTab).min : getNonRentalConfig().min}
-                    max={showTabsInPrice ? getRangeConfig(activeTab).max : getNonRentalConfig().max}
-                    step={
-                      showTabsInPrice ? getRangeConfig(activeTab).step : getNonRentalConfig().step
-                    }
+                    min={config.min}
+                    max={config.max}
+                    step={config.step}
                     handles={priceRange}
                     onChange={handleRangeChange}
                   />
                 </div>
 
-                {/* Min/Max Values */}
                 <div className={css.priceValues}>
                   <div className={css.priceValue}>
                     <span className={css.priceLabel}>
@@ -373,21 +383,9 @@ const PriceDropdown = ({
                       value={minInputValue}
                       onChange={handleMinInputChange}
                       onBlur={handleMinInputBlur}
-                      min={
-                        showTabsInPrice
-                          ? getRangeConfig(activeTab).min / 1000000
-                          : getNonRentalConfig().min / 1000000
-                      }
-                      max={
-                        showTabsInPrice
-                          ? getRangeConfig(activeTab).max / 1000000
-                          : getNonRentalConfig().max / 1000000
-                      }
-                      step={
-                        showTabsInPrice
-                          ? getRangeConfig(activeTab).step / 1000000
-                          : getNonRentalConfig().step / 1000000
-                      }
+                      min={displayConfig.min}
+                      max={displayConfig.max}
+                      step={displayConfig.step}
                     />
                   </div>
                   <div className={css.priceValue}>
@@ -400,21 +398,9 @@ const PriceDropdown = ({
                       value={maxInputValue}
                       onChange={handleMaxInputChange}
                       onBlur={handleMaxInputBlur}
-                      min={
-                        showTabsInPrice
-                          ? getRangeConfig(activeTab).min / 1000000
-                          : getNonRentalConfig().min / 1000000
-                      }
-                      max={
-                        showTabsInPrice
-                          ? getRangeConfig(activeTab).max / 1000000
-                          : getNonRentalConfig().max / 1000000
-                      }
-                      step={
-                        showTabsInPrice
-                          ? getRangeConfig(activeTab).step / 1000000
-                          : getNonRentalConfig().step / 1000000
-                      }
+                      min={displayConfig.min}
+                      max={displayConfig.max}
+                      step={displayConfig.step}
                     />
                   </div>
                 </div>

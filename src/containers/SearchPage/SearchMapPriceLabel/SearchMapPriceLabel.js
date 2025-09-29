@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
 
 import { injectIntl, intlShape } from '../../../util/reactIntl';
 import { propTypes } from '../../../util/types';
 import { formatMoney } from '../../../util/currency';
 import { ensureListing } from '../../../util/data';
 import { isPriceVariationsEnabled } from '../../../util/configHelpers';
+import { formatPriceWithCurrency } from '../../../components/ListingCard/ListingCard';
 
 import css from './SearchMapPriceLabel.module.css';
 
@@ -34,8 +36,16 @@ class SearchMapPriceLabel extends Component {
     const hasSameRefreshToken =
       this.props.mapComponentRefreshToken === nextProps.mapComponentRefreshToken;
     const hasSameRentPeriodParam = this.props.rentPeriodParam === nextProps.rentPeriodParam;
+    const hasSameCurrencyConversion = this.props.currencyConversion?.selectedCurrency === nextProps.currencyConversion?.selectedCurrency;
 
-    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken && hasSameRentPeriodParam);
+    return !(
+      isSameListing &&
+      hasSamePrice &&
+      hasSameActiveStatus &&
+      hasSameCurrencyConversion &&
+      hasSameRefreshToken &&
+      hasSameRentPeriodParam
+    );
   }
 
   render() {
@@ -48,29 +58,32 @@ class SearchMapPriceLabel extends Component {
       isActive,
       config,
       rentPeriodParam,
+      currencyConversion,
     } = this.props;
-    
+
     const currentListing = ensureListing(listing);
     const { price, publicData } = currentListing.attributes;
     const priceAmount = price?.amount / 100;
 
     const rentPriceAmount =
-    rentPeriodParam === 'noFilter'
-      ? publicData['monthprice'] ?? publicData['weekprice'] ?? publicData['yearprice'] ?? priceAmount
-      : publicData[rentPeriodParam];
+      rentPeriodParam === 'noFilter'
+        ? publicData['monthprice'] ??
+          publicData['weekprice'] ??
+          publicData['yearprice'] ??
+          priceAmount
+        : publicData[rentPeriodParam];
 
-  const isRental = publicData?.categoryLevel1 === 'rentalvillas';
-  let formattedPriceAmount = (isRental ? rentPriceAmount : priceAmount)?.toString();
-
-    if (formattedPriceAmount) {
-      const numValue = parseFloat(formattedPriceAmount);
-      const millions = numValue / 1000000; // Convert to millions
-      formattedPriceAmount = `IDR ${(millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1))} Mil`;
+    const isRental = publicData?.categoryLevel1 === 'rentalvillas';
+    const needPriceConversion = currencyConversion?.selectedCurrency === 'USD';
+    let actualPrice = isRental ? rentPriceAmount : priceAmount;
+    if (needPriceConversion) {
+      actualPrice = actualPrice * currencyConversion?.conversionRate.USD;
     }
-
+    const currency = currencyConversion?.selectedCurrency || 'IDR';
+    let formattedPriceAmount = actualPrice ? formatPriceWithCurrency(actualPrice, currency) : null;
     // Create formatted price if currency is known or alternatively show just the unknown currency.
     const formattedPrice =
-    (price && price.currency === config.currency) || isRental
+      (price && price.currency === config.currency) || isRental
         ? formattedPriceAmount
         : price?.currency
         ? price.currency

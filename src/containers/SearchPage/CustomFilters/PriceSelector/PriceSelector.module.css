@@ -127,12 +127,6 @@
   gap: 16px;
 }
 
-.priceValues {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-
 .priceValue {
   display: flex;
   flex-direction: column;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { connect } from 'react-redux';
 import classNames from 'classnames';
 import { parse } from '../../../../util/urlHelpers';
 
@@ -16,6 +17,8 @@ import {
   IconCollection,
   Button,
 } from '../../../../components';
+
+import { setCurrency } from '../../../../ducks/currency.js';
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
@@ -173,6 +176,33 @@ const NotSignedInProfileMenu = ({
   );
 };
 
+const CurrencyToggler = ({ selectedCurrency, onSetCurrency }) => {
+  const handleCurrencyChange = currency => {
+    onSetCurrency(currency);
+  };
+
+  return (
+    <div className={css.currencyToggler}>
+      <button
+        className={classNames(css.currencyButton, {
+          [css.selectedCurrency]: selectedCurrency === 'IDR',
+        })}
+        onClick={() => handleCurrencyChange('IDR')}
+      >
+        IDR
+      </button>
+      <button
+        className={classNames(css.currencyButton, {
+          [css.selectedCurrency]: selectedCurrency === 'USD',
+        })}
+        onClick={() => handleCurrencyChange('USD')}
+      >
+        USD
+      </button>
+    </div>
+  );
+};
+
 /**
  * Topbar for desktop layout
  *
@@ -215,7 +245,9 @@ const TopbarDesktop = props => {
     inboxTab,
     openCustomFilters,
     location,
-    history
+    history,
+    selectedCurrency,
+    onSetCurrency,
   } = props;
   const [mounted, setMounted] = useState(false);
   const [scrollToBottom, setScrollToBottom] = useState(false);
@@ -227,6 +259,8 @@ const TopbarDesktop = props => {
   // Parse URL parameters to determine active tab
   const urlParams = parse(location?.search || '');
   const currentCategoryFromURL = urlParams.pub_categoryLevel1;
+
+  const showCurrencyToggler = config.multiCurrencyEnabled && ['LandingPage', 'search', 'ListingPage'].includes(currentPage);
 
   // Update active category when URL changes
   useEffect(() => {
@@ -396,6 +430,7 @@ const TopbarDesktop = props => {
           </Button>
         </div>}
         <div className={classNames(css.rightMenus, { [css.searchPageTopbarMenu]: currentPage === 'search' })}>
+          {showCurrencyToggler && <CurrencyToggler selectedCurrency={selectedCurrency} onSetCurrency={onSetCurrency} />}
           <CustomLinksMenu
             currentPage={currentPage}
             customLinks={customLinks}
@@ -413,4 +448,14 @@ const TopbarDesktop = props => {
   );
 };
 
-export default TopbarDesktop;
+const mapStateToProps = state => {
+  return {
+    selectedCurrency: state.currency.selectedCurrency,
+  };
+};
+
+const mapDispatchToProps = dispatch => ({
+  onSetCurrency: currency => dispatch(setCurrency(currency)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TopbarDesktop);
