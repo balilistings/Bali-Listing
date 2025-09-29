@@ -58,6 +58,10 @@ const TRUST_PROXY = process.env.SERVER_SHARETRIBE_TRUST_PROXY || null;
 const CSP = process.env.REACT_APP_CSP;
 const cspReportUrl = '/csp-report';
 const cspEnabled = CSP === 'block' || CSP === 'report';
+const PAGE_CACHE_DURATION = process.env.PAGE_CACHE_DURATION
+  ? parseInt(process.env.PAGE_CACHE_DURATION, 10)
+  : 0;
+const ENABLE_STATIC_ASSET_CACHING = process.env.ENABLE_STATIC_ASSET_CACHING === 'true';
 
 // Without these, something will break for sure
 const MANDATORY_ENV_VARIABLES = [
@@ -155,7 +159,17 @@ if (TRUST_PROXY === 'true') {
 }
 
 app.use(compression());
-app.use('/static', express.static(path.join(buildPath, 'static')));
+
+if (ENABLE_STATIC_ASSET_CACHING) {
+  const staticOptions = {
+    maxAge: '1y',
+    immutable: true,
+  };
+  app.use('/static', express.static(path.join(buildPath, 'static'), staticOptions));
+} else {
+  app.use('/static', express.static(path.join(buildPath, 'static')));
+}
+
 app.use(cookieParser());
 
 // We don't serve favicon.ico from root. PNG images are used instead for icons through link elements.
@@ -228,7 +242,18 @@ app.get('*', async (req, res) => {
   // Until we have a better plan for caching dynamic content and we
   // make sure that no sensitive data can appear in the prefetched
   // data, let's disable response caching altogether.
-  res.set(noCacheHeaders);
+      // Custom caching for landing page.
+      const { getSupportedLocales } = require('../src/util/translation');
+      const SUPPORTED_LOCALES = getSupportedLocales();
+      const pathParts = req.url.split('/').filter(p => p);
+      const isLandingPage =
+        req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
+
+      if (isLandingPage && PAGE_CACHE_DURATION > 0) {
+        res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
+      } else {
+        res.set(noCacheHeaders);
+      }
 
   // Get chunk extractors from node and web builds
   // https://loadable-components.com/docs/api-loadable-server/#chunkextractor
