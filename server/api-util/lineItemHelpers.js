@@ -1,5 +1,10 @@
 const Decimal = require('decimal.js');
-const moment = require('moment-timezone/builds/moment-timezone-with-data-10-year-range.min');
+const dayjs = require('dayjs');
+const timezone = require('dayjs/plugin/timezone');
+const utc = require('dayjs/plugin/utc');
+
+dayjs.extend(timezone);
+dayjs.extend(utc);
 const { types } = require('sharetribe-flex-sdk');
 const { Money } = types;
 
@@ -159,8 +164,7 @@ exports.calculateQuantityFromDates = (startDate, endDate, type) => {
  * you can change parameter 'hours' to 'minutes' and use that to calculate the
  * quantity of timeslots.
  *
- * See moment documentation about diff:
- * https://momentjs.com/docs/#/displaying/difference/
+ * See dayjs documentation about diff:
  *
  * @param {Date} startDate
  * @param {Date} endDate
@@ -169,8 +173,8 @@ exports.calculateQuantityFromDates = (startDate, endDate, type) => {
  *
  */
 exports.calculateQuantityFromHours = (startDate, endDate) => {
-  // Note: the last parameter (true) ensures that floats are returned.
-  return moment(endDate).diff(moment(startDate), 'hours', true);
+  // Note: dayjs.diff returns a number, which is the same as moment.diff
+  return dayjs(endDate).diff(dayjs(startDate), 'hour', true);
 };
 
 /**

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import css from './CustomAvailablePerField.module.css';
 import SingleDatePicker from '../../DatePicker/DatePickers/SingleDatePicker';
 import LabelWithTooltip from '../../LabelWithTooltip/LabelWithTooltip';
@@ -17,9 +17,9 @@ const CustomAvailablePerField = props => {
 
     // Handle new date format
     if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
-      const date = moment.utc(fieldValue);
-      if (date.isValid()) {
-        const today = moment.utc().startOf('day');
+      const date = dayjs.utc(fieldValue);
+      if (date.isValid && date.isValid()) {
+        const today = dayjs.utc().startOf('day');
         return date.isSameOrBefore(today) ? 'yes' : 'no';
       }
     }
@@ -33,8 +33,8 @@ const CustomAvailablePerField = props => {
     }
 
     if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
-      const date = moment.utc(fieldValue);
-      if (date.isValid()) {
+      const date = dayjs.utc(fieldValue);
+      if (date.isValid && date.isValid()) {
         return date.toDate();
       }
     }
@@ -51,7 +51,7 @@ const CustomAvailablePerField = props => {
     setSelection(value);
 
     if (value === 'yes') {
-      const today = moment.utc().startOf('day');
+      const today = dayjs.utc().startOf('day');
       const todayString = today.format('YYYY-MM-DD');
       setSelectedDate(today.toDate());
       input.onChange(todayString);
@@ -64,9 +64,9 @@ const CustomAvailablePerField = props => {
   // Handle date picker change
   const handleDateChange = date => {
     if (date) {
-      const momentDate = moment(date);
-      setSelectedDate(momentDate.toDate());
-      const dateString = momentDate.format('YYYY-MM-DD');
+      const dayjsDate = dayjs(date);
+      setSelectedDate(dayjsDate.toDate());
+      const dateString = dayjsDate.format('YYYY-MM-DD');
       input.onChange(dateString);
     } else {
       setSelectedDate(null);
@@ -101,8 +101,8 @@ const CustomAvailablePerField = props => {
             value={selectedDate}
             onChange={handleDateChange}
             isDayBlocked={day => {
-              const today = moment().startOf('day');
-              return moment(day).isBefore(today);
+              const today = dayjs().startOf('day');
+              return dayjs(day).isBefore(today);
             }}
           />
         </div>
