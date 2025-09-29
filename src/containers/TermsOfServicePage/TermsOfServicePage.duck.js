@@ -9,7 +9,6 @@ export const loadData = (params, search, config, match) => dispatch => {
   };
 
   const pageAsset = constructLocalizedPageAssets(assetMap, match);
-  // throw new Error(JSON.stringify(pageAsset));
   
   return dispatch(fetchPageAssets(pageAsset, true));
 };
