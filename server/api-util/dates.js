@@ -1,4 +1,4 @@
-const moment = require('moment');
+const dayjs = require('dayjs');
 
 /** Helper functions for handling dates
  * These helper functions are copied from src/util/dates.js
@@ -7,7 +7,7 @@ const moment = require('moment');
 /**
  * Calculate the number of nights between the given dates.
  *
- * This uses moment#diff and, therefore, it just checks,
+ * This uses dayjs#diff and, therefore, it just checks,
  * if there are 1000x60x60x24 milliseconds between date objects.
  *
  * Note: This should not be used for checking if the local date has
@@ -20,7 +20,7 @@ const moment = require('moment');
  * @returns {Number} number of nights between the given dates
  */
 exports.nightsBetween = (startDate, endDate) => {
-  const nights = moment(endDate).diff(startDate, 'days');
+  const nights = dayjs(endDate).diff(startDate, 'day');
   if (nights < 0) {
     throw new Error('End date cannot be before start date');
   }
@@ -30,7 +30,7 @@ exports.nightsBetween = (startDate, endDate) => {
 /**
  * Calculate the number of days between the given dates.
  *
- * This uses moment#diff and, therefore, it just checks,
+ * This uses dayjs#diff and, therefore, it just checks,
  * if there are 1000x60x60x24 milliseconds between date objects.
  *
  * Note: This should not be used for checking if the local date has
@@ -46,7 +46,7 @@ exports.nightsBetween = (startDate, endDate) => {
  * @returns {Number} number of days between the given dates
  */
 exports.daysBetween = (startDate, endDate) => {
-  const days = moment(endDate).diff(startDate, 'days');
+  const days = dayjs(endDate).diff(startDate, 'day');
   if (days < 0) {
     throw new Error('End date cannot be before start date');
   }
