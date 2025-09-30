@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import unified from 'unified';
 import parse from 'remark-parse';
@@ -18,9 +18,9 @@ const renderAst = new rehypeReact({ createElement: React.createElement }).Compil
 const AboutUsPage = props => {
   const dispatch = useDispatch();
   const params = useParams();
-  const pageId = 'about';
+  const pageId = 'about-new';
 
-  const { pageAssetsData, inProgress, error } = useSelector(state => state.hostedAssets || {});
+  const { pageAssetsData, inProgress, error } = useSelector(state => state.hostedAssets || {}, shallowEqual);
 
   useEffect(() => {
     if (inProgress || pageAssetsData?.[pageId]) {
@@ -38,47 +38,20 @@ const AboutUsPage = props => {
   }
 
   const pageData = pageAssetsData?.[pageId]?.data;
-  const section = pageData?.sections?.[0];
-  const block = section?.blocks?.[0];
-  const markdownContent = block?.text?.content || '';
 
-  const processor = unified().use(parse);
-  const ast = processor.parse(markdownContent);
-
-  const contentParts = ast.children.reduce((acc, node) => {
-    if (node.type === 'heading' && node.depth === 2) {
-      const titleNode = node.children[0];
-      const title = titleNode ? titleNode.value : '';
-      acc.push({ title, content: [] });
-    } else if (acc.length > 0) {
-      acc[acc.length - 1].content.push(node);
-    } else {
-      if (!acc[0]) {
-        acc.push({ title: 'intro', content: [] });
-      }
-      acc[0].content.push(node);
-    }
-    return acc;
-  }, []);
-
-  const toReact = contentAst => {
-    if (!contentAst || contentAst.length === 0) return null;
-    const content = { type: 'root', children: contentAst };
-    return renderAst(unified().use(remark2rehype).runSync(content));
+  const toReact = markdown => {
+    if (!markdown) return null;
+    const content = unified()
+      .use(parse)
+      .parse(markdown);
+    const rehypeAst = unified()
+      .use(remark2rehype)
+      .runSync(content);
+    return renderAst(rehypeAst);
   };
 
-  const birthContent = toReact(contentParts.find(p => p.title === 'intro')?.content);
-  const missionContent = toReact(contentParts.find(p => p.title === 'Our Mission')?.content);
-  const differentContent = toReact(
-    contentParts.find(p => p.title === 'What Makes BaliListings Different?')?.content
-  );
-
-  const birthTitle = section?.title?.content || 'The Birth of Bali Listings';
-  const missionTitle = 'Our mission';
-  const differentTitle = 'What Makes Bali Listings Different';
-
-  const missionImage = block?.media?.image?.attributes?.variants?.landscape800?.url;
-  const missionImageAlt = block?.media?.alt;
+  const section = pageData?.sections?.[0];
+  const blocks = section?.blocks || [];
 
   return (
     <div className={css.root}>
@@ -87,27 +60,132 @@ const AboutUsPage = props => {
         <h1 className={css.heroTitle}>About Us</h1>
       </div>
       <div className={css.content}>
-        <div className={css.section}>
-          <h2 className={css.sectionTitle} style={{ whiteSpace: 'pre-line' }}>
-            {birthTitle}
-          </h2>
-          <div className={css.sectionText}>{birthContent}</div>
-        </div>
-        <div className={css.missionSection}>
-          {missionImage ? (
-            <img src={missionImage} alt={missionImageAlt} className={css.missionImage} />
-          ) : null}
-          <div className={css.missionContent}>
-            <h2 className={css.missionTitle}>{missionTitle}</h2>
-            <div className={css.missionText}>{missionContent}</div>
-          </div>
-        </div>
-        <div className={css.differentSection}>
-          <h2 className={css.differentTitle} style={{ whiteSpace: 'pre-line' }}>
-            {differentTitle}
-          </h2>
-          <div className={css.differentText}>{differentContent}</div>
-        </div>
+        {blocks.map((block, i) => {
+          const title = block.title?.content;
+          const rawContent = block.text?.content;
+          const image = block.media?.image?.attributes?.variants?.original800?.url;
+          const imageAlt = block.media?.alt;
+
+          if (i === 0) {
+            return (
+              <div key={i} className={css.section}>
+                <h2 className={css.sectionTitle} style={{ whiteSpace: 'pre-line' }}>
+                  {title}
+                </h2>
+                <div className={css.sectionText}>{toReact(rawContent)}</div>
+              </div>
+            );
+          }
+          if (i === 1 || i === 7) {
+            // Mission, Explore
+            return (
+              <div key={i} className={css.missionSection}>
+                {image ? <img src={image} alt={imageAlt} className={css.missionImage} /> : null}
+                <div className={css.missionContent}>
+                  <h2 className={css.missionTitle}>{title}</h2>
+                  <div className={css.missionText}>{toReact(rawContent)}</div>
+                </div>
+              </div>
+            );
+          }
+          if (i === 2) {
+            return (
+              <div key={i} className={css.differentSection}>
+                <h2 className={css.differentTitle} style={{ whiteSpace: 'pre-line' }}>
+                  {title}
+                </h2>
+                <div className={css.differentText}>{toReact(rawContent)}</div>
+              </div>
+            );
+          }
+          if (i === 3 || i === 5) {
+            // Smart Filters, Free to use
+            const [mainText, pillText] = rawContent.split('\n\n');
+            const pills = (pillText || ' ')
+              .substring(2)
+              .split('\n> ')
+              .map(p => p.replace(/\\|\./g, '').trim());
+
+            return (
+              <div key={i} className={css.featureSection}>
+                <div className={css.missionContent}>
+                  <h2 className={css.missionTitle}>{title}</h2>
+                  <div className={css.missionText}>{toReact(mainText)}</div>
+                  <div className={css.pillsContainer}>
+                    {pills.map((pill, j) => (
+                      <div key={j} className={css.pill}>
+                        {pill}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {image ? <img src={image} alt={imageAlt} className={css.missionImage} /> : null}
+              </div>
+            );
+          }
+          if (i === 4) {
+            // Verified
+            const [mainText, pillText] = rawContent.split('\n\n');
+            const pills = (pillText || ' ')
+              .substring(2)
+              .split('\n> ')
+              .map(p => p.replace(/\\|\./g, '').trim());
+
+            return (
+              <div key={i} className={css.missionSection}>
+                {image ? <img src={image} alt={imageAlt} className={css.missionImage} /> : null}
+                <div className={css.missionContent}>
+                  <h2 className={css.missionTitle}>{title}</h2>
+                  <div className={css.missionText}>{toReact(mainText)}</div>
+                  <div className={css.pillsContainer}>
+                    {pills.map((pill, j) => (
+                      <div key={j} className={css.pill}>
+                        {pill}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+          if (i === 6) {
+            // Why people choose us
+            const textParts = rawContent.split('\n\n');
+            const mainText = textParts[0];
+            const statsContent = textParts[1] || '';
+            const stats =
+              statsContent.length > 0
+                ? statsContent
+                    .substring(2)
+                    .split('\n> ')
+                    .map(s => {
+                      const [number, ...labelParts] = s.split('. ');
+                      const label = labelParts.join('. ');
+                      return {
+                        number: number.trim(),
+                        label: label.replace(/\\/g, '').trim(),
+                      };
+                    })
+                : [];
+
+            return (
+              <div key={i} className={css.statsSection}>
+                <h2 className={css.statsTitle}>{title}</h2>
+                <div className={css.statsText}>{mainText}</div>
+                <div className={css.statsContainer}>
+                  {stats.map((stat, j) => (
+                    <div key={j} className={css.statItem}>
+                      <span className={css.statNumber}>{stat.number}</span>
+                      <span className={css.statLabel}>{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+
+          return null;
+        })}
       </div>
       <FooterContainer />
     </div>
