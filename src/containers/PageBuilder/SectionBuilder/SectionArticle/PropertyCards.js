@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './PropertyCards.module.css';
 import IconCollection from '../../../../components/IconCollection/IconCollection';
 import Slider from 'react-slick';
+import useDisableBodyScrollOnSwipe from '../../../../util/useDisableBodyScrollOnSwipe';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { getListingsById } from '../../../../ducks/marketplaceData.duck';
@@ -296,6 +297,32 @@ export const customLocationBounds = [
   },
 ];
 
+const CardSlider = props => {
+  const { sliderSettings, images, title } = props;
+  const setSliderNode = useDisableBodyScrollOnSwipe();
+  const sliderRef = useCallback(
+    element => {
+      if (element && element.innerSlider && element.innerSlider.list) {
+        setSliderNode(element.innerSlider.list);
+      }
+    },
+    [setSliderNode]
+  );
+
+  return (
+    <Slider {...sliderSettings} ref={sliderRef} className={styles.slider}>
+      {images.map((img, imgIdx) => (
+        <img
+          src={img}
+          alt={title}
+          className={styles.image + ' ' + styles.imageFade}
+          key={imgIdx}
+        />
+      ))}
+    </Slider>
+  );
+};
+
 const PropertyCards = () => {
   const { featuredListingIds, featuredListingsInProgress } = useSelector(state => state.LandingPage, shallowEqual);
   const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
@@ -517,16 +544,7 @@ const PropertyCards = () => {
                   key={card.id.uuid}
                 >
                   <div className={styles.imageWrapper}>
-                    <Slider {...cardSliderSettings} className={styles.slider}>
-                      {imagesUrls.map((img, imgIdx) => (
-                        <img
-                          src={img}
-                          alt={title}
-                          className={styles.image + ' ' + styles.imageFade}
-                          key={imgIdx}
-                        />
-                      ))}
-                    </Slider>
+                    <CardSlider sliderSettings={cardSliderSettings} images={imagesUrls} title={title} />
                     <button 
                       className={classNames(styles.wishlistButton, isFavorite ? styles.active : '')} 
                       onClick={onToggleFavorites}>
