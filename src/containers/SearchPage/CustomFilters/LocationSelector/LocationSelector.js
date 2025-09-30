@@ -32,8 +32,8 @@ const locations = [
   },
   {
     id: 'umalas',
-    name: 'Umalas',
-    mapNameToUse: 'Jl. Umalas, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali, Indonesia',
+    name: 'Kerobokan',
+    mapNameToUse: 'Jl. Raya Kerobokan, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali, Indonesia',
     mapDetails: mapDetails['umalas'],
   },
   {
