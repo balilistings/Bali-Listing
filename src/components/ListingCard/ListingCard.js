@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -18,6 +18,7 @@ import { handleToggleFavorites } from '../../util/userFavorites';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import useDisableBodyScrollOnSwipe from '../../util/useDisableBodyScrollOnSwipe';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -228,6 +229,15 @@ export const ListingCard = props => {
     currentUser,
     onUpdateFavorites,
   } = props;
+  const setSliderNode = useDisableBodyScrollOnSwipe();
+  const sliderRef = useCallback(
+    element => {
+      if (element && element.innerSlider && element.innerSlider.list) {
+        setSliderNode(element.innerSlider.list);
+      }
+    },
+    [setSliderNode]
+  );
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
   const id = currentListing.id.uuid;
@@ -296,7 +306,7 @@ export const ListingCard = props => {
       </button>
 
       <div className={css.imageWrapper}>
-        <Slider {...cardSliderSettings} className={css.slider}>
+        <Slider ref={sliderRef} {...cardSliderSettings} className={css.slider}>
           {imagesUrls.map((img, imgIdx) => (
             <img src={img} alt={title} className={css.image + ' ' + css.imageFade} key={imgIdx} />
           ))}

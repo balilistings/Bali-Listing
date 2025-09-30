@@ -482,8 +482,8 @@ margin-right: 10px;
     cursor: pointer;
     display: none !important;
     & svg{
-      width: 16px;
-      height: 16px;
+      width: 24px;
+      height: 24px;
     }
   }
 
@@ -563,6 +563,13 @@ margin-right: 10px;
   @media (--viewportSmall) {
     top: 18px;
     right: 18px;
+    width: 26px;
+    height: 26px;
+  }
+
+  @media (--viewportMedium) {
+    width: 40px;
+    height: 40px;
   }
 }
 

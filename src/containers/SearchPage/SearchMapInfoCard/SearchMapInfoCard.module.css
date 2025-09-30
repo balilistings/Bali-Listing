@@ -669,9 +669,9 @@ margin-right: 10px;
     @media (min-width: 768px) {
       display: none !important;
      }
-    & svg{
-      width: 16px;
-      height: 16px;
+    & svg {
+      width: 24px;
+      height: 24px;
       @media (max-width: 767px) {
         width: 23px;
         height: 23px;
