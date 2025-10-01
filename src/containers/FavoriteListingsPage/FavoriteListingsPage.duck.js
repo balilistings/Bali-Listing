@@ -3,14 +3,14 @@ import { storableError } from '../../util/errors';
 import { createImageVariantConfig } from '../../util/sdkLoader';
 import { parse } from '../../util/urlHelpers';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { fetchCurrentUser } from '../../ducks/user.duck'; // Tambahkan import ini
+import { fetchCurrentUser } from '../../ducks/user.duck';
 
 // Pagination page size might need to be dynamic on responsive page layouts
 const RESULT_PAGE_SIZE = 42;
 
 // ================ Action types ================ //
 export const FAVORITES_CLEAR = 'app/FavoriteListingsPage/FAVORITES_CLEAR';
-export const FAVORITES_UNFAVORITE = 'app/FavoriteListingsPage/FAVORITES_UNFAVORITE'; // new
+export const FAVORITES_UNFAVORITE = 'app/FavoriteListingsPage/FAVORITES_UNFAVORITE';
 export const FETCH_LISTINGS_REQUEST = 'app/FavoriteListingsPage/FETCH_LISTINGS_REQUEST';
 export const FETCH_LISTINGS_SUCCESS = 'app/FavoriteListingsPage/FETCH_LISTINGS_SUCCESS';
 export const FETCH_LISTINGS_ERROR = 'app/FavoriteListingsPage/FETCH_LISTINGS_ERROR';
@@ -23,6 +23,7 @@ const initialState = {
   queryInProgress: false,
   queryFavoritesError: null,
   currentPageResultIds: [],
+  listings: [],
 };
 
 const resultIds = data => data.data.map(l => l.id);
@@ -31,7 +32,6 @@ const resultIds = data => data.data.map(l => l.id);
 export const unfavoriteAllListings = () => async (dispatch, getState, sdk) => {
   const { currentUser } = getState().user;
 
-  // Jika tidak ada currentUser, cukup bersihkan state halaman
   if (!currentUser) {
     dispatch(unfavoriteAllSuccess());
     return Promise.resolve();
@@ -47,15 +47,9 @@ export const unfavoriteAllListings = () => async (dispatch, getState, sdk) => {
   };
 
   try {
-    // Update server: hapus semua favorites
     const response = await sdk.currentUser.updateProfile(payload);
-
-    // Refresh global currentUser agar state app sinkron
     await dispatch(fetchCurrentUser());
-
-    // Hapus semua favorites dari state halaman (UI responsif)
     dispatch(unfavoriteAllSuccess());
-
     return response;
   } catch (e) {
     console.error('❌ unfavoriteAllListings failed:', e);
@@ -74,15 +68,18 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
         queryFavoritesError: null,
         currentPageResultIds: [],
       };
+
     case FETCH_LISTINGS_SUCCESS:
+      // ✅ FIXED: Hapus duplikasi, simpan listings dengan benar
       return {
         ...state,
         currentPageResultIds: resultIds(payload.data),
-        pagination: payload.data.meta,
+        listings: Array.isArray(payload.data?.data) ? payload.data.data : [],
+        pagination: payload.data?.meta || null,
         queryInProgress: false,
       };
+
     case FETCH_LISTINGS_ERROR:
-      // eslint-disable-next-line no-console
       console.error(payload);
       return {
         ...state,
@@ -91,11 +88,13 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
       };
 
     case FAVORITES_UNFAVORITE:
-      // payload.listingId is a uuid string; currentPageResultIds is array of id objects
       return {
         ...state,
         currentPageResultIds: state.currentPageResultIds.filter(
           idObj => idObj?.uuid !== payload.listingId
+        ),
+        listings: state.listings.filter(
+          listing => listing.id?.uuid !== payload.listingId
         ),
       };
 
@@ -103,6 +102,7 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
       return {
         ...state,
         currentPageResultIds: [],
+        listings: [],
         pagination: null,
       };
 
@@ -136,14 +136,12 @@ export const unfavoriteSuccess = listingId => ({
   payload: { listingId },
 });
 
-// Action to clear all favorites from page state (used after successful server update)
 export const unfavoriteAllSuccess = () => ({
   type: FAVORITES_CLEAR,
 });
 
 // ================ Thunks ================ //
 
-// Query favorite listings (unchanged, only slightly annotated)
 export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) => {
   dispatch(queryFavoritesRequest(queryParams));
   const { currentUser } = getState().user;
@@ -165,6 +163,13 @@ export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) =>
     .then(response => {
       console.log('✅ API Response received:', response);
       console.log('📊 Number of listings:', response.data?.data?.length || 0);
+      
+      // ✅ Log gambar untuk debugging
+      if (response.data?.data) {
+        response.data.data.forEach((listing, idx) => {
+          console.log(`📸 Listing ${idx + 1} images:`, listing.relationships?.images);
+        });
+      }
 
       dispatch(addMarketplaceEntities(response));
       dispatch(queryFavoritesSuccess(response));
@@ -177,22 +182,9 @@ export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) =>
     });
 };
 
-/**
- * Thunk: unfavoriteListing(listingId)
- *
- * - Mengambil currentUser dari state
- * - Menghapus listingId dari array favorites (privateData)
- * - Memanggil sdk.currentUser.updateProfile untuk menyimpan perubahan
- * - Setelah sukses -> dispatch(unfavoriteSuccess(listingId)) agar halaman favorit
- *   segera menghapus listing dari currentPageResultIds (UI responsif)
- *
- * Note: jika Anda ingin juga memperbarui state.user.currentUser secara global,
- * Anda bisa memanggil fetchCurrentUser() atau dispatch action yang sesuai di user.duck.
- */
 export const unfavoriteListing = listingId => async (dispatch, getState, sdk) => {
   const { currentUser } = getState().user;
 
-  // Jika tidak ada currentUser, langsung hapus di UI dan selesai
   if (!currentUser) {
     dispatch(unfavoriteSuccess(listingId));
     return Promise.resolve();
@@ -211,24 +203,15 @@ export const unfavoriteListing = listingId => async (dispatch, getState, sdk) =>
   };
 
   try {
-    // Update profile di server
     const response = await sdk.currentUser.updateProfile(payload);
-
-    // Pastikan Redux currentUser ter-refresh dari server sebelum kita memutuskan state halaman
-    // agar tidak terjadi race condition saat halaman direload
     await dispatch(fetchCurrentUser());
-
-    // Update local page state sehingga UI langsung merefleksikan perubahan
     dispatch(unfavoriteSuccess(listingId));
-
     return response;
   } catch (e) {
     console.error('❌ unfavoriteListing failed:', e);
     throw e;
   }
-
 };
-
 
 export const loadData = (params, search, config) => {
   const queryParams = parse(search);
@@ -244,7 +227,7 @@ export const loadData = (params, search, config) => {
   console.log('=== 🔧 LOAD DATA CONFIGURATION ===');
   console.log('🖼️ Image config:', { aspectWidth, aspectHeight, variantPrefix, aspectRatio });
 
-  // Perbaikan: Tingkatkan limit gambar dan tambah variant yang lebih lengkap
+  // ✅ FIXED: Tambah lebih banyak image variants
   const imageVariantConfig = {
     ...createImageVariantConfig(`${variantPrefix}`, 400, aspectRatio),
     ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
@@ -256,18 +239,30 @@ export const loadData = (params, search, config) => {
     ...queryParams,
     page,
     perPage: RESULT_PAGE_SIZE,
-    include: ['images', 'author'],
+    include: ['images', 'author', 'author.profileImage'],
     'fields.image': [
+      // Primary variants
       `variants.${variantPrefix}`,
       `variants.${variantPrefix}-2x`,
+      // Fallback variants
+      'variants.landscape-crop',
+      'variants.landscape-crop2x',
       'variants.scaled-small',
       'variants.scaled-medium',
       'variants.scaled-large',
-      'variants.landscape-crop',
-      'variants.landscape-crop2x'
+      // Original
+      'url'
+    ],
+    'fields.listing': [
+      'title',
+      'description',
+      'price',
+      'publicData',
+      'geolocation',
+      'state'
     ],
     ...imageVariantConfig,
-    'limit.images': 99,
+    'limit.images': 10, // ✅ Reasonable limit
   };
 
   console.log('📡 Final API params for loadData:', apiParams);
