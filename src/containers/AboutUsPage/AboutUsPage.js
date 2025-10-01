@@ -9,9 +9,12 @@ import rehypeReact from 'rehype-react';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
+import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage';
 import { loadData } from './AboutUsPage.duck';
 
 import css from './AboutUsPage.module.css';
+import { FormattedMessage } from 'react-intl';
+import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -20,7 +23,10 @@ const AboutUsPage = props => {
   const params = useParams();
   const pageId = 'about-new';
 
-  const { pageAssetsData, inProgress, error } = useSelector(state => state.hostedAssets || {}, shallowEqual);
+  const { pageAssetsData, inProgress, error } = useSelector(
+    state => state.hostedAssets || {},
+    shallowEqual
+  );
 
   useEffect(() => {
     if (inProgress || pageAssetsData?.[pageId]) {
@@ -57,13 +63,16 @@ const AboutUsPage = props => {
     <div className={css.root}>
       <TopbarContainer />
       <div className={css.hero}>
-        <h1 className={css.heroTitle}>About Us</h1>
+        <Spiral className={css.spiral} />
+        <h1 className={css.heroTitle}>
+          <FormattedMessage id="TranslatedLink.aboutUs" />
+        </h1>
       </div>
       <div className={css.content}>
         {blocks.map((block, i) => {
           const title = block.title?.content;
           const rawContent = block.text?.content;
-          const image = block.media?.image?.attributes?.variants?.original800?.url;
+          const image = block.media?.image;
           const imageAlt = block.media?.alt;
 
           if (i === 0) {
@@ -78,12 +87,24 @@ const AboutUsPage = props => {
           }
           if (i === 1 || i === 7) {
             // Mission, Explore
+            const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
             return (
-              <div key={i} className={css.missionSection}>
-                {image ? <img src={image} alt={imageAlt} className={css.missionImage} /> : null}
-                <div className={css.missionContent}>
-                  <h2 className={css.missionTitle}>{title}</h2>
-                  <div className={css.missionText}>{toReact(rawContent)}</div>
+              <div key={i} className={css.missionParent}>
+                <h2 className={`${css.missionTitle} ${css.mobileOnly}`}>{title}</h2>
+                <div className={css.missionSection}>
+                  {image ? (
+                    <ResponsiveImage
+                      alt={imageAlt || title}
+                      image={image}
+                      variants={imageVariants}
+                      className={css.missionImage}
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                    />
+                  ) : null}
+                  <div className={css.missionContent}>
+                    <h2 className={`${css.missionTitle} ${css.desktopOnly}`}>{title}</h2>
+                    <div className={css.missionText}>{toReact(rawContent)}</div>
+                  </div>
                 </div>
               </div>
             );
@@ -106,20 +127,32 @@ const AboutUsPage = props => {
               .split('\n> ')
               .map(p => p.replace(/\\|\./g, '').trim());
 
+            const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
             return (
-              <div key={i} className={css.featureSection}>
-                <div className={css.missionContent}>
-                  <h2 className={css.missionTitle}>{title}</h2>
-                  <div className={css.missionText}>{toReact(mainText)}</div>
-                  <div className={css.pillsContainer}>
-                    {pills.map((pill, j) => (
-                      <div key={j} className={css.pill}>
-                        {pill}
-                      </div>
-                    ))}
+              <div key={i} className={css.missionParent}>
+                <h3 className={`$ ${css.mobileOnly}`}>{title}</h3>
+                <div className={css.featureSection}>
+                  <div className={css.missionContent}>
+                    <h3 className={`${css.desktopOnly}`}>{title}</h3>
+                    <div className={css.missionText}>{toReact(mainText)}</div>
+                    <div className={css.pillsContainer}>
+                      {pills.map((pill, j) => (
+                        <div key={j} className={css.pill}>
+                          {pill}
+                        </div>
+                      ))}
+                    </div>
                   </div>
+                  {image ? (
+                    <ResponsiveImage
+                      alt={imageAlt || title}
+                      image={image}
+                      variants={imageVariants}
+                      className={css.missionImage}
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                    />
+                  ) : null}
                 </div>
-                {image ? <img src={image} alt={imageAlt} className={css.missionImage} /> : null}
               </div>
             );
           }
@@ -131,18 +164,30 @@ const AboutUsPage = props => {
               .split('\n> ')
               .map(p => p.replace(/\\|\./g, '').trim());
 
+            const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
             return (
-              <div key={i} className={css.missionSection}>
-                {image ? <img src={image} alt={imageAlt} className={css.missionImage} /> : null}
-                <div className={css.missionContent}>
-                  <h2 className={css.missionTitle}>{title}</h2>
-                  <div className={css.missionText}>{toReact(mainText)}</div>
-                  <div className={css.pillsContainer}>
-                    {pills.map((pill, j) => (
-                      <div key={j} className={css.pill}>
-                        {pill}
-                      </div>
-                    ))}
+              <div key={i} className={css.missionParent}>
+                <h3 className={`${css.mobileOnly}`}>{title}</h3>
+                <div className={css.missionSection}>
+                  {image ? (
+                    <ResponsiveImage
+                      alt={imageAlt || title}
+                      image={image}
+                      variants={imageVariants}
+                      className={css.missionImage}
+                      sizes="(max-width: 768px) 100vw, 60vw"
+                    />
+                  ) : null}
+                  <div className={css.missionContent}>
+                    <h3 className={`${css.desktopOnly}`}>{title}</h3>
+                    <div className={css.missionText}>{toReact(mainText)}</div>
+                    <div className={css.pillsContainer}>
+                      {pills.map((pill, j) => (
+                        <div key={j} className={css.pill}>
+                          {pill}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -175,8 +220,8 @@ const AboutUsPage = props => {
                 <div className={css.statsContainer}>
                   {stats.map((stat, j) => (
                     <div key={j} className={css.statItem}>
-                      <span className={css.statNumber}>{stat.number}</span>
-                      <span className={css.statLabel}>{stat.label}</span>
+                      <p className={css.statNumber}>{stat.number}</p>
+                      <p className={css.statLabel}>{stat.label}</p>
                     </div>
                   ))}
                 </div>

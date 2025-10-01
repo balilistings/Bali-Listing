@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   display: flex;
   flex-direction: column;
@@ -5,88 +7,191 @@
   background-color: #fff;
 }
 
+p {
+  font-family: Mulish;
+  font-size: 12px;
+  color: #8d8d8d;
+  line-height: 1.3;
+
+  @media (--viewportMedium) {
+    font-size: 16px;
+  }
+}
+
+h2 {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+h3 {
+  font-size: 18px;
+  color: var(--marketplaceColor);
+  font-family: 'Istok Web', sans-serif;
+
+  @media (--viewportMedium) {
+    font-size: 30px;
+  }
+}
+
 .hero {
   background-color: rgba(251, 166, 249, 0.2);
-  padding: 80px 0;
+  padding: 40px 0;
   text-align: center;
-  margin-bottom: 80px;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+
+  @media (--viewportMedium) {
+    padding: 80px 0;
+    margin-bottom: 80px;
+  }
+}
+
+.spiral {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: auto;
+  z-index: 0;
+  fill: none;
 }
 
 .heroTitle {
-  font-size: 53px;
+  font-size: 25px;
   font-weight: 700;
-  color: #231F20;
+  color: #231f20;
   font-family: Istok Web, sans-serif;
+  position: relative;
+  z-index: 1;
+
+  @media (--viewportMedium) {
+    font-size: 53px;
+  }
 }
 
 .content {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  padding: 0 112px;
+  padding: 0 24px;
   max-width: 1440px;
   margin: 0 auto;
-  gap: 100px;
-  color: #231F20;
+  gap: 50px;
+  color: #231f20;
   width: 100%;
+
+  @media (--viewportMedium) {
+    padding: 0 112px;
+    gap: 100px;
+  }
 }
 
 .section {
   display: flex;
-  gap: 76px;
-  align-items: flex-start;
+  gap: 20px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: 76px;
+    align-items: flex-start;
+    text-align: left;
+  }
 }
 
 .sectionTitle {
-  font-size: 40px;
+  font-size: 18px;
   font-weight: 700;
   font-family: Istok Web, sans-serif;
-  width: 444px;
-  flex-shrink: 0;
+  width: 100%;
   color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+    width: 444px;
+  }
 }
 
 .sectionText {
   font-size: 16px;
   line-height: 1.6;
   max-width: 548px;
-  color: #8D8D8D;
-  font-family: 'Mulish', sans-serif;
-  font-weight: 400;
 }
 
 .sectionText p {
   margin-bottom: 20px;
 }
 
+.missionParent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+
+  @media (--viewportMedium) {
+    display: block;
+    text-align: left;
+  }
+}
+
 .missionSection {
   display: flex;
-  gap: 76px;
+  gap: 20px;
   align-items: center;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: 76px;
+    width: auto;
+  }
 }
 
 .missionImage {
-  width: 548px;
+  width: 100%;
   height: auto;
   flex-shrink: 0;
+  max-width: 336px;
+
+  @media (--viewportMedium) {
+    width: 548px;
+    max-width: none;
+  }
 }
 
 .missionContent {
-  max-width: 444px;
+  max-width: 100%;
+  text-align: center;
+
+  @media (--viewportMedium) {
+    max-width: 444px;
+    text-align: left;
+  }
 }
 
 .missionTitle {
-  font-size: 40px;
+  font-size: 18px;
   font-weight: 700;
   font-family: 'Istok Web', sans-serif;
   margin-bottom: 20px;
   color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+  }
 }
 
 .missionText {
   font-size: 16px;
   line-height: 1.6;
-  color: #8D8D8D;
+  color: #8d8d8d;
   font-family: 'Mulish', sans-serif;
   font-weight: 400;
 }
@@ -97,24 +202,32 @@
 
 .differentSection {
   text-align: center;
-  padding: 80px 0;
+  padding: 40px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
+
+  @media (--viewportMedium) {
+    padding: 80px 0;
+  }
 }
 
 .differentTitle {
-  font-size: 40px;
+  font-size: 18px;
   font-weight: 700;
   font-family: 'Istok Web', sans-serif;
   color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+  }
 }
 
 .differentText {
   font-size: 16px;
   line-height: 1.6;
-  color: #8D8D8D;
+  color: #8d8d8d;
   max-width: 600px;
   font-family: 'Mulish', sans-serif;
   font-weight: 400;
@@ -122,40 +235,60 @@
 
 .featureSection {
   display: flex;
-  gap: 76px;
+  gap: 20px;
   align-items: center;
+  flex-direction: column-reverse;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: 76px;
+  }
 }
 
 .statsSection {
   text-align: center;
-  padding: 80px 0;
+  padding: 40px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
+
+  @media (--viewportMedium) {
+    padding: 80px 20px;
+  }
 }
 
 .statsTitle {
-  font-size: 40px;
+  font-size: 18px;
   font-weight: 700;
   font-family: 'Istok Web', sans-serif;
   color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+  }
 }
 
 .statsText {
   font-size: 16px;
   line-height: 1.6;
-  color: #8D8D8D;
-  max-width: 600px;
+  color: #8d8d8d;
   margin-bottom: 40px;
   font-family: 'Inter', sans-serif;
 }
 
 .statsContainer {
   display: flex;
-  justify-content: space-around;
   width: 100%;
-  max-width: 900px;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+  }
 }
 
 .statItem {
@@ -165,16 +298,24 @@
 
 .statNumber {
   font-family: 'Inter', sans-serif;
-  font-size: 80px;
+  font-size: 50px;
   font-weight: 400;
-  color: #F74DF4;
+  color: var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    font-size: 80px;
+  }
 }
 
 .statLabel {
   font-family: 'Inter', sans-serif;
   font-size: 16px;
-  color: #231F20;
-  max-width: 200px;
+  color: #231f20;
+  max-width: 100%;
+
+  @media (--viewportMedium) {
+    max-width: 200px;
+  }
 }
 
 .pillsContainer {
@@ -182,15 +323,36 @@
   gap: 15px;
   margin-top: 25px;
   flex-wrap: wrap;
+  justify-content: center;
+
+  @media (--viewportMedium) {
+    justify-content: flex-start;
+  }
 }
 
 .pill {
-  background-color: #FFF1FF;
-  border: 1px solid #F74DF4;
+  background-color: #fff1ff;
+  border: 1px solid var(--marketplaceColor);
   border-radius: 23px;
   padding: 10px 20px;
   font-family: 'Poppins', sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #F74DF4;
+  color: var(--marketplaceColor);
+}
+
+.mobileOnly {
+  display: block;
+
+  @media (--viewportMedium) {
+    display: none;
+  }
+}
+
+.desktopOnly {
+  display: none;
+
+  @media (--viewportMedium) {
+    display: block;
+  }
 }
