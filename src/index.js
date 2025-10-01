@@ -51,18 +51,14 @@ const render = (store, shouldHydrate) => {
   const state = store.getState();
   const cdnAssetsVersion = state.hostedAssets.version;
   const authInfoLoaded = state.auth.authInfoLoaded;
-  const info = authInfoLoaded ? Promise.resolve({}) : store.dispatch(authInfo());
+  const authPromise = authInfoLoaded ? Promise.resolve({}) : store.dispatch(authInfo());
+  const assetsPromise = store.dispatch(fetchAppAssets(defaultConfig.appCdnAssets, cdnAssetsVersion));
+  const loadablePromise = loadableReady();
 
-  info
-    .then(() => {
-      // Ensure that Loadable Components is ready
-      // and fetch hosted assets in parallel before initializing the ClientApp
-      return Promise.all([
-        loadableReady(),
-        store.dispatch(fetchAppAssets(defaultConfig.appCdnAssets, cdnAssetsVersion)),
-        store.dispatch(fetchCurrentUser()),
-      ]);
-    })
+  // fetchCurrentUser requires auth info
+  const userPromise = authPromise.then(() => store.dispatch(fetchCurrentUser()));
+
+  Promise.all([loadablePromise, assetsPromise, userPromise])
     .then(([_, fetchedAppAssets, cu]) => {
       const { translations: translationsRaw, ...rest } = fetchedAppAssets || {};
       // We'll handle translations as a separate data.
