@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 
-import debounce from 'lodash/debounce';
+import debounce from 'lodash-es/debounce';
 import classNames from 'classnames';
 
 import FilterPlain from '../FilterPlain/FilterPlain';

@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash-es/debounce';
 import { Field, Form as FinalForm, FormSpy } from 'react-final-form';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';

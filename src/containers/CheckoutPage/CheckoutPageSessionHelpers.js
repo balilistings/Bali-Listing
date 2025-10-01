@@ -4,7 +4,7 @@
  * This data is saved to Session Store which only exists while the browsing session exists -
  * e.g. tab is open. (Session Store is not related to session cookies.)
  */
-import reduce from 'lodash/reduce';
+import reduce from 'lodash-es/reduce';
 import Decimal from 'decimal.js';
 
 import { isAfterDate, subtractTime } from '../../util/dates';

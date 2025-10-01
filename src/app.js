@@ -4,8 +4,8 @@ import { any, string } from 'prop-types';
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider } from 'react-redux';
 import loadable from '@loadable/component';
-import difference from 'lodash/difference';
-import mapValues from 'lodash/mapValues';
+import difference from 'lodash-es/difference';
+import mapValues from 'lodash-es/mapValues';
 
 // Configs and store setup
 import defaultConfig from './config/configDefault';

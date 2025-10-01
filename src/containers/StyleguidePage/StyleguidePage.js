@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import isEmpty from 'lodash/isEmpty';
+import isEmpty from 'lodash-es/isEmpty';
 import classNames from 'classnames';
 import { H2, H3, H4, H5, NamedLink } from '../../components';
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import pick from 'lodash/pick';
-import isEqual from 'lodash/isEqual';
+import pick from 'lodash-es/pick';
+import isEqual from 'lodash-es/isEqual';
 import polyline from '@mapbox/polyline';
 
 import { encodeLatLng, stringify } from '../../util/urlHelpers';

@@ -1,4 +1,4 @@
-import intersection from 'lodash/intersection';
+import intersection from 'lodash-es/intersection';
 
 import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM } from '../../util/types';
 import { createResourceLocatorString, matchPathname } from '../../util/routes';

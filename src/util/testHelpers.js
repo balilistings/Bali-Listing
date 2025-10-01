@@ -1,5 +1,5 @@
 import React from 'react';
-import mapValues from 'lodash/mapValues';
+import mapValues from 'lodash-es/mapValues';
 
 import * as reactTestingLibrary from '@testing-library/react';
 import userEvent from '@testing-library/user-event';

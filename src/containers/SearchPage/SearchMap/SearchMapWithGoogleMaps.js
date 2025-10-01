@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import invariant from 'invariant';
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 import classNames from 'classnames';
 
 import { types as sdkTypes } from '../../../util/sdkLoader';

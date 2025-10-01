@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
 import { Field, Form as FinalForm } from 'react-final-form';
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 import classNames from 'classnames';
 import arrayMutators from 'final-form-arrays';
 

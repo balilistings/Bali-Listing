@@ -1,5 +1,5 @@
 import React from 'react';
-import pickBy from 'lodash/pickBy';
+import pickBy from 'lodash-es/pickBy';
 import classNames from 'classnames';
 
 import appSettings from '../../../config/settings';

@@ -1,4 +1,4 @@
-import omit from 'lodash/omit';
+import omit from 'lodash-es/omit';
 
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import { denormalisedResponseEntities } from '../../util/data';

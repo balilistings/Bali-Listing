@@ -1,4 +1,4 @@
-import merge from 'lodash/merge';
+import merge from 'lodash-es/merge';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { fetchCurrentUser, currentUserShowSuccess } from '../../ducks/user.duck';

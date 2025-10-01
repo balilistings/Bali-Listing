@@ -1,4 +1,4 @@
-import pick from 'lodash/pick';
+import pick from 'lodash-es/pick';
 
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';

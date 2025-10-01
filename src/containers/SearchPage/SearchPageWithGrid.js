@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import omit from 'lodash/omit';
+import omit from 'lodash-es/omit';
 import classNames from 'classnames';
 
 import { useConfiguration } from '../../context/configurationContext';

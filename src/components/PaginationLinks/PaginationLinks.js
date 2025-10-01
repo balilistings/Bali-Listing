@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import range from 'lodash/range';
+import range from 'lodash-es/range';
 
 import { useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';

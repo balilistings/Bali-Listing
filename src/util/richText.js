@@ -1,7 +1,7 @@
 import React from 'react';
-import flow from 'lodash/flow';
-import flatMap from 'lodash/flatMap';
-import map from 'lodash/map';
+import flow from 'lodash-es/flow';
+import flatMap from 'lodash-es/flatMap';
+import map from 'lodash-es/map';
 
 import { sanitizeUrl } from './sanitize';
 

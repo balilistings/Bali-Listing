@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { compose } from 'redux';
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 import classNames from 'classnames';
 import { Form as FinalForm } from 'react-final-form';
 

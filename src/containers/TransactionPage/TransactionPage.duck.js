@@ -1,6 +1,6 @@
-import pick from 'lodash/pick';
-import pickBy from 'lodash/pickBy';
-import isEmpty from 'lodash/isEmpty';
+import pick from 'lodash-es/pick';
+import pickBy from 'lodash-es/pickBy';
+import isEmpty from 'lodash-es/isEmpty';
 
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import {

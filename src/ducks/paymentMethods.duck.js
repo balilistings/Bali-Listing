@@ -1,4 +1,4 @@
-import pick from 'lodash/pick';
+import pick from 'lodash-es/pick';
 import * as log from '../util/log';
 import { storableError } from '../util/errors';
 

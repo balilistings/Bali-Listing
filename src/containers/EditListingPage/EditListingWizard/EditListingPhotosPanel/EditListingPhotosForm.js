@@ -3,7 +3,7 @@ import { ARRAY_ERROR } from 'final-form';
 import { Form as FinalForm, Field } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import { FieldArray } from 'react-final-form-arrays';
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 import classNames from 'classnames';
 
 // Import configs and util modules

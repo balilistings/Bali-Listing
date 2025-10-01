@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { useHistory, useLocation } from 'react-router-dom';
-import debounce from 'lodash/debounce';
-import omit from 'lodash/omit';
+import debounce from 'lodash-es/debounce';
+import omit from 'lodash-es/omit';
 import classNames from 'classnames';
 
 import { useConfiguration } from '../../context/configurationContext';

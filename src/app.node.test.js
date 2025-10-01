@@ -4,7 +4,7 @@
 
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import forEach from 'lodash/forEach';
+import forEach from 'lodash-es/forEach';
 import { getHostedConfiguration } from './util/testHelpers';
 import { ServerApp } from './app';
 import configureStore from './store';

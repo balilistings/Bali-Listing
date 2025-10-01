@@ -1,5 +1,5 @@
-import groupBy from 'lodash/groupBy';
-import reduce from 'lodash/reduce';
+import groupBy from 'lodash-es/groupBy';
+import reduce from 'lodash-es/reduce';
 
 /**
  * hasParentWithClassName searches class name from parent elements of given target

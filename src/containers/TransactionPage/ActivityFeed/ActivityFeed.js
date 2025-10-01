@@ -1,5 +1,5 @@
 import React from 'react';
-import dropWhile from 'lodash/dropWhile';
+import dropWhile from 'lodash-es/dropWhile';
 import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';

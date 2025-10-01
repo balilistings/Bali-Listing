@@ -1,4 +1,4 @@
-import find from 'lodash/find';
+import find from 'lodash-es/find';
 import { matchPath } from 'react-router-dom';
 import { compile } from 'path-to-regexp';
 // NOTE: This file imports urlHelpers.js, which may lead to circular dependency

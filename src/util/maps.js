@@ -1,4 +1,4 @@
-import memoize from 'lodash/memoize';
+import memoize from 'lodash-es/memoize';
 import seedrandom from 'seedrandom';
 import { types as sdkTypes } from './sdkLoader';
 

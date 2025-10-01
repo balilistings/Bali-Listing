@@ -1,5 +1,5 @@
-import reverse from 'lodash/reverse';
-import sortBy from 'lodash/sortBy';
+import reverse from 'lodash-es/reverse';
+import sortBy from 'lodash-es/sortBy';
 import { storableError } from '../../util/errors';
 import { parse } from '../../util/urlHelpers';
 import { getAllTransitionsForEveryProcess } from '../../transactions/transaction';

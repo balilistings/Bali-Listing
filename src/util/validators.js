@@ -1,4 +1,4 @@
-import toPairs from 'lodash/toPairs';
+import toPairs from 'lodash-es/toPairs';
 import { types as sdkTypes } from './sdkLoader';
 import { diffInTime } from './dates';
 import { extractYouTubeID } from './string';

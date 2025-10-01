@@ -8,7 +8,7 @@
 
 import React from 'react';
 import classNames from 'classnames';
-import includes from 'lodash/includes';
+import includes from 'lodash-es/includes';
 
 import css from './PropertyGroup.module.css';
 

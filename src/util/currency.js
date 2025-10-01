@@ -1,5 +1,5 @@
-import has from 'lodash/has';
-import trimEnd from 'lodash/trimEnd';
+import has from 'lodash-es/has';
+import trimEnd from 'lodash-es/trimEnd';
 import Decimal from 'decimal.js';
 
 import appSettings from '../config/settings';

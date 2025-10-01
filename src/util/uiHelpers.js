@@ -1,5 +1,5 @@
 import React, { Component as ReactComponent } from 'react';
-import throttle from 'lodash/throttle';
+import throttle from 'lodash-es/throttle';
 
 /**
  * A higher order component (HOC) that provides the current viewport

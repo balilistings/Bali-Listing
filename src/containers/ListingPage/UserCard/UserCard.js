@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import truncate from 'lodash/truncate';
+import truncate from 'lodash-es/truncate';
 import classNames from 'classnames';
 
 import { FormattedMessage } from '../../../util/reactIntl';

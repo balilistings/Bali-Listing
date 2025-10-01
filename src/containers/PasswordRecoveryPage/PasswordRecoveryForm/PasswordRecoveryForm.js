@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Form as FinalForm } from 'react-final-form';
-import isEqual from 'lodash/isEqual';
+import isEqual from 'lodash-es/isEqual';
 import classNames from 'classnames';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
