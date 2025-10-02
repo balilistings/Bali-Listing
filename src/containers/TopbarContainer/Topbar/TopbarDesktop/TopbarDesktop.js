@@ -84,6 +84,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
           </MenuItem>
         ) : null}
 
+
         <MenuItem key="ProfileSettingsPage">
           <NamedLink
             className={classNames(css.menuLink, currentPageClass('ProfileSettingsPage'))}
@@ -93,6 +94,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
             <FormattedMessage id="TopbarDesktop.profileSettingsLink" />
           </NamedLink>
         </MenuItem>
+
 
         <MenuItem key="AccountSettingsPage">
           <NamedLink
@@ -115,6 +117,8 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
             </NamedLink>
           </MenuItem>
         )}
+
+
 
         <MenuItem key="logout">
           <InlineTextButton rootClassName={css.logoutButton} onClick={onLogout}>

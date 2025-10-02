@@ -62,14 +62,18 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
         currentPageResultIds: [],
         listings: [],
       };
+
     case FETCH_LISTINGS_SUCCESS:
+      // ✅ FIXED: Hapus duplikasi, simpan listings dengan benar
       return {
         ...state,
         currentPageResultIds: resultIds(payload.data),
-        pagination: payload.data.meta,
+        listings: Array.isArray(payload.data?.data) ? payload.data.data : [],
+        pagination: payload.data?.meta || null,
         queryInProgress: false,
         listings: payload.data.data,
       };
+
     case FETCH_LISTINGS_ERROR:
       return {
         ...state,
@@ -91,6 +95,7 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
       return {
         ...state,
         currentPageResultIds: [],
+        listings: [],
         pagination: null,
         listings: [],
       };

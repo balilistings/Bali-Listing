@@ -6,7 +6,7 @@ import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import remove from "./img/remove.png";
 
-import { unfavoriteListing, unfavoriteAllListings } from './FavoriteListingsPage.duck';
+import { fetchCurrentUser, unfavoriteAllListings } from './FavoriteListingsPage.duck';
 
 import {
   H3,
@@ -21,6 +21,7 @@ import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 
 import css from './FavoriteListingsPage.module.css';
+import { getListingsById } from '../../ducks/marketplaceData.duck';
 
 export const FavoriteListingsPageComponent = props => {
   const {
@@ -160,7 +161,7 @@ export const FavoriteListingsPageComponent = props => {
         footer={<FooterContainer />}
       >
           <div className={css.listingPanel}>
-          {heading}
+          {heading}          
           {queryInProgress && loadingResults}
           
           {/* Show error state */}
