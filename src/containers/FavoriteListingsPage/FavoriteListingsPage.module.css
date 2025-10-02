@@ -30,6 +30,7 @@
 
   @media (--viewportLarge) {
     margin-bottom: -60px;
+    margin-left: -80px;
   }
 }
 

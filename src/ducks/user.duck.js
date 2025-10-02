@@ -343,6 +343,16 @@ export const fetchCurrentUserNotifications = () => (dispatch, getState, sdk) => 
  * @param {boolean} [options.afterLogin]          Fetch is no-op for unauthenticated users except after login() call
  * @param {boolean} [options.enforce]             Enforce the call even if the currentUser entity is freshly fetched.
  */
+export const selectCurrentUserFavorites = state => {
+  const currentUser = selectCurrentUser (state);
+  return currentUser?.attributes?.profile?.privateData?.favorites || []; 
+};
+
+export const selectHasFavorites = state => {
+  const favorites = selectCurrentUserFavorites (state);
+  return array.isArray(favorites) && favorites.length > 0;
+};
+
 export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
   const state = getState();
   const { currentUserHasListings, currentUserShowTimestamp } = state.user || {};

@@ -6,8 +6,6 @@ import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import remove from "./img/remove.png";
 
-// Removed unused/incorrect imports and added unfavoriteAllListings
-import { clearFavoritesOnProfile } from '../../ducks/user.duck';
 import { unfavoriteListing, unfavoriteAllListings } from './FavoriteListingsPage.duck';
 
 import {
@@ -23,7 +21,6 @@ import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 
 import css from './FavoriteListingsPage.module.css';
-import { getListingsById } from '../../ducks/marketplaceData.duck';
 
 export const FavoriteListingsPageComponent = props => {
   const {
@@ -35,7 +32,7 @@ export const FavoriteListingsPageComponent = props => {
     scrollingDisabled,
     intl,
     dispatch,
-    currentUser,
+    fetchCurrentUser,
   } = props;
 
   const [selectedIds, setSelectedIds] = useState([]);
@@ -43,10 +40,28 @@ export const FavoriteListingsPageComponent = props => {
   const hasPaginationInfo = !!pagination && pagination.totalItems != null;
   const listingsAreLoaded = !queryInProgress && hasPaginationInfo;
 
+  // Debug: lihat data yang diterima
+  console.log('FavoriteListingsPage Debug:', {
+    listingsCount: listings?.length,
+    queryInProgress,
+    queryFavoritesError,
+    pagination,
+    hasPaginationInfo,
+    listingsAreLoaded
+  });
+
+  console.log('=== DETAILED IMAGE DEBUG ===');
+  if (listings.length > 0) {
+    listings.forEach((listing, index) => {
+      console.log(`Listing ${index}:`, listing.attributes.title);
+      console.log(`- Images:`, listing.images);
+      console.log(`- Relationships:`, listing.relationships);
+      console.log(`- Full listing data:`, listing);
+    });
+  }
   const loadingResults = (
     <div className={css.messagePanel}>
       <H3 as="h2" className={css.heading}>
-        <FormattedMessage id="FavoriteListingsPage.loadingFavoriteListings" />
       </H3>
     </div>
   );
@@ -54,23 +69,25 @@ export const FavoriteListingsPageComponent = props => {
   const queryError = (
     <div className={css.messagePanel}>
       <H3 as="h2" className={css.heading}>
-        <FormattedMessage id="FavoriteListingsPage.queryError" />
+        <FormattedMessage id="Favorite Listings Error" />
       </H3>
     </div>
   );
 
-  const noResults =
-    listingsAreLoaded && (!listings || listings.length === 0) ? (
+  const noResults = listingsAreLoaded && listings.length === 0 ? (
+    <div className={css.messagePanel}>
       <H3 as="h1" className={css.heading}>
-        <FormattedMessage id="FavoriteListingsPage.noResults" />
+        <FormattedMessage id="Favorite Listings Results" />
       </H3>
-    ) : null;
+    </div>
+  ) : null;
 
-  // Unfavorite All handler now dispatches the duck thunk we added
+  // Unfavorite All handler
   const handleUnfavoriteAll = async () => {
     if (!dispatch) return;
 
     const confirmed = window.confirm(
+      intl.formatMessage({ id: 'FavoriteListingsPage.unfavoritAllConfirmation' }) ||
       'Remove ALL favorites from your profile? This cannot be undone.'
     );
 
@@ -78,37 +95,31 @@ export const FavoriteListingsPageComponent = props => {
 
     try {
       await dispatch(unfavoriteAllListings());
-      // Clear selection and optionally show a toast
-      setSelectedIds([]);
+      setSelectedIds([]); 
     } catch (e) {
-      // Optionally show error feedback
       console.error('Unfavorite all failed', e);
     }
   };
 
-  const heading =
-    listingsAreLoaded && listings && listings.length > 0 ? (
-      <>
-        <H3 as="h1" className={css.heading}>
-          <FormattedMessage
-            id="Favorite Listings"
-            values={{ count: pagination?.totalItems || listings.length }} />
-        </H3>
-      </>
-    ) : (
-      noResults
-    );
 
-  const page = queryParams ? queryParams.page : 1;
-  const paginationLinks =
-    listingsAreLoaded && pagination && pagination.totalPages > 1 ? (
-      <PaginationLinks
-        className={css.pagination}
-        pageName="FavoriteListingsPage"
-        pageSearchParams={{ page }}
-        pagination={pagination}
+  const heading = listingsAreLoaded && listings.length > 0 ? (
+    <H3 as="h1" className={css.heading}>
+      <FormattedMessage 
+        id="Favorite Listings" 
+        values={{ count: pagination?.totalItems || listings.length }} 
       />
-    ) : null;
+    </H3>
+  ) : null;
+
+  const page = queryParams?.page || 1;
+  const paginationLinks = listingsAreLoaded && pagination && pagination.totalPages > 1 ? (
+    <PaginationLinks
+      className={css.pagination}
+      pageName="FavoriteListingsPage"
+      pageSearchParams={{ page }}
+      pagination={pagination}
+    />
+  ) : null;
 
   const title = intl.formatMessage({ id: 'Favorite Listings' });
 
@@ -136,7 +147,7 @@ export const FavoriteListingsPageComponent = props => {
       setSelectedIds([]);
     }
   };
-
+  
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>
       <LayoutSingleColumn
@@ -148,69 +159,82 @@ export const FavoriteListingsPageComponent = props => {
         }
         footer={<FooterContainer />}
       >
-        {queryInProgress ? loadingResults : null}
-        {queryFavoritesError ? queryError : null}
-
-        <div className={css.listingPanel}>
+          <div className={css.listingPanel}>
           {heading}
-
-          {/* Toolbar: unfavorite all is always visible; remove selected only when selection exists */}
+          {queryInProgress && loadingResults}
+          
+          {/* Show error state */}
+          {queryFavoritesError && queryError}
+          
+          {/* Show content when not loading and no error */}
+          {!queryInProgress && !queryFavoritesError && (
+            <>
           <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 0' }}>
-            
 
-            {selectedIds.length > 0 && (
-              <button
-                className={css.removeSelected}
-                onClick={handleUnfavoriteSelected}
-                title={`Unfavorite selected (${selectedIds.length})`}
-                style={{ marginLeft: '8px' }}
-              >
-                <img src={remove} alt="unfavorite selected" />
-              </button>
-            )}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 0'}}>
-  {selectedIds.length > 0 && (
-    <button
-      type="button"
-      onClick={handleUnfavoriteAll}
-      className={css.removeAll}
-      title="Unfavorite all listings"
-    >
-      🗑️ Unfavorite All
-    </button>
-  )}
-</div>
 
-          <div className={css.listingCards}>
-            {Array.isArray(listings) && listings.length > 0 ? (
-              listings.map(l => {
-                const id = l.id.uuid;
-                const isSelected = selectedIds.includes(id);
-
-                return (
-                  <div className={css.listingCard} key={id}>
-                    <div
-                      className={`${css.selectCircle} ${isSelected ? css.selected : ''}`}
-                      onClick={() => toggleSelect(id)}
-                      title={isSelected ? "Deselect" : "Select"}
-                    />
-                    <ListingCard
-                      listing={l}
-                      renderSizes={renderSizes}
-                      showWishlistButton={false}
-                    />
+                    {selectedIds.length > 0 && (
+                      <button
+                        className={css.removeSelected}
+                        onClick={handleUnfavoriteSelected}
+                        title={`Unfavorite selected (${selectedIds.length})`}
+                        style={{ marginLeft: '8px' }}
+                      >
+                        <img src={remove} alt="unfavorite selected" />
+                      </button>
+                    )}
                   </div>
-                );
-              })
-            ) : (
-              <div className={css.emptyPanel}>
-                <FormattedMessage id="FavoriteListingsPage.noResults" />
-              </div>
-            )}
-          </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 0'}}>
+          {selectedIds.length > 0 && (
+            <button
+              type="button"
+              onClick={handleUnfavoriteAll}
+              className={css.removeAll}
+              title="Unfavorite all listings"
+            >
+              🗑️ Unfavorite All
+            </button>
+          )}
+        </div>
 
-          {paginationLinks}
+
+              {/* Listings grid */}
+              <div className={css.listingCards}>
+                {listings.length > 0 ? (
+                  listings.map(listing => {
+                    // Handle both object and string IDs
+                    const id = listing.id?.uuid || listing.id;
+                    const isSelected = selectedIds.includes(id);
+
+                    return (
+                      <div className={css.listingCard} key={id}>
+                        <div
+                          className={`${css.selectCircle} ${isSelected ? css.selected : ''}`}
+                          onClick={() => toggleSelect(id)}
+                          title={isSelected ? 
+                            intl.formatMessage({ id: 'FavoriteListingsPage.deselect' }) : 
+                            intl.formatMessage({ id: 'FavoriteListingsPage.select' })
+                          }
+                        />
+                        <ListingCard
+                          listing={listing}
+                          renderSizes={renderSizes}
+                          showWishlistButton={false}
+                        />
+                      </div>
+                    );
+                  })
+                ) : (
+                  !queryInProgress && !queryFavoritesError && (
+                    <div className={css.emptyPanel}>
+                      <FormattedMessage id="FavoriteListingsPage.noResults" />
+                    </div>
+                  )
+                )}
+              </div>
+
+              {paginationLinks}
+            </>
+          )}
         </div>
       </LayoutSingleColumn>
     </Page>
@@ -219,18 +243,30 @@ export const FavoriteListingsPageComponent = props => {
 
 const mapStateToProps = state => {
   const {
-    currentPageResultIds,
+    currentPageResultIds = [],
     pagination,
-    queryInProgress,
-    queryFavoritesError,
-    queryParams,
-    listings: favoriteListingsFromDuck,
+    queryInProgress = false,
+    queryFavoritesError = null,
+    queryParams = null,
+    listings = [],
   } = state.FavoriteListingsPage || {};
 
-  const listings =
-    Array.isArray(favoriteListingsFromDuck) && favoriteListingsFromDuck.length > 0
-      ? favoriteListingsFromDuck
-      : getListingsById(state, currentPageResultIds || []) || [];
+  // Approach 1: Normal way
+  // let listings = getListingsById(state, currentPageResultIds) || [];
+
+  // Approach 2: Fallback - langsung dari marketplaceData
+  if (listings.length === 0 && currentPageResultIds.length > 0) {
+    console.log('⚠️  Using fallback approach - getting from marketplaceData directly');
+    const marketplaceListings = state.marketplaceData?.listings || {};
+    listings = currentPageResultIds
+      .map(id => marketplaceListings[id])
+      .filter(Boolean);
+  }
+
+  console.log('=== FINAL LISTINGS ===');
+  console.log('Current page result IDs:', currentPageResultIds);
+  console.log('Listings found:', listings.length);
+  console.log('Listings:', listings);
 
   return {
     currentPageResultIds,
@@ -244,8 +280,9 @@ const mapStateToProps = state => {
   };
 };
 
-const FavoriteListingsPage = compose(connect(mapStateToProps), injectIntl)(
-  FavoriteListingsPageComponent
-);
+const FavoriteListingsPage = compose(
+  connect(mapStateToProps),
+  injectIntl
+)(FavoriteListingsPageComponent);
 
 export default FavoriteListingsPage;

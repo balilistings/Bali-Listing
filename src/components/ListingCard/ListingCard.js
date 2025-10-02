@@ -27,6 +27,22 @@ import useDisableBodyScrollOnSwipe from '../../util/useDisableBodyScrollOnSwipe'
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
+// Helper function to get image entities from Redux store
+const getImagesFromStore = (listing, imageEntities) => {
+  const imageRelationships = listing?.relationships?.images?.data;
+  
+  if (!imageRelationships || !Array.isArray(imageRelationships)) {
+    return [];
+  }
+  
+  return imageRelationships
+    .map(imgRef => {
+      const imageId = imgRef.id?.uuid || imgRef.id;
+      return imageEntities?.[imageId];
+    })
+    .filter(Boolean);
+};
+
 // react-slick settings
 const sliderSettings = {
   dots: true,
@@ -95,32 +111,26 @@ const sliderSettings = {
 export const formatPriceInMillions = actualPrice => {
   if (!actualPrice) return null;
 
-  // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
     const millions = actualPrice / 1000000;
-    // If it's a whole number, show without decimal
     if (millions % 1 === 0) {
       return `${millions}M`;
     } else {
-      // Show with one decimal place for partial millions
       return `${millions.toFixed(1)}M`;
     }
   }
 
-  // For smaller amounts, show the actual price
   return `${actualPrice.toLocaleString()}`;
 };
 
 // Helper function to format price with currency, handling millions appropriately
 export const formatPriceWithCurrency = (actualPrice, currency = 'IDR') => {
   if (actualPrice) {
-    // Check if the price is greater than 1 million
     if (actualPrice > 1_000_000) {
       const millions = Number(actualPrice) / 1_000_000;
       const formattedMillions = millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1);
       return `${currency} ${formattedMillions}M`;
     } else {
-      // For smaller amounts, show the actual price with currency
       return `${currency} ${Number(actualPrice).toLocaleString()}`;
     }
   }
@@ -140,7 +150,6 @@ export const checkPriceParams = () => {
 
 // Helper function untuk mencari image URL yang valid dari berbagai variant
 const findValidImageUrl = (img, imageIndex) => {
-  // ... same as before (omitted for brevity in canvas) ...
   let imageUrl = null;
 
   const possibleVariants = [
@@ -161,10 +170,10 @@ const findValidImageUrl = (img, imageIndex) => {
   return imageUrl;
 };
 
-const processListingImages = (currentListing) => {
-  if (!currentListing.images || !Array.isArray(currentListing.images)) return [];
+const processListingImages = (images) => {
+  if (!images || !Array.isArray(images)) return [];
   const processedImages = [];
-  currentListing.images.forEach((img) => {
+  images.forEach((img) => {
     const validUrl = findValidImageUrl(img);
     if (validUrl) processedImages.push(validUrl);
   });
@@ -194,7 +203,6 @@ const PriceMaybe = props => {
     const periodPriority = ['yearprice', 'monthprice', 'weekprice'];
     let activePeriodKey = '';
 
-    // Prioritize URL params for determining which period to show
     for (const p of periodPriority) {
       if (priceParams && priceParams[p]) {
         activePeriodKey = p;
@@ -202,7 +210,6 @@ const PriceMaybe = props => {
       }
     }
 
-    // Fallback to publicData if no relevant URL param
     if (!activePeriodKey) {
       for (const p of periodPriority) {
         if (publicData && publicData[p]) {
@@ -218,7 +225,6 @@ const PriceMaybe = props => {
     }
   }
 
-  // Apply conversion if needed. This now correctly handles non-rentals.
   const finalPrice =
     needPriceConversion && priceToDisplay ? priceToDisplay * USDConversionRate : priceToDisplay;
 
@@ -229,7 +235,6 @@ const PriceMaybe = props => {
       return `$${Math.round(priceValue).toLocaleString('en-US')}`;
     }
 
-    // IDR logic
     if (priceValue >= 1000000) {
       const millions = priceValue / 1000000;
       const value = millions % 1 === 0 ? millions : millions.toFixed(1);
@@ -257,6 +262,8 @@ const PriceMaybe = props => {
 export const ListingCard = props => {
   const config = useConfiguration();
   const intl = props.intl || useIntl();
+  const imageEntities = useSelector(state => state.marketplaceData?.entities?.image || {});
+  
   const {
     className,
     rootClassName,
@@ -266,8 +273,9 @@ export const ListingCard = props => {
     showAuthorInfo = true,
     currentUser,
     onUpdateFavorites,
-    showWishlistButton = true ,
+    showWishlistButton = true,
   } = props;
+  
   const setSliderNode = useDisableBodyScrollOnSwipe();
   const sliderRef = useCallback(
     element => {
@@ -277,6 +285,7 @@ export const ListingCard = props => {
     },
     [setSliderNode]
   );
+  
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
 
@@ -284,6 +293,7 @@ export const ListingCard = props => {
   const { title = '', price: p, publicData } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
+  
   const {
     pricee,
     location,
@@ -297,6 +307,7 @@ export const ListingCard = props => {
     landsize,
     Freehold,
   } = publicData;
+  
   const tags = sortTags(pricee);
   const isLand = categoryLevel1 === 'landforsale';
   const isRentals = categoryLevel1 === 'rentalvillas';
@@ -313,8 +324,13 @@ export const ListingCard = props => {
       }
     : null;
 
-  // === PROSES GAMBAR ===
-  const processedImageUrls = processListingImages(currentListing);
+  // === PROSES GAMBAR - Get from Redux store ===
+  const imagesFromStore = getImagesFromStore(currentListing, imageEntities);
+  const imagesToProcess = currentListing.images?.length > 0 
+    ? currentListing.images 
+    : imagesFromStore;
+  
+  const processedImageUrls = processListingImages(imagesToProcess);
   const hasValidImages = processedImageUrls.length > 0;
   const displayImages = hasValidImages ? processedImageUrls : ['/images/placeholder-property.jpg'];
 
@@ -326,35 +342,28 @@ export const ListingCard = props => {
   const dispatch = useDispatch();
   const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
 
-  // NEW: custom onToggleFavorites that mirrors "tong sampah" behavior for UNFAVORITE
   const onToggleFavorites = e => {
     e.preventDefault();
     e.stopPropagation();
 
-    // customOnUpdate akan dipanggil oleh handleToggleFavorites
     const customOnUpdate = payload => {
       if (isFavorite) {
-        // UNFAVORITE: panggil thunk user.duck yang sudah mengupdate profile di server
         dispatch(removeFavoriteOnProfile(id))
           .then(() => {
-            // Setelah backend sukses, update page-level state agar listing hilang dari FavoriteListings
-            dispatch(unfavoriteSuccess(id));
+            dispatch(unfavoriteListing(id));
           })
           .catch(err => {
             console.error('Unfavorite failed:', err);
           });
       } else {
-        // FAVORITE: forward payload ke onUpdateFavorites jika parent menyediakan
         if (typeof onUpdateFavorites === 'function') {
           onUpdateFavorites(payload);
         } else {
-          // fallback: log (atau Anda bisa dispatch addFavorite thunk jika tersedia)
           console.log('Favoriting not wired: payload=', payload);
         }
       }
     };
 
-    // Panggil util handleToggleFavorites (tetap menjaga redirect/login flow)
     handleToggleFavorites({
       location: routeLocation,
       history,
@@ -368,11 +377,11 @@ export const ListingCard = props => {
   return (
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
       {showWishlistButton && (
-      <button 
-        className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
-        onClick={onToggleFavorites}>
-        <IconCollection name="icon-waislist" />
-      </button>
+        <button 
+          className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
+          onClick={onToggleFavorites}>
+          <IconCollection name="icon-waislist" />
+        </button>
       )}
 
       <div className={css.imageWrapper}>
@@ -395,6 +404,7 @@ export const ListingCard = props => {
           })}
         </Slider>
       </div>
+      
       <div className={css.info}>
         <div className={css.tags}>
           {tags?.map(tag => (
@@ -412,7 +422,6 @@ export const ListingCard = props => {
             </NamedLink>
           )}
         </div>
-
 
         <div className={css.mainInfo}>
           <div className={css.title}>
@@ -452,7 +461,6 @@ export const ListingCard = props => {
                     {intl.formatMessage({ id: 'ListingCard.bathroom' }, { count: bathrooms })}
                   </span>
                 )}
-
                 {!!landsize && isLand && (
                   <span className={css.iconItem}>
                     <Icon type="land" /> {landsize} m2
@@ -480,4 +488,3 @@ export const ListingCard = props => {
 };
 
 export default ListingCard;
-// End of recent edits
