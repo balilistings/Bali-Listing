@@ -15,7 +15,12 @@ const pageDataLoadingAPI = getPageDataLoadingAPI();
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
-const FAQPage = loadable(() => import(/* webpackChunkName: "FAQPage" */ '../containers/FAQPage/FAQPage'));
+const FAQPage = loadable(() =>
+  import(/* webpackChunkName: "FAQPage" */ '../containers/FAQPage/FAQPage')
+);
+const AboutUsPage = loadable(() =>
+  import(/* webpackChunkName: "AboutUsPage" */ '../containers/AboutUsPage/AboutUsPage')
+);
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ '../containers/EmailVerificationPage/EmailVerificationPage'));
@@ -86,6 +91,12 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'FAQPage',
       component: FAQPage,
       loadData: pageDataLoadingAPI.FAQPage.loadData,
+    },
+    {
+      path: '/about',
+      name: 'AboutUsPage',
+      component: AboutUsPage,
+      loadData: pageDataLoadingAPI.AboutUsPage.loadData,
     },
     {
       path: '/p/:pageId',
