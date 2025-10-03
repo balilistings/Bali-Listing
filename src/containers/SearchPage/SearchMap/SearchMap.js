@@ -91,7 +91,7 @@ export class SearchMapComponent extends Component {
 
   componentDidMount() {
     if (!this.state.isMapLibReady) {
-      window.addEventListener('mapbox-loaded', () => {
+      window.addEventListener('map-loaded', () => {
         this.setState({ isMapLibReady: true });
       });
     }
