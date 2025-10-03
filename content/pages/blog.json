@@ -1,0 +1,360 @@
+{
+  "meta": {
+    "pageTitle": {
+      "fieldType": "metaTitle",
+      "content": "Bali Rental Tips & Expat Guides | BaliListings Blog"
+    },
+    "pageDescription": {
+      "fieldType": "metaDescription",
+      "content": "Discover expert tips on renting in Bali, expat living advice, and local insights. Stay informed and find your perfect home with Bali Listings"
+    },
+    "socialSharing": {
+      "fieldType": "openGraphData",
+      "image": {
+        "id": "cba297c4-ac8b-5ce7-ba51-b0609f95acf0",
+        "type": "imageAsset",
+        "attributes": {
+          "variants": {
+            "social600": {
+              "height": 315,
+              "width": 600,
+              "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/5e/1d4c80272165635d220c88cdca1e64ad301a13?auto=format&fit=clip&h=600&w=600&s=725d0e9cbc4f6bdddaef8fda5ca081ae",
+              "name": "social600"
+            },
+            "social1200": {
+              "height": 630,
+              "width": 1200,
+              "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/5e/1d4c80272165635d220c88cdca1e64ad301a13?auto=format&fit=clip&h=1200&w=1200&s=1d946371a6ca764598721e5c0c782776",
+              "name": "social1200"
+            }
+          },
+          "assetPath": "/content/pages/blog/social-image-0198b6f4-b923-8cb2-a386-f3027c85a28b.png"
+        }
+      },
+      "description": "Discover expert tips on renting in Bali, expat living advice, and local insights. Stay informed and find your perfect home with Bali Listings",
+      "title": "Bali Rental Tips & Expat Guides | BaliListings Blog"
+    }
+  },
+  "sections": [
+    {
+      "description": { "fieldType": "paragraph", "content": "" },
+      "numColumns": 3,
+      "callToAction": {
+        "fieldType": "none",
+        "content": "Go to Pages",
+        "href": "https://flex-console.sharetribe.com/content/pages"
+      },
+      "sectionType": "columns",
+      "sectionId": "",
+      "title": { "fieldType": "heading1", "content": "Blog" },
+      "sectionName": "Blog",
+      "blocks": [
+        {
+          "media": {
+            "fieldType": "image",
+            "image": {
+              "id": "a990c40f-5c0f-52f8-a6fc-618deaec4a43",
+              "type": "imageAsset",
+              "attributes": {
+                "variants": {
+                  "landscape400": {
+                    "height": 225,
+                    "width": 400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/05/f47a55d72489de0076e7e9baf5686feca2e0f3?auto=format&crop=edges&fit=crop&h=225&w=400&s=b9c93e2371982ac2f374f0f400adf268",
+                    "name": "landscape400"
+                  },
+                  "landscape800": {
+                    "height": 450,
+                    "width": 800,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/05/f47a55d72489de0076e7e9baf5686feca2e0f3?auto=format&crop=edges&fit=crop&h=450&w=800&s=e7b21d916238e762cebad565d6e0948b",
+                    "name": "landscape800"
+                  },
+                  "landscape1200": {
+                    "height": 675,
+                    "width": 1200,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/05/f47a55d72489de0076e7e9baf5686feca2e0f3?auto=format&crop=edges&fit=crop&h=675&w=1200&s=ff77aec85e10de58e0961bfe002f717c",
+                    "name": "landscape1200"
+                  },
+                  "landscape2400": {
+                    "height": 1350,
+                    "width": 2400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/05/f47a55d72489de0076e7e9baf5686feca2e0f3?auto=format&crop=edges&fit=crop&h=1350&w=2400&s=06f95a86279b516a29584197f4932f86",
+                    "name": "landscape2400"
+                  }
+                },
+                "assetPath": "/content/pages/blog/block-media-01960dd5-7431-8b8e-9063-856086d6eec0.jpg"
+              }
+            },
+            "aspectRatio": "16/9",
+            "link": {
+              "fieldType": "internalImageLink",
+              "href": "/p/best-neighborhood-in-bali-for-digital-nomads-2025-guide"
+            },
+            "alt": "Best Neighborhoods in Bali for Digital Nomads (2025 Guide)"
+          },
+          "title": {
+            "fieldType": "heading2",
+            "content": "Best Neighborhoods in Bali for Digital Nomads (2025 Guide)"
+          },
+          "text": {
+            "fieldType": "markdown",
+            "content": "###### *04/07/25*\nLooking for a long-term rental in Bali as a digital nomad? Whether you're.."
+          },
+          "callToAction": {
+            "fieldType": "internalButtonLink",
+            "content": "Read more",
+            "href": "/p/best-neighborhood-in-bali-for-digital-nomads-2025-guide"
+          },
+          "alignment": "left",
+          "blockType": "defaultBlock",
+          "blockName": "Best Neighborhoods in Bali for Digital Nomads (2025 Guide)"
+        },
+        {
+          "media": {
+            "fieldType": "image",
+            "image": {
+              "id": "29cab4ce-7a36-5186-88eb-8a96dfbed6aa",
+              "type": "imageAsset",
+              "attributes": {
+                "variants": {
+                  "landscape400": {
+                    "height": 225,
+                    "width": 400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/c3/521367a51c79ad9a6a4d7370bb2f7dc03396af?auto=format&crop=edges&fit=crop&h=225&w=400&s=fbafdac43755695142e28477fb313308",
+                    "name": "landscape400"
+                  },
+                  "landscape800": {
+                    "height": 450,
+                    "width": 800,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/c3/521367a51c79ad9a6a4d7370bb2f7dc03396af?auto=format&crop=edges&fit=crop&h=450&w=800&s=51ad3b6aa13f508100b92d6506c58d17",
+                    "name": "landscape800"
+                  },
+                  "landscape1200": {
+                    "height": 675,
+                    "width": 1200,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/c3/521367a51c79ad9a6a4d7370bb2f7dc03396af?auto=format&crop=edges&fit=crop&h=675&w=1200&s=2c5287823d29aa6cefa7ad6defca4685",
+                    "name": "landscape1200"
+                  },
+                  "landscape2400": {
+                    "height": 1350,
+                    "width": 2400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/c3/521367a51c79ad9a6a4d7370bb2f7dc03396af?auto=format&crop=edges&fit=crop&h=1350&w=2400&s=fc9cd18dc88e2034555db4a3e8ef99ed",
+                    "name": "landscape2400"
+                  }
+                },
+                "assetPath": "/content/pages/blog/block-media-0194ba28-946f-8fab-9b51-4879ff94b29c.jpg"
+              }
+            },
+            "aspectRatio": "16/9",
+            "link": {
+              "fieldType": "internalImageLink",
+              "href": "/p/the-ultimate-bali-villa-staycation-experience"
+            },
+            "alt": "pool villa"
+          },
+          "title": {
+            "fieldType": "heading2",
+            "content": "The Ultimate Bali Villa Staycation Experience"
+          },
+          "text": {
+            "fieldType": "markdown",
+            "content": "###### *03/24/25*\nWelcome to Bali Listings, where the dream of the perfect Bali villa staycation becomes a reality. In this blog, we delve into what makes a stay in one..."
+          },
+          "callToAction": {
+            "fieldType": "internalButtonLink",
+            "href": "/p/the-ultimate-bali-villa-staycation-experience",
+            "content": "Read more"
+          },
+          "alignment": "left",
+          "blockType": "defaultBlock",
+          "blockName": "The Ultimate Bali Villa Staycation Experience"
+        },
+        {
+          "media": {
+            "fieldType": "image",
+            "image": {
+              "id": "831a1158-3e0f-598f-9155-166494abf27a",
+              "type": "imageAsset",
+              "attributes": {
+                "variants": {
+                  "landscape400": {
+                    "height": 225,
+                    "width": 400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/fc/1919e5fc93df967d5e93d10d6063c386207003?auto=format&crop=edges&fit=crop&h=225&w=400&s=8b9b2c538e5f84549d3dcc4ed8a79f78",
+                    "name": "landscape400"
+                  },
+                  "landscape800": {
+                    "height": 450,
+                    "width": 800,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/fc/1919e5fc93df967d5e93d10d6063c386207003?auto=format&crop=edges&fit=crop&h=450&w=800&s=953a56b801e37be4802c0cbc5d6d9a1f",
+                    "name": "landscape800"
+                  },
+                  "landscape1200": {
+                    "height": 675,
+                    "width": 1200,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/fc/1919e5fc93df967d5e93d10d6063c386207003?auto=format&crop=edges&fit=crop&h=675&w=1200&s=50cb126c08b7c8f831513677da79ca6f",
+                    "name": "landscape1200"
+                  },
+                  "landscape2400": {
+                    "height": 1350,
+                    "width": 2400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/fc/1919e5fc93df967d5e93d10d6063c386207003?auto=format&crop=edges&fit=crop&h=1350&w=2400&s=a42078c5726e5c00ded975a1c68bada2",
+                    "name": "landscape2400"
+                  }
+                },
+                "assetPath": "/content/pages/blog/block-media-0194ba25-a5be-81bd-aca4-d32554022cf7.jpeg"
+              }
+            },
+            "aspectRatio": "16/9",
+            "link": {
+              "fieldType": "internalImageLink",
+              "href": "/p/a-guide-to-booking-your-dream-villa-in-bali"
+            },
+            "alt": "villa"
+          },
+          "title": {
+            "fieldType": "heading2",
+            "content": "A Guide to Booking Your Dream Villa in Bali"
+          },
+          "text": {
+            "fieldType": "markdown",
+            "content": "###### *03/20/25*\nFinding the perfect villa in Bali should be an exciting and hassle-free experience. Whether you’re looking for a secluded retreat in Ubud, a beachfront..."
+          },
+          "callToAction": {
+            "fieldType": "internalButtonLink",
+            "href": "/p/a-guide-to-booking-your-dream-villa-in-bali",
+            "content": "Read more"
+          },
+          "alignment": "left",
+          "blockType": "defaultBlock",
+          "blockName": "A Guide to Booking Your Dream Villa in Bali"
+        },
+        {
+          "media": {
+            "fieldType": "image",
+            "image": {
+              "id": "8e798352-88ae-582a-8322-cdab9c467f38",
+              "type": "imageAsset",
+              "attributes": {
+                "variants": {
+                  "landscape400": {
+                    "height": 225,
+                    "width": 400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=225&w=400&s=73e7f4671ede9c237d7225678d955529",
+                    "name": "landscape400"
+                  },
+                  "landscape800": {
+                    "height": 450,
+                    "width": 800,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=450&w=800&s=dcc5be17e7f9a6b41e5ffc5411850737",
+                    "name": "landscape800"
+                  },
+                  "landscape1200": {
+                    "height": 675,
+                    "width": 1200,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=675&w=1200&s=0eab2256c47fcdf75f324b66ce2c68ea",
+                    "name": "landscape1200"
+                  },
+                  "landscape2400": {
+                    "height": 1350,
+                    "width": 2400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/2c/b05d1de70614ba0eb60e4fd537d7820311d3a4?auto=format&crop=edges&fit=crop&h=1350&w=2400&s=5733224be0c09536fe46d5b7fa6dcbeb",
+                    "name": "landscape2400"
+                  }
+                },
+                "assetPath": "/content/pages/blog/block-media-0194a5b4-747d-888b-a93f-23516a6d7b34.jpg"
+              }
+            },
+            "aspectRatio": "16/9",
+            "link": {
+              "fieldType": "internalImageLink",
+              "href": "/p/discovering-the-charm-of-traditional-balinese-villas"
+            },
+            "alt": "Traditional Balinese Villa"
+          },
+          "title": {
+            "fieldType": "heading2",
+            "content": "Discovering the Charm of Traditional Balinese Villas"
+          },
+          "text": {
+            "fieldType": "markdown",
+            "content": "###### *03/17/25*\nBali’s villas are more than just accommodations—they’re a reflection of the island’s rich culture and heritage. From..."
+          },
+          "callToAction": {
+            "fieldType": "internalButtonLink",
+            "href": "/p/discovering-the-charm-of-traditional-balinese-villas",
+            "content": "Read more"
+          },
+          "alignment": "left",
+          "blockType": "defaultBlock",
+          "blockId": "",
+          "blockName": "Discovering the Charm of Traditional Balinese Villas"
+        },
+        {
+          "media": {
+            "fieldType": "image",
+            "image": {
+              "id": "ba8239b1-eebe-5eaa-baed-8e928f8d066a",
+              "type": "imageAsset",
+              "attributes": {
+                "variants": {
+                  "landscape400": {
+                    "height": 225,
+                    "width": 400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/b9/c4d4e439968f695363e9f049976f6756bab83e?auto=format&crop=edges&fit=crop&h=225&w=400&s=b3efbf0f2cae2507007723c18f5e9706",
+                    "name": "landscape400"
+                  },
+                  "landscape800": {
+                    "height": 450,
+                    "width": 800,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/b9/c4d4e439968f695363e9f049976f6756bab83e?auto=format&crop=edges&fit=crop&h=450&w=800&s=839583de4cc8d0e72d1d3b5221e87c1c",
+                    "name": "landscape800"
+                  },
+                  "landscape1200": {
+                    "height": 675,
+                    "width": 1200,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/b9/c4d4e439968f695363e9f049976f6756bab83e?auto=format&crop=edges&fit=crop&h=675&w=1200&s=e28c184d85c320b73f3c3204f03a2dc9",
+                    "name": "landscape1200"
+                  },
+                  "landscape2400": {
+                    "height": 1350,
+                    "width": 2400,
+                    "url": "https://sharetribe-assets.imgix.net/67877067-5377-44b6-983d-c3c38b827ba0/raw/b9/c4d4e439968f695363e9f049976f6756bab83e?auto=format&crop=edges&fit=crop&h=1350&w=2400&s=6b1ae93f012a2c1fa8d56436ba7cc872",
+                    "name": "landscape2400"
+                  }
+                },
+                "assetPath": "/content/pages/blog/block-media-0195c347-cf1d-87a8-b7ec-d9febcb0212e.jpg"
+              }
+            },
+            "aspectRatio": "16/9",
+            "link": {
+              "fieldType": "internalImageLink",
+              "href": "/p/how-to-find-a-long-term-rental-in-bali-without-getting-scammed"
+            },
+            "alt": "bali listings rental scam"
+          },
+          "title": {
+            "fieldType": "heading2",
+            "content": "How to Find a Long-Term Rental in Bali Without Getting Scammed"
+          },
+          "text": {
+            "fieldType": "markdown",
+            "content": "###### *03/13/25*\nRenting a home in Bali for the long term sounds like a dream—waking up.."
+          },
+          "callToAction": {
+            "fieldType": "internalButtonLink",
+            "href": "/p/how-to-find-a-long-term-rental-in-bali-without-getting-scammed",
+            "content": "Read more"
+          },
+          "alignment": "left",
+          "blockType": "defaultBlock",
+          "blockName": "How to Find a Long-Term Rental in Bali Without Getting Scammed"
+        }
+      ],
+      "appearance": {
+        "fieldType": "customAppearance",
+        "backgroundImageOverlay": { "preset": "none" }
+      }
+    }
+  ]
+}
