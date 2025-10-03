@@ -44,6 +44,7 @@ export const CustomAppearance = React.forwardRef((props, ref) => {
     backgroundImageOverlay,
     alt = 'background image',
     sizes,
+    fromSectionHero,
   } = props;
 
   const getVariantNames = img => {
@@ -72,6 +73,7 @@ export const CustomAppearance = React.forwardRef((props, ref) => {
           image={backgroundImage}
           variants={getVariantNames(backgroundImage)}
           sizes={sizes}
+          fromSectionHero={fromSectionHero}
         />
       ) : null}
       {hasBackgroundOverlay ? <div className={css.backgroundOverlay} style={overlayStyle} /> : null}

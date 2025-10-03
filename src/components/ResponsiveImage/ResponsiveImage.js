@@ -69,6 +69,7 @@ const ResponsiveImage = props => {
     image,
     variants,
     dimensions,
+    fromSectionHero,
     ...rest
   } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -108,7 +109,7 @@ const ResponsiveImage = props => {
     ...rest,
   };
 
-  return <img alt={alt} {...imgProps} />;
+  return <img alt={alt} {...imgProps} fetchpriority={fromSectionHero ? "high" : null} />;
 };
 
 export default ResponsiveImage;
