@@ -6,7 +6,7 @@ import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import remove from "./img/remove.png";
 
-import { fetchCurrentUser, unfavoriteAllListings } from './FavoriteListingsPage.duck';
+import { unfavoriteListing, unfavoriteAllListings } from './FavoriteListingsPage.duck';
 
 import {
   H3,

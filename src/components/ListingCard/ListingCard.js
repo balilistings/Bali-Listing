@@ -153,12 +153,7 @@ const findValidImageUrl = (img, imageIndex) => {
   let imageUrl = null;
 
   const possibleVariants = [
-    'landscape-crop2x',
-    'landscape-crop',
     'scaled-small',
-    'scaled-medium', 
-    'scaled-large',
-    'default'
   ];
 
   for (const variant of possibleVariants) {
