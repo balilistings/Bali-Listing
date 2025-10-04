@@ -49,7 +49,6 @@ import {
   Page,
   NamedLink,
   NamedRedirect,
-  OrderPanel,
   LayoutSingleColumn,
 } from '../../components';
 
@@ -83,6 +82,7 @@ import SectionMapMaybe from './SectionMapMaybe';
 import CustomListingFields from './CustomListingFields';
 
 import css from './ListingPage.module.css';
+import OrderPanel from '../../components/OrderPanel/OrderPanel.js';
 
 const MIN_LENGTH_FOR_LONG_WORDS_IN_TITLE = 16;
 

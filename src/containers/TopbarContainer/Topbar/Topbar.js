@@ -15,9 +15,11 @@ import {
   LimitedAccessBanner,
   LinkedLogo,
   Modal,
-  ModalMissingInformation,
   NamedLink,
 } from '../../../components';
+
+import ModalMissingInformation from '../../../components/ModalMissingInformation/ModalMissingInformation';
+
 import { getSearchPageResourceLocatorStringParams } from '../../SearchPage/SearchPage.shared';
 
 import MenuIcon from './MenuIcon';

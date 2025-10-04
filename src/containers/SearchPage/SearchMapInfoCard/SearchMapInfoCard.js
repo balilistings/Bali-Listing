@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Slider from 'react-slick';
-import { IconCollection } from '../../../components';
+import IconCollection from '../../../components/IconCollection/IconCollection';
 import {
   checkPriceParams,
   formatPriceInMillions,

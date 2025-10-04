@@ -4,7 +4,8 @@ import React, { useCallback } from 'react';
 import { useConfiguration } from '../../context/configurationContext';
 
 import Slider from 'react-slick';
-import { IconCollection, NamedLink } from '../../components';
+import NamedLink from '../../components/NamedLink/NamedLink';
+import IconCollection from '../../components/IconCollection/IconCollection';
 import { displayPrice } from '../../util/configHelpers';
 import { ensureListing, ensureUser } from '../../util/data';
 import { useIntl } from '../../util/reactIntl';

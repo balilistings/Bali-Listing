@@ -1,3 +1,7 @@
+// TODO: remove this file
+// This barrel file adds to the bundle size and makes it harder to tree-shake unused components
+// If barrel file is needed, split the barrel file into smaller groups
+
 /**
  * Independent components
  * These components do not include any other components
@@ -122,14 +126,14 @@ export { default as UserNav } from './UserNav/UserNav';
 ///////////////////////////////////////////////
 
 export { default as Avatar, AvatarSmall, AvatarMedium, AvatarLarge } from './Avatar/Avatar';
-export { default as CustomExtendedDataField } from './CustomExtendedDataField/CustomExtendedDataField';
+// export { default as CustomExtendedDataField } from './CustomExtendedDataField/CustomExtendedDataField';
 export { default as OrderBreakdown } from './OrderBreakdown/OrderBreakdown';
-export { default as OrderPanel } from './OrderPanel/OrderPanel';
-export { default as ListingCard } from './ListingCard/ListingCard';
+// export { default as OrderPanel } from './OrderPanel/OrderPanel';
+// export { default as ListingCard } from './ListingCard/ListingCard';
 export { default as Map } from './Map/Map';
 export { default as Page } from './Page/Page';
 export { default as Reviews } from './Reviews/Reviews';
-export { default as SavedCardDetails } from './SavedCardDetails/SavedCardDetails';
+// export { default as SavedCardDetails } from './SavedCardDetails/SavedCardDetails';
 export { default as StripeConnectAccountStatusBox } from './StripeConnectAccountStatusBox/StripeConnectAccountStatusBox';
 export { default as StripePaymentAddress } from './StripePaymentAddress/StripePaymentAddress';
 
@@ -141,9 +145,9 @@ export { default as StripeConnectAccountForm } from './StripeConnectAccountForm/
 //////////////////////////////////////////////
 
 export { default as LayoutComposer, LayoutSingleColumn, LayoutSideNavigation } from './LayoutComposer';
-export { default as MaintenanceMode } from './MaintenanceMode/MaintenanceMode';
-export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';
-export { default as CookieConsent } from './CookieConsent';
+// export { default as MaintenanceMode } from './MaintenanceMode/MaintenanceMode';
+// export { default as ModalMissingInformation } from './ModalMissingInformation/ModalMissingInformation';
+// export { default as CookieConsent } from './CookieConsent';
 
-export { default as IconCollection } from './IconCollection/IconCollection';
-export { default as TestmonialSlider } from './TestmonialSlider/TestmonialSlider';
+// export { default as IconCollection } from './IconCollection/IconCollection';
+// export { default as TestmonialSlider } from './TestmonialSlider/TestmonialSlider';

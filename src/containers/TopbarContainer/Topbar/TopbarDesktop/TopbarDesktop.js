@@ -14,10 +14,10 @@ import {
   MenuContent,
   MenuItem,
   NamedLink,
-  IconCollection,
   Button,
 } from '../../../../components';
 
+import IconCollection from '../../../../components/IconCollection/IconCollection';
 import { setCurrency } from '../../../../ducks/currency.js';
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';

@@ -32,7 +32,6 @@ import {
   Page,
   UserDisplayName,
   OrderBreakdown,
-  OrderPanel,
   LayoutSingleColumn,
 } from '../../components';
 
@@ -55,6 +54,7 @@ import {
 } from './TransactionPage.duck';
 import css from './TransactionPage.module.css';
 import { getCurrentUserTypeRoles, hasPermissionToViewData } from '../../util/userHelpers.js';
+import OrderPanel from '../../components/OrderPanel/OrderPanel.js';
 
 // Submit dispute and close the review modal
 const onDisputeOrder = (

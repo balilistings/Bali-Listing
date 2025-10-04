@@ -18,13 +18,14 @@ import {
   FieldCheckbox,
   FieldTextInput,
   IconSpinner,
-  SavedCardDetails,
+  // SavedCardDetails,
   StripePaymentAddress,
 } from '../../../components';
 
 import ShippingDetails from '../ShippingDetails/ShippingDetails';
 
 import css from './StripePaymentForm.module.css';
+import SavedCardDetails from '../../../components/SavedCardDetails/SavedCardDetails';
 
 /**
  * Translate a Stripe API error object.

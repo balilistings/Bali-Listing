@@ -52,7 +52,6 @@ import {
   Page,
   NamedLink,
   NamedRedirect,
-  OrderPanel,
   LayoutSingleColumn,
 } from '../../components';
 import SectionHeading from './SectionHeading';
@@ -90,6 +89,7 @@ import SectionTerms from './SectionTerms';
 
 import css from './ListingPage.module.css';
 import { handleToggleFavorites } from '../../util/userFavorites.js';
+import OrderPanel from '../../components/OrderPanel/OrderPanel.js';
 
 const { Money } = sdkTypes;
 
