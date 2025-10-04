@@ -7,13 +7,30 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+import AboutUsPage from '../AboutUsPage/AboutUsPage';
+import BlogPage from '../BlogPage/BlogPage';
+import FAQPage from '../FAQPage/FAQPage';
+
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
 
+const componentMap = {
+  about: AboutUsPage,
+  blog: BlogPage,
+  faq: FAQPage,
+};
+
 export const CMSPageComponent = props => {
   const { params, pageAssetsData, inProgress, error } = props;
   const pageId = params.pageId || props.pageId;
+
+  const useNewPages = process.env.REACT_APP_USE_NEW_PAGES === 'true';
+  const PageComponent = useNewPages ? componentMap[pageId] : null;
+
+  if (PageComponent) {
+    return <PageComponent {...props} />;
+  }
 
   if (!inProgress && error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;

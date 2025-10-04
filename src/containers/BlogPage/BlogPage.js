@@ -6,7 +6,7 @@ import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage';
-import { IconBannedUser, IconDate, IconReviewUser } from '../../components';
+import { IconDate } from '../../components';
 import { loadData } from './BlogPage.duck';
 
 import css from './BlogPage.module.css';
@@ -71,7 +71,7 @@ const BlogCard = ({ block }) => {
 const BlogPage = props => {
   const dispatch = useDispatch();
   const params = useParams();
-  const pageId = 'blog';
+  const pageId = params.pageId || 'blog';
 
   const { pageAssetsData, inProgress, error } = useSelector(
     state => state.hostedAssets || {},
@@ -98,7 +98,7 @@ const BlogPage = props => {
   const pageData = pageAssetsData?.[pageId]?.data;
   const blocks = pageData?.sections?.[0]?.blocks || [];
 
-  const tabs = ['All', 'Tips & tricks', 'Lorem', 'Lorem', 'Lorem'];
+  const tabs = ['All', 'Tips & tricks'];
 
   return (
     <div className={css.root}>

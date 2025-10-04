@@ -90,24 +90,6 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       loadData: pageDataLoadingAPI.LandingPage.loadData,
     },
     {
-      path: '/faq',
-      name: 'FAQPage',
-      component: FAQPage,
-      loadData: pageDataLoadingAPI.FAQPage.loadData,
-    },
-    {
-      path: '/about',
-      name: 'AboutUsPage',
-      component: AboutUsPage,
-      loadData: pageDataLoadingAPI.AboutUsPage.loadData,
-    },
-    {
-      path: '/blog',
-      name: 'BlogPage',
-      component: BlogPage,
-      loadData: pageDataLoadingAPI.BlogPage.loadData,
-    },
-    {
       path: '/p/:pageId',
       name: 'CMSPage',
       component: CMSPage,

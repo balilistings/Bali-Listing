@@ -65,7 +65,10 @@ const AnimatedWrapper = ({ children, ...props }) => {
 const AboutUsPage = props => {
   const dispatch = useDispatch();
   const params = useParams();
-  const pageId = 'about-new';
+
+  // intentional to use new content page, to make it easier to switch between the old about page and the new one because of the content difference
+  // TODO: move "about-new" content to "about", and then change the page id here to "about". Right now it's retrieving content from both "about" and "about-new"
+  const pageId = 'about-new'; 
 
   const { pageAssetsData, inProgress, error } = useSelector(
     state => state.hostedAssets || {},
