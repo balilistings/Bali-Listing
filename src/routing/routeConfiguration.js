@@ -21,6 +21,9 @@ const FAQPage = loadable(() =>
 const AboutUsPage = loadable(() =>
   import(/* webpackChunkName: "AboutUsPage" */ '../containers/AboutUsPage/AboutUsPage')
 );
+const BlogPage = loadable(() =>
+  import(/* webpackChunkName: "BlogPage" */ '../containers/BlogPage/BlogPage')
+);
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ '../containers/EmailVerificationPage/EmailVerificationPage'));
@@ -85,18 +88,6 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'LandingPage',
       component: LandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
-    },
-    {
-      path: '/faq',
-      name: 'FAQPage',
-      component: FAQPage,
-      loadData: pageDataLoadingAPI.FAQPage.loadData,
-    },
-    {
-      path: '/about',
-      name: 'AboutUsPage',
-      component: AboutUsPage,
-      loadData: pageDataLoadingAPI.AboutUsPage.loadData,
     },
     {
       path: '/p/:pageId',
