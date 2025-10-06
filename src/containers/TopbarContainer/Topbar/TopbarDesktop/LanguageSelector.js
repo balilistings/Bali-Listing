@@ -2,17 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import classNames from 'classnames';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useIntl } from 'react-intl';
-import { useLocale } from '../../../../context/localeContext';
-
-import css from './LanguageSelector.module.css';
-
-const languageNames = {
-  en: 'English',
-  fr: 'Français',
-  de: 'Deutsch',
-  es: 'Español',
-  id: 'Bahasa Indonesia',
-};
+import { useLocale, languageNames } from '../../../../context/localeContext';
 
 const LanguageSelector = ({ isMobile = false }) => {
   const { locale, updateLocale, updateMessages, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
