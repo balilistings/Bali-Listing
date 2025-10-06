@@ -21,7 +21,6 @@ import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 
 import css from './FavoriteListingsPage.module.css';
-import { getListingsById } from '../../ducks/marketplaceData.duck';
 
 export const FavoriteListingsPageComponent = props => {
   const {
@@ -33,7 +32,6 @@ export const FavoriteListingsPageComponent = props => {
     scrollingDisabled,
     intl,
     dispatch,
-    fetchCurrentUser,
   } = props;
 
   const [selectedIds, setSelectedIds] = useState([]);
@@ -105,10 +103,7 @@ export const FavoriteListingsPageComponent = props => {
 
   const heading = listingsAreLoaded && listings.length > 0 ? (
     <H3 as="h1" className={css.heading}>
-      <FormattedMessage 
-        id="Favorite Listings" 
-        values={{ count: pagination?.totalItems || listings.length }} 
-      />
+      <FormattedMessage id="Favorite Listings" />
     </H3>
   ) : null;
 
@@ -171,8 +166,6 @@ export const FavoriteListingsPageComponent = props => {
           {!queryInProgress && !queryFavoritesError && (
             <>
           <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 0' }}>
-
-
                     {selectedIds.length > 0 && (
                       <button
                         className={css.removeSelected}
@@ -251,18 +244,6 @@ const mapStateToProps = state => {
     queryParams = null,
     listings = [],
   } = state.FavoriteListingsPage || {};
-
-  // Approach 1: Normal way
-  // let listings = getListingsById(state, currentPageResultIds) || [];
-
-  // Approach 2: Fallback - langsung dari marketplaceData
-  if (listings.length === 0 && currentPageResultIds.length > 0) {
-    console.log('⚠️  Using fallback approach - getting from marketplaceData directly');
-    const marketplaceListings = state.marketplaceData?.listings || {};
-    listings = currentPageResultIds
-      .map(id => marketplaceListings[id])
-      .filter(Boolean);
-  }
 
   console.log('=== FINAL LISTINGS ===');
   console.log('Current page result IDs:', currentPageResultIds);

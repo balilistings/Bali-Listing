@@ -27,22 +27,6 @@ import useDisableBodyScrollOnSwipe from '../../util/useDisableBodyScrollOnSwipe'
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
-// Helper function to get image entities from Redux store
-const getImagesFromStore = (listing, imageEntities) => {
-  const imageRelationships = listing?.relationships?.images?.data;
-  
-  if (!imageRelationships || !Array.isArray(imageRelationships)) {
-    return [];
-  }
-  
-  return imageRelationships
-    .map(imgRef => {
-      const imageId = imgRef.id?.uuid || imgRef.id;
-      return imageEntities?.[imageId];
-    })
-    .filter(Boolean);
-};
-
 // react-slick settings
 const sliderSettings = {
   dots: true,
@@ -98,7 +82,7 @@ const sliderSettings = {
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M9.5035 11.6908C9.42157 11.7728 9.37556 11.884 9.37556 12C9.37556 12.1159 9.42157 12.2271 9.5035 12.3091L13.8785 16.6841C13.9614 16.7614 14.0711 16.8035 14.1845 16.8015C14.2978 16.7995 14.406 16.7536 14.4861 16.6734C14.5663 16.5932 14.6122 16.4851 14.6142 16.3718C14.6162 16.2584 14.5741 16.1487 14.4968 16.0658L10.431 12L14.4968 7.93412C14.5741 7.85118 14.6162 7.74149 14.6142 7.62815C14.6122 7.5148 14.5663 7.40666 14.4861 7.32651C14.406 7.24635 14.2978 7.20043 14.1845 7.19843C14.0711 7.19643 13.9614 7.2385 13.8785 7.31578L9.5035 11.6908Z"
+            d="M9.5035 11.6908C9.42157 11.7728 9.37556 11.884 9.37556 12C9.37556 12.1159 9.42157 12.2271 9.5035 12.3091L13.8785 16.6841C13.9614 16.7614 14.0711 16.8035 14.1845 16.8015C14.2978 16.7995 14.406 16.7536 14.4861 16.6734C14.5663 16.5932 14.6122 16.4851 14.6142 16.3718C14.6162 16.2584 14.5741 16.1487 14.4968 16.0658L10.431 12L14.4968 7.93412C14.5741 7.85118 14.6162 7.74149 14.6142 7.62815C14.6142 7.5148 14.5663 7.40666 14.4861 7.32651C14.406 7.24635 14.2978 7.20043 14.1845 7.19843C14.0711 7.19643 13.9614 7.2385 13.8785 7.31578L9.5035 11.6908Z"
             fill="#231F20"
           />
         </svg>
@@ -107,30 +91,63 @@ const sliderSettings = {
   ),
 };
 
+// Helper function to get best available image variant
+const getBestImageUrl = (img) => {
+  if (!img || !img.attributes) return null;
+  
+  const variants = img.attributes.variants || {};
+  
+  // Priority order for variants
+  const variantPriority = [
+    'landscape-crop2x',
+    'landscape-crop',
+    'scaled-medium',
+    'scaled-small',
+    'scaled-large',
+    'default'
+  ];
+  
+  // Try each variant in order
+  for (const variantName of variantPriority) {
+    if (variants[variantName]?.url) {
+      return variants[variantName].url;
+    }
+  }
+  
+  // Fallback to direct URL
+  return img.attributes.url || null;
+};
+
 // Format price in millions if appropriate
 export const formatPriceInMillions = actualPrice => {
   if (!actualPrice) return null;
 
+  // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
     const millions = actualPrice / 1000000;
+    // If it's a whole number, show without decimal
     if (millions % 1 === 0) {
       return `${millions}M`;
     } else {
+      // Show with one decimal place for partial millions
       return `${millions.toFixed(1)}M`;
     }
   }
 
+  // For smaller amounts, show the actual price
   return `${actualPrice.toLocaleString()}`;
 };
 
 // Helper function to format price with currency, handling millions appropriately
 export const formatPriceWithCurrency = (actualPrice, currency = 'IDR') => {
   if (actualPrice) {
+    // Check if the price is greater than 1 million
     if (actualPrice > 1_000_000) {
       const millions = Number(actualPrice) / 1_000_000;
       const formattedMillions = millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1);
       return `${currency} ${formattedMillions}M`;
     } else {
+      // For smaller amounts, show the actual price with currency
       return `${currency} ${Number(actualPrice).toLocaleString()}`;
     }
   }
@@ -146,33 +163,6 @@ export const checkPriceParams = () => {
 
     return { weekprice, monthprice, yearprice };
   }
-};
-
-// Helper function untuk mencari image URL yang valid dari berbagai variant
-const findValidImageUrl = (img, imageIndex) => {
-  let imageUrl = null;
-
-  const possibleVariants = [
-    'scaled-small',
-  ];
-
-  for (const variant of possibleVariants) {
-    imageUrl = img?.attributes?.variants?.[variant]?.url;
-    if (imageUrl) break;
-  }
-
-  if (!imageUrl) imageUrl = img?.attributes?.url;
-  return imageUrl;
-};
-
-const processListingImages = (images) => {
-  if (!images || !Array.isArray(images)) return [];
-  const processedImages = [];
-  images.forEach((img) => {
-    const validUrl = findValidImageUrl(img);
-    if (validUrl) processedImages.push(validUrl);
-  });
-  return processedImages;
 };
 
 const PriceMaybe = props => {
@@ -198,6 +188,7 @@ const PriceMaybe = props => {
     const periodPriority = ['yearprice', 'monthprice', 'weekprice'];
     let activePeriodKey = '';
 
+    // Prioritize URL params for determining which period to show
     for (const p of periodPriority) {
       if (priceParams && priceParams[p]) {
         activePeriodKey = p;
@@ -205,6 +196,7 @@ const PriceMaybe = props => {
       }
     }
 
+    // Fallback to publicData if no relevant URL param
     if (!activePeriodKey) {
       for (const p of periodPriority) {
         if (publicData && publicData[p]) {
@@ -220,6 +212,7 @@ const PriceMaybe = props => {
     }
   }
 
+  // Apply conversion if needed. This now correctly handles non-rentals.
   const finalPrice =
     needPriceConversion && priceToDisplay ? priceToDisplay * USDConversionRate : priceToDisplay;
 
@@ -230,6 +223,7 @@ const PriceMaybe = props => {
       return `$${Math.round(priceValue).toLocaleString('en-US')}`;
     }
 
+    // IDR logic
     if (priceValue >= 1000000) {
       const millions = priceValue / 1000000;
       const value = millions % 1 === 0 ? millions : millions.toFixed(1);
@@ -257,8 +251,6 @@ const PriceMaybe = props => {
 export const ListingCard = props => {
   const config = useConfiguration();
   const intl = props.intl || useIntl();
-  const imageEntities = useSelector(state => state.marketplaceData?.entities?.image || {});
-  
   const {
     className,
     rootClassName,
@@ -270,7 +262,6 @@ export const ListingCard = props => {
     onUpdateFavorites,
     showWishlistButton = true,
   } = props;
-  
   const setSliderNode = useDisableBodyScrollOnSwipe();
   const sliderRef = useCallback(
     element => {
@@ -280,7 +271,6 @@ export const ListingCard = props => {
     },
     [setSliderNode]
   );
-  
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
 
@@ -288,7 +278,6 @@ export const ListingCard = props => {
   const { title = '', price: p, publicData } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
-  
   const {
     pricee,
     location,
@@ -302,7 +291,6 @@ export const ListingCard = props => {
     landsize,
     Freehold,
   } = publicData;
-  
   const tags = sortTags(pricee);
   const isLand = categoryLevel1 === 'landforsale';
   const isRentals = categoryLevel1 === 'rentalvillas';
@@ -319,46 +307,46 @@ export const ListingCard = props => {
       }
     : null;
 
-  // === PROSES GAMBAR - Get from Redux store ===
-  const imagesFromStore = getImagesFromStore(currentListing, imageEntities);
-  const imagesToProcess = currentListing.images?.length > 0 
-    ? currentListing.images 
-    : imagesFromStore;
-  
-  const processedImageUrls = processListingImages(imagesToProcess);
-  const hasValidImages = processedImageUrls.length > 0;
-  const displayImages = hasValidImages ? processedImageUrls : ['/images/placeholder-property.jpg'];
+  // ✅ FIXED: Process images with proper fallback chain
+  const imagesUrls = currentListing.images?.map(img => getBestImageUrl(img)).filter(Boolean) || [];
 
   const cardSliderSettings = {
     ...sliderSettings,
-    infinite: displayImages.length > 1,
+    infinite: imagesUrls.length > 1,
   };
 
   const dispatch = useDispatch();
   const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
 
+  // NEW: custom onToggleFavorites that mirrors "tong sampah" behavior for UNFAVORITE
   const onToggleFavorites = e => {
     e.preventDefault();
     e.stopPropagation();
 
+    // customOnUpdate akan dipanggil oleh handleToggleFavorites
     const customOnUpdate = payload => {
       if (isFavorite) {
+        // UNFAVORITE: panggil thunk user.duck yang sudah mengupdate profile di server
         dispatch(removeFavoriteOnProfile(id))
           .then(() => {
+            // Setelah backend sukses, update page-level state agar listing hilang dari FavoriteListings
             dispatch(unfavoriteListing(id));
           })
           .catch(err => {
             console.error('Unfavorite failed:', err);
           });
       } else {
+        // FAVORITE: forward payload ke onUpdateFavorites jika parent menyediakan
         if (typeof onUpdateFavorites === 'function') {
           onUpdateFavorites(payload);
         } else {
+          // fallback: log (atau Anda bisa dispatch addFavorite thunk jika tersedia)
           console.log('Favoriting not wired: payload=', payload);
         }
       }
     };
 
+    // Panggil util handleToggleFavorites (tetap menjaga redirect/login flow)
     handleToggleFavorites({
       location: routeLocation,
       history,
@@ -374,32 +362,19 @@ export const ListingCard = props => {
       {showWishlistButton && (
         <button 
           className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
-          onClick={onToggleFavorites}>
+          onClick={onToggleFavorites}
+        >
           <IconCollection name="icon-waislist" />
         </button>
       )}
 
       <div className={css.imageWrapper}>
         <Slider ref={sliderRef} {...cardSliderSettings} className={css.slider}>
-          {displayImages.map((imageUrl, imgIdx) => {
-            return (
-              <div key={imgIdx}>
-                <img 
-                  src={imageUrl} 
-                  alt={title || `Property image ${imgIdx + 1}`}
-                  className={css.image + ' ' + css.imageFade}
-                  onError={(e) => {
-                    if (e.target.src !== '/images/placeholder-property.jpg') {
-                      e.target.src = '/images/placeholder-property.jpg';
-                    }
-                  }}
-                />
-              </div>
-            );
-          })}
+          {imagesUrls.map((img, imgIdx) => (
+            <img src={img} alt={title} className={css.image + ' ' + css.imageFade} key={imgIdx} />
+          ))}
         </Slider>
       </div>
-      
       <div className={css.info}>
         <div className={css.tags}>
           {tags?.map(tag => (
@@ -456,6 +431,7 @@ export const ListingCard = props => {
                     {intl.formatMessage({ id: 'ListingCard.bathroom' }, { count: bathrooms })}
                   </span>
                 )}
+
                 {!!landsize && isLand && (
                   <span className={css.iconItem}>
                     <Icon type="land" /> {landsize} m2

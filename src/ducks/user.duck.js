@@ -547,13 +547,8 @@ export const selectIsProvider = (state, { debug = false } = {}) => {
   // checks: include userType === 'provider' and other common names
   const isProviderDetected =
     publicData?.isProvider === true ||
-    publicData?.is_seller === true ||
     publicData?.userType === 'provider' ||        // <<< ADDED: your case
-    publicData?.role === 'provider' ||
-    publicData?.accountType === 'provider' ||
     (Array.isArray(publicData?.roles) && publicData.roles.includes('provider')) ||
-    publicData?.provider === true ||
-    topLevel.isProvider === true ||
     topLevel.role === 'provider';
 
   if (debug) {

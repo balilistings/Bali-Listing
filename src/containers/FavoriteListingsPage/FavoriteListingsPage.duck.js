@@ -23,6 +23,30 @@ const initialState = {
 
 const resultIds = data => data.data.map(l => l.id);
 
+// ✅ Helper function to expand relationships manually
+const expandListingRelationships = (listing, included) => {
+  if (!listing || !included) return listing;
+
+  const expandedListing = { ...listing };
+
+  // Expand images
+  if (listing.relationships?.images?.data) {
+    expandedListing.images = listing.relationships.images.data
+      .map(imgRef => included.find(inc => inc.id.uuid === imgRef.id.uuid && inc.type === 'image'))
+      .filter(Boolean);
+  }
+
+  // Expand author
+  if (listing.relationships?.author?.data) {
+    const authorRef = listing.relationships.author.data;
+    expandedListing.author = included.find(
+      inc => inc.id.uuid === authorRef.id.uuid && inc.type === 'user'
+    );
+  }
+
+  return expandedListing;
+};
+
 export const unfavoriteAllListings = () => async (dispatch, getState, sdk) => {
   const { currentUser } = getState().user;
 
@@ -64,14 +88,12 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
       };
 
     case FETCH_LISTINGS_SUCCESS:
-      // ✅ FIXED: Hapus duplikasi, simpan listings dengan benar
       return {
         ...state,
         currentPageResultIds: resultIds(payload.data),
         listings: Array.isArray(payload.data?.data) ? payload.data.data : [],
         pagination: payload.data?.meta || null,
         queryInProgress: false,
-        listings: payload.data.data,
       };
 
     case FETCH_LISTINGS_ERROR:
@@ -80,6 +102,7 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
         queryInProgress: false,
         queryFavoritesError: payload
       };
+      
     case FAVORITES_UNFAVORITE:
       const updatedListings = state.listings.filter(
         listing => listing.id?.uuid !== payload.listingId
@@ -91,14 +114,15 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
         ),
         listings: updatedListings,
       };
+      
     case FAVORITES_CLEAR:
       return {
         ...state,
         currentPageResultIds: [],
         listings: [],
         pagination: null,
-        listings: [],
       };
+      
     default:
       return state;
   }
@@ -151,22 +175,49 @@ export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) =>
   const params = {
     ...queryParams,
     ids: favorites,
-    include: ['images', 'author'],
-    'fields.image': ['variants.scaled-medium', 'variants.scaled-small'],
+    include: ['images', 'author', 'author.profileImage'],
+    'fields.image': [
+      'variants.landscape-crop',
+      'variants.landscape-crop2x',
+      'variants.scaled-small',
+      'variants.scaled-medium',
+      'variants.scaled-large',
+      'variants.default'
+    ],
     'limit.images': 10,
   };
 
   return sdk.listings
     .query(params)
     .then(response => {
-      console.log('✅ Favorites API - Images:', response.data?.data?.[0]?.images?.length);
+      console.log('✅ API Response:', response);
+      console.log('✅ Included items:', response.data?.included?.length);
+      
+      // ✅ CRITICAL FIX: Manually expand relationships before storing
+      const expandedListings = response.data.data.map(listing => 
+        expandListingRelationships(listing, response.data.included)
+      );
+      
+      console.log('✅ First expanded listing images:', expandedListings[0]?.images?.length);
+
+      // Create modified response with expanded listings
+      const expandedResponse = {
+        data: {
+          ...response.data,
+          data: expandedListings
+        }
+      };
+
+      // Still call addMarketplaceEntities for other parts of the app
       dispatch(addMarketplaceEntities(response));
-      dispatch(queryFavoritesSuccess(response));
-      return response;
+      dispatch(queryFavoritesSuccess(expandedResponse));
+      
+      return expandedResponse;
     })
     .catch(e => {
-      console.error('❌ API Error:', e);
+      console.error('❌ Favorites API Error:', e);
       dispatch(queryFavoritesError(storableError(e)));
+      throw e;
     });
 };
 
