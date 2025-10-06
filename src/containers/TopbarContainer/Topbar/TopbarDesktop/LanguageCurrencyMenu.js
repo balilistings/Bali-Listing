@@ -5,11 +5,11 @@ import classNames from 'classnames';
 import { setCurrency } from '../../../../ducks/currency.js';
 import { useLocale, languageNames } from '../../../../context/localeContext';
 import { Menu, MenuLabel, MenuContent, MenuItem } from '../../../../components';
-import IconLanguage from '../../../../components/IconLanguage/IconLanguage';
-import IconCurrency from '../../../../components/IconCurrency/IconCurrency';
 
 import topbarCss from './TopbarDesktop.module.css';
 import css from './LanguageCurrencyMenu.module.css';
+import IconLanguage from '../../../../components/IconLanguage/IconLanguage.js';
+import IconCurrency from '../../../../components/IconCurrency/IconCurrency.js';
 
 const currencies = [
   { code: 'IDR', name: 'Indonesian Rupiah', symbol: 'RP' },
@@ -17,16 +17,7 @@ const currencies = [
 ];
 
 const LanguageCurrencyMenu = ({ config, currentPage }) => {
-  const showCurrencyToggler =
-    config.multiCurrencyEnabled && ['LandingPage', 'search', 'ListingPage'].includes(currentPage);
-
-  const {
-    locale,
-    updateLocale,
-    updateMessages,
-    SUPPORTED_LOCALES,
-    DEFAULT_LOCALE,
-  } = useLocale();
+  const { locale, updateLocale, updateMessages, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
   const location = useLocation();
   const history = useHistory();
 
@@ -36,6 +27,14 @@ const LanguageCurrencyMenu = ({ config, currentPage }) => {
   const handleCurrencyChange = currency => {
     dispatch(setCurrency(currency));
   };
+
+  const showCurrencyToggler =
+    config.multiCurrencyEnabled && ['LandingPage', 'search', 'ListingPage'].includes(currentPage);
+  const showLanguageToggler = SUPPORTED_LOCALES.length > 1 && currentPage !== 'EditListingPage';
+
+  if (!showLanguageToggler && !showCurrencyToggler) {
+    return null;
+  }
 
   const onLanguageChange = newLocale => {
     if (newLocale === locale) {
@@ -103,12 +102,12 @@ const LanguageCurrencyMenu = ({ config, currentPage }) => {
         </div>
       </MenuLabel>
       <MenuContent className={css.menuContent}>
-        {SUPPORTED_LOCALES.length > 1 && currentPage !== 'EditListingPage' && (
+        {showLanguageToggler && (
           <MenuItem key="language-section">
             <div className={css.section}>
-              <h3 className={css.sectionTitle}>
+              <p className={css.sectionTitle}>
                 <IconLanguage /> Language:
-              </h3>
+              </p>
               <div className={css.optionsContainer}>
                 {SUPPORTED_LOCALES.map(l => (
                   <button
@@ -128,9 +127,9 @@ const LanguageCurrencyMenu = ({ config, currentPage }) => {
         {showCurrencyToggler && (
           <MenuItem key="currency-section">
             <div className={css.section}>
-              <h3 className={css.sectionTitle}>
+              <p className={css.sectionTitle}>
                 <IconCurrency /> Currency:
-              </h3>
+              </p>
               <div className={css.optionsContainer}>
                 {currencies.map(c => (
                   <button

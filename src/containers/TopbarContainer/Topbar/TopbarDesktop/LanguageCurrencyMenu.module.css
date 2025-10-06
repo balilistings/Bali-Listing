@@ -1,3 +1,6 @@
+svg {
+  fill: transparent;
+}
 
 .menuContent {
   padding: 24px;
@@ -5,7 +8,11 @@
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.1);
-  border: 1px solid #D3D3D3;
+  border: 1px solid #d3d3d3;
+}
+
+.menuContent > ul {
+  gap: 40px;
 }
 
 .section {
@@ -22,8 +29,9 @@
   gap: 8px;
   font-size: 16px;
   font-weight: 600;
-  color: #231F20;
-  margin: 0 0 16px 0;
+  color: #231f20;
+  margin: 0 0 12px 0;
+  padding: 10px;
 }
 
 .optionsContainer {
@@ -33,15 +41,15 @@
 }
 
 .optionButton {
-  background-color: #FFFFFF;
-  border: 1px solid #F2F2F2;
+  background-color: #ffffff;
+  border: 1px solid #f2f2f2;
   border-radius: 10px;
-  padding: 12px 16px;
+  padding: 12px 14px;
   cursor: pointer;
   font-family: 'Mulish', sans-serif;
-  color: #231F20;
+  color: #231f20;
   transition: all 0.2s ease-in-out;
-  
+
   /* Styles for Language Button */
   font-size: 16px;
   font-weight: 700;
@@ -49,13 +57,13 @@
 }
 
 .optionButton:hover {
-  background-color: #EAEAEA;
-  border-color: #EAEAEA;
+  background-color: #eaeaea;
+  border-color: #eaeaea;
 }
 
 .selected {
-  background-color: #FFFFFF;
-  border-color: #F74DF4;
+  background-color: #ffffff;
+  border-color: #f74df4;
 }
 
 .currencyOption {

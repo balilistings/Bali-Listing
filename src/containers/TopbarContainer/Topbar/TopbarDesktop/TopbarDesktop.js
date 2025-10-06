@@ -230,8 +230,6 @@ const TopbarDesktop = props => {
   const urlParams = parse(location?.search || '');
   const currentCategoryFromURL = urlParams.pub_categoryLevel1;
 
-  const showCurrencyToggler = config.multiCurrencyEnabled && ['LandingPage', 'search', 'ListingPage'].includes(currentPage);
-
   // Update active category when URL changes
   useEffect(() => {
     setActiveCategory(currentCategoryFromURL);
