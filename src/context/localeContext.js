@@ -4,6 +4,15 @@ const { getSupportedLocales } = require('../util/translation');
 
 const LocaleContext = createContext();
 
+export const languageNames = {
+  en: 'English',
+  fr: 'Français',
+  de: 'Deutsch',
+  es: 'Español',
+  id: 'Bahasa Indonesia',
+  ru: 'Russian',
+};
+
 const SUPPORTED_LOCALES = getSupportedLocales();
 const DEFAULT_LOCALE = 'en';
 
