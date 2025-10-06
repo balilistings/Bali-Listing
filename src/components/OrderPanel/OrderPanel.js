@@ -530,7 +530,11 @@ const OrderPanel = props => {
 
   const handleWhatsappClick = () => {
     if (!currentUser) {
-      history.push('/login');
+      const currentUrl = window.location.pathname + window.location.search;
+      history.push({
+        pathname: '/login',
+        state: { from: currentUrl }
+      });
       return;
     }
 
