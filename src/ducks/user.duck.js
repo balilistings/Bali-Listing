@@ -19,7 +19,6 @@ export const CURRENT_USER_SHOW_ERROR = 'app/user/CURRENT_USER_SHOW_ERROR';
 export const CLEAR_FAVORITES_ON_PROFILE = 'app/user/CLEAR_FAVORITES_ON_PROFILE';
 export const REMOVE_FAVORITE_ON_PROFILE = 'app/user/REMOVE_FAVORITE_ON_PROFILE';
 
-
 export const CLEAR_CURRENT_USER = 'app/user/CLEAR_CURRENT_USER';
 
 export const FETCH_CURRENT_USER_HAS_LISTINGS_REQUEST =
@@ -45,9 +44,11 @@ export const FETCH_CURRENT_USER_HAS_ORDERS_ERROR = 'app/user/FETCH_CURRENT_USER_
 export const SEND_VERIFICATION_EMAIL_REQUEST = 'app/user/SEND_VERIFICATION_EMAIL_REQUEST';
 export const SEND_VERIFICATION_EMAIL_SUCCESS = 'app/user/SEND_VERIFICATION_EMAIL_SUCCESS';
 export const SEND_VERIFICATION_EMAIL_ERROR = 'app/user/SEND_VERIFICATION_EMAIL_ERROR';
+
 export const clearFavoritesOnProfile = () => ({
   type: CLEAR_FAVORITES_ON_PROFILE,
 });
+
 export const removeFavoriteOnProfile = listingId => ({
   type: REMOVE_FAVORITE_ON_PROFILE,
   payload: listingId,
@@ -350,7 +351,7 @@ export const selectCurrentUserFavorites = state => {
 
 export const selectHasFavorites = state => {
   const favorites = selectCurrentUserFavorites (state);
-  return array.isArray(favorites) && favorites.length > 0;
+  return Array.isArray(favorites) && favorites.length > 0;
 };
 
 export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
@@ -475,7 +476,6 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
     });
 };
 
-
 export const sendVerificationEmail = () => (dispatch, getState, sdk) => {
   if (verificationSendingInProgress(getState())) {
     return Promise.reject(new Error('Verification email sending already in progress'));
@@ -487,75 +487,16 @@ export const sendVerificationEmail = () => (dispatch, getState, sdk) => {
     .catch(e => dispatch(sendVerificationEmailError(storableError(e))));
 };
 
-// ================ Additional Selectors (added) ================ //
+// ================ Essential Selectors ================ //
 
-/**
- * Generic selector for currentUser entity from the user reducer.
- * Returns null if not available.
- */
 export const selectCurrentUser = state => state?.user?.currentUser || null;
 
-/**
- * Common place where "publicData" / profile custom data usually lives.
- * This tries to be resilient to different currentUser shapes:
- * - currentUser.attributes.profile.publicData (typical)
- * - currentUser.profile.publicData
- * - currentUser.publicData
- *
- * Returns an object (empty if no public data found).
- */
 export const selectCurrentUserPublicData = state => {
   const currentUser = selectCurrentUser(state);
-  // flexibility for multiple shapes
   const pd =
     currentUser?.attributes?.profile?.publicData ||
     currentUser?.profile?.publicData ||
     currentUser?.publicData ||
     {};
   return pd || {};
-};
-
-/**
- * More resilient selectIsProvider with optional debug logging
- * Tries several common flag names and locations used across projects.
- *
- * Usage: selectIsProvider(state) or selectIsProvider(state, { debug: true })
- */
-// More resilient selectIsProvider with userType check
-export const selectIsProvider = (state, { debug = false } = {}) => {
-  const currentUser = selectCurrentUser(state);
-  if (!currentUser) return false;
-
-  // try multiple common places for "publicData"
-  const candidates = [
-    currentUser?.attributes?.profile?.publicData,
-    currentUser?.attributes?.profile,         // some APIs put flags here
-    currentUser?.attributes?.publicData,
-    currentUser?.profile?.publicData,
-    currentUser?.publicData,
-  ];
-
-  // pick first object-like candidate
-  const publicData = candidates.find(pd => pd && typeof pd === 'object') || {};
-
-  // extra top-level fallbacks
-  const topLevel = {
-    role: currentUser?.attributes?.role || currentUser?.role || currentUser?.type,
-    isProvider: currentUser?.isProvider || currentUser?.attributes?.isProvider,
-  };
-
-  // checks: include userType === 'provider' and other common names
-  const isProviderDetected =
-    publicData?.isProvider === true ||
-    publicData?.userType === 'provider' ||        // <<< ADDED: your case
-    (Array.isArray(publicData?.roles) && publicData.roles.includes('provider')) ||
-    topLevel.role === 'provider';
-
-  if (debug) {
-    // temporary debug output — remove after you confirm which field is used
-    // eslint-disable-next-line no-console
-    console.log('selectIsProvider debug -> publicData:', publicData, ' topLevel:', topLevel, ' result:', isProviderDetected);
-  }
-
-  return Boolean(isProviderDetected);
 };

@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { parse } from '../../../../util/urlHelpers';
 import { connect } from 'react-redux';
-import { selectIsProvider } from '../../../../ducks/user.duck';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
+
 import {
   Avatar,
   InlineTextButton,
@@ -18,14 +18,38 @@ import {
   Button,
 } from '../../../../components';
 
-import { setCurrency } from '../../../../ducks/currency.js';
-
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
 import LanguageSelector from './LanguageSelector';
 import { useLocale } from '../../../../context/localeContext';
 
 import css from './TopbarDesktop.module.css';
+
+// Helper function untuk cek apakah user adalah provider
+const checkIsProvider = (currentUser) => {
+  if (!currentUser) return false;
+  
+  const publicData = currentUser?.attributes?.profile?.publicData || {};
+  return (
+    publicData.userType === 'provider' ||
+    publicData.isProvider === true ||
+    (Array.isArray(publicData.roles) && publicData.roles.includes('provider')) ||
+    currentUser?.attributes?.role === 'provider'
+  );
+};
+
+// Helper function untuk cek apakah user adalah customer
+const checkIsCustomer = (currentUser) => {
+  if (!currentUser) return false;
+  
+  const publicData = currentUser?.attributes?.profile?.publicData || {};
+  return (
+    publicData.userType === 'customer' ||
+    publicData.isCustomer === true ||
+    (Array.isArray(publicData.roles) && publicData.roles.includes('customer')) ||
+    currentUser?.attributes?.role === 'customer'
+  );
+};
 
 const SignupLink = () => {
   return (
@@ -59,12 +83,15 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
   );
 };
 
-const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink, isProvider }) => {
+const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink }) => {
   const currentPageClass = page => {
     const isAccountSettingsPage =
       page === 'AccountSettingsPage' && ACCOUNT_SETTINGS_PAGES.includes(currentPage);
     return currentPage === page || isAccountSettingsPage ? css.currentPage : null;
   };
+
+  const isProvider = checkIsProvider(currentUser);
+  const isCustomer = checkIsCustomer(currentUser);
 
   return (
     <Menu>
@@ -72,7 +99,8 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
-        {showManageListingsLink ? (
+        {/* Hanya tampilkan ManageListings untuk provider */}
+        {showManageListingsLink && isProvider ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
@@ -84,7 +112,6 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
           </MenuItem>
         ) : null}
 
-
         <MenuItem key="ProfileSettingsPage">
           <NamedLink
             className={classNames(css.menuLink, currentPageClass('ProfileSettingsPage'))}
@@ -94,7 +121,6 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
             <FormattedMessage id="TopbarDesktop.profileSettingsLink" />
           </NamedLink>
         </MenuItem>
-
 
         <MenuItem key="AccountSettingsPage">
           <NamedLink
@@ -117,8 +143,6 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
             </NamedLink>
           </MenuItem>
         )}
-
-
 
         <MenuItem key="logout">
           <InlineTextButton rootClassName={css.logoutButton} onClick={onLogout}>
@@ -180,13 +204,11 @@ const NotSignedInProfileMenu = ({
         </MenuItem>
         <MenuItem key="login">
           <NamedLink className={classNames(css.menuLink, css.loginLink)} name="LoginPage">
-
             <FormattedMessage id="TopbarDesktop.login" />
           </NamedLink>
         </MenuItem>
         <MenuItem key="signup">
           <NamedLink className={classNames(css.menuLink, css.signupLink)} name="SignupPage">
-
             <FormattedMessage id="TopbarDesktop.signup" />
           </NamedLink>
         </MenuItem>
@@ -222,29 +244,6 @@ const CurrencyToggler = ({ selectedCurrency, onSetCurrency }) => {
   );
 };
 
-/**
- * Topbar for desktop layout
- *
- * @component
- * @param {Object} props
- * @param {string?} props.className add more style rules in addition to components own css.root
- * @param {string?} props.rootClassName overwrite components own css.root
- * @param {CurrentUser} props.currentUser API entity
- * @param {string?} props.currentPage
- * @param {boolean} props.isAuthenticated
- * @param {number} props.notificationCount
- * @param {Function} props.onLogout
- * @param {Function} props.onSearchSubmit
- * @param {Object?} props.initialSearchFormValues
- * @param {Object} props.intl
- * @param {Object} props.config
- * @param {boolean} props.showSearchForm
- * @param {boolean} props.showCreateListingsLink
- * @param {string} props.inboxTab
- * @param {Object} props.location
- * @param {Object} props.history
- * @returns {JSX.Element} search icon
- */
 const TopbarDesktop = props => {
   const {
     className,
@@ -267,8 +266,8 @@ const TopbarDesktop = props => {
     history,
     selectedCurrency,
     onSetCurrency,
-    IsProvider,
   } = props;
+  
   const [mounted, setMounted] = useState(false);
   const [scrollToBottom, setScrollToBottom] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
@@ -276,18 +275,15 @@ const TopbarDesktop = props => {
   const debounceTimeout = useRef(null);
   const { SUPPORTED_LOCALES } = useLocale();
 
-  // Parse URL parameters to determine active tab
   const urlParams = parse(location?.search || '');
   const currentCategoryFromURL = urlParams.pub_categoryLevel1;
 
   const showCurrencyToggler = config.multiCurrencyEnabled && ['LandingPage', 'search', 'ListingPage'].includes(currentPage);
 
-  // Update active category when URL changes
   useEffect(() => {
     setActiveCategory(currentCategoryFromURL);
   }, [currentCategoryFromURL]);
 
-  // Define tab categories and their corresponding category IDs
   const tabCategories = [
     {
       id: 'rentalvillas',
@@ -306,18 +302,10 @@ const TopbarDesktop = props => {
     }
   ];
 
-  // Handle tab click to navigate to the appropriate URL
   const handleTabClick = (categoryId) => {
     const newUrl = `/s?pub_categoryLevel1=${categoryId}`;
     history.push(newUrl);
   };
-
-  // check if user is proffesional and has created a listing already
-  // const listingLength = useSelector(state => state.user.totalListingsLength);
-  // const userType = currentUser?.attributes?.profile?.publicData?.userType;
-  // const showCreateNewListingLink = !(listingLength > 0 && userType == USER_TYPE_PROFESSIONAL);
-
-  // Debounced scroll handler with hysteresis
 
   useEffect(() => {
     setMounted(true);
@@ -331,7 +319,6 @@ const TopbarDesktop = props => {
       }
       debounceTimeout.current = setTimeout(() => {
         const scrollY = window.scrollY;
-        // Remove console.log to prevent spam
         if (!lastScrollState.current && scrollY > SCROLL_ADD_CLASS) {
           setScrollToBottom(true);
           lastScrollState.current = true;
@@ -343,7 +330,6 @@ const TopbarDesktop = props => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    // Set initial state in case already scrolled
     handleScroll();
 
     return () => {
@@ -377,7 +363,6 @@ const TopbarDesktop = props => {
       currentUser={currentUser}
       onLogout={onLogout}
       showManageListingsLink={showCreateListingsLink}
-      isProvider={props.isProvider}
     />
   ) : (
     <NotSignedInProfileMenu
@@ -387,9 +372,6 @@ const TopbarDesktop = props => {
       intl={intl}
       authenticatedOnClientSide={authenticatedOnClientSide}
       isAuthenticatedOrJustHydrated={isAuthenticatedOrJustHydrated}
-      Add
-      commentMore
-      actions
     />
   );
 
@@ -446,10 +428,10 @@ const TopbarDesktop = props => {
             <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M6.03125 2.50098H13.3438M6.03125 2.50098C6.03125 2.79935 5.91272 3.08549 5.70175 3.29647C5.49077 3.50745 5.20462 3.62598 4.90625 3.62598C4.60788 3.62598 4.32173 3.50745 4.11075 3.29647C3.89978 3.08549 3.78125 2.79935 3.78125 2.50098M6.03125 2.50098C6.03125 2.20261 5.91272 1.91646 5.70175 1.70548C5.49077 1.4945 5.20462 1.37598 4.90625 1.37598C4.60788 1.37598 4.32173 1.4945 4.11075 1.70548C3.89978 1.91646 3.78125 2.20261 3.78125 2.50098M3.78125 2.50098H0.96875M6.03125 11.501H13.3438M6.03125 11.501C6.03125 11.7993 5.91272 12.0855 5.70175 12.2965C5.49077 12.5074 5.20462 12.626 4.90625 12.626C4.60788 12.626 4.32173 12.5074 4.11075 12.2965C3.89978 12.0855 3.78125 11.7993 3.78125 11.501M6.03125 11.501C6.03125 11.2026 5.91272 10.9165 5.70175 10.7055C5.49077 10.4945 5.20462 10.376 4.90625 10.376C4.60788 10.376 4.32173 10.4945 4.11075 10.7055C3.89978 10.9165 3.78125 11.2026 3.78125 11.501M3.78125 11.501H0.96875M10.5312 7.00098H13.3438M10.5312 7.00098C10.5312 7.29935 10.4127 7.58549 10.2017 7.79647C9.99077 8.00745 9.70462 8.12598 9.40625 8.12598C9.10788 8.12598 8.82173 8.00745 8.61075 7.79647C8.39978 7.58549 8.28125 7.29935 8.28125 7.00098M10.5312 7.00098C10.5312 6.70261 10.4127 6.41646 10.2017 6.20548C9.99077 5.9945 9.70462 5.87598 9.40625 5.87598C9.10788 5.87598 8.82173 5.9945 8.61075 6.20548C8.39978 6.41646 8.28125 6.70261 8.28125 7.00098M8.28125 7.00098H0.96875" stroke="white" stroke-width="1.5" stroke-linecap="round" strokeLinejoin="round" />
             </svg>
-
             Filters
           </Button>
         </div>}
+        
         <div className={classNames(css.rightMenus, { [css.searchPageTopbarMenu]: currentPage === 'search' })}>
           {showCurrencyToggler && <CurrencyToggler selectedCurrency={selectedCurrency} onSetCurrency={onSetCurrency} />}
           <CustomLinksMenu
@@ -469,8 +451,4 @@ const TopbarDesktop = props => {
   );
 };
 
-const mapStateToProps = state => ({
-  isProvider: selectIsProvider(state),
-});
-
-export default connect(mapStateToProps)(TopbarDesktop);
+export default connect(null)(TopbarDesktop);

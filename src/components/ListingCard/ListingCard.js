@@ -100,11 +100,7 @@ const getBestImageUrl = (img) => {
   // Priority order for variants
   const variantPriority = [
     'landscape-crop2x',
-    'landscape-crop',
-    'scaled-medium',
     'scaled-small',
-    'scaled-large',
-    'default'
   ];
   
   // Try each variant in order

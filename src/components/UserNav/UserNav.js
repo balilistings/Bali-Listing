@@ -4,9 +4,20 @@ import classNames from 'classnames';
 import { connect } from 'react-redux';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routing/routeConfiguration';
 import { LinkTabNavHorizontal } from '../../components';
-import { selectIsProvider, selectCurrentUser } from '../../ducks/user.duck';
+import { selectCurrentUser } from '../../ducks/user.duck';
 
 import css from './UserNav.module.css';
+const checkIsProvider = (currentUser) => {
+  if (!currentUser) return false;
+  
+  const publicData = currentUser?.attributes?.profile?.publicData || {};
+  return (
+    publicData.userType === 'provider' ||
+    publicData.isProvider === true ||
+    (Array.isArray(publicData.roles) && publicData.roles.includes('provider')) ||
+    currentUser?.attributes?.role === 'provider'
+  );
+};
 
 /**
  * @param {Object} props
@@ -15,7 +26,6 @@ import css from './UserNav.module.css';
  * @param {string} props.currentPage
  * @param {boolean} [props.showManageListingsLink]
  * @param {boolean} [props.showFavoriteListingPage]
- * @param {boolean} [props.isProvider]
  */
 const UserNav = props => {
   const {
@@ -24,8 +34,10 @@ const UserNav = props => {
     currentPage,
     showManageListingsLink = false,
     showFavoriteListingPage = true,
-    isProvider = false,
+    currentUser,
   } = props;
+
+  const isProvider = checkIsProvider(currentUser);
 
   const classes = classNames(rootClassName || css.root, className);
 
@@ -84,16 +96,9 @@ const UserNav = props => {
     />
   );
 };
-
-/**
- * Gunakan selector central (selectIsProvider) agar deteksi provider konsisten
- * dengan logic di user.duck.js
- */
-
+  
 const mapStateToProps = state => ({
-  isProvider: selectIsProvider(state),
+  currentUser: selectCurrentUser(state),
 });
-
-
 
 export default connect(mapStateToProps)(UserNav);
