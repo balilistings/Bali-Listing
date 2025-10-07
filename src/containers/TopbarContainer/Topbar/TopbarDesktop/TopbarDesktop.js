@@ -4,6 +4,8 @@ import { parse } from '../../../../util/urlHelpers';
 import { connect } from 'react-redux';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
+import { checkIsProvider, checkIsCustomer } from '../../../../util/userHelpers';
+
 
 import {
   Avatar,
@@ -25,31 +27,7 @@ import { useLocale } from '../../../../context/localeContext';
 
 import css from './TopbarDesktop.module.css';
 
-// Helper function untuk cek apakah user adalah provider
-const checkIsProvider = (currentUser) => {
-  if (!currentUser) return false;
-  
-  const publicData = currentUser?.attributes?.profile?.publicData || {};
-  return (
-    publicData.userType === 'provider' ||
-    publicData.isProvider === true ||
-    (Array.isArray(publicData.roles) && publicData.roles.includes('provider')) ||
-    currentUser?.attributes?.role === 'provider'
-  );
-};
 
-// Helper function untuk cek apakah user adalah customer
-const checkIsCustomer = (currentUser) => {
-  if (!currentUser) return false;
-  
-  const publicData = currentUser?.attributes?.profile?.publicData || {};
-  return (
-    publicData.userType === 'customer' ||
-    publicData.isCustomer === true ||
-    (Array.isArray(publicData.roles) && publicData.roles.includes('customer')) ||
-    currentUser?.attributes?.role === 'customer'
-  );
-};
 
 const SignupLink = () => {
   return (

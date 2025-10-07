@@ -5,19 +5,9 @@ import { connect } from 'react-redux';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routing/routeConfiguration';
 import { LinkTabNavHorizontal } from '../../components';
 import { selectCurrentUser } from '../../ducks/user.duck';
+import { checkIsProvider } from '../../util/userHelpers';
 
 import css from './UserNav.module.css';
-const checkIsProvider = (currentUser) => {
-  if (!currentUser) return false;
-  
-  const publicData = currentUser?.attributes?.profile?.publicData || {};
-  return (
-    publicData.userType === 'provider' ||
-    publicData.isProvider === true ||
-    (Array.isArray(publicData.roles) && publicData.roles.includes('provider')) ||
-    currentUser?.attributes?.role === 'provider'
-  );
-};
 
 /**
  * @param {Object} props
