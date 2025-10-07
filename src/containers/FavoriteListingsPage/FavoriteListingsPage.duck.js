@@ -100,9 +100,9 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
       return {
         ...state,
         queryInProgress: false,
-        queryFavoritesError: payload
+        queryFavoritesError: payload,
       };
-      
+
     case FAVORITES_UNFAVORITE:
       const updatedListings = state.listings.filter(
         listing => listing.id?.uuid !== payload.listingId
@@ -114,7 +114,7 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
         ),
         listings: updatedListings,
       };
-      
+
     case FAVORITES_CLEAR:
       return {
         ...state,
@@ -122,7 +122,7 @@ const favoriteListingsPageReducer = (state = initialState, action = {}) => {
         listings: [],
         pagination: null,
       };
-      
+
     default:
       return state;
   }
@@ -157,7 +157,7 @@ export const unfavoriteAllSuccess = () => ({
 
 export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) => {
   dispatch(queryFavoritesRequest(queryParams));
-  
+
   const { currentUser } = getState().user;
   const favorites = currentUser?.attributes?.profile?.privateData?.favorites || [];
 
@@ -165,8 +165,8 @@ export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) =>
     const emptyResponse = {
       data: {
         data: [],
-        meta: { totalItems: 0, totalPages: 1, perPage: RESULT_PAGE_SIZE, page: 1 }
-      }
+        meta: { totalItems: 0, totalPages: 1, perPage: RESULT_PAGE_SIZE, page: 1 },
+      },
     };
     dispatch(queryFavoritesSuccess(emptyResponse));
     return Promise.resolve(emptyResponse);
@@ -182,7 +182,7 @@ export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) =>
       'variants.scaled-small',
       'variants.scaled-medium',
       'variants.scaled-large',
-      'variants.default'
+      'variants.default',
     ],
     'limit.images': 10,
   };
@@ -190,28 +190,23 @@ export const queryFavoriteListings = queryParams => (dispatch, getState, sdk) =>
   return sdk.listings
     .query(params)
     .then(response => {
-      console.log('✅ API Response:', response);
-      console.log('✅ Included items:', response.data?.included?.length);
-      
-      // ✅ CRITICAL FIX: Manually expand relationships before storing
-      const expandedListings = response.data.data.map(listing => 
+      // CRITICAL FIX: Manually expand relationships before storing
+      const expandedListings = response.data.data.map(listing =>
         expandListingRelationships(listing, response.data.included)
       );
-      
-      console.log('✅ First expanded listing images:', expandedListings[0]?.images?.length);
 
       // Create modified response with expanded listings
       const expandedResponse = {
         data: {
           ...response.data,
-          data: expandedListings
-        }
+          data: expandedListings,
+        },
       };
 
       // Still call addMarketplaceEntities for other parts of the app
       dispatch(addMarketplaceEntities(response));
       dispatch(queryFavoritesSuccess(expandedResponse));
-      
+
       return expandedResponse;
     })
     .catch(e => {

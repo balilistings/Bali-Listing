@@ -39,6 +39,32 @@ const SignupLink = () => {
   );
 };
 
+
+/**
+ * Topbar for desktop layout
+ *
+ * @component
+ * @param {Object} props
+ * @param {string?} props.className add more style rules in addition to components own css.root
+ * @param {string?} props.rootClassName overwrite components own css.root
+ * @param {CurrentUser} props.currentUser API entity
+ * @param {string?} props.currentPage
+ * @param {boolean} props.isAuthenticated
+ * @param {number} props.notificationCount
+ * @param {Function} props.onLogout
+ * @param {Function} props.onSearchSubmit
+ * @param {Object?} props.initialSearchFormValues
+ * @param {Object} props.intl
+ * @param {Object} props.config
+ * @param {boolean} props.showSearchForm
+ * @param {boolean} props.showCreateListingsLink
+ * @param {string} props.inboxTab
+ * @param {Object} props.location
+ * @param {Object} props.history
+ * @returns {JSX.Element} search icon
+ */
+
+
 const LoginLink = () => {
   return (
     <NamedLink name="LoginPage" className={css.topbarLink}>
@@ -78,7 +104,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
         {/* Hanya tampilkan ManageListings untuk provider */}
-        {showManageListingsLink && isProvider ? (
+        {showManageListingsLink ? (
           <MenuItem key="ManageListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('ManageListingsPage'))}
@@ -429,4 +455,4 @@ const TopbarDesktop = props => {
   );
 };
 
-export default connect(null)(TopbarDesktop);
+export default (TopbarDesktop);

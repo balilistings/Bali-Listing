@@ -19,9 +19,9 @@ import { handleToggleFavorites } from '../../util/userFavorites';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useLocation, useHistory } from 'react-router-dom';
 
-// added imports for unfavorite wiring
-import { removeFavoriteOnProfile } from '../../ducks/user.duck';
-import { unfavoriteListing } from '../../containers/FavoriteListingsPage/FavoriteListingsPage.duck';
+// HAPUS import yang tidak perlu untuk unfavorite wiring
+// import { removeFavoriteOnProfile } from '../../ducks/user.duck';
+// import { unfavoriteListing } from '../../containers/FavoriteListingsPage/FavoriteListingsPage.duck';
 import { useSelector } from 'react-redux';
 import useDisableBodyScrollOnSwipe from '../../util/useDisableBodyScrollOnSwipe';
 
@@ -255,7 +255,7 @@ export const ListingCard = props => {
     setActiveListing,
     showAuthorInfo = true,
     currentUser,
-    onUpdateFavorites,
+    // HAPUS: onUpdateFavorites, // tidak digunakan lagi
     showWishlistButton = true,
   } = props;
   const setSliderNode = useDisableBodyScrollOnSwipe();
@@ -314,42 +314,18 @@ export const ListingCard = props => {
   const dispatch = useDispatch();
   const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
 
-  // NEW: custom onToggleFavorites that mirrors "tong sampah" behavior for UNFAVORITE
+  // SIMPLIFIED: Gunakan handleToggleFavorites langsung tanpa custom onUpdate
   const onToggleFavorites = e => {
     e.preventDefault();
     e.stopPropagation();
 
-    // customOnUpdate akan dipanggil oleh handleToggleFavorites
-    const customOnUpdate = payload => {
-      if (isFavorite) {
-        // UNFAVORITE: panggil thunk user.duck yang sudah mengupdate profile di server
-        dispatch(removeFavoriteOnProfile(id))
-          .then(() => {
-            // Setelah backend sukses, update page-level state agar listing hilang dari FavoriteListings
-            dispatch(unfavoriteListing(id));
-          })
-          .catch(err => {
-            console.error('Unfavorite failed:', err);
-          });
-      } else {
-        // FAVORITE: forward payload ke onUpdateFavorites jika parent menyediakan
-        if (typeof onUpdateFavorites === 'function') {
-          onUpdateFavorites(payload);
-        } else {
-          // fallback: log (atau Anda bisa dispatch addFavorite thunk jika tersedia)
-          console.log('Favoriting not wired: payload=', payload);
-        }
-      }
-    };
-
-    // Panggil util handleToggleFavorites (tetap menjaga redirect/login flow)
+    // Panggil util handleToggleFavorites tanpa parameter onUpdateFavorites
     handleToggleFavorites({
       location: routeLocation,
       history,
       routes,
       currentUser,
       params: { id },
-      onUpdateFavorites: customOnUpdate,
     })(isFavorite);
   };
 
