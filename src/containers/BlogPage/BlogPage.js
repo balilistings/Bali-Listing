@@ -1,128 +1,144 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
+import React from 'react';
+import { useSelector, shallowEqual } from 'react-redux';
 import { useParams, Link } from 'react-router-dom';
+import unified from 'unified';
+import parse from 'remark-parse';
+import remark2rehype from 'remark-rehype';
+import rehypeReact from 'rehype-react';
 
-import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
-import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
+import NotFoundPage from '../NotFoundPage/NotFoundPage.js';
+import TopbarContainer from '../TopbarContainer/TopbarContainer.js';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
-import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage';
-import { IconDate } from '../../components';
-import { loadData } from './BlogPage.duck';
+import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage.js';
+import IconDate from '../../components/IconDate/IconDate.js';
 
 import css from './BlogPage.module.css';
-import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
-import { ReactComponent as UserIcon } from '../../assets/usericon.svg';
+import { SocialMediaLink } from '../PageBuilder/Primitives/Link/SocialMediaLink.js';
 
-const getInfoFromText = text => {
-  const dateRegex = /\*(\d{2}\/\d{2}\/\d{2})\*/;
-  const dateMatch = text.match(dateRegex);
-  let date = dateMatch ? dateMatch[1] : '';
-
-  if (date) {
-    const [month, day, year] = date.split('/'); // Assuming MM/DD/YY
-    const dateObj = new Date(parseInt(`20${year}`), parseInt(month) - 1, parseInt(day));
-    const dayOfMonth = dateObj.getDate();
-    const monthName = dateObj.toLocaleString('default', { month: 'short' });
-    const fullYear = dateObj.getFullYear();
-    date = `${dayOfMonth} ${monthName}, ${fullYear}`;
-  }
-
-  const description = text.replace(dateRegex, '').replace(/######/g, '').trim();
-
-  return { date, description };
+const Markdown = ({ content }) => {
+  const result = unified()
+    .use(parse)
+    .use(remark2rehype)
+    .use(rehypeReact, { createElement: React.createElement })
+    .processSync(content).result;
+  return <div className={css.markdownContent}>{result}</div>;
 };
 
-const BlogCard = ({ block }) => {
-  const { date, description } = getInfoFromText(block.text?.content || '');
-  const image = block.media?.image;
+const BlogBlock = ({ block, isWide }) => {
+  const { media, title, text, callToAction } = block;
+  const image = media?.image;
   const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
 
+  const ctaButton =
+    callToAction?.content &&
+    callToAction?.href &&
+    callToAction?.fieldType === 'internalButtonLink' ? (
+      <Link to={callToAction.href} className={css.ctaButton}>
+        {callToAction.content}
+      </Link>
+    ) : null;
+
+  const imageWrapperClass = isWide ? css.wideImageWrapper : css.blockImageWrapper;
+
   return (
-    <Link to={block.callToAction?.href || '#'} className={css.card}>
-      {image && (
-        <ResponsiveImage
-          alt={block.media?.alt || block.title?.content}
-          image={image}
-          variants={imageVariants}
-          className={css.cardImage}
-        />
-      )}
-      <div className={css.cardContent}>
-        <div className={css.topMeta}>
-          <div className={css.category}>Tips & tricks</div>
-          <div className={css.meta}>
-            <div className={css.author}>
-              <UserIcon />
-              <span>Wesley Silalahi</span>
-            </div>
-            <div className={css.date}>
-              <IconDate />
-              <span>{date}</span>
-            </div>
-          </div>
+    <div className={css.blogBlock}>
+      {image?.id && (
+        <div className={imageWrapperClass}>
+          <ResponsiveImage
+            alt={media.alt || title?.content}
+            image={image}
+            variants={imageVariants}
+            className={css.blockImage}
+          />
         </div>
-        <h2 className={css.title}>{block.title?.content}</h2>
-        <p className={css.description}>{description}</p>
-      </div>
-    </Link>
+      )}
+      {title?.content && <h2 className={css.blockTitle}>{title.content}</h2>}
+      {text?.content && <Markdown content={text.content} />}
+      {ctaButton}
+    </div>
   );
 };
 
 const BlogPage = props => {
-  const dispatch = useDispatch();
   const params = useParams();
-  const pageId = params.pageId || 'blog';
+  const { blogId } = params;
 
   const { pageAssetsData, inProgress, error } = useSelector(
     state => state.hostedAssets || {},
     shallowEqual
   );
 
-  const [activeTab, setActiveTab] = useState('All');
-
-  useEffect(() => {
-    if (inProgress || pageAssetsData?.[pageId]) {
-      return;
-    }
-    dispatch(loadData(params));
-  }, [dispatch, params, pageId, inProgress, pageAssetsData]);
-
-  if (inProgress) {
-    return <div className={css.root} />;
-  }
-
   if (error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;
   }
 
-  const pageData = pageAssetsData?.[pageId]?.data;
-  const blocks = pageData?.sections?.[0]?.blocks || [];
+  const pageData = pageAssetsData?.[blogId]?.data;
+  if (!pageData) {
+    return <div className={css.root} />;
+  }
 
-  const tabs = ['All', 'Tips & tricks'];
+  const section = pageData?.sections?.[0];
+
+  if (!section) {
+    return <NotFoundPage staticContext={props.staticContext} />;
+  }
+
+  const title = section.title?.content;
+  const [dateString, author] = section.description?.content
+    .replace('Published on ', '')
+    .split(' - ');
+  const blocks = section.blocks || [];
+  const firstImageBlockIndex = blocks.findIndex(b => b.media?.image);
 
   return (
     <div className={css.root}>
       <TopbarContainer />
-      <div className={css.hero}>
-        <Spiral className={css.spiral} />
-        <h1 className={css.heroTitle}>Blog</h1>
-      </div>
-      <div className={css.content}>
-        <div className={css.tabs}>
-          {tabs.map(tab => (
-            <button
-              key={tab}
-              className={activeTab === tab ? css.activeTab : css.tab}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <div className={css.grid}>
-          {blocks.map((block, i) => (
-            <BlogCard key={i} block={block} />
-          ))}
+      <div className={css.container}>
+        <div className={css.mainContent}>
+          <Link to="/blog" className={css.backLink}>
+            &larr; Back to Blog
+          </Link>
+          <div className={css.blogHeader}>
+            <h1 className={css.title}>{title}</h1>
+            <div className={css.metaContainer}>
+              <div className={css.author}>
+                <div className={css.metaLabel}>Creator</div>
+                <div className={css.authorName}>{author}</div>
+              </div>
+              <div className={css.dateWrapper}>
+                <IconDate className={css.dateIcon} />
+                <span className={css.dateText}>{dateString}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className={css.sidebar}>
+            <SocialMediaLink
+              platform="instagram"
+              href="https://www.instagram.com/balilistings?igsh=MTV4Mzlscm10ZGF1Mg=="
+              className={css.socialIconLink}
+            />
+            <SocialMediaLink
+              platform="facebook"
+              href="https://www.facebook.com/share/1F9hrCkY6A/?mibextid=wwXIfr"
+              className={css.socialIconLink}
+            />
+            <SocialMediaLink
+              platform="linkedin"
+              href="https://www.linkedin.com/company/bali-listings"
+              className={css.socialIconLink}
+            />
+          </div>
+
+          <div className={css.content}>
+            {blocks.map((block, index) => (
+              <BlogBlock
+                key={block.blockName || index}
+                block={block}
+                isWide={index === firstImageBlockIndex}
+              />
+            ))}
+          </div>
         </div>
       </div>
       <FooterContainer />
