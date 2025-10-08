@@ -36,8 +36,6 @@ export const CMSPageComponent = props => {
     return <NotFoundPage staticContext={props.staticContext} />;
   }
 
-  console.log(JSON.stringify(pageAssetsData?.[pageId]?.data));
-
   return (
     <PageBuilder
       pageAssetsData={pageAssetsData?.[pageId]?.data}

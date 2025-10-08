@@ -51,7 +51,7 @@ const BlogCard = ({ block }) => {
       )}
       <div className={css.cardContent}>
         <div className={css.topMeta}>
-          <div className={css.category}>Tips & tricks</div>
+          {/* <div className={css.category}></div> */}
           <div className={css.meta}>
             <div className={css.author}>
               <UserIcon />
@@ -80,7 +80,7 @@ const BlogListPage = props => {
     shallowEqual
   );
 
-  const [activeTab, setActiveTab] = useState('All');
+  // const [activeTab, setActiveTab] = useState('All');
 
   useEffect(() => {
     if (inProgress || pageAssetsData?.[pageId]) {
@@ -100,7 +100,8 @@ const BlogListPage = props => {
   const pageData = pageAssetsData?.[pageId]?.data;
   const blocks = pageData?.sections?.[0]?.blocks || [];
 
-  const tabs = ['All', 'Tips & tricks'];
+  // TODO: Add tags for blog posts
+  // const tabs = ['All', 'Tips & tricks'];
 
   return (
     <div className={css.root}>
@@ -110,7 +111,7 @@ const BlogListPage = props => {
         <h1 className={css.heroTitle}>Blog</h1>
       </div>
       <div className={css.content}>
-        <div className={css.tabs}>
+        {/* <div className={css.tabs}>
           {tabs.map(tab => (
             <button
               key={tab}
@@ -120,7 +121,7 @@ const BlogListPage = props => {
               {tab}
             </button>
           ))}
-        </div>
+        </div> */}
         <div className={css.grid}>
           {blocks.map((block, i) => (
             <BlogCard key={i} block={block} />

@@ -10,9 +10,10 @@ import NotFoundPage from '../NotFoundPage/NotFoundPage.js';
 import TopbarContainer from '../TopbarContainer/TopbarContainer.js';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage.js';
-import { IconDate } from '../../components/index.js';
+import IconDate from '../../components/IconDate/IconDate.js';
 
 import css from './BlogPage.module.css';
+import { SocialMediaLink } from '../PageBuilder/Primitives/Link/SocialMediaLink.js';
 
 const Markdown = ({ content }) => {
   const result = unified()
@@ -41,7 +42,7 @@ const BlogBlock = ({ block, isWide }) => {
 
   return (
     <div className={css.blogBlock}>
-      {image && (
+      {image?.id && (
         <div className={imageWrapperClass}>
           <ResponsiveImage
             alt={media.alt || title?.content}
@@ -83,7 +84,9 @@ const BlogPage = props => {
   }
 
   const title = section.title?.content;
-  const [dateString, author] = section.description?.content.replace('Published on ', '').split(' - ');
+  const [dateString, author] = section.description?.content
+    .replace('Published on ', '')
+    .split(' - ');
   const blocks = section.blocks || [];
   const firstImageBlockIndex = blocks.findIndex(b => b.media?.image);
 
@@ -107,6 +110,24 @@ const BlogPage = props => {
                 <span className={css.dateText}>{dateString}</span>
               </div>
             </div>
+          </div>
+
+          <div className={css.sidebar}>
+            <SocialMediaLink
+              platform="instagram"
+              href="https://www.instagram.com/balilistings?igsh=MTV4Mzlscm10ZGF1Mg=="
+              className={css.socialIconLink}
+            />
+            <SocialMediaLink
+              platform="facebook"
+              href="https://www.facebook.com/share/1F9hrCkY6A/?mibextid=wwXIfr"
+              className={css.socialIconLink}
+            />
+            <SocialMediaLink
+              platform="linkedin"
+              href="https://www.linkedin.com/company/bali-listings"
+              className={css.socialIconLink}
+            />
           </div>
 
           <div className={css.content}>
