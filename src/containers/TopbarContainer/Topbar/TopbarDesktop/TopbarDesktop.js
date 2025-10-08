@@ -27,19 +27,6 @@ import { useLocale } from '../../../../context/localeContext';
 
 import css from './TopbarDesktop.module.css';
 
-
-
-const SignupLink = () => {
-  return (
-    <NamedLink name="SignupPage" className={css.topbarLink}>
-      <span className={css.topbarLinkLabel}>
-        <FormattedMessage id="TopbarDesktop.signup" />
-      </span>
-    </NamedLink>
-  );
-};
-
-
 /**
  * Topbar for desktop layout
  *
@@ -64,6 +51,15 @@ const SignupLink = () => {
  * @returns {JSX.Element} search icon
  */
 
+const SignupLink = () => {
+  return (
+    <NamedLink name="SignupPage" className={css.topbarLink}>
+      <span className={css.topbarLinkLabel}>
+        <FormattedMessage id="TopbarDesktop.signup" />
+      </span>
+    </NamedLink>
+  );
+};
 
 const LoginLink = () => {
   return (

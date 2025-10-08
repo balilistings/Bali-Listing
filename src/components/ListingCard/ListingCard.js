@@ -255,7 +255,7 @@ export const ListingCard = props => {
     setActiveListing,
     showAuthorInfo = true,
     currentUser,
-    // HAPUS: onUpdateFavorites, // tidak digunakan lagi
+    onUpdateFavorites,
     showWishlistButton = true,
   } = props;
   const setSliderNode = useDisableBodyScrollOnSwipe();
@@ -326,6 +326,7 @@ export const ListingCard = props => {
       routes,
       currentUser,
       params: { id },
+      onUpdateFavorites,
     })(isFavorite);
   };
 

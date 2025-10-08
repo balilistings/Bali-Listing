@@ -39,25 +39,6 @@ export const FavoriteListingsPageComponent = props => {
   const hasPaginationInfo = !!pagination && pagination.totalItems != null;
   const listingsAreLoaded = !queryInProgress && hasPaginationInfo;
 
-  // Debug: lihat data yang diterima
-  console.log('FavoriteListingsPage Debug:', {
-    listingsCount: listings?.length,
-    queryInProgress,
-    queryFavoritesError,
-    pagination,
-    hasPaginationInfo,
-    listingsAreLoaded
-  });
-
-  console.log('=== DETAILED IMAGE DEBUG ===');
-  if (listings.length > 0) {
-    listings.forEach((listing, index) => {
-      console.log(`Listing ${index}:`, listing.attributes.title);
-      console.log(`- Images:`, listing.images);
-      console.log(`- Relationships:`, listing.relationships);
-      console.log(`- Full listing data:`, listing);
-    });
-  }
   const loadingResults = (
     <div className={css.messagePanel}>
       <H3 as="h2" className={css.heading}>
@@ -244,11 +225,6 @@ const mapStateToProps = state => {
     queryParams = null,
     listings = [],
   } = state.FavoriteListingsPage || {};
-
-  console.log('=== FINAL LISTINGS ===');
-  console.log('Current page result IDs:', currentPageResultIds);
-  console.log('Listings found:', listings.length);
-  console.log('Listings:', listings);
 
   return {
     currentPageResultIds,

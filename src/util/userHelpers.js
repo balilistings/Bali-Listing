@@ -268,10 +268,7 @@ export const checkIsProvider = currentUser => {
   const publicData = currentUser?.attributes?.profile?.publicData || {};
   
   return (
-    publicData.userType === 'provider' ||
-    publicData.isProvider === true ||
-    (Array.isArray(publicData.roles) && publicData.roles.includes('provider')) ||
-    currentUser?.attributes?.role === 'provider'
+    publicData.userType === 'provider'
   );
 };
 
@@ -286,10 +283,7 @@ export const checkIsCustomer = currentUser => {
   const publicData = currentUser?.attributes?.profile?.publicData || {};
   
   return (
-    publicData.userType === 'customer' ||
-    publicData.isCustomer === true ||
-    (Array.isArray(publicData.roles) && publicData.roles.includes('customer')) ||
-    currentUser?.attributes?.role === 'customer'
+    publicData.userType === 'customer'
   );
 };
 
