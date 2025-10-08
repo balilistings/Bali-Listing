@@ -560,6 +560,8 @@
   "ListingPage.amenitiesTitle": "Amenities",
   "ListingPage.servicesTitle": "Services included",
   "ListingPage.propertyDetailsTitle": "Property Details",
+  "ListingPage.share.share": "Share",
+  "ListingPage.share.shareListing": "Share this listing",
   "ListingImageGallery.closeModal": "CLOSE",
   "ListingImageGallery.closeModalTitle": "Close modal",
   "ListingImageGallery.imageAltText": "listing photo {index}/{count}",

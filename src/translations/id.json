@@ -360,6 +360,8 @@
   "ListingPage.amenitiesTitle": "Fasilitas",
   "ListingPage.servicesTitle": "Layanan",
   "ListingPage.propertyDetailsTitle": "Detail Properti",
+  "ListingPage.share.share": "Bagikan",
+  "ListingPage.share.shareListing": "Bagikan listing ini",
   "ListingImageGallery.closeModal": "TUTUP",
   "ListingImageGallery.closeModalTitle": "Tutup modal",
   "ListingImageGallery.imageAltText": "foto daftar {index}/{count}",
