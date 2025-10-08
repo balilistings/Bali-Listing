@@ -28,86 +28,99 @@
   }
 
   @media (--viewportLarge) {
-    margin-bottom: -60px;
+    margin: 0 24px 32px 55px;
   }
 }
 
 .listingCards {
   display: grid;
   grid-template-columns: repeat(1, 1fr);
-  justify-content: center;
+  gap: 20px;
   width: 100%;
-  margin-left: 20px;
+  padding: 0 24px;
+  justify-items: center;
+
   @media (min-width: 550px) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 
   @media (--viewportMedium) {
     grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
 
   @media (--viewportLarge) {
-    grid-template-columns: repeat(2, 1fr);
-    justify-content: center;
-    margin-top: 35px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  @media (--viewportXLarge) {
+    gap: 32px;
   }
 }
 
 .removeAll {
   border: none;
   display: flex;
-  color: #EB2BE8;
-  margin-right: 150px;
+  color: #eb2be8;
+  margin-right: 131px;
+  align-self: flex-start;
+  margin-top: -85px
 }
 
 .removeAll:hover {
-  text-decoration: underline #EB2BE8; 
+  text-decoration: underline #eb2be8;
   color: black;
 }
 
 .listingCard {
-  width: 85%;
+  width: 100%;
+  max-width: 320px;
+  position: relative;
 }
 
-/**
- * Remove margin-right from listingCards on the last column
- * This is a special case in the world of breakpoints. Nth-of-type effects every nth item.
- * Here we take margin-right away, but we don't want it affect the next column breakpoint.
- */
-
-.listingCard:nth-of-type(2n) {
-  @media screen and (min-width: 768px) and (max-width: 1920px) {
-    margin-right: 0;
+@media (--viewportLarge) {
+  .listingCard {
+    max-width: 425px;
   }
 }
 
-.listingCard:nth-of-type(3n) {
-  @media (--viewportXLarge) {
-    margin-right: 0;
+@media (--viewportXLarge) {
+  .listingCard {
+    max-width: 320px;
   }
 }
 
 .pagination {
-  /* margin-top: auto; pushes pagination to the end of the page. */
-  margin: auto 24px 0 24px;
+  margin: 40px auto 0 auto;
+  max-width: 1600px;
+  padding: 0 24px;
 
   @media (--viewportLarge) {
-    margin: auto 36px 0 36px;
+    padding: 0 48px;
   }
 }
 
 .selectCircle {
-  position: absolute;  width: 28px;
+  position: absolute;
+  top: 30px;
+  left: 365px;
+  width: 28px;
   height: 28px;
   border-radius: 50%;
   border: 2px solid #ccc;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  transition: all 0.2s ease;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .selectCircle:hover {
@@ -128,34 +141,25 @@
 }
 
 .removeSelected {
+  position: absolute;
+  top: 209px;
+  right: 88px;
+  z-index: 2;
   border: none;
-  display: flex;
-  justify-content: flex-end;
-  width: 91%;
-  margin-left: -50px;
+  background: none;
 }
 
 .removeSelected img {
-  width: 60px;
-  height: 53px;
+  width: 40px;
+  height: 40px;
   border: none;
-  border-radius: 8px;
-  padding: 8px 12px;
-  display: flex;
-  align-items: center;
-  margin-left: auto;
+  border-radius: 12px;
+  padding: 0;
   cursor: pointer;
-  margin-bottom: -24px;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
 
-  @media (--viewportMedium) {
-    font-size: 14px;
-    padding: 8px 12px;
-  }
-
-  @media (--viewportLarge) {
-    font-size: 14px;
-    padding: 8px 12px;
-    margin-right: 70px;
-    margin-bottom: -90px;
-  }
+.removeSelected img:hover {
+  transform: scale(1.1);
 }
