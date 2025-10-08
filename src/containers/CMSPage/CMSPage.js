@@ -8,7 +8,7 @@ import { withRouter } from 'react-router-dom';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 import AboutUsPage from '../AboutUsPage/AboutUsPage';
-import BlogPage from '../BlogPage/BlogPage';
+import BlogListPage from '../BlogListPage/BlogListPage';
 import FAQPage from '../FAQPage/FAQPage';
 
 const PageBuilder = loadable(() =>
@@ -17,7 +17,7 @@ const PageBuilder = loadable(() =>
 
 const componentMap = {
   about: AboutUsPage,
-  blog: BlogPage,
+  blog: BlogListPage,
   faq: FAQPage,
 };
 
@@ -35,6 +35,8 @@ export const CMSPageComponent = props => {
   if (!inProgress && error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;
   }
+
+  console.log(JSON.stringify(pageAssetsData?.[pageId]?.data));
 
   return (
     <PageBuilder
