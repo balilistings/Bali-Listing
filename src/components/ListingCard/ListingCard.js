@@ -18,10 +18,6 @@ import css from './ListingCard.module.css';
 import { handleToggleFavorites } from '../../util/userFavorites';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useLocation, useHistory } from 'react-router-dom';
-
-// HAPUS import yang tidak perlu untuk unfavorite wiring
-// import { removeFavoriteOnProfile } from '../../ducks/user.duck';
-// import { unfavoriteListing } from '../../containers/FavoriteListingsPage/FavoriteListingsPage.duck';
 import { useSelector } from 'react-redux';
 import useDisableBodyScrollOnSwipe from '../../util/useDisableBodyScrollOnSwipe';
 

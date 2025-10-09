@@ -1341,10 +1341,5 @@
   "UserNav.profileSettings": "Profile settings",
   "UserNav.yourListings": "Your listings",
   "Favorite Listings": "Favorite Listings",
-  "ContactDetailsForm.emailLabel": "Email address",
-  "ContactDetailsForm.phoneLabel": "Phone number",
-  "ContactDetailsForm.saveChanges": "Save changes",
-  "ContactDetailsPage.title": "Contact details",
-  "ContactDetailsPage.heading": "Manage your contact details",
   "FavoriteListingsPage.noResults": "No favorite listings found."
 } 

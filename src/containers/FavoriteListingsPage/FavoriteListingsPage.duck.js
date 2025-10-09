@@ -1,4 +1,3 @@
-// src/ducks/FavoriteListingsPage.duck.js
 import { storableError } from '../../util/errors';
 import { parse } from '../../util/urlHelpers';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
