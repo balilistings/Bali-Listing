@@ -7,18 +7,27 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
-import AboutUsPage from '../AboutUsPage/AboutUsPage';
-import BlogListPage from '../BlogListPage/BlogListPage';
-import FAQPage from '../FAQPage/FAQPage';
 
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
+);
+const AboutUsPage = loadable(() =>
+  import(/* webpackChunkName: "AboutUsPage" */ '../AboutUsPage/AboutUsPage')
+);
+const BlogListPage = loadable(() =>
+  import(/* webpackChunkName: "BlogListPage" */ '../BlogListPage/BlogListPage')
+);
+const FAQPage = loadable(() => import(/* webpackChunkName: "FAQPage" */ '../FAQPage/FAQPage'));
+
+const SolutionHubPage = loadable(() =>
+  import(/* webpackChunkName: "SolutionHubPage" */ '../SolutionHubPage/SolutionHubPage')
 );
 
 const componentMap = {
   about: AboutUsPage,
   blog: BlogListPage,
   faq: FAQPage,
+  'solution-hub': SolutionHubPage,
 };
 
 export const CMSPageComponent = props => {
