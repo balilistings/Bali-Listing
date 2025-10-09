@@ -30,7 +30,6 @@ import { LocaleBrowserRouter, LocaleStaticRouter } from './routing/LocaleRouter'
 
 // Sharetribe Web Template uses English translations as default translations.
 import defaultMessages from './translations/en.json';
-import allMessages from './translations';
 
 // If you want to change the language of default (fallback) translations,
 // change the imports to match the wanted locale:
@@ -120,7 +119,7 @@ const MaintenanceModeError = props => {
 
   const localeMessages = isTestEnv
     ? mapValues(defaultMessages, (val, key) => key)
-    : allMessages[locale] || allMessages['en'];
+    : defaultMessages;
 
   const finalMessages = addMissingTranslations(defaultMessages, {
     ...localeMessages,
