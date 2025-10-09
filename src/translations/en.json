@@ -480,6 +480,8 @@
   "FilterForm.clear": "Clear",
   "FilterForm.submit": "Apply",
   "FilterPlain.clear": "Clear",
+  "Favorite Listings": "Favorite Listings",
+  "FavoriteListingsPage.noResults": "No favorite listings found.",
   "ImageCarousel.imageAltText": "listing photo {index}/{count}",
   "ImageFromFile.couldNotReadFile": "Couldn't read file",
   "InboxPage.default-booking.accepted.status": "Accepted",
@@ -1339,7 +1341,5 @@
   "UserDisplayName.deleted": "Deleted user",
   "UserNav.accountSettings": "Account settings",
   "UserNav.profileSettings": "Profile settings",
-  "UserNav.yourListings": "Your listings",
-  "Favorite Listings": "Favorite Listings",
-  "FavoriteListingsPage.noResults": "No favorite listings found."
+  "UserNav.yourListings": "Your listings"
 } 

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { parse } from '../../../../util/urlHelpers';
-import { connect } from 'react-redux';
 import { FormattedMessage } from '../../../../util/reactIntl';
 import { ACCOUNT_SETTINGS_PAGES } from '../../../../routing/routeConfiguration';
 import { checkIsProvider, checkIsCustomer } from '../../../../util/userHelpers';
@@ -26,30 +25,6 @@ import LanguageSelector from './LanguageSelector';
 import { useLocale } from '../../../../context/localeContext';
 
 import css from './TopbarDesktop.module.css';
-
-/**
- * Topbar for desktop layout
- *
- * @component
- * @param {Object} props
- * @param {string?} props.className add more style rules in addition to components own css.root
- * @param {string?} props.rootClassName overwrite components own css.root
- * @param {CurrentUser} props.currentUser API entity
- * @param {string?} props.currentPage
- * @param {boolean} props.isAuthenticated
- * @param {number} props.notificationCount
- * @param {Function} props.onLogout
- * @param {Function} props.onSearchSubmit
- * @param {Object?} props.initialSearchFormValues
- * @param {Object} props.intl
- * @param {Object} props.config
- * @param {boolean} props.showSearchForm
- * @param {boolean} props.showCreateListingsLink
- * @param {string} props.inboxTab
- * @param {Object} props.location
- * @param {Object} props.history
- * @returns {JSX.Element} search icon
- */
 
 const SignupLink = () => {
   return (
@@ -243,6 +218,30 @@ const CurrencyToggler = ({ selectedCurrency, onSetCurrency }) => {
     </div>
   );
 };
+
+/**
+ * Topbar for desktop layout
+ *
+ * @component
+ * @param {Object} props
+ * @param {string?} props.className add more style rules in addition to components own css.root
+ * @param {string?} props.rootClassName overwrite components own css.root
+ * @param {CurrentUser} props.currentUser API entity
+ * @param {string?} props.currentPage
+ * @param {boolean} props.isAuthenticated
+ * @param {number} props.notificationCount
+ * @param {Function} props.onLogout
+ * @param {Function} props.onSearchSubmit
+ * @param {Object?} props.initialSearchFormValues
+ * @param {Object} props.intl
+ * @param {Object} props.config
+ * @param {boolean} props.showSearchForm
+ * @param {boolean} props.showCreateListingsLink
+ * @param {string} props.inboxTab
+ * @param {Object} props.location
+ * @param {Object} props.history
+ * @returns {JSX.Element} search icon
+ */
 
 const TopbarDesktop = props => {
   const {

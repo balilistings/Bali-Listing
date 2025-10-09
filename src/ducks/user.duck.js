@@ -487,16 +487,4 @@ export const sendVerificationEmail = () => (dispatch, getState, sdk) => {
     .catch(e => dispatch(sendVerificationEmailError(storableError(e))));
 };
 
-// ================ Essential Selectors ================ //
-
 export const selectCurrentUser = state => state?.user?.currentUser || null;
-
-export const selectCurrentUserPublicData = state => {
-  const currentUser = selectCurrentUser(state);
-  const pd =
-    currentUser?.attributes?.profile?.publicData ||
-    currentUser?.profile?.publicData ||
-    currentUser?.publicData ||
-    {};
-  return pd || {};
-};
