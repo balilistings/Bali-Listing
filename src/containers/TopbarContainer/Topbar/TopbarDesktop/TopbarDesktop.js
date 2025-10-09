@@ -65,9 +65,6 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
     return currentPage === page || isAccountSettingsPage ? css.currentPage : null;
   };
 
-  const isProvider = checkIsProvider(currentUser);
-  const isCustomer = checkIsCustomer(currentUser);
-
   return (
     <Menu>
       <MenuLabel className={css.profileMenuLabel} isOpenClassName={css.profileMenuIsOpen}>
@@ -107,7 +104,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
           </NamedLink>
         </MenuItem>
 
-        {!isProvider && ( // <-- favorite hanya muncul kalau BUKAN provider
+        {checkIsCustomer(currentUser) && (
           <MenuItem key="FavoriteListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('FavoriteListingsPage'))}
