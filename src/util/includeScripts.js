@@ -98,7 +98,9 @@ export const IncludeScripts = props => {
       <script
         id={GOOGLE_MAPS_SCRIPT_ID}
         key="GoogleMapsApi"
-        src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsAPIKey}&libraries=places`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsAPIKey}&libraries=places&loading=async`}
+        async
+        defer
         crossOrigin
       ></script>
     );
