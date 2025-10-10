@@ -11,9 +11,13 @@ import TopbarContainer from '../TopbarContainer/TopbarContainer.js';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage.js';
 import IconDate from '../../components/IconDate/IconDate.js';
+import { Page, LayoutSingleColumn } from '../../components/index.js';
+import { useConfiguration } from '../../context/configurationContext';
+import { extractPageMetadata } from '../../util/seo';
 
 import css from './BlogPage.module.css';
 import { SocialMediaLink } from '../PageBuilder/Primitives/Link/SocialMediaLink.js';
+import CTABlock from '../../components/CTABlock/CTABlock.js';
 
 const Markdown = ({ content }) => {
   const result = unified()
@@ -62,6 +66,7 @@ const BlogBlock = ({ block, isWide }) => {
 const BlogPage = props => {
   const params = useParams();
   const { blogId } = params;
+  const config = useConfiguration();
 
   const { pageAssetsData, inProgress, error } = useSelector(
     state => state.hostedAssets || {},
@@ -83,7 +88,14 @@ const BlogPage = props => {
     return <NotFoundPage staticContext={props.staticContext} />;
   }
 
-  const title = section.title?.content;
+  // Extract meta information using the helper function
+  const { title: extractedTitle, description, schema, socialSharing } = extractPageMetadata(
+    pageData,
+    'Article'
+  );
+
+  // Fallback to page section title if no meta title is available
+  const title = extractedTitle || section.title?.content;
   const [dateString, author] = section.description?.content
     .replace('Published on ', '')
     .split(' - ');
@@ -91,58 +103,68 @@ const BlogPage = props => {
   const firstImageBlockIndex = blocks.findIndex(b => b.media?.image);
 
   return (
-    <div className={css.root}>
-      <TopbarContainer />
-      <div className={css.container}>
-        <div className={css.mainContent}>
-          <Link to="/blog" className={css.backLink}>
-            &larr; Back to Blog
-          </Link>
-          <div className={css.blogHeader}>
-            <h1 className={css.title}>{title}</h1>
-            <div className={css.metaContainer}>
-              <div className={css.author}>
-                <div className={css.metaLabel}>Creator</div>
-                <div className={css.authorName}>{author}</div>
-              </div>
-              <div className={css.dateWrapper}>
-                <IconDate className={css.dateIcon} />
-                <span className={css.dateText}>{dateString}</span>
+    <Page
+      {...{ title, description, schema, socialSharing }}
+      config={config}
+      author={author}
+      published={dateString}
+      className={css.root}
+    >
+      <LayoutSingleColumn
+        topbar={<TopbarContainer />}
+        footer={<FooterContainer />}
+      >
+        <div className={css.container}>
+          <div className={css.mainContent}>
+            <Link to="/blog" className={css.backLink}>
+              &larr; Back to Blog
+            </Link>
+            <div className={css.blogHeader}>
+              <h1 className={css.title}>{title}</h1>
+              <div className={css.metaContainer}>
+                <div className={css.author}>
+                  <div className={css.metaLabel}>Creator</div>
+                  <div className={css.authorName}>{author}</div>
+                </div>
+                <div className={css.dateWrapper}>
+                  <IconDate className={css.dateIcon} />
+                  <span className={css.dateText}>{dateString}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className={css.sidebar}>
-            <SocialMediaLink
-              platform="instagram"
-              href="https://www.instagram.com/balilistings?igsh=MTV4Mzlscm10ZGF1Mg=="
-              className={css.socialIconLink}
-            />
-            <SocialMediaLink
-              platform="facebook"
-              href="https://www.facebook.com/share/1F9hrCkY6A/?mibextid=wwXIfr"
-              className={css.socialIconLink}
-            />
-            <SocialMediaLink
-              platform="linkedin"
-              href="https://www.linkedin.com/company/bali-listings"
-              className={css.socialIconLink}
-            />
-          </div>
-
-          <div className={css.content}>
-            {blocks.map((block, index) => (
-              <BlogBlock
-                key={block.blockName || index}
-                block={block}
-                isWide={index === firstImageBlockIndex}
+            <div className={css.sidebar}>
+              <SocialMediaLink
+                platform="instagram"
+                href="https://www.instagram.com/balilistings?igsh=MTV4Mzlscm10ZGF1Mg=="
+                className={css.socialIconLink}
               />
-            ))}
+              <SocialMediaLink
+                platform="facebook"
+                href="https://www.facebook.com/share/1F9hrCkY6A/?mibextid=wwXIfr"
+                className={css.socialIconLink}
+              />
+              <SocialMediaLink
+                platform="linkedin"
+                href="https://www.linkedin.com/company/bali-listings"
+                className={css.socialIconLink}
+              />
+            </div>
+
+            <div className={css.content}>
+              {blocks.map((block, index) => (
+                <BlogBlock
+                  key={block.blockName || index}
+                  block={block}
+                  isWide={index === firstImageBlockIndex}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      <FooterContainer />
-    </div>
+        <CTABlock />
+      </LayoutSingleColumn>
+    </Page>
   );
 };
 

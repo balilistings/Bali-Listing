@@ -174,3 +174,56 @@ export const metaTagProps = (tagData, config) => {
 
   return [...defaultMeta, ...openGraphMeta, ...twitterMeta];
 };
+
+/**
+ * Extracts meta information from page assets data for SEO purposes
+ * @param {Object} pageAssetsData - The page assets data containing sections and meta
+ * @param {string} schemaType - The schema type for structured data (default: 'WebPage')
+ * @returns {Object} Object containing title, description, schema, and socialSharing properties
+ */
+export const extractPageMetadata = (pageAssetsData, schemaType = 'WebPage') => {
+  if (!pageAssetsData) {
+    return {
+      title: undefined,
+      description: undefined,
+      schema: undefined,
+      socialSharing: undefined
+    };
+  }
+
+  const meta = pageAssetsData?.meta || {};
+  const { pageTitle, pageDescription, socialSharing } = meta;
+
+  // Extract content for meta tags
+  const title = pageTitle?.content;
+  const description = pageDescription?.content;
+  const openGraph = socialSharing;
+
+  // Schema for search engines
+  const isArticle = ['Article', 'NewsArticle', 'TechArticle'].includes(schemaType);
+  const schemaImage = openGraph?.images1200?.[0]?.url;
+  const schemaImageMaybe = schemaImage ? { image: [schemaImage] } : {};
+  const schemaHeadlineMaybe = isArticle ? { headline: title } : {};
+
+  const pageSchemaForSEO = {
+    '@context': 'http://schema.org',
+    '@type': schemaType,
+    description: description,
+    name: title,
+    ...schemaHeadlineMaybe,
+    ...schemaImageMaybe,
+  };
+
+  // If title or description are not provided, schema should not be created with empty values
+  if (!title && !description) {
+    delete pageSchemaForSEO.name;
+    delete pageSchemaForSEO.description;
+  }
+
+  return {
+    title,
+    description,
+    schema: pageSchemaForSEO,
+    socialSharing: openGraph,
+  };
+};
