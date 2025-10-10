@@ -463,9 +463,12 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
           dispatch(fetchCurrentUserHasOrders());
         }
       }
-
+      // Make sure auth info is up to date
+      dispatch(authInfo());
     })
     .catch(e => {
+      // Make sure auth info is up to date
+      dispatch(authInfo());
       log.error(e, 'fetch-current-user-failed');
       dispatch(currentUserShowError(storableError(e)));
     });

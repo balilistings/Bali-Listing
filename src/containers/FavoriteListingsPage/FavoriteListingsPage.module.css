@@ -69,7 +69,10 @@
   color: #eb2be8;
   margin-right: 131px;
   align-self: flex-start;
-  margin-top: -85px
+  margin-top: -85px;
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 0;
 }
 
 .removeAll:hover {

@@ -157,7 +157,7 @@ export const FavoriteListingsPageComponent = props => {
                   </button>
                 )}
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 0' }}>
+              <div>
                 {selectedIds.length > 0 && (
                   <button
                     type="button"
