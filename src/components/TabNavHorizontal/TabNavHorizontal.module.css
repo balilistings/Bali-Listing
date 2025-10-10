@@ -7,7 +7,7 @@
 }
 
 .darkSkin {
-  background-color: #EB2BE8;
+  background-color: var(--colorGrey700);
 }
 
 .tab {
@@ -76,7 +76,7 @@
 
 /* Dark skin */
 .tabContentDarkSkin {
-  color: var(--colorBlack);
+  color: var(--colorGrey300);
 
   &:hover,
   &:focus {

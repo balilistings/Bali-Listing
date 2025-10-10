@@ -373,7 +373,6 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
   }
   // Set in-progress, no errors
   dispatch(currentUserShowRequest());
-  dispatch(authInfo());
 
   if (!isAuthenticated && !afterLogin) {
     // Make sure current user is null
@@ -465,12 +464,8 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
         }
       }
 
-      // Make sure auth info is up to date
-      dispatch(authInfo());
     })
     .catch(e => {
-      // Make sure auth info is up to date
-      dispatch(authInfo());
       log.error(e, 'fetch-current-user-failed');
       dispatch(currentUserShowError(storableError(e)));
     });
