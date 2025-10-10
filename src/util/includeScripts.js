@@ -98,7 +98,9 @@ export const IncludeScripts = props => {
       <script
         id={GOOGLE_MAPS_SCRIPT_ID}
         key="GoogleMapsApi"
-        src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsAPIKey}&libraries=places`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${googleMapsAPIKey}&libraries=places&loading=async`}
+        async
+        defer
         crossOrigin
       ></script>
     );
@@ -194,7 +196,9 @@ export const IncludeScripts = props => {
     if (isMapboxInUse && !window.mapboxgl.accessToken) {
       // Add access token for Mapbox sdk.
       window.mapboxgl.accessToken = mapboxAccessToken;
-      window.dispatchEvent(new CustomEvent('mapbox-loaded'));
+      window.dispatchEvent(new CustomEvent('map-loaded'));
+    } else if (isGoogleMapsInUse) {
+      window.dispatchEvent(new CustomEvent('map-loaded'));
     }
   };
 

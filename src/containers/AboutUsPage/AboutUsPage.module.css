@@ -1,0 +1,395 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
+}
+
+p {
+  font-family: Mulish;
+  font-size: 12px;
+  color: #8d8d8d;
+  line-height: 1.3;
+  padding: 0;
+
+  @media (--viewportMedium) {
+    font-size: 16px;
+  }
+}
+
+h2 {
+  margin-top: 16px;
+  margin-bottom: 0;
+}
+
+h3 {
+  font-size: 18px;
+  color: var(--marketplaceColor);
+  font-family: 'Istok Web', sans-serif;
+
+  @media (--viewportMedium) {
+    font-size: 30px;
+  }
+}
+
+.hero {
+  background-color: rgba(251, 166, 249, 0.2);
+  padding: 40px 0;
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  overflow: hidden;
+
+  @media (--viewportMedium) {
+    padding: 80px 0;
+    margin-bottom: 80px;
+  }
+}
+
+.spiral {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: auto;
+  z-index: 0;
+  fill: none;
+}
+
+.heroTitle {
+  font-size: 25px;
+  font-weight: 700;
+  color: #231f20;
+  font-family: Istok Web, sans-serif;
+  position: relative;
+  z-index: 1;
+
+  @media (--viewportMedium) {
+    font-size: 53px;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 0 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+  gap: 24px;
+  color: #231f20;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    padding: 0 112px;
+    gap: 100px;
+  }
+}
+
+.section {
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: 76px;
+    align-items: flex-start;
+    text-align: left;
+  }
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: Istok Web, sans-serif;
+  width: 100%;
+  color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+    width: 444px;
+  }
+}
+
+.sectionText {
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 548px;
+}
+
+.sectionText p {
+  margin-bottom: 20px;
+}
+
+.missionParent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+
+  @media (--viewportMedium) {
+    display: block;
+    text-align: left;
+    margin-bottom: 50px;
+  }
+}
+
+.missionSection {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: 76px;
+    width: auto;
+  }
+}
+
+.missionImage {
+  width: 100%;
+  height: auto;
+  flex-shrink: 0;
+  max-width: 336px;
+
+  @media (--viewportMedium) {
+    width: 548px;
+    max-width: none;
+  }
+}
+
+.missionContent {
+  max-width: 100%;
+  text-align: center;
+
+  @media (--viewportMedium) {
+    max-width: 444px;
+    text-align: left;
+  }
+}
+
+.missionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Istok Web', sans-serif;
+  color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+    margin-bottom: 20px;
+  }
+}
+
+.missionText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #8d8d8d;
+  font-family: 'Mulish', sans-serif;
+  font-weight: 400;
+}
+
+.missionText p {
+  margin-bottom: 20px;
+}
+
+.differentSection {
+  text-align: center;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (--viewportMedium) {
+    padding-top: 80px;
+    padding-bottom: 0;
+    gap: 20px;
+  }
+}
+
+.differentTitle {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Istok Web', sans-serif;
+  color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+  }
+}
+
+.differentText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #8d8d8d;
+  max-width: 600px;
+  font-family: 'Mulish', sans-serif;
+  font-weight: 400;
+}
+
+.featureSection {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  flex-direction: column-reverse;
+
+  @media (--viewportMedium) {
+    flex-direction: row;
+    gap: 76px;
+  }
+}
+
+.statsSection {
+  text-align: center;
+  padding: 40px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  @media (--viewportMedium) {
+    padding: 80px 20px;
+    gap: 20px;
+  }
+}
+
+.statsTitle {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'Istok Web', sans-serif;
+  color: #000000;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+  }
+}
+
+.statsText {
+  font-size: 12px;
+  line-height: 1.3;
+  margin-bottom: 28px;
+
+  @media (--viewportMedium) {
+    font-size: 16px;
+    margin-bottom: 40px;
+  }
+}
+
+.statsContainer {
+  display: flex;
+  width: 100%;
+  max-width: 256px;
+  flex-direction: column;
+  gap: 40px;
+  align-items: center;
+
+  @media (--viewportMedium) {
+    max-width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+  }
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.statNumber {
+  font-family: 'Inter', sans-serif;
+  font-size: 50px;
+  font-weight: 400;
+  color: var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    font-size: 80px;
+    margin: 0;;
+  }
+}
+
+.statLabel {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #231f20;
+  max-width: 100%;
+
+  @media (--viewportMedium) {
+    max-width: 320px;
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.pillsContainer {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  @media (--viewportMedium) {
+    justify-content: flex-start;
+  }
+}
+
+.pill {
+  background-color: #fff1ff;
+  border: 1px solid var(--marketplaceColor);
+  border-radius: 23px;
+  padding: 10px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--marketplaceColor);
+
+  @media (--viewportMedium) {
+    font-size: 12px;
+  }
+}
+
+.mobileOnly {
+  display: block;
+
+  @media (--viewportMedium) {
+    display: none;
+  }
+}
+
+.desktopOnly {
+  display: none;
+
+  @media (--viewportMedium) {
+    display: block;
+  }
+}
+
+.animatedBlock {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.animatedBlock.inView {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.featureGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  @media (--viewportMedium) {
+    gap: 50px;
+  }
+}

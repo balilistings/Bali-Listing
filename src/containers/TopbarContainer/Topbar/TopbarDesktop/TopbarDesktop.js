@@ -21,8 +21,7 @@ import {
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
-import LanguageSelector from './LanguageSelector';
-import { useLocale } from '../../../../context/localeContext';
+import LanguageCurrencyMenu from './LanguageCurrencyMenu';
 
 import css from './TopbarDesktop.module.css';
 
@@ -189,32 +188,7 @@ const NotSignedInProfileMenu = ({
   );
 };
 
-const CurrencyToggler = ({ selectedCurrency, onSetCurrency }) => {
-  const handleCurrencyChange = currency => {
-    onSetCurrency(currency);
-  };
 
-  return (
-    <div className={css.currencyToggler}>
-      <button
-        className={classNames(css.currencyButton, {
-          [css.selectedCurrency]: selectedCurrency === 'IDR',
-        })}
-        onClick={() => handleCurrencyChange('IDR')}
-      >
-        IDR
-      </button>
-      <button
-        className={classNames(css.currencyButton, {
-          [css.selectedCurrency]: selectedCurrency === 'USD',
-        })}
-        onClick={() => handleCurrencyChange('USD')}
-      >
-        USD
-      </button>
-    </div>
-  );
-};
 
 /**
  * Topbar for desktop layout
@@ -260,8 +234,6 @@ const TopbarDesktop = props => {
     openCustomFilters,
     location,
     history,
-    selectedCurrency,
-    onSetCurrency,
   } = props;
   
   const [mounted, setMounted] = useState(false);
@@ -269,7 +241,6 @@ const TopbarDesktop = props => {
   const [activeCategory, setActiveCategory] = useState(null);
   const lastScrollState = useRef(false);
   const debounceTimeout = useRef(null);
-  const { SUPPORTED_LOCALES } = useLocale();
 
   const urlParams = parse(location?.search || '');
   const currentCategoryFromURL = urlParams.pub_categoryLevel1;
@@ -429,7 +400,6 @@ const TopbarDesktop = props => {
         </div>}
         
         <div className={classNames(css.rightMenus, { [css.searchPageTopbarMenu]: currentPage === 'search' })}>
-          {showCurrencyToggler && <CurrencyToggler selectedCurrency={selectedCurrency} onSetCurrency={onSetCurrency} />}
           <CustomLinksMenu
             currentPage={currentPage}
             customLinks={customLinks}
@@ -437,9 +407,10 @@ const TopbarDesktop = props => {
             hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
             showCreateListingsLink={showCreateListingsLink}
           />
-          {SUPPORTED_LOCALES.length > 1 && currentPage !== 'EditListingPage' ? (
-            <LanguageSelector isMobile={false} />
-          ) : null}
+          <LanguageCurrencyMenu 
+            config={config}
+            currentPage={currentPage}
+          />
           {profileMenuMaybe}
         </div>
       </div>

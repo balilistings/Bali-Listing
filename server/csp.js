@@ -60,13 +60,11 @@ const defaultDirectives = {
     'plausible.io',
     '*.plausible.io',
 
-    'fonts.googleapis.com',
-
     'sentry.io',
     '*.sentry.io',
     '*.stripe.com',
   ],
-  fontSrc: [self, data, 'assets-sharetribecom.sharetribe.com', 'fonts.gstatic.com'],
+  fontSrc: [self, data, 'assets-sharetribecom.sharetribe.com'],
   formAction: [self],
   frameSrc: [
     self,
@@ -89,7 +87,6 @@ const defaultDirectives = {
 
     'api.mapbox.com',
     'maps.googleapis.com',
-    '*.gstatic.com',
     '*.googleapis.com',
     '*.ggpht.com',
 
@@ -124,7 +121,7 @@ const defaultDirectives = {
     // Plausible analytics
     'plausible.io',
   ],
-  styleSrc: [self, unsafeInline, 'fonts.googleapis.com', 'api.mapbox.com'],
+  styleSrc: [self, unsafeInline, 'api.mapbox.com'],
 };
 
 /**

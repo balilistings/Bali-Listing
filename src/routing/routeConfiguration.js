@@ -15,6 +15,18 @@ const pageDataLoadingAPI = getPageDataLoadingAPI();
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
+const FAQPage = loadable(() =>
+  import(/* webpackChunkName: "FAQPage" */ '../containers/FAQPage/FAQPage')
+);
+const AboutUsPage = loadable(() =>
+  import(/* webpackChunkName: "AboutUsPage" */ '../containers/AboutUsPage/AboutUsPage')
+);
+const BlogPage = loadable(() =>
+  import(/* webpackChunkName: "BlogPage" */ '../containers/BlogListPage/BlogListPage')
+);
+const SingularBlogPage = loadable(() =>
+  import(/* webpackChunkName: "SingularBlogPage" */ '../containers/BlogPage/BlogPage')
+);
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ '../containers/EmailVerificationPage/EmailVerificationPage'));
@@ -82,10 +94,22 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       loadData: pageDataLoadingAPI.LandingPage.loadData,
     },
     {
+      path: '/blog',
+      name: 'BlogPage',
+      component: BlogPage,
+      loadData: pageDataLoadingAPI.BlogPage.loadData,
+    },
+    {
       path: '/p/:pageId',
       name: 'CMSPage',
       component: CMSPage,
       loadData: pageDataLoadingAPI.CMSPage.loadData,
+    },
+    {
+      path: '/blog/:blogId',
+      name: 'SingularBlogPage',
+      component: SingularBlogPage,
+      loadData: pageDataLoadingAPI.SingularBlogPage.loadData,
     },
     // NOTE: when the private marketplace feature is enabled, the '/s' route is disallowed by the robots.txt resource.
     // If you add new routes that start with '/s*' (e.g. /support), you should add them to the robotsPrivateMarketplace.txt file.

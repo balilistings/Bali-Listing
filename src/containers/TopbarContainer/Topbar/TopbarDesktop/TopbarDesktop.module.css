@@ -596,3 +596,9 @@ color: #C4C4C4;
   background-color: var(--marketplaceColor);
   color: white;
 }
+
+/* Menu item for LanguageCurrencyMenu */
+.menuItem {
+  padding: 10px 0;
+  width: 100%;
+}

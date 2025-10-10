@@ -338,9 +338,9 @@ const TopbarComponent = props => {
           <NamedLink name="NewListingPage" className={css.addListing}>
             <FormattedMessage id="TopbarDesktop.addListing" />
           </NamedLink>
-          {SUPPORTED_LOCALES.length > 1 && resolvedCurrentPage !== 'EditListingPage' && (
+          {/* {SUPPORTED_LOCALES.length > 1 && resolvedCurrentPage !== 'EditListingPage' && (
             <LanguageSelector isMobile={true} />
-          )}
+          )} */}
           <Button
             rootClassName={css.menu}
             onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}

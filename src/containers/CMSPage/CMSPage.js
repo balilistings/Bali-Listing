@@ -7,13 +7,39 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
 );
+const AboutUsPage = loadable(() =>
+  import(/* webpackChunkName: "AboutUsPage" */ '../AboutUsPage/AboutUsPage')
+);
+const BlogListPage = loadable(() =>
+  import(/* webpackChunkName: "BlogListPage" */ '../BlogListPage/BlogListPage')
+);
+const FAQPage = loadable(() => import(/* webpackChunkName: "FAQPage" */ '../FAQPage/FAQPage'));
+
+const SolutionHubPage = loadable(() =>
+  import(/* webpackChunkName: "SolutionHubPage" */ '../SolutionHubPage/SolutionHubPage')
+);
+
+const componentMap = {
+  about: AboutUsPage,
+  blog: BlogListPage,
+  faq: FAQPage,
+  'solution-hub': SolutionHubPage,
+};
 
 export const CMSPageComponent = props => {
   const { params, pageAssetsData, inProgress, error } = props;
   const pageId = params.pageId || props.pageId;
+
+  const useNewPages = process.env.REACT_APP_USE_NEW_PAGES === 'true';
+  const PageComponent = useNewPages ? componentMap[pageId] : null;
+
+  if (PageComponent) {
+    return <PageComponent {...props} />;
+  }
 
   if (!inProgress && error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;

@@ -21,7 +21,7 @@ import {
 import { LISTING_STATE_DRAFT, LISTING_STATE_PENDING_APPROVAL, propTypes } from '../../util/types';
 import { isErrorNoPermissionToPostListings } from '../../util/errors';
 import { ensureOwnListing } from '../../util/data';
-import { hasPermissionToPostListings, isUserAuthorized } from '../../util/userHelpers';
+import { hasPermissionToPostListings, isUserAuthorized, isUserProvider } from '../../util/userHelpers';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { manageDisableScrolling, isScrollingDisabled } from '../../ducks/ui.duck';
 import {
@@ -47,6 +47,7 @@ import {
 } from './EditListingPage.duck';
 import EditListingWizard from './EditListingWizard/EditListingWizard';
 import css from './EditListingPage.module.css';
+import NotFoundPage from '../NotFoundPage/NotFoundPage';
 
 const STRIPE_ONBOARDING_RETURN_URL_SUCCESS = 'success';
 const STRIPE_ONBOARDING_RETURN_URL_FAILURE = 'failure';
@@ -192,6 +193,10 @@ export const EditListingPageComponent = props => {
         name="NoAccessPage"
         params={{ missingAccessRight: NO_ACCESS_PAGE_POST_LISTINGS }}
       />
+    );
+  } else if (!isUserProvider(currentUser)) {
+    return (
+      <NotFoundPage staticContext={props.staticContext}/>
     );
   } else if (shouldRedirectAfterPosting) {
     const isPendingApproval =

@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import loadable from '@loadable/component';
 import difference from 'lodash/difference';
 import mapValues from 'lodash/mapValues';
-import moment from 'moment';
 
 // Configs and store setup
 import defaultConfig from './config/configDefault';
@@ -31,7 +30,6 @@ import { LocaleBrowserRouter, LocaleStaticRouter } from './routing/LocaleRouter'
 
 // Sharetribe Web Template uses English translations as default translations.
 import defaultMessages from './translations/en.json';
-import allMessages from './translations';
 
 // If you want to change the language of default (fallback) translations,
 // change the imports to match the wanted locale:
@@ -47,14 +45,9 @@ import allMessages from './translations';
 // This used to collect billing address in StripePaymentAddress on CheckoutPage
 
 // Step 2:
-// If you are using a non-english locale with moment library,
-// you should also import time specific formatting rules for that locale
-// There are 2 ways to do it:
-// - you can add your preferred locale to MomentLocaleLoader or
-// - stop using MomentLocaleLoader component and directly import the locale here.
-// E.g. for French:
-// import 'moment/locale/fr';
-// const hardCodedLocale = process.env.NODE_ENV === 'test' ? 'en' : 'fr';
+// If you are using time-based functionality, you may need to configure date/time formatting
+// This application now uses dayjs instead of moment for date handling.
+// E.g. for time zone specific handling you can configure those settings in the date utilities.
 
 // Step 3:
 // The "./translations/en.json" has generic English translations
@@ -84,45 +77,7 @@ const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) 
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
-// For customized apps, this dynamic loading of locale files is not necessary.
-// It helps locale change from configDefault.js file or hosted configs, but customizers should probably
-// just remove this and directly import the necessary locale on step 2.
-const MomentLocaleLoader = props => {
-  const { children, locale } = props;
-  const isAlreadyImportedLocale =
-    typeof hardCodedLocale !== 'undefined' && locale === hardCodedLocale;
 
-  // Moment's built-in locale does not need loader
-  const NoLoader = props => <>{props.children()}</>;
-
-  // The default locale is en (en-US). Here we dynamically load one of the other common locales.
-  // However, the default is to include all supported locales package from moment library.
-  const MomentLocale =
-    ['en', 'en-US'].includes(locale) || isAlreadyImportedLocale
-      ? NoLoader
-      : ['fr', 'fr-FR'].includes(locale)
-      ? loadable.lib(() => import(/* webpackChunkName: "fr" */ 'moment/locale/fr'))
-      : ['de', 'de-DE'].includes(locale)
-      ? loadable.lib(() => import(/* webpackChunkName: "de" */ 'moment/locale/de'))
-      : ['es', 'es-ES'].includes(locale)
-      ? loadable.lib(() => import(/* webpackChunkName: "es" */ 'moment/locale/es'))
-      : ['fi', 'fi-FI'].includes(locale)
-      ? loadable.lib(() => import(/* webpackChunkName: "fi" */ 'moment/locale/fi'))
-      : ['nl', 'nl-NL'].includes(locale)
-      ? loadable.lib(() => import(/* webpackChunkName: "nl" */ 'moment/locale/nl'))
-      : loadable.lib(() => import(/* webpackChunkName: "locales" */ 'moment/min/locales.min'));
-
-  return (
-    <MomentLocale>
-      {() => {
-        // Set the Moment locale globally
-        // See: http://momentjs.com/docs/#/i18n/changing-locale/
-        moment.locale(locale);
-        return children;
-      }}
-    </MomentLocale>
-  );
-};
 
 const Configurations = props => {
   const { appConfig, children } = props;
@@ -131,9 +86,7 @@ const Configurations = props => {
 
   return (
     <ConfigurationProvider value={appConfig}>
-      <MomentLocaleLoader locale={locale}>
-        <RouteConfigurationProvider value={routeConfig}>{children}</RouteConfigurationProvider>
-      </MomentLocaleLoader>
+      <RouteConfigurationProvider value={routeConfig}>{children}</RouteConfigurationProvider>
     </ConfigurationProvider>
   );
 };
@@ -166,7 +119,7 @@ const MaintenanceModeError = props => {
 
   const localeMessages = isTestEnv
     ? mapValues(defaultMessages, (val, key) => key)
-    : allMessages[locale] || allMessages['en'];
+    : defaultMessages;
 
   const finalMessages = addMissingTranslations(defaultMessages, {
     ...localeMessages,

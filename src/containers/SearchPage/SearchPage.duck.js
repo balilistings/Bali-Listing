@@ -175,8 +175,8 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
         return null;
       }
       const splitted = priceParam.split(',');
-      const min = Number(splitted[0]);
-      const max = Number(splitted[1]) + 1;
+      const min = parseInt(splitted[0]);
+      const max = parseInt(splitted[1]) + 1;
       return [min, max].join(',');
     };
 

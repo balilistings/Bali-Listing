@@ -199,6 +199,8 @@ export const hasPermissionToViewData = currentUser => {
  */
 export const isUserAuthorized = currentUser => currentUser?.attributes?.state === 'active';
 
+export const isUserProvider = currentUser => currentUser?.attributes?.profile?.publicData?.userType === 'provider';
+
 /**
  * Get the user type configuration for the current user's user type
  * @param {*} config marketplace configuration
