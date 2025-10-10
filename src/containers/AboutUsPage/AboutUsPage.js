@@ -15,6 +15,7 @@ import { loadData } from './AboutUsPage.duck';
 import css from './AboutUsPage.module.css';
 import { FormattedMessage } from 'react-intl';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
+import CTABlock from '../../components/CTABlock/CTABlock';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -293,6 +294,7 @@ const AboutUsPage = props => {
           return renderBlock(block, i);
         })}
       </div>
+      <CTABlock />
       <FooterContainer />
     </div>
   );

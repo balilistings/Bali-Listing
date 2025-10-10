@@ -11,6 +11,7 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import Accordion from '../../components/Accordion/Accordion';
 import { loadData } from './FAQPage.duck';
+import CTABlock from '../../components/CTABlock/CTABlock';
 
 import css from './FAQPage.module.css';
 
@@ -99,6 +100,7 @@ const FAQPage = props => {
           <Accordion items={faqItems} />
         </div>
       </div>
+      <CTABlock />
       <FooterContainer />
     </div>
   );

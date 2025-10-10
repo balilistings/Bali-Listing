@@ -12,6 +12,7 @@ import { loadData } from './BlogListPage.duck.js';
 import css from './BlogListPage.module.css';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import { ReactComponent as UserIcon } from '../../assets/usericon.svg';
+import CTABlock from '../../components/CTABlock/CTABlock';
 
 const getInfoFromText = text => {
   const dateRegex = /\*(\d{2}\/\d{2}\/\d{2})\*/;
@@ -27,7 +28,10 @@ const getInfoFromText = text => {
     date = `${dayOfMonth} ${monthName}, ${fullYear}`;
   }
 
-  const description = text.replace(dateRegex, '').replace(/######/g, '').trim();
+  const description = text
+    .replace(dateRegex, '')
+    .replace(/######/g, '')
+    .trim();
 
   return { date, description };
 };
@@ -128,6 +132,7 @@ const BlogListPage = props => {
           ))}
         </div>
       </div>
+      <CTABlock />
       <FooterContainer />
     </div>
   );

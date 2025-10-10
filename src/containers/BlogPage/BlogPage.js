@@ -14,6 +14,7 @@ import IconDate from '../../components/IconDate/IconDate.js';
 
 import css from './BlogPage.module.css';
 import { SocialMediaLink } from '../PageBuilder/Primitives/Link/SocialMediaLink.js';
+import CTABlock from '../../components/CTABlock/CTABlock.js';
 
 const Markdown = ({ content }) => {
   const result = unified()
@@ -141,6 +142,7 @@ const BlogPage = props => {
           </div>
         </div>
       </div>
+      <CTABlock />
       <FooterContainer />
     </div>
   );

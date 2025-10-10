@@ -12,7 +12,7 @@ import FooterContainer from '../FooterContainer/FooterContainer.js';
 import IconSolution from '../../components/IconSolution/IconSolution';
 import { loadData } from './SolutionHubPage.duck';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
-import CTA from '../../components/CTA/CTA';
+import CTABlock from '../../components/CTABlock/CTABlock';
 
 import css from './SolutionHubPage.module.css';
 
@@ -134,7 +134,7 @@ const SolutionHubPage = props => {
           <div className={css.blocksGrid}>{blocks.map(renderBlock)}</div>
         </div>
       </div>
-      <CTA />
+      <CTABlock />
       <FooterContainer />
     </div>
   );
