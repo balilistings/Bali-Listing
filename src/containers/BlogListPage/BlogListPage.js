@@ -6,8 +6,9 @@ import NotFoundPage from '../NotFoundPage/NotFoundPage.js';
 import TopbarContainer from '../TopbarContainer/TopbarContainer.js';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage.js';
-import { IconDate } from '../../components/index.js';
-import { loadData } from './BlogListPage.duck.js';
+import { IconDate, Page, LayoutSingleColumn } from '../../components/index.js';
+import { useConfiguration } from '../../context/configurationContext';
+import { extractPageMetadata } from '../../util/seo';
 
 import css from './BlogListPage.module.css';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
@@ -75,9 +76,9 @@ const BlogCard = ({ block }) => {
 };
 
 const BlogListPage = props => {
-  const dispatch = useDispatch();
   const params = useParams();
   const pageId = params.pageId || 'blog';
+  const config = useConfiguration();
 
   const { pageAssetsData, inProgress, error } = useSelector(
     state => state.hostedAssets || {},
@@ -85,13 +86,6 @@ const BlogListPage = props => {
   );
 
   // const [activeTab, setActiveTab] = useState('All');
-
-  useEffect(() => {
-    if (inProgress || pageAssetsData?.[pageId]) {
-      return;
-    }
-    dispatch(loadData(params));
-  }, [dispatch, params, pageId, inProgress, pageAssetsData]);
 
   if (inProgress) {
     return <div className={css.root} />;
@@ -104,37 +98,43 @@ const BlogListPage = props => {
   const pageData = pageAssetsData?.[pageId]?.data;
   const blocks = pageData?.sections?.[0]?.blocks || [];
 
+  // Extract meta information using the helper function
+  const { title, description, schema, socialSharing } = extractPageMetadata(pageData, 'WebPage');
+
   // TODO: Add tags for blog posts
   // const tabs = ['All', 'Tips & tricks'];
 
   return (
-    <div className={css.root}>
-      <TopbarContainer />
-      <div className={css.hero}>
-        <Spiral className={css.spiral} />
-        <h1 className={css.heroTitle}>Blog</h1>
-      </div>
-      <div className={css.content}>
-        {/* <div className={css.tabs}>
-          {tabs.map(tab => (
-            <button
-              key={tab}
-              className={activeTab === tab ? css.activeTab : css.tab}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
-        </div> */}
-        <div className={css.grid}>
-          {blocks.map((block, i) => (
-            <BlogCard key={i} block={block} />
-          ))}
+    <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
+      <LayoutSingleColumn
+        topbar={<TopbarContainer />}
+        footer={<FooterContainer />}
+      >
+        <div className={css.hero}>
+          <Spiral className={css.spiral} />
+          <h1 className={css.heroTitle}>Blog</h1>
         </div>
-      </div>
-      <CTABlock />
-      <FooterContainer />
-    </div>
+        <div className={css.content}>
+          {/* <div className={css.tabs}>
+            {tabs.map(tab => (
+              <button
+                key={tab}
+                className={activeTab === tab ? css.activeTab : css.tab}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div> */}
+          <div className={css.grid}>
+            {blocks.map((block, i) => (
+              <BlogCard key={i} block={block} />
+            ))}
+          </div>
+        </div>
+        <CTABlock />
+      </LayoutSingleColumn>
+    </Page>
   );
 };
 

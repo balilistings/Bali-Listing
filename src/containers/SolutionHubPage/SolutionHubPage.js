@@ -11,6 +11,9 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import IconSolution from '../../components/IconSolution/IconSolution';
 import { loadData } from './SolutionHubPage.duck';
+import { Page, LayoutSingleColumn } from '../../components/index.js';
+import { useConfiguration } from '../../context/configurationContext';
+import { extractPageMetadata } from '../../util/seo';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import CTABlock from '../../components/CTABlock/CTABlock';
 
@@ -21,6 +24,7 @@ const renderAst = new rehypeReact({ createElement: React.createElement }).Compil
 const SolutionHubPage = props => {
   const dispatch = useDispatch();
   const params = useParams();
+  const config = useConfiguration();
 
   const pageId = 'solution-hub';
 
@@ -45,6 +49,9 @@ const SolutionHubPage = props => {
   }
 
   const pageData = pageAssetsData?.[pageId]?.data;
+
+  // Extract meta information using the helper function
+  const { title, description, schema, socialSharing } = extractPageMetadata(pageData, 'WebPage');
 
   const toReact = markdown => {
     if (!markdown) return null;
@@ -112,31 +119,34 @@ const SolutionHubPage = props => {
   const descriptionContent = section?.description?.content || '';
   const descriptionParts = descriptionContent.split('###');
   const subTitle = descriptionParts.length > 1 ? descriptionParts[1] : '';
-  const description =
+  const sectionDescription =
     descriptionParts.length > 2 ? descriptionParts[2].trim() : descriptionParts[0];
 
   return (
-    <div className={css.root}>
-      <TopbarContainer />
-      <div className={css.hero}>
-        <Spiral className={css.spiral} />
-        <h1 className={css.heroTitle}>{section?.title?.content}</h1>
-      </div>
-      <div className={css.mainContentContainer}>
-        <div className={css.pageHeader}>
-          <div className={css.pageTitleWrapper}>
-            <h1 className={css.pageTitle}>{subTitle}</h1>
+    <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
+      <LayoutSingleColumn
+        topbar={<TopbarContainer />}
+        footer={<FooterContainer />}
+      >
+        <div className={css.hero}>
+          <Spiral className={css.spiral} />
+          <h1 className={css.heroTitle}>{section?.title?.content}</h1>
+        </div>
+        <div className={css.mainContentContainer}>
+          <div className={css.pageHeader}>
+            <div className={css.pageTitleWrapper}>
+              <h1 className={css.pageTitle}>{subTitle}</h1>
+            </div>
+            <div className={css.pageSubtitle}>{toReact(sectionDescription)}</div>
           </div>
-          <div className={css.pageSubtitle}>{toReact(description)}</div>
-        </div>
 
-        <div className={css.content}>
-          <div className={css.blocksGrid}>{blocks.map(renderBlock)}</div>
+          <div className={css.content}>
+            <div className={css.blocksGrid}>{blocks.map(renderBlock)}</div>
+          </div>
         </div>
-      </div>
-      <CTABlock />
-      <FooterContainer />
-    </div>
+        <CTABlock />
+      </LayoutSingleColumn>
+    </Page>
   );
 };
 
