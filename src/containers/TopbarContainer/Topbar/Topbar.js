@@ -372,6 +372,7 @@ const TopbarComponent = props => {
           openCustomFilters={openCustomFilters}
           location={location}
           history={history}
+          provider={isProvider}
         />
       </div>
       <Modal

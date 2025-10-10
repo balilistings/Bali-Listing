@@ -31,7 +31,6 @@ const CookieConsent = () => {
       setShowConsent(false);
       return;
     }
-
     const cookieConsentValue = Cookies.get(COOKIE_CONSENT_KEY);
     const hasConsent = cookieConsentValue === 'accepted' || cookieConsentValue === 'rejected';
 

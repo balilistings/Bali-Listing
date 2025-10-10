@@ -18,6 +18,7 @@ import { loadData as AboutUsPageLoader } from './AboutUsPage/AboutUsPage.duck';
 import { loadData as ProfilePageLoader } from './ProfilePage/ProfilePage.duck';
 import { loadData as SearchPageLoader } from './SearchPage/SearchPage.duck';
 import { loadData as StripePayoutPageLoader } from './StripePayoutPage/StripePayoutPage.duck';
+import { loadData as FavoriteListingsPageLoader } from './FavoriteListingsPage/FavoriteListingsPage.duck';
 import { loadData as TermsOfServicePageLoader } from './TermsOfServicePage/TermsOfServicePage.duck';
 import { loadData as SingularBlogPageLoader } from './BlogPage/BlogPage.duck';
 import {
@@ -86,6 +87,9 @@ const getPageDataLoadingAPI = () => {
     },
     TermsOfServicePage: {
       loadData: TermsOfServicePageLoader,
+    },
+    FavoriteListingsPage: {
+      loadData: FavoriteListingsPageLoader,
     },
     TransactionPage: {
       loadData: TransactionPageLoader,
