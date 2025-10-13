@@ -21,6 +21,55 @@ import css from './SolutionHubPage.module.css';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
+const SolutionBlock = ({ block, toReact }) => {
+  const title = block.title?.content;
+  const rawContent = block.text?.content;
+  const callToAction = block.callToAction;
+
+  let tag = null;
+  let content = rawContent || '';
+  let subtitle = '';
+
+  if (content.startsWith('--')) {
+    const parts = content.split('--');
+    if (parts.length > 2) {
+      tag = parts[1];
+      content = parts
+        .slice(2)
+        .join('--')
+        .trim();
+    }
+  }
+
+  const contentParts = content.split('\n\n');
+  if (contentParts[0].startsWith('**') && contentParts[0].endsWith('**')) {
+    subtitle = contentParts[0].replace(/\*\*/g, '');
+    content = contentParts.slice(1).join('\n\n');
+  }
+
+  return (
+    <div className={css.block}>
+      {tag && <div className={css.tag}>{tag}</div>}
+      <div className={css.imageWrapper}>
+        <IconSolution solutionName={title} />
+      </div>
+      <h3 className={css.blockTitle}>{title}</h3>
+      {subtitle && <p className={css.blockSubtitle}>{subtitle}</p>}
+      <div className={css.blockText}>{toReact(content)}</div>
+      {callToAction?.fieldType === 'externalButtonLink' && callToAction.href && (
+        <a
+          href={callToAction.href}
+          className={css.blockButton}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {callToAction.content}
+        </a>
+      )}
+    </div>
+  );
+};
+
 const SolutionHubPage = props => {
   const dispatch = useDispatch();
   const params = useParams();
@@ -67,55 +116,6 @@ const SolutionHubPage = props => {
   const section = pageData?.sections?.[0];
   const blocks = section?.blocks || [];
 
-  const renderBlock = (block, i) => {
-    const title = block.title?.content;
-    const rawContent = block.text?.content;
-    const callToAction = block.callToAction;
-
-    let tag = null;
-    let content = rawContent || '';
-    let subtitle = '';
-
-    if (content.startsWith('--')) {
-      const parts = content.split('--');
-      if (parts.length > 2) {
-        tag = parts[1];
-        content = parts
-          .slice(2)
-          .join('--')
-          .trim();
-      }
-    }
-
-    const contentParts = content.split('\n\n');
-    if (contentParts[0].startsWith('**') && contentParts[0].endsWith('**')) {
-      subtitle = contentParts[0].replace(/\*\*/g, '');
-      content = contentParts.slice(1).join('\n\n');
-    }
-
-    return (
-      <div key={i} className={css.block}>
-        {tag && <div className={css.tag}>{tag}</div>}
-        <div className={css.imageWrapper}>
-          <IconSolution solutionName={title} />
-        </div>
-        <h3 className={css.blockTitle}>{title}</h3>
-        {subtitle && <p className={css.blockSubtitle}>{subtitle}</p>}
-        <div className={css.blockText}>{toReact(content)}</div>
-        {callToAction?.fieldType === 'externalButtonLink' && callToAction.href && (
-          <a
-            href={callToAction.href}
-            className={css.blockButton}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {callToAction.content}
-          </a>
-        )}
-      </div>
-    );
-  };
-
   const descriptionContent = section?.description?.content || '';
   const descriptionParts = descriptionContent.split('###');
   const subTitle = descriptionParts.length > 1 ? descriptionParts[1] : '';
@@ -124,10 +124,7 @@ const SolutionHubPage = props => {
 
   return (
     <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
-      <LayoutSingleColumn
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
+      <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.hero}>
           <Spiral className={css.spiral} />
           <h1 className={css.heroTitle}>{section?.title?.content}</h1>
@@ -141,7 +138,11 @@ const SolutionHubPage = props => {
           </div>
 
           <div className={css.content}>
-            <div className={css.blocksGrid}>{blocks.map(renderBlock)}</div>
+            <div className={css.blocksGrid}>
+              {blocks.map((block, i) => (
+                <SolutionBlock key={i} block={block} toReact={toReact} />
+              ))}
+            </div>
           </div>
         </div>
         <CTABlock />
