@@ -18,7 +18,7 @@ import { extractPageMetadata } from '../../util/seo';
 import css from './AboutUsPage.module.css';
 import { FormattedMessage } from 'react-intl';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
-import CTABlock from '../../components/CTABlock/CTABlock';
+import CTABlock from '../../components/CTAFooter/CTAFooter.js';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -143,7 +143,7 @@ const AboutUsPage = props => {
                 image={image}
                 variants={imageVariants}
                 className={css.missionImage}
-                sizes="(max-width: 768px) 100vw, 60vw"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             ) : null}
             <div className={css.missionContent}>
@@ -194,7 +194,7 @@ const AboutUsPage = props => {
                 image={image}
                 variants={imageVariants}
                 className={css.missionImage}
-                sizes="(max-width: 768px) 100vw, 60vw"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             ) : null}
           </div>
@@ -220,7 +220,7 @@ const AboutUsPage = props => {
                 image={image}
                 variants={imageVariants}
                 className={css.missionImage}
-                sizes="(max-width: 768px) 100vw, 60vw"
+                sizes="(max-width: 768px) 100vw, 800px"
               />
             ) : null}
             <div className={css.missionContent}>

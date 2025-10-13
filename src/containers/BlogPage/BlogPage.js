@@ -17,7 +17,7 @@ import { extractPageMetadata } from '../../util/seo';
 
 import css from './BlogPage.module.css';
 import { SocialMediaLink } from '../PageBuilder/Primitives/Link/SocialMediaLink.js';
-import CTABlock from '../../components/CTABlock/CTABlock.js';
+import CTABlock from '../../components/CTAFooter/CTAFooter.js';
 
 const Markdown = ({ content }) => {
   const result = unified()
@@ -96,7 +96,7 @@ const BlogPage = props => {
 
   // Fallback to page section title if no meta title is available
   const title = extractedTitle || section.title?.content;
-  const [dateString, author] = section.description?.content
+  const [dateString, author = 'Balilistings Team'] = section.description?.content
     .replace('Published on ', '')
     .split(' - ');
   const blocks = section.blocks || [];
@@ -110,13 +110,10 @@ const BlogPage = props => {
       published={dateString}
       className={css.root}
     >
-      <LayoutSingleColumn
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
+      <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.container}>
           <div className={css.mainContent}>
-            <Link to="/blog" className={css.backLink}>
+            <Link to="/p/blog" className={css.backLink}>
               &larr; Back to Blog
             </Link>
             <div className={css.blogHeader}>
@@ -128,7 +125,7 @@ const BlogPage = props => {
                 </div>
                 <div className={css.dateWrapper}>
                   <IconDate className={css.dateIcon} />
-                  <span className={css.dateText}>{dateString}</span>
+                  <span className={css.dateText}>{dateString.replaceAll('-', '')}</span>
                 </div>
               </div>
             </div>

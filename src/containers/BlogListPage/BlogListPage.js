@@ -13,7 +13,7 @@ import { extractPageMetadata } from '../../util/seo';
 import css from './BlogListPage.module.css';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import { ReactComponent as UserIcon } from '../../assets/usericon.svg';
-import CTABlock from '../../components/CTABlock/CTABlock';
+import CTABlock from '../../components/CTAFooter/CTAFooter.js';
 
 const getInfoFromText = text => {
   const dateRegex = /\*(\d{2}\/\d{2}\/\d{2})\*/;
@@ -52,16 +52,17 @@ const BlogCard = ({ block }) => {
           image={image}
           variants={imageVariants}
           className={css.cardImage}
+          sizes={"600px"}
         />
       )}
       <div className={css.cardContent}>
         <div className={css.topMeta}>
           {/* <div className={css.category}></div> */}
           <div className={css.meta}>
-            <div className={css.author}>
+            {/* <div className={css.author}>
               <UserIcon />
               <span>Wesley Silalahi</span>
-            </div>
+            </div> */}
             <div className={css.date}>
               <IconDate />
               <span>{date}</span>

@@ -13,7 +13,7 @@ import Accordion from '../../components/Accordion/Accordion';
 import { Page, LayoutSingleColumn } from '../../components/index.js';
 import { useConfiguration } from '../../context/configurationContext';
 import { extractPageMetadata } from '../../util/seo';
-import CTABlock from '../../components/CTABlock/CTABlock';
+import CTABlock from '../../components/CTAFooter/CTAFooter.js';
 
 import css from './FAQPage.module.css';
 
