@@ -64,15 +64,14 @@
 }
 
 .removeAll {
+  display: flex;
   border: none;
-  display: flex;
   color: #eb2be8;
-  margin-right: 131px;
-  align-self: flex-start;
-  margin-top: -85px;
-  display: flex;
-  justify-content: flex-end;
   padding: 8px 0;
+  justify-content: flex-end;
+  margin-top: -80px;
+  margin-bottom: 40px;
+  margin-left: 1150px;
 }
 
 .removeAll:hover {

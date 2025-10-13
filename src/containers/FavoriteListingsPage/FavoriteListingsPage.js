@@ -146,30 +146,27 @@ export const FavoriteListingsPageComponent = props => {
           {!queryInProgress && !queryFavoritesError && (
             <>
               <div>
-                {selectedIds.length > 0 && (
-                  <button
-                    className={css.removeSelected}
-                    onClick={handleUnfavoriteSelected}
-                    title={`Unfavorite selected (${selectedIds.length})`}
-                    style={{ marginLeft: '8px' }}
-                  >
-                    <img src={remove} alt="unfavorite selected" />
-                  </button>
-                )}
-              </div>
-              <div>
-                {selectedIds.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleUnfavoriteAll}
-                    className={css.removeAll}
-                    title="Unfavorite all listings"
-                  >
-                    🗑️ Unfavorite All
-                  </button>
-                )}
-              </div>
-
+  {selectedIds.length > 0 && (
+    <div className={css.buttonGroup}>
+      <button
+        className={css.removeSelected}
+        onClick={handleUnfavoriteSelected}
+        title={`Unfavorite selected (${selectedIds.length})`}
+        style={{ marginLeft: '8px' }}
+      >
+        <img src={remove} alt="unfavorite selected" />
+      </button>
+    
+      <button
+        onClick={handleUnfavoriteAll}
+        className={css.removeAll}
+        title="Unfavorite all listings"
+      >
+        🗑️ Unfavorite All
+      </button>
+    </div>
+  )}
+</div>
               {/* Listings grid */}
               <div className={css.listingCards}>
                 {listings.length > 0
