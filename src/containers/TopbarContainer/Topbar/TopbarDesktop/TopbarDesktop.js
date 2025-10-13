@@ -21,7 +21,7 @@ import { setCurrency } from '../../../../ducks/currency.js';
 
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
-import LanguageCurrencyMenu from './LanguageCurrencyMenu';
+import LanguageCurrencyMenu from './LanguageCurrencyMenu/LanguageCurrencyMenu.js';
 
 import css from './TopbarDesktop.module.css';
 
@@ -405,11 +405,12 @@ const TopbarDesktop = props => {
             hasClientSideContentReady={authenticatedOnClientSide || !isAuthenticatedOrJustHydrated}
             showCreateListingsLink={showCreateListingsLink}
           />
+          {profileMenuMaybe}
           <LanguageCurrencyMenu 
             config={config}
             currentPage={currentPage}
+            scrollToBottom={scrollToBottom}
           />
-          {profileMenuMaybe}
         </div>
       </div>
     </nav>
