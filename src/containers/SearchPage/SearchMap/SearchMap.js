@@ -202,7 +202,6 @@ export class SearchMapComponent extends Component {
     };
 
     const handleCloseInfoCard = () => {
-      console.log('handleCloseInfoCard called, setting infoCardOpen to null');
       this.closeInfoCard();
     };
 
@@ -210,8 +209,6 @@ export class SearchMapComponent extends Component {
     const hasApiAccessForMapProvider = !!getMapProviderApiAccess(config.maps);
     const SearchMapVariantComponent = getSearchMapVariantComponent(mapProvider);
     const isMapProviderAvailable = hasApiAccessForMapProvider && this.state.isMapLibReady;
-
-    console.log('isMapProviderAvailable', hasApiAccessForMapProvider, this.state.isMapLibReady);
 
     return isMapProviderAvailable ? (
       <ReusableMapContainer
