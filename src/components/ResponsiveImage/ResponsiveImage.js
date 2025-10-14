@@ -39,6 +39,8 @@ import { FormattedMessage } from '../../util/reactIntl';
 
 import NoImageIcon from './NoImageIcon';
 import css from './ResponsiveImage.module.css';
+import heroImage from '../../assets/balilisting-hero.webp';
+import heroImage1024 from '../../assets/balilisting-hero-1024.webp';
 
 /**
  * Responsive image
@@ -69,6 +71,7 @@ const ResponsiveImage = props => {
     image,
     variants,
     dimensions,
+    fromSectionHero,
     ...rest
   } = props;
   const classes = classNames(rootClassName || css.root, className);
@@ -107,6 +110,20 @@ const ResponsiveImage = props => {
     srcSet,
     ...rest,
   };
+
+  // Manual LCP optimization for landing page
+  if (fromSectionHero) {
+    return (
+      <img
+        alt={alt}
+        {...imgProps}
+        src={heroImage}
+        srcSet={`${heroImage1024} 800w, ${heroImage} 1920w`}
+        sizes="100vw"
+        fetchpriority="high"
+      />
+    );
+  }
 
   return <img alt={alt} {...imgProps} />;
 };

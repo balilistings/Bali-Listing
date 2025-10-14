@@ -5,13 +5,13 @@
 }
 
 .footer {
-  max-width: 1415px;
+  max-width: 1284px;
 
-  display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  /* display: grid; */
+  /* grid-template-columns: repeat(1, 1fr); */
   gap: 32px;
   margin: 0 auto;
-  padding: 60px 32px 19px;
+  padding: 60px 20px 19px;
   background-color: #ffffff;
   border-radius: 20px;
   @media (max-width: 1023px) {

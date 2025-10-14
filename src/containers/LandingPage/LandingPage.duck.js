@@ -2,6 +2,8 @@ import { fetchPageAssets } from '../../ducks/hostedAssets.duck';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
+import * as log from '../../util/log';
+import { constructLocalizedPageAssets } from '../../util/localeAssetUtils';
 import { customLocationBounds } from '../PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 
 export const ASSET_NAME = 'landing-page';
@@ -88,8 +90,13 @@ export const fetchFeaturedListings = (
   }
 };
 
-export const loadData = (params, search) => dispatch => {
-  const pageAsset = { landingPage: `content/pages/${ASSET_NAME}.json` };
+export const loadData = (params, search, config, match) => dispatch => {
+  const assetMap = {
+    landingPage: ASSET_NAME,
+  };
+
+  const pageAsset = constructLocalizedPageAssets(assetMap, match);
+
   return dispatch(fetchPageAssets(pageAsset, true))
     .then(() => {
       dispatch(fetchFeaturedListings());

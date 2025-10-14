@@ -21,6 +21,7 @@ const createUserWithIdp = require('./api/auth/createUserWithIdp');
 const { authenticateFacebook, authenticateFacebookCallback } = require('./api/auth/facebook');
 const { authenticateGoogle, authenticateGoogleCallback } = require('./api/auth/google');
 const { generatePresignedUrlR2 } = require('./api/R2');
+const { getConversionRate } = require('./api/currency');
 
 const router = express.Router();
 
@@ -83,5 +84,8 @@ router.get('/auth/google/callback', authenticateGoogleCallback);
 
 // R2 endpoints
 router.post('/r2/generate-presigned-url', generatePresignedUrlR2);
+
+// currency conversion endpoint
+router.get('/currency/conversion-rate', getConversionRate);
 
 module.exports = router;

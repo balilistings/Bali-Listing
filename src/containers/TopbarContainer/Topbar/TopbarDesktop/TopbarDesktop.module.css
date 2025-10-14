@@ -86,6 +86,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 30px;
 }
 
 /* logo */
@@ -564,4 +565,41 @@ color: #C4C4C4;
      height: 30px;
     }
   }
+}
+
+.currencyToggler {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.currencyButton {
+  background-color: transparent;
+  border: 1px solid var(--marketplaceColor);
+  color: var(--marketplaceColor);
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.currencyButton:first-child {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.currencyButton:last-child {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-left: none;
+}
+
+.selectedCurrency {
+  background-color: var(--marketplaceColor);
+  color: white;
+}
+
+/* Menu item for LanguageCurrencyMenu */
+.menuItem {
+  padding: 10px 0;
+  width: 100%;
 }

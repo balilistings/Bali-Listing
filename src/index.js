@@ -32,7 +32,7 @@ import { createInstance, types as sdkTypes } from './util/sdkLoader';
 import { mergeConfig } from './util/configHelpers';
 import { matchPathname } from './util/routes';
 import * as apiUtils from './util/api';
-import * as log from './util/log';
+import { onRecoverableError } from './util/log';
 
 // Import relevant global duck files
 import { authInfo } from './ducks/auth.duck';
@@ -81,7 +81,7 @@ const render = (store, shouldHydrate) => {
         ReactDOMClient.hydrateRoot(
           container,
           <ClientApp store={store} hostedTranslations={translations} hostedConfig={hostedConfig} />,
-          { onRecoverableError: log.onRecoverableError }
+          { onRecoverableError: onRecoverableError }
         );
       } else {
         const container = document.getElementById('root');
@@ -92,7 +92,7 @@ const render = (store, shouldHydrate) => {
       }
     })
     .catch(e => {
-      log.error(e, 'browser-side-render-failed');
+      console.error(e, 'browser-side-render-failed');
     });
 };
 
@@ -121,7 +121,7 @@ const setupAnalyticsHandlers = googleAnalyticsId => {
 // If we're in a browser already, render the client application.
 if (typeof window !== 'undefined') {
   // set up logger with Sentry DSN client key and environment
-  log.setup();
+  // log.setup();
 
   const baseUrl = appSettings.sdk.baseUrl ? { baseUrl: appSettings.sdk.baseUrl } : {};
   const assetCdnBaseUrl = appSettings.sdk.assetCdnBaseUrl

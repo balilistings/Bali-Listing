@@ -127,12 +127,6 @@
   gap: 16px;
 }
 
-.priceValues {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-
 .priceValue {
   display: flex;
   flex-direction: column;
@@ -150,7 +144,7 @@
   text-align: center;
   color: #4d4d4d;
   margin-bottom: 4px;
-  text-transform: lowercase;
+  /* text-transform: capitalize; */
 
   @media (max-width: 767px) {
     font-size: 8px;

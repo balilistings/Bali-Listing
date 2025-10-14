@@ -17,8 +17,11 @@ import {
   Button,
 } from '../../../../components';
 
+import { setCurrency } from '../../../../ducks/currency.js';
+
 import TopbarSearchForm from '../TopbarSearchForm/TopbarSearchForm';
 import CustomLinksMenu from './CustomLinksMenu/CustomLinksMenu';
+import LanguageCurrencyMenu from './LanguageCurrencyMenu/LanguageCurrencyMenu.js';
 
 import css from './TopbarDesktop.module.css';
 
@@ -171,6 +174,8 @@ const NotSignedInProfileMenu = ({
   );
 };
 
+
+
 /**
  * Topbar for desktop layout
  *
@@ -213,7 +218,7 @@ const TopbarDesktop = props => {
     inboxTab,
     openCustomFilters,
     location,
-    history
+    history,
   } = props;
   const [mounted, setMounted] = useState(false);
   const [scrollToBottom, setScrollToBottom] = useState(false);
@@ -234,17 +239,17 @@ const TopbarDesktop = props => {
   const tabCategories = [
     {
       id: 'rentalvillas',
-      name: 'Rentals',
+      name: 'PageBuilder.SearchCTA.rentals',
       icon: 'rentals_icon'
     },
     {
       id: 'villaforsale', 
-      name: 'For Sale',
+      name: 'PageBuilder.SearchCTA.forSale',
       icon: 'sale_icon'
     },
     {
       id: 'landforsale',
-      name: 'Land', 
+      name: 'PageBuilder.SearchCTA.land', 
       icon: 'icon_Land'
     }
   ];
@@ -379,7 +384,7 @@ const TopbarDesktop = props => {
                   <IconCollection name={category.icon} />
                 </div> : null}
                 <div className={css.tabText}>
-                  {category.name}
+                  <FormattedMessage id={category.name} />
                 </div>
               </div>
             ))}
@@ -401,6 +406,11 @@ const TopbarDesktop = props => {
             showCreateListingsLink={showCreateListingsLink}
           />
           {profileMenuMaybe}
+          <LanguageCurrencyMenu 
+            config={config}
+            currentPage={currentPage}
+            scrollToBottom={scrollToBottom}
+          />
         </div>
       </div>
     </nav>

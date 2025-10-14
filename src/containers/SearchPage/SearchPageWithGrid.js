@@ -575,7 +575,7 @@ const mapStateToProps = state => {
     searchListingsError,
     searchParams,
   } = state.SearchPage;
-  const listings = getListingsById(state, currentPageResultIds);
+  const listings = getListingsById(state.marketplaceData.entities, currentPageResultIds);
 
   return {
     currentUser,

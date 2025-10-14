@@ -30,9 +30,10 @@ const sliderSettings = {
   appendDots: dots => (
     <div className={css.dots}>
       <span className={css.dotsCounter}>
-        {dots.findIndex(dot => 
-          dot.props.className && dot.props.className.includes('slick-active')
-        ) + 1}/{dots.length}
+        {dots.findIndex(
+          dot => dot.props.className && dot.props.className.includes('slick-active')
+        ) + 1}
+        /{dots.length}
       </span>
     </div>
   ),
@@ -82,7 +83,7 @@ const sliderSettings = {
 };
 
 const PriceMaybe = props => {
-  const { price, publicData, config, isRentals } = props;
+  const { intl, price, publicData, config, isRentals, currencyConversion } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -91,33 +92,35 @@ const PriceMaybe = props => {
     return null;
   }
 
-  const formattedPrice = price ? formatPriceInMillions(price) : null;
-
+  const needPriceConversion = currencyConversion?.selectedCurrency === 'USD';
+  const convertedPrice = needPriceConversion ? price * currencyConversion?.conversionRate.USD : price;
+  
+  const formattedPrice = convertedPrice ? formatPriceInMillions(convertedPrice) : null;
   const priceParams = checkPriceParams();
 
   let suffix;
   if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
     if (priceParams.weekprice) {
-      suffix = '/ weekly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
     } else if (priceParams.monthprice) {
-      suffix = '/ monthly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
     } else if (priceParams.yearprice) {
-      suffix = '/ yearly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
     }
   } else {
     if (publicData?.monthprice) {
-      suffix = '/ monthly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' });
     } else if (publicData?.weekprice) {
-      suffix = '/ weekly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' });
     } else if (publicData?.yearprice) {
-      suffix = '/ yearly';
+      suffix = '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' });
     }
   }
 
   return (
     <div className={css.price}>
       <span className={css.priceValue}>
-        {formattedPrice} IDR
+        {formattedPrice} {currencyConversion?.selectedCurrency}
         {isRentals && <span>{suffix}</span>}
       </span>
     </div>
@@ -127,7 +130,7 @@ const PriceMaybe = props => {
 // ListingCard is the listing info without overlayview or carousel controls
 const ListingCard = props => {
   const history = useHistory();
-  const { className, clickHandler, intl, isInCarousel, listing, urlToListing, config } = props;
+  const { className, clickHandler, intl, isInCarousel, listing, urlToListing, config, currencyConversion } = props;
   const { title, price: p, publicData } = listing.attributes;
   const author = ensureUser(listing.author);
 
@@ -197,9 +200,7 @@ const ListingCard = props => {
       price = monthprice;
     } else if (priceParams?.yearprice) {
       price = yearprice;
-    }
-
-    else if (pricee.includes('monthly')) {
+    } else if (pricee.includes('monthly')) {
       price = monthprice;
     } else if (pricee.includes('weekly')) {
       price = weekprice;
@@ -269,12 +270,12 @@ const ListingCard = props => {
           <div className={css.tags}>
             {tags?.map(tag => (
               <span className={css.tag} key={tag}>
-                {tag}
+                {intl.formatMessage({ id: tag })}
               </span>
             ))}
             {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
             <span className={css.listedBy} onClick={() => history.push(`/u/${author.id.uuid}`)}>
-              Listed by:{' '}
+              {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
               <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
             </span>
           </div>
@@ -333,6 +334,7 @@ const ListingCard = props => {
                 config={config}
                 intl={intl}
                 isRentals={isRentals}
+                currencyConversion={currencyConversion}
               />
             </div>
           </div>
@@ -367,13 +369,13 @@ const SearchMapInfoCard = props => {
     onClose,
     config,
     caretPosition,
+    currencyConversion,
   } = props;
   const currentListing = ensureListing(listings[currentListingIndex]);
   const hasCarousel = listings.length > 1;
 
   const classes = classNames(rootClassName || css.root, className);
 
-  
   let positionCaretClass = null;
   if (caretPosition === 'bottom-left') {
     positionCaretClass = css.caretBottomLeft;
@@ -385,11 +387,9 @@ const SearchMapInfoCard = props => {
     positionCaretClass = css.caretTopRight;
   }
 
-  const caretClass = classNames(
-    css.caret,            
-    positionCaretClass,   
-    { [css.caretWithCarousel]: hasCarousel }
-  );
+  const caretClass = classNames(css.caret, positionCaretClass, {
+    [css.caretWithCarousel]: hasCarousel,
+  });
 
   const handleCloseClick = e => {
     e.preventDefault();
@@ -456,6 +456,7 @@ const SearchMapInfoCard = props => {
         intl={intl}
         isInCarousel={hasCarousel}
         config={config}
+        currencyConversion={currencyConversion}
       />
       {hasCarousel ? (
         <div

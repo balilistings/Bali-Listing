@@ -1,12 +1,13 @@
 import React from 'react';
 import css from './PropertyDetailsSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const propertyDetailsOptions = [
-  { id: 'open-livingroom', name: 'Open livingroom' },
-  { id: 'closed-livingroom', name: 'Closed livingroom' },
-  { id: 'furnished', name: 'Furnished' },
-  { id: 'semi-furnished', name: 'Semi Furnished' },
-  { id: 'unfurnished', name: 'Unfurnished' },
+  { id: 'open-livingroom', name: 'CustomFilter.PropertyDetails.open-livingroom' },
+  { id: 'closed-livingroom', name: 'CustomFilter.PropertyDetails.closed-livingroom' },
+  { id: 'furnished', name: 'CustomFilter.PropertyDetails.furnished' },
+  { id: 'semi-furnished', name: 'CustomFilter.PropertyDetails.semi-furnished' },
+  { id: 'unfurnished', name: 'CustomFilter.PropertyDetails.unfurnished' },
 ];
 
 function PropertyDetailsSelector({ selectedPropertyDetail, onPropertyDetailChange, onReset }) {
@@ -21,7 +22,9 @@ function PropertyDetailsSelector({ selectedPropertyDetail, onPropertyDetailChang
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>Property details</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id="CustomFilter.PropertyDetails.title" />
+        </h3>
         <button onClick={onReset} className={css.resetButton}>
           Reset
         </button>
@@ -36,7 +39,9 @@ function PropertyDetailsSelector({ selectedPropertyDetail, onPropertyDetailChang
             }`}
             onClick={() => handleAmenityToggle(property.id)}
           >
-            <span className={css.amenityName}>{property.name}</span>
+            <span className={css.amenityName}>
+              <FormattedMessage id={property.name} />
+            </span>
           </button>
         ))}
       </div>

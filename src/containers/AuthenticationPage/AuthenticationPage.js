@@ -103,7 +103,7 @@ export const SocialLoginButtonsMaybe = props => {
     <div className={css.idpButtons}>
       <div className={css.socialButtonsOr}>
         <span className={css.socialButtonsOrText}>
-          <FormattedMessage id="AuthenticationPage.or1" />
+          <FormattedMessage id="AuthenticationPage.or" />
         </span>
       </div>
       <div className={css.idpButtonsInner}>
@@ -112,9 +112,9 @@ export const SocialLoginButtonsMaybe = props => {
             <SocialLoginButton onClick={() => authWithGoogle()}>
               <span className={css.buttonIcon}>{GoogleLogo}</span>
               {isLogin ? (
-                <FormattedMessage id="AuthenticationPage.loginWithGoogle1" />
+                <FormattedMessage id="AuthenticationPage.loginWithGoogle" />
               ) : (
-                <FormattedMessage id="AuthenticationPage.signupWithGoogle1" />
+                <FormattedMessage id="AuthenticationPage.signupWithGoogle" />
               )}
             </SocialLoginButton>
           </div>
@@ -124,9 +124,9 @@ export const SocialLoginButtonsMaybe = props => {
             <SocialLoginButton onClick={() => authWithFacebook()}>
               <span className={css.buttonIcon}>{FacebookLogo}</span>
               {isLogin ? (
-                <FormattedMessage id="AuthenticationPage.loginWithFacebook1" />
+                <FormattedMessage id="AuthenticationPage.loginWithFacebook" />
               ) : (
-                <FormattedMessage id="AuthenticationPage.signupWithFacebook1" />
+                <FormattedMessage id="AuthenticationPage.signupWithFacebook" />
               )}
             </SocialLoginButton>
           </div>
@@ -313,13 +313,19 @@ export const AuthenticationForms = props => {
       {isLogin ? (
         <div className={css.signUpLink}>
           <p className={css.signUpLinkText}>
-            Don't have an account? <NamedLink name="SignupPage">Sign up</NamedLink>
+            <FormattedMessage id="AuthenticationPage.dontHaveAccount" /> {' '}
+            <NamedLink name="SignupPage">
+              <FormattedMessage id="AuthenticationPage.signupLinkText" />
+            </NamedLink>
           </p>
         </div>
       ) : (
         <div className={css.signUpLink}>
           <p className={css.signUpLinkText}>
-            Already have an account? <NamedLink name="LoginPage">Login</NamedLink>
+            <FormattedMessage id="AuthenticationPage.alreadyHaveAccount" /> {' '}
+            <NamedLink name="LoginPage">
+              <FormattedMessage id="AuthenticationPage.loginLinkText" />
+            </NamedLink>
           </p>
         </div>
       )}

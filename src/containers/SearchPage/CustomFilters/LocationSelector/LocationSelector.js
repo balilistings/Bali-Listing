@@ -5,11 +5,12 @@ import { Form } from '../../../../components';
 import FilterLocation from '../../../PageBuilder/Primitives/SearchCTA/FilterLocation/FilterLocation';
 import EventBus from '../../../../util/EventBus';
 import { mapDetails } from './helper';
+import { FormattedMessage } from 'react-intl';
 
 const locations = [
   {
     id: 'nearBy',
-    name: 'Nearby me',
+    name: 'LocationFilter.nearby',
   },
   {
     id: 'canggu',
@@ -32,7 +33,7 @@ const locations = [
   {
     id: 'umalas',
     name: 'Umalas',
-    mapNameToUse: 'Jl. Umalas, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali, Indonesia',
+    mapNameToUse: 'Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali, Indonesia',
     mapDetails: mapDetails['umalas'],
   },
   {
@@ -66,7 +67,6 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
 
   const handleLocationsClick = async location => {
     try {
-      // console.log('called', location);
       setIsActive(location);
       if (location.id === 'nearBy') {
         EventBus.emit('selectPrediction', {
@@ -92,7 +92,6 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
       mapDetails[(isActive?.id)] &&
       location.selectedPlace.address === mapDetails[(isActive?.id)]['place_name_en-GB']
     ) {
-      // console.log('location', location);
     } else {
       onLocationChange(location);
     }
@@ -101,7 +100,9 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
   return (
     <div className={css.container}>
       <div className={css.header}>
-        <h3 className={css.title}>Location</h3>
+        <h3 className={css.title}>
+          <FormattedMessage id="PageBuilder.SearchCTA.location" />
+        </h3>
         <button onClick={handleReset} className={css.resetButton}>
           Reset
         </button>
@@ -135,7 +136,7 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
                       }`}
                       onClick={() => handleLocationsClick(location)}
                     >
-                      {location.name}
+                      {location.id === 'nearBy' ? <FormattedMessage id={location.name} /> : location.name}
                     </button>
                   ))}
                 </div>

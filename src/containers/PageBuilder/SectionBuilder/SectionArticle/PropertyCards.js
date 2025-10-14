@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './PropertyCards.module.css';
 import IconCollection from '../../../../components/IconCollection/IconCollection';
 import Slider from 'react-slick';
-import { useDispatch, useSelector } from 'react-redux';
+import useDisableBodyScrollOnSwipe from '../../../../util/useDisableBodyScrollOnSwipe';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { getListingsById } from '../../../../ducks/marketplaceData.duck';
 import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
@@ -14,6 +15,7 @@ import { handleToggleFavorites } from '../../../../util/userFavorites';
 import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import classNames from 'classnames';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -295,26 +297,49 @@ export const customLocationBounds = [
   },
 ];
 
+const CardSlider = props => {
+  const { sliderSettings, images, title } = props;
+  const setSliderNode = useDisableBodyScrollOnSwipe();
+  const sliderRef = useCallback(
+    element => {
+      if (element && element.innerSlider && element.innerSlider.list) {
+        setSliderNode(element.innerSlider.list);
+      }
+    },
+    [setSliderNode]
+  );
+
+  return (
+    <Slider {...sliderSettings} ref={sliderRef} className={styles.slider}>
+      {images.map((img, imgIdx) => (
+        <img
+          src={img}
+          alt={title}
+          className={styles.image + ' ' + styles.imageFade}
+          key={imgIdx}
+        />
+      ))}
+    </Slider>
+  );
+};
+
 const PropertyCards = () => {
-  const state = useSelector(state => state);
-  const {
-    featuredListingIds,
-    featuredListingsInProgress,
-    featuredListingsError,
-  } = state.LandingPage;
-  const currentUser = useSelector(state => state.user.currentUser);
-  const l = getListingsById(state, featuredListingIds);
+  const { featuredListingIds, featuredListingsInProgress } = useSelector(state => state.LandingPage, shallowEqual);
+  const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
+  const entities = useSelector(state => state.marketplaceData.entities, shallowEqual);
+  const listings = getListingsById(entities, featuredListingIds);
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
+
   const [activeTab, setActiveTab] = useState('canggu');
-  // const [likedCards, setLikedCards] = useState(cards.map(card => card.liked));
   const [underlineStyle, setUnderlineStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
+  const intl = useIntl();
   const history = useHistory();
   const routeLocation = useLocation();
   const routes = useRouteConfiguration();
-
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-  const listings = isMobile ? l.slice(0, 2) : l;
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -488,6 +513,10 @@ const PropertyCards = () => {
                 price = p.amount / 100;
               }
 
+              if (needPriceConversion) {
+                price = price * USDConversionRate;
+              }
+
               const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
                 card.id.uuid
               );
@@ -515,16 +544,7 @@ const PropertyCards = () => {
                   key={card.id.uuid}
                 >
                   <div className={styles.imageWrapper}>
-                    <Slider {...cardSliderSettings} className={styles.slider}>
-                      {imagesUrls.map((img, imgIdx) => (
-                        <img
-                          src={img}
-                          alt={title}
-                          className={styles.image + ' ' + styles.imageFade}
-                          key={imgIdx}
-                        />
-                      ))}
-                    </Slider>
+                    <CardSlider sliderSettings={cardSliderSettings} images={imagesUrls} title={title} />
                     <button 
                       className={classNames(styles.wishlistButton, isFavorite ? styles.active : '')} 
                       onClick={onToggleFavorites}>
@@ -536,7 +556,7 @@ const PropertyCards = () => {
                       <div className={styles.tags}>
                         {tags?.map(tag => (
                           <span className={styles.tag} key={tag}>
-                            {tag}
+                            {intl.formatMessage({ id: tag })}
                           </span>
                         ))}
                         {!!Freehold && (
@@ -548,7 +568,7 @@ const PropertyCards = () => {
                           params={{ id: author.id.uuid }}
                         >
                           <span className={styles.listedBy}>
-                            Listed by:{' '}
+                            {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle'})}:{' '}
                             <span className={styles.listedByName}>
                               {author.attributes.profile.displayName}
                             </span>
@@ -578,13 +598,12 @@ const PropertyCards = () => {
                         <div className={styles.icons}>
                           {!!bedrooms && (
                             <span className={styles.iconItem}>
-                              <Icon type="bed" /> {bedrooms} bedroom
-                              {bedrooms > 1 ? 's' : ''}
+                              <Icon type="bed" /> {bedrooms} {intl.formatMessage({ id: 'ListingCard.bedroom' }, { count: bedrooms })}
                             </span>
                           )}
                           {!!bathrooms && (
                             <span className={styles.iconItem}>
-                              <Icon type="bath" /> {bathrooms} bathroom{bathrooms > 1 ? 's' : ''}
+                              <Icon type="bath" /> {bathrooms} {intl.formatMessage({ id: 'ListingCard.bathroom' }, { count: bathrooms })}
                             </span>
                           )}
                           {!!landsize && isLand && (
@@ -600,11 +619,15 @@ const PropertyCards = () => {
                         </div>
                         <div className={styles.price}>
                           <span className={styles.priceValue}>
-                            {formatPriceInMillions(price)} IDR
+                            {formatPriceInMillions(price)} {needPriceConversion ? "USD" : "IDR"}
                           </span>
                           {isRentals && (
                             <span className={styles.priceUnit}>
-                              {monthprice ? '/ monthly' : weekprice ? '/ weekly' : '/ yearly'}
+                              {monthprice 
+                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' }) 
+                                : weekprice 
+                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' }) 
+                                : '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' })}
                             </span>
                           )}
                         </div>
@@ -621,7 +644,7 @@ const PropertyCards = () => {
         className={styles.browseAllButton}
         onClick={() => history.push('/s?pub_categoryLevel1=rentalvillas')}
       >
-        Browse all listings
+        <FormattedMessage id="FeaturedListing.browseAllListings" />
       </button>
     </div>
   );

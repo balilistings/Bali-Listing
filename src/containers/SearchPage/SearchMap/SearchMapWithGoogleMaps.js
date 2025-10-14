@@ -242,8 +242,9 @@ class SearchMapPriceLabelWithOverlay extends Component {
     const hasSameRefreshToken =
       this.props.mapComponentRefreshToken === nextProps.mapComponentRefreshToken;
     const hasSameRentPeriodParam = this.props.rentPeriodParam === nextProps.rentPeriodParam;
+    const hasSameCurrencyConversion = this.props.currencyConversion?.selectedCurrency === nextProps.currencyConversion?.selectedCurrency;
 
-    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken && hasSameRentPeriodParam);
+    return !(isSameListing && hasSamePrice && hasSameActiveStatus && hasSameRefreshToken && hasSameRentPeriodParam && hasSameCurrencyConversion);
   }
 
   render() {
@@ -259,6 +260,7 @@ class SearchMapPriceLabelWithOverlay extends Component {
       config,
       rentPeriodParam,
       location,
+      currencyConversion,
     } = this.props;
 
     return (
@@ -277,6 +279,7 @@ class SearchMapPriceLabelWithOverlay extends Component {
           config={config}
           rentPeriodParam={rentPeriodParam}
           location={location}
+          currencyConversion={currencyConversion}
         />
       </CustomOverlayView>
     );
@@ -341,6 +344,7 @@ const PriceLabelsAndGroups = props => {
     config,
     rentPeriodParam,
     location,
+    currencyConversion,
   } = props;
   const listingArraysInLocations = reducedToArray(groupedByCoordinates(listings));
   const priceLabels = listingArraysInLocations.reverse().map(listingArr => {
@@ -377,6 +381,7 @@ const PriceLabelsAndGroups = props => {
           config={config}
           rentPeriodParam={rentPeriodParam}
           location={location}
+          currencyConversion={currencyConversion}
         />
       );
     }
@@ -397,7 +402,8 @@ const PriceLabelsAndGroups = props => {
         listings={listingArr}
         onListingClicked={onListingClicked}
         mapComponentRefreshToken={mapComponentRefreshToken}
-      />
+        currencyConversion={currencyConversion}
+        />
     );
   });
   return priceLabels;
@@ -416,6 +422,7 @@ const InfoCardComponent = props => {
     config,
     onClose,
     isMobile,
+    currencyConversion,
   } = props;
   const listingsArray = Array.isArray(infoCardOpen) ? infoCardOpen : [infoCardOpen];
 
@@ -440,6 +447,7 @@ const InfoCardComponent = props => {
           createURLToListing={createURLToListing}
           onClose={onClose}
           config={config}
+          currencyConversion={currencyConversion}
         />
       </div>
     );
@@ -502,6 +510,7 @@ const InfoCardComponent = props => {
         onClose={onClose}
         config={config}
         caretPosition={caretPosition}
+        currencyConversion={currencyConversion}
       />
     </CustomOverlayView>
   );
@@ -694,6 +703,7 @@ class SearchMapWithGoogleMaps extends Component {
       createURLToListing,
       config,
       location,
+      currencyConversion,
     } = this.props;
     
     const rentPeriodParam = this.getRentPeriodParam();
@@ -716,6 +726,7 @@ class SearchMapWithGoogleMaps extends Component {
             config={config}
             rentPeriodParam={rentPeriodParam}
             location={location}
+            currencyConversion={currencyConversion}
           />
         ) : null}
         {this.map ? (
@@ -728,6 +739,7 @@ class SearchMapWithGoogleMaps extends Component {
             config={config}
             onClose={this.props.onClose}
             isMobile={this.state.isMobile}
+            currencyConversion={currencyConversion}
           />
         ) : null}
       </div>

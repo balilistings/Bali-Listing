@@ -213,6 +213,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
+  text-transform: capitalize;
 }
 
 .tag {
@@ -626,12 +627,12 @@
 
 .wishlistButton {
   backdrop-filter: blur(9.399999618530273px);
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   border-radius: 25px;
   background-color: #0202020D;
-  top: 18px;
-  right: 18px;
+  top: 15px;
+  right: 15px;
   position: absolute;
   z-index: 2;
   cursor: pointer;

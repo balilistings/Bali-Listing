@@ -17,6 +17,7 @@ import LandTitleSelector from './LandTitleSelector/LandTitleSelector';
 import LandZoneSelector from './LandZoneSelector/LandZoneSelector';
 import { useHistory } from 'react-router-dom';
 import { IconCollection } from '../../../components';
+import { FormattedMessage } from 'react-intl';
 
 // Configuration for which filters each category needs
 const categoryFilterConfig = {
@@ -712,8 +713,8 @@ function CustomFilters({
             <SimplePriceSelector
               priceRange={landSizeRange}
               onPriceRangeChange={handleLandSizeRangeChange}
-              title="Land size"
-              description="Choose your preferred range in square meters"
+              title="CustomFilter.LandSize.title"
+              description="PriceFilter.landDescription"
               formatValue={value => `${value} m²`}
               min={100}
               max={50000}
@@ -725,7 +726,7 @@ function CustomFilters({
           {availableFilters.includes('simplePrice') && (
             <SimplePriceSelector
               priceRange={simplePriceRange}
-              description="Select your price range (in millions IDR)"
+              description="PriceFilter.simplePriceDescription"
               onPriceRangeChange={handleSimplePriceRangeChange}
               min={1000000}
               max={999000000000}
@@ -820,7 +821,7 @@ function CustomFilters({
             Reset All
           </button>
           <button onClick={onClose} className={css.showListingsButton}>
-            Show {resultsCount} listings
+            <FormattedMessage id="CustomFilters.showListingsButton" values={{ resultsCount }} />
           </button>
         </div>
       </div>

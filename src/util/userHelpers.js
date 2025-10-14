@@ -106,6 +106,7 @@ export const getPropsForCustomUserFieldInputs = (
   userType = null,
   isSignup = true
 ) => {
+  
   return (
     userFieldsConfig?.reduce((pickedFields, fieldConfig) => {
       const { key, userTypeConfig, schemaType, scope, saveConfig = {} } = fieldConfig || {};
@@ -197,6 +198,8 @@ export const hasPermissionToViewData = currentUser => {
  * @returns {Boolean} true if currentUser has been approved (state is 'active').
  */
 export const isUserAuthorized = currentUser => currentUser?.attributes?.state === 'active';
+
+export const isUserProvider = currentUser => currentUser?.attributes?.profile?.publicData?.userType === 'provider';
 
 /**
  * Get the user type configuration for the current user's user type

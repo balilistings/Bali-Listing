@@ -60,7 +60,7 @@ const CustomFieldEnum = props => {
         const key = optionConfig.key;
         return (
           <option key={key} value={key}>
-            {optionConfig.label}
+            {intl.messages[optionConfig.label] ? intl.formatMessage({ id: optionConfig.label }): optionConfig.label}
           </option>
         );
       })}
@@ -105,11 +105,11 @@ const CustomFieldText = props => {
 
   const customPlaceholder =
     name === 'pub_companyname'
-      ? 'Your company name'
+      ? intl.formatMessage({ id: 'SignupForm.placeholderCompanyName' })
       : name === 'pub_company_address'
-      ? 'Your company address'
+      ? intl.formatMessage({ id: 'SignupForm.placeholderCompanyAddress' })
       : name === 'pub_company_registration'
-      ? 'Business number'
+      ? intl.formatMessage({ id: 'SignupForm.placeholderBusinessRegistrationNumber' })
       : name === 'pub_id_card_nik'
       ? '3212345678990001'
       : name === 'pub_id_npwp_nik'

@@ -5,8 +5,8 @@ import { intlShape } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import * as validators from '../../util/validators';
 import { phoneNumberValid } from '../../util/phoneNumberValidators';
+import FieldPhoneNumberInputWithCountry from '../../components/FieldPhoneNumberInputWithCountry/FieldPhoneNumberInputWithCountry';
 
-import { FieldPhoneNumberInputWithCountry } from '../../components';
 
 /**
  * A component that renders the phone number field with country code selection.

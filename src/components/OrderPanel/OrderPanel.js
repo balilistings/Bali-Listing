@@ -39,6 +39,7 @@ import PriceVariantPicker from './PriceVariantPicker/PriceVariantPicker';
 import css from './OrderPanel.module.css';
 
 import { types as sdkTypes } from '../../util/sdkLoader';
+import { useSelector } from 'react-redux';
 
 const { Money } = sdkTypes;
 
@@ -142,6 +143,10 @@ const PriceMaybe = props => {
   } = props;
   const { listingType, unitType } = publicData || {};
 
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
+
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
   const showPrice = displayPrice(foundListingTypeConfig);
   const isPriceVariationsInUse = !!publicData?.priceVariationsEnabled;
@@ -153,8 +158,15 @@ const PriceMaybe = props => {
 
   // Get formatted price or currency code if the currency does not match with marketplace currency
   const { formattedPrice, priceTitle } = priceData(price, marketplaceCurrency, intl);
+
+  const convertedPrice = new Money(price.amount, price.currency);
+  if (needPriceConversion) {
+    convertedPrice.amount *= USDConversionRate;
+    convertedPrice.currency = 'USD';
+  }
+
   const priceValue = (
-    <span className={css.priceValue}>{formatMoneyIfSupportedCurrency(price, intl)}</span>
+    <span className={css.priceValue}>{formatMoneyIfSupportedCurrency(convertedPrice, intl)}</span>
   );
   const pricePerUnit = (
     <span className={css.perUnit}>
@@ -224,7 +236,7 @@ const hasValidPriceVariants = priceVariants => {
   return variantsHaveNames && namesAreUnique;
 };
 
-const preparePriceTabs = (publicData, marketplaceCurrency) => {
+const preparePriceTabs = (publicData, marketplaceCurrency, intl) => {
   if (publicData.categoryLevel1 === 'villaforsale' || publicData.categoryLevel1 === 'landforsale') {
     return [];
   }
@@ -242,20 +254,23 @@ const preparePriceTabs = (publicData, marketplaceCurrency) => {
         item === 'weekly' ? 'weekprice' : item === 'monthly' ? 'monthprice' : 'yearprice';
       const price = publicData?.[priceKey] || null;
 
+      // Use translated labels with the specified prefix
+      const translationKey = `PageBuilder.SearchCTA.PriceFilter.${item}`;
+
       return {
         key: item,
-        label: item.charAt(0).toUpperCase() + item.slice(1).toLowerCase(),
+        label: intl.formatMessage({ id: translationKey }),
         price: price ? new Money(price * 100, marketplaceCurrency) : null,
       };
     });
 };
 
 // Helper function to check if a listing is available now based on availableper value
-const isAvailableNow = (availableper) => {
+const isAvailableNow = availableper => {
   // Handle legacy "yes"/"no" values
   if (availableper === 'yes') return true;
   if (availableper === 'no') return false;
-  
+
   // Handle date strings (ISO format: "YYYY-MM-DD")
   if (typeof availableper === 'string' && availableper.match(/^\d{4}-\d{2}-\d{2}$/)) {
     const today = new Date();
@@ -264,7 +279,7 @@ const isAvailableNow = (availableper) => {
     availableDate.setHours(0, 0, 0, 0);
     return availableDate <= today;
   }
-  
+
   return false;
 };
 
@@ -273,21 +288,25 @@ const getAvailabilityDisplay = (availableper, intl) => {
   // Handle legacy "yes"/"no" values
   if (availableper === 'yes') return 'Available Now!';
   if (availableper === 'no') return 'Available soon!';
-  
+
   // Handle date strings (ISO format: "YYYY-MM-DD")
   if (typeof availableper === 'string' && availableper.match(/^\d{4}-\d{2}-\d{2}$/)) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const availableDate = new Date(availableper);
     availableDate.setHours(0, 0, 0, 0);
-    
+
     if (availableDate <= today) {
       return 'Available Now!';
     } else {
-      return `Available from ${intl.formatDate(availableDate, { month: 'short', day: 'numeric', year: 'numeric' })}`;
+      return `Available from ${intl.formatDate(availableDate, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })}`;
     }
   }
-  
+
   // Default case
   return 'Available soon!';
 };
@@ -338,10 +357,16 @@ const OrderPanel = props => {
   const intl = useIntl();
   const location = useLocation();
   const history = useHistory();
-  const [tabs, setTabs] = useState(
-    preparePriceTabs(props.listing?.attributes?.publicData, props.marketplaceCurrency)
+  const tabs = preparePriceTabs(
+    props.listing?.attributes?.publicData,
+    props.marketplaceCurrency,
+    intl
   );
   const [selectedTab, setSelectedTab] = useState(tabs[tabs.length - 1]);
+
+    const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
 
   useEffect(() => {
     setMounted(true);
@@ -505,7 +530,11 @@ const OrderPanel = props => {
 
   const handleWhatsappClick = () => {
     if (!currentUser) {
-      history.push('/login');
+      const currentUrl = window.location.pathname + window.location.search;
+      history.push({
+        pathname: '/login',
+        state: { from: currentUrl }
+      });
       return;
     }
 
@@ -518,19 +547,19 @@ const OrderPanel = props => {
       const hostUrl = `${window.location.protocol}//${window.location.host}`;
       const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${currentUrl}. Can we discuss details?`;
       const encodedMessage = encodeURIComponent(message);
-      
+
       const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
       window.open(whatsappUrl, '_blank');
-      
+
       if (window.gtag) {
         window.gtag('event', 'click_contact_owner', {
-          'category': 'engagement',
-          'listing_id': listing.attributes.id,
-          'clicker': currentUser.attributes.email,
-          'contact_value': 1
-        });        
+          category: 'engagement',
+          listing_id: listing.attributes.id,
+          clicker: currentUser.attributes.email,
+          contact_value: 1,
+        });
       }
-      
+
       if (window.fbq) {
         fbq('track', 'Click Contact Owner', {
           listing_id: listing.id,
@@ -541,13 +570,13 @@ const OrderPanel = props => {
   };
 
   const listingIsAvailableNow = isAvailableNow(availableper);
-  const availabilityDisplayText = getAvailabilityDisplay(availableper, intl);
+  // const availabilityDisplayText = getAvailabilityDisplay(availableper, intl);
 
   return (
     <div className={classes}>
       {listingIsAvailableNow && (
         <div className={classNames(css.availableNowButton, css.availableNowButtonDesktop)}>
-          Available Now!
+          {intl.formatMessage({ id: 'OrderPanel.availableNow' })}
         </div>
       )}
       <ModalInMobile
@@ -583,7 +612,7 @@ const OrderPanel = props => {
             ))}
           </div>
         )}
-        <h4 className={css.priceHeading}>Price</h4>
+        <h4 className={css.priceHeading}>{intl.formatMessage({ id: 'OrderPanel.priceTitle' })}</h4>
         <PriceMaybe
           price={hideTabs ? price : selectedTab?.price}
           publicData={publicData}
@@ -596,11 +625,11 @@ const OrderPanel = props => {
         )} */}
         {priceperare && (
           <div className={css.availableFrom}>
-            Price per are:{' '}
+            {intl.formatMessage({ id: 'OrderPanel.pricePerAre' })}:{' '}
             {formatMoneyIfSupportedCurrency(
               new Money(
-                convertUnitToSubUnit(priceperare, unitDivisor(marketplaceCurrency)),
-                marketplaceCurrency
+                convertUnitToSubUnit(needPriceConversion ? Math.ceil(priceperare * USDConversionRate) : priceperare, unitDivisor(marketplaceCurrency)),
+                selectedCurrency
               ),
               intl
             )}
@@ -693,7 +722,7 @@ const OrderPanel = props => {
           <div>
             {listingIsAvailableNow && (
               <div className={classNames(css.availableNowButton, css.availableNowButtonMobile)}>
-                Available Now!
+                {intl.formatMessage({ id: 'OrderPanel.availableNow' })}
               </div>
             )}
             {!hideTabs && (
@@ -761,7 +790,11 @@ const OrderPanel = props => {
                           fill="white"
                         />
                       </svg>
-                      Contact {agentorowner === 'agent' ? ' Agent' : 'Owner'}
+                      {agentorowner === 'agent' ? (
+                        <FormattedMessage id="OrderPanel.contactAgent" />
+                      ) : (
+                        <FormattedMessage id="OrderPanel.contactOwner" />
+                      )}
                     </>
                   )}
                 </PrimaryButton>

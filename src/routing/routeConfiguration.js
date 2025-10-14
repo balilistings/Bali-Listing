@@ -15,6 +15,9 @@ const pageDataLoadingAPI = getPageDataLoadingAPI();
 const AuthenticationPage = loadable(() => import(/* webpackChunkName: "AuthenticationPage" */ '../containers/AuthenticationPage/AuthenticationPage'));
 const CheckoutPage = loadable(() => import(/* webpackChunkName: "CheckoutPage" */ '../containers/CheckoutPage/CheckoutPage'));
 const CMSPage = loadable(() => import(/* webpackChunkName: "CMSPage" */ '../containers/CMSPage/CMSPage'));
+const SingularBlogPage = loadable(() =>
+  import(/* webpackChunkName: "SingularBlogPage" */ '../containers/BlogPage/BlogPage')
+);
 const ContactDetailsPage = loadable(() => import(/* webpackChunkName: "ContactDetailsPage" */ '../containers/ContactDetailsPage/ContactDetailsPage'));
 const EditListingPage = loadable(() => import(/* webpackChunkName: "EditListingPage" */ '../containers/EditListingPage/EditListingPage'));
 const EmailVerificationPage = loadable(() => import(/* webpackChunkName: "EmailVerificationPage" */ '../containers/EmailVerificationPage/EmailVerificationPage'));
@@ -72,7 +75,8 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
   const isPrivateMarketplace = accessControlConfig?.marketplace?.private === true;
   const authForPrivateMarketplace = isPrivateMarketplace ? { auth: true } : {};
   
-  return [
+  // Base routes without locale prefix
+  const baseRoutes = [
     {
       path: '/',
       name: 'LandingPage',
@@ -84,6 +88,12 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'CMSPage',
       component: CMSPage,
       loadData: pageDataLoadingAPI.CMSPage.loadData,
+    },
+    {
+      path: '/blog/:blogId',
+      name: 'SingularBlogPage',
+      component: SingularBlogPage,
+      loadData: pageDataLoadingAPI.SingularBlogPage.loadData,
     },
     // NOTE: when the private marketplace feature is enabled, the '/s' route is disallowed by the robots.txt resource.
     // If you add new routes that start with '/s*' (e.g. /support), you should add them to the robotsPrivateMarketplace.txt file.
@@ -411,6 +421,8 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       component: PreviewResolverPage ,
     },
   ];
+
+  return baseRoutes;
 };
 
 export default routeConfiguration;
