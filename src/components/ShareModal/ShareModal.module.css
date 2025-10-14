@@ -5,22 +5,19 @@
   composes: scrollLayer from '../Modal/Modal.module.css';
 
   align-items: center !important;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+
 }
 
 .customCloseButton {
   position: absolute;
-  top: 24px;
-  right: 24px;
   width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f0f0f0;
   border-radius: 50%;
   border: none;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
 
 .customCloseButton:hover {
@@ -99,6 +96,10 @@
   font-family: Istok Web;
 }
 
+.headerCenter svg {
+  fill: transparent !important;
+}
+
 .shareModalHeaderContent {
   display: flex;
   align-items: center;
@@ -116,6 +117,7 @@
   font-size: 18px;
   font-weight: 700;
   color: black;
+  padding-top: 2px;
 }
 
 .shareModalDescription {

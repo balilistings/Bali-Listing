@@ -58,9 +58,9 @@ const ShareModal = ({ isOpen, onClose }) => {
             <div className={css.headerSpacer} />
             <div className={css.headerCenter}>
               <IconShare color="black" />
-              <span className={css.shareModalLabel}>
+              <div className={css.shareModalLabel}>
                 <FormattedMessage id="ListingPage.share.share" />
-              </span>
+              </div>
             </div>
             <div className={css.headerSpacer} />
           </div>
