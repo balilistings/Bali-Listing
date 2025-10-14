@@ -28,7 +28,7 @@ const Markdown = ({ content }) => {
   return <div className={css.markdownContent}>{result}</div>;
 };
 
-const BlogBlock = ({ block, isWide }) => {
+const BlogBlock = ({ block, isWide, hideImage = false }) => {
   const { media, title, text, callToAction } = block;
   const image = media?.image;
   const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
@@ -46,7 +46,7 @@ const BlogBlock = ({ block, isWide }) => {
 
   return (
     <div className={css.blogBlock}>
-      {image?.id && (
+      {!hideImage && image?.id && (
         <div className={imageWrapperClass}>
           <ResponsiveImage
             alt={media.alt || title?.content}
@@ -101,6 +101,10 @@ const BlogPage = props => {
     .split(' - ');
   const blocks = section.blocks || [];
   const firstImageBlockIndex = blocks.findIndex(b => b.media?.image);
+  const firstImageBlock = firstImageBlockIndex > -1 ? blocks[firstImageBlockIndex] : null;
+  const firstImage = firstImageBlock?.media?.image;
+  const firstImageAlt = firstImageBlock?.media?.alt || firstImageBlock?.title?.content;
+  const firstImageVariants = firstImage ? Object.keys(firstImage.attributes?.variants || {}) : [];
 
   return (
     <Page
@@ -130,6 +134,19 @@ const BlogPage = props => {
               </div>
             </div>
 
+            {firstImage && (
+              <div className={css.firstImageWrapper}>
+                <div className={css.wideImageWrapper}>
+                  <ResponsiveImage
+                    alt={firstImageAlt}
+                    image={firstImage}
+                    variants={firstImageVariants}
+                    className={css.blockImage}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className={css.sidebar}>
               <SocialMediaLink
                 platform="instagram"
@@ -149,13 +166,17 @@ const BlogPage = props => {
             </div>
 
             <div className={css.content}>
-              {blocks.map((block, index) => (
-                <BlogBlock
-                  key={block.blockName || index}
-                  block={block}
-                  isWide={index === firstImageBlockIndex}
-                />
-              ))}
+              {blocks.map((block, index) => {
+                const hideImage = index === firstImageBlockIndex;
+                return (
+                  <BlogBlock
+                    key={block.blockName || index}
+                    block={block}
+                    isWide={false}
+                    hideImage={hideImage}
+                  />
+                );
+              })}
             </div>
           </div>
         </div>
