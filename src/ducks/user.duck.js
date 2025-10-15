@@ -16,6 +16,8 @@ import { saveCookieConsent } from './cookieConsent.duck';
 export const CURRENT_USER_SHOW_REQUEST = 'app/user/CURRENT_USER_SHOW_REQUEST';
 export const CURRENT_USER_SHOW_SUCCESS = 'app/user/CURRENT_USER_SHOW_SUCCESS';
 export const CURRENT_USER_SHOW_ERROR = 'app/user/CURRENT_USER_SHOW_ERROR';
+export const CLEAR_FAVORITES_ON_PROFILE = 'app/user/CLEAR_FAVORITES_ON_PROFILE';
+export const REMOVE_FAVORITE_ON_PROFILE = 'app/user/REMOVE_FAVORITE_ON_PROFILE';
 
 export const CLEAR_CURRENT_USER = 'app/user/CLEAR_CURRENT_USER';
 
@@ -42,6 +44,15 @@ export const FETCH_CURRENT_USER_HAS_ORDERS_ERROR = 'app/user/FETCH_CURRENT_USER_
 export const SEND_VERIFICATION_EMAIL_REQUEST = 'app/user/SEND_VERIFICATION_EMAIL_REQUEST';
 export const SEND_VERIFICATION_EMAIL_SUCCESS = 'app/user/SEND_VERIFICATION_EMAIL_SUCCESS';
 export const SEND_VERIFICATION_EMAIL_ERROR = 'app/user/SEND_VERIFICATION_EMAIL_ERROR';
+
+export const clearFavoritesOnProfile = () => ({
+  type: CLEAR_FAVORITES_ON_PROFILE,
+});
+
+export const removeFavoriteOnProfile = listingId => ({
+  type: REMOVE_FAVORITE_ON_PROFILE,
+  payload: listingId,
+});
 
 // ================ Reducer ================ //
 
@@ -71,6 +82,8 @@ const initialState = {
   currentUserHasOrdersError: null,
   sendVerificationEmailInProgress: false,
   sendVerificationEmailError: null,
+
+  favorites: [],
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -331,6 +344,16 @@ export const fetchCurrentUserNotifications = () => (dispatch, getState, sdk) => 
  * @param {boolean} [options.afterLogin]          Fetch is no-op for unauthenticated users except after login() call
  * @param {boolean} [options.enforce]             Enforce the call even if the currentUser entity is freshly fetched.
  */
+export const selectCurrentUserFavorites = state => {
+  const currentUser = selectCurrentUser (state);
+  return currentUser?.attributes?.profile?.privateData?.favorites || []; 
+};
+
+export const selectHasFavorites = state => {
+  const favorites = selectCurrentUserFavorites (state);
+  return Array.isArray(favorites) && favorites.length > 0;
+};
+
 export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
   const state = getState();
   const { currentUserHasListings, currentUserShowTimestamp } = state.user || {};
@@ -440,7 +463,6 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
           dispatch(fetchCurrentUserHasOrders());
         }
       }
-
       // Make sure auth info is up to date
       dispatch(authInfo());
     })
@@ -452,7 +474,6 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
     });
 };
 
-
 export const sendVerificationEmail = () => (dispatch, getState, sdk) => {
   if (verificationSendingInProgress(getState())) {
     return Promise.reject(new Error('Verification email sending already in progress'));
@@ -463,3 +484,5 @@ export const sendVerificationEmail = () => (dispatch, getState, sdk) => {
     .then(() => dispatch(sendVerificationEmailSuccess()))
     .catch(e => dispatch(sendVerificationEmailError(storableError(e))));
 };
+
+export const selectCurrentUser = state => state?.user?.currentUser || null;

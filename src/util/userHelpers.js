@@ -260,7 +260,35 @@ export const showPaymentDetailsForUser = (config, currentUser) => {
  * @param {*} config Marketplace configuration
  * @param {*} currentUser API entity
  * @returns Object with attributes 'customer' and 'provider' and boolean values for each
+ * Check if current user is a provider based on various possible data locations
+ * @param {Object} currentUser API entity
+ * @returns {Boolean} true if current user is a provider
  */
+export const checkIsProvider = currentUser => {
+  if (!currentUser) return false;
+  
+  const publicData = currentUser?.attributes?.profile?.publicData || {};
+  
+  return (
+    publicData.userType === 'provider'
+  );
+};
+
+/**
+ * Check if current user is a customer based on various possible data locations
+ * @param {Object} currentUser API entity  
+ * @returns {Boolean} true if current user is a customer
+ */
+export const checkIsCustomer = currentUser => {
+  if (!currentUser) return false;
+  
+  const publicData = currentUser?.attributes?.profile?.publicData || {};
+  
+  return (
+    publicData.userType === 'customer'
+  );
+};
+
 export const getCurrentUserTypeRoles = (config, currentUser) => {
   const currentUserTypeConfig = getCurrentUserTypeConfig(config, currentUser);
   return (

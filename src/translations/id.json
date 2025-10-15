@@ -284,6 +284,7 @@
   "FilterForm.clear": "Hapus",
   "FilterForm.submit": "Terapkan",
   "FilterPlain.clear": "Hapus",
+  "Favorite Listings": "Daftar Listingan Favorit",
   "ImageCarousel.imageAltText": "foto daftar {index}/{count}",
   "ImageFromFile.couldNotReadFile": "Tidak dapat membaca file",
   "InboxPage.default-booking.accepted.status": "Diterima",

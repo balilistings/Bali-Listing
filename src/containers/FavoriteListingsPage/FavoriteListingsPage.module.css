@@ -1,0 +1,167 @@
+@import '../../styles/customMediaQueries.css';
+
+.root {
+}
+
+.messagePanel,
+.listingPanel {
+  margin: 24px auto 0 auto;
+
+  @media (--viewportMedium) {
+    margin: 48px auto 0 auto;
+  }
+
+  @media (--viewportLarge) {
+    margin: 72px auto 0 auto;
+  }
+
+  @media (--viewportXLarge) {
+    max-width: var(--contentMaxWidth);
+  }
+}
+
+.heading {
+  margin: 0 24px 24px 24px;
+
+  @media (--viewportMedium) {
+    margin: 0 24px 32px 24px;
+  }
+
+  @media (--viewportLarge) {
+    margin: 0 24px 32px 55px;
+  }
+}
+
+.listingCards {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 20px;
+  width: 100%;
+  padding: 0 24px;
+  justify-items: center;
+
+  @media (min-width: 550px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (--viewportMedium) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  @media (--viewportLarge) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  @media (--viewportXLarge) {
+    gap: 32px;
+  }
+}
+
+.removeAll {
+  display: flex;
+  border: none;
+  color: #eb2be8;
+  padding: 8px 0;
+  justify-content: flex-end;
+  margin-top: -80px;
+  margin-bottom: 40px;
+  margin-left: 1150px;
+}
+
+.removeAll:hover {
+  text-decoration: underline #eb2be8;
+  color: black;
+}
+
+.listingCard {
+  width: 100%;
+  max-width: 320px;
+  position: relative;
+}
+
+@media (--viewportLarge) {
+  .listingCard {
+    max-width: 425px;
+  }
+}
+
+@media (--viewportXLarge) {
+  .listingCard {
+    max-width: 320px;
+  }
+}
+
+.pagination {
+  margin: 40px auto 0 auto;
+  max-width: 1600px;
+  padding: 0 24px;
+
+  @media (--viewportLarge) {
+    padding: 0 48px;
+  }
+}
+
+.selectCircle {
+  position: absolute;
+  top: 30px;
+  left: 365px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selectCircle:hover {
+  border-color: #c922ce;
+  transform: scale(1.1);
+}
+
+.selectCircle.selected {
+  border-color: #c922ce;
+  background: #d81ee9;
+}
+
+.selectCircle.selected::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.removeSelected {
+  position: absolute;
+  top: 195px;
+  right: 88px;
+  z-index: 2;
+  border: none;
+  background: none;
+}
+
+.removeSelected img {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.removeSelected img:hover {
+  transform: scale(1.1);
+}

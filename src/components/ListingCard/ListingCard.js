@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -77,13 +78,36 @@ const sliderSettings = {
           <path
             fillRule="evenodd"
             clipRule="evenodd"
-            d="M9.5035 11.6908C9.42157 11.7728 9.37556 11.884 9.37556 12C9.37556 12.1159 9.42157 12.2271 9.5035 12.3091L13.8785 16.6841C13.9614 16.7614 14.0711 16.8035 14.1845 16.8015C14.2978 16.7995 14.406 16.7536 14.4861 16.6734C14.5663 16.5932 14.6122 16.4851 14.6142 16.3718C14.6162 16.2584 14.5741 16.1487 14.4968 16.0658L10.431 12L14.4968 7.93412C14.5741 7.85118 14.6162 7.74149 14.6142 7.62815C14.6122 7.5148 14.5663 7.40666 14.4861 7.32651C14.406 7.24635 14.2978 7.20043 14.1845 7.19843C14.0711 7.19643 13.9614 7.2385 13.8785 7.31578L9.5035 11.6908Z"
+            d="M9.5035 11.6908C9.42157 11.7728 9.37556 11.884 9.37556 12C9.37556 12.1159 9.42157 12.2271 9.5035 12.3091L13.8785 16.6841C13.9614 16.7614 14.0711 16.8035 14.1845 16.8015C14.2978 16.7995 14.406 16.7536 14.4861 16.6734C14.5663 16.5932 14.6122 16.4851 14.6142 16.3718C14.6162 16.2584 14.5741 16.1487 14.4968 16.0658L10.431 12L14.4968 7.93412C14.5741 7.85118 14.6162 7.74149 14.6142 7.62815C14.6142 7.5148 14.5663 7.40666 14.4861 7.32651C14.406 7.24635 14.2978 7.20043 14.1845 7.19843C14.0711 7.19643 13.9614 7.2385 13.8785 7.31578L9.5035 11.6908Z"
             fill="#231F20"
           />
         </svg>
       </span>
     </button>
   ),
+};
+
+// Helper function to get best available image variant
+const getBestImageUrl = (img) => {
+  if (!img || !img.attributes) return null;
+  
+  const variants = img.attributes.variants || {};
+  
+  // Priority order for variants
+  const variantPriority = [
+    'landscape-crop2x',
+    'scaled-small',
+  ];
+  
+  // Try each variant in order
+  for (const variantName of variantPriority) {
+    if (variants[variantName]?.url) {
+      return variants[variantName].url;
+    }
+  }
+  
+  // Fallback to direct URL
+  return img.attributes.url || null;
 };
 
 // Format price in millions if appropriate
@@ -228,6 +252,7 @@ export const ListingCard = props => {
     showAuthorInfo = true,
     currentUser,
     onUpdateFavorites,
+    showWishlistButton = true,
   } = props;
   const setSliderNode = useDisableBodyScrollOnSwipe();
   const sliderRef = useCallback(
@@ -240,6 +265,7 @@ export const ListingCard = props => {
   );
   const classes = classNames(rootClassName || css.root, className);
   const currentListing = ensureListing(listing);
+
   const id = currentListing.id.uuid;
   const { title = '', price: p, publicData } = currentListing.attributes;
   const slug = createSlug(title);
@@ -273,37 +299,43 @@ export const ListingCard = props => {
       }
     : null;
 
-  const imagesUrls = currentListing.images.map(
-    img => img.attributes.variants['landscape-crop2x']?.url
-  );
-  // Per-card slider settings
+  // ✅ FIXED: Process images with proper fallback chain
+  const imagesUrls = currentListing.images?.map(img => getBestImageUrl(img)).filter(Boolean) || [];
+
   const cardSliderSettings = {
     ...sliderSettings,
     infinite: imagesUrls.length > 1,
   };
 
+  const dispatch = useDispatch();
   const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
+
+  // SIMPLIFIED: Gunakan handleToggleFavorites langsung tanpa custom onUpdate
   const onToggleFavorites = e => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Panggil util handleToggleFavorites tanpa parameter onUpdateFavorites
     handleToggleFavorites({
       location: routeLocation,
       history,
       routes,
       currentUser,
       params: { id },
-      onUpdateFavorites: onUpdateFavorites,
+      onUpdateFavorites,
     })(isFavorite);
   };
 
   return (
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
-      <button
-        className={classNames(css.wishlistButton, isFavorite ? css.active : '')}
-        onClick={onToggleFavorites}
-      >
-        <IconCollection name="icon-waislist" />
-      </button>
+      {showWishlistButton && (
+        <button 
+          className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
+          onClick={onToggleFavorites}
+        >
+          <IconCollection name="icon-waislist" />
+        </button>
+      )}
 
       <div className={css.imageWrapper}>
         <Slider ref={sliderRef} {...cardSliderSettings} className={css.slider}>
@@ -320,12 +352,14 @@ export const ListingCard = props => {
             </span>
           ))}
           {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
-          <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
-            <span className={css.listedBy}>
-              {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle'})}:{' '}
-              <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
-            </span>
-          </NamedLink>
+          {author?.id?.uuid && (
+            <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
+              <span className={css.listedBy}>
+                {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle'})}:{' '}
+                <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
+              </span>
+            </NamedLink>
+          )}
         </div>
 
         <div className={css.mainInfo}>

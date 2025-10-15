@@ -484,6 +484,8 @@
   "FilterForm.clear": "Clear",
   "FilterForm.submit": "Apply",
   "FilterPlain.clear": "Clear",
+  "Favorite Listings": "Favorite Listings",
+  "FavoriteListingsPage.noResults": "No favorite listings found.",
   "ImageCarousel.imageAltText": "listing photo {index}/{count}",
   "ImageFromFile.couldNotReadFile": "Couldn't read file",
   "InboxPage.default-booking.accepted.status": "Accepted",
