@@ -5,6 +5,7 @@ import { storableError } from '../../util/errors';
 import * as log from '../../util/log';
 import { constructLocalizedPageAssets } from '../../util/localeAssetUtils';
 import { customLocationBounds } from '../PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
+import { util as sdkUtil } from '../../util/sdkLoader';
 
 export const ASSET_NAME = 'landing-page';
 
@@ -78,7 +79,12 @@ export const fetchFeaturedListings = (
       include: ['author', 'images'],
       'fields.listing': ['title', 'description', 'geolocation', 'price', 'publicData'],
       'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
-      'fields.image': ['variants.landscape-crop2x'],
+      'fields.image': ['variants.landscape-crop2x', 'variants.featured-listing'],
+      'imageVariant.featured-listing': sdkUtil.objectQueryString({
+        w: 640,
+        h: 480,
+        fit: 'scale'
+      }),
       pub_featured: true,
     });
 
