@@ -62,7 +62,7 @@ p {
 
 .tabs {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 30px;
   margin-bottom: 50px;
 }

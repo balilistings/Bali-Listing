@@ -321,3 +321,33 @@
 .ctaButton:hover {
   background-color: #e03ad1; /* Slightly darker pink */
 }
+
+.relatedArticlesSection {
+  margin-top: 80px;
+  margin-bottom: 80px;
+  grid-column: 1 / -1;
+  padding: 0 24px;
+
+  @media (--viewportMedium) {
+    padding: 0 112px;
+  }
+}
+
+.relatedArticlesTitle {
+  font-family: 'Istok Web', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #231f20;
+  text-align: center;
+  margin-bottom: 40px;
+
+  @media (--viewportMedium) {
+    font-size: 40px;
+  }
+}
+
+.relatedArticlesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 40px;
+}
