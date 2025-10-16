@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useHistory } from 'react-router-dom';
 import classNames from 'classnames';
-import { setCurrency } from '../../../../../ducks/currency.js';
+import { saveCurrency } from '../../../../../ducks/currency.js';
 import { useLocale, languageNames, useUpdateLocale } from '../../../../../context/localeContext.js';
 import { setMessages } from '../../../../../ducks/locale.duck.js';
 import { Menu, MenuLabel, MenuContent, MenuItem } from '../../../../../components/index.js';
@@ -29,7 +29,7 @@ const LanguageCurrencyMenu = ({ config, currentPage, scrollToBottom }) => {
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
 
   const handleCurrencyChange = currency => {
-    dispatch(setCurrency(currency));
+    dispatch(saveCurrency(currency));
   };
 
   const showCurrencyToggler =

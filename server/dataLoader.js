@@ -3,7 +3,7 @@ const fs = require('fs');
 const { URL } = require('node:url');
 const log = require('./log');
 const { getRootURL } = require('./api-util/rootURL');
-const { fetchConversionRate } = require('../src/ducks/currency');
+const { fetchConversionRate } = require('./api-util/currency');
 
 const { getSupportedLocales } = require('../src/util/translation');
 

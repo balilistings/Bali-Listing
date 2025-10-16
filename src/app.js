@@ -16,6 +16,7 @@ import { RouteConfigurationProvider } from './context/routeConfigurationContext'
 import { ConfigurationProvider } from './context/configurationContext';
 import { useLocale, getInitialLocale } from './context/localeContext';
 import { setLocale, setMessages } from './ducks/locale.duck';
+import { getInitialCurrency, setCurrency } from './ducks/currency.js';
 import { mergeConfig, addMissingTranslations } from './util/configHelpers';
 import { IntlProvider } from './util/reactIntl';
 import { includeCSSProperties } from './util/style';
@@ -65,27 +66,29 @@ const EnvironmentVariableWarning = loadable(() =>
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
-const LocaleInitializer = () => {
+const AppInitializers = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.currentUser);
-  const locale = useSelector(state => state.locale.locale);
 
   useEffect(() => {
-    if (!locale) {
-      const initialLocale = getInitialLocale(currentUser);
-      dispatch(setLocale(initialLocale));
+    // Initialize Locale
+    const initialLocale = getInitialLocale(currentUser);
+    dispatch(setLocale(initialLocale));
 
-      if (initialLocale !== 'en') {
-        import(`./translations/${initialLocale}.json`)
-          .then(messages => {
-            dispatch(setMessages(messages.default));
-          })
-          .catch(error => {
-            console.error('Failed to load translation', error);
-          });
-      }
+    if (initialLocale !== 'en') {
+      import(`./translations/${initialLocale}.json`)
+        .then(messages => {
+          dispatch(setMessages(messages.default));
+        })
+        .catch(error => {
+          console.error('Failed to load translation', error);
+        });
     }
-  }, [currentUser, locale, dispatch]);
+
+    // Initialize Currency
+    const initialCurrency = getInitialCurrency(currentUser);
+    dispatch(setCurrency(initialCurrency));
+  }, [currentUser, dispatch]);
 
   return null;
 };
@@ -162,7 +165,7 @@ export const ClientApp = props => {
       <Configurations appConfig={appConfig}>
         <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
           <HelmetProvider>
-            <LocaleInitializer />
+            <AppInitializers />
             <IncludeScripts config={appConfig} />
             <LocaleBrowserRouter>
               <Routes logLoadDataCalls={logLoadDataCalls} />
@@ -198,7 +201,7 @@ export const ServerApp = props => {
       <Configurations appConfig={appConfig}>
         <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
           <HelmetProvider context={helmetContext}>
-            <LocaleInitializer />
+            <AppInitializers />
             <IncludeScripts config={appConfig} />
             <LocaleStaticRouter location={url} context={context}>
               <Routes />
