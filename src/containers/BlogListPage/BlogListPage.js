@@ -15,8 +15,11 @@ import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import { ReactComponent as UserIcon } from '../../assets/usericon.svg';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
 
-const getInfoFromText = text => {
+export const getInfoFromText = text => {
   const dateRegex = /\*(\d{2}\/\d{2}\/\d{2})\*/;
+  const tagRegex = /--([^-]+)--/;
+  const authorRegex = /---([^-]+)---/;
+
   const dateMatch = text.match(dateRegex);
   let date = dateMatch ? dateMatch[1] : '';
 
@@ -29,16 +32,24 @@ const getInfoFromText = text => {
     date = `${dayOfMonth} ${monthName}, ${fullYear}`;
   }
 
+  const tagMatch = text.match(tagRegex);
+  const tag = tagMatch ? tagMatch[1] : '';
+
+  const authorMatch = text.match(authorRegex);
+  const author = authorMatch ? authorMatch[1] : '';
+
   const description = text
     .replace(dateRegex, '')
+    .replace(tagRegex, '')
+    .replace(authorRegex, '')
     .replace(/######/g, '')
     .trim();
 
-  return { date, description };
+  return { date, description, tag, author };
 };
 
-const BlogCard = ({ block }) => {
-  const { date, description } = getInfoFromText(block.text?.content || '');
+export const BlogCard = ({ block }) => {
+  const { date, description, tag, author } = getInfoFromText(block.text?.content || '');
   const image = block.media?.image;
   const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
 
@@ -57,12 +68,14 @@ const BlogCard = ({ block }) => {
       )}
       <div className={css.cardContent}>
         <div className={css.topMeta}>
-          {/* <div className={css.category}></div> */}
+          {tag && <div className={css.category}>{tag}</div>}
           <div className={css.meta}>
-            {/* <div className={css.author}>
-              <UserIcon />
-              <span>Wesley Silalahi</span>
-            </div> */}
+            {author && (
+              <div className={css.author}>
+                <UserIcon />
+                <span>{author}</span>
+              </div>
+            )}
             <div className={css.date}>
               <IconDate />
               <span>{date}</span>
@@ -86,7 +99,7 @@ const BlogListPage = props => {
     shallowEqual
   );
 
-  // const [activeTab, setActiveTab] = useState('All');
+  const [activeTag, setActiveTag] = useState('All');
 
   if (inProgress) {
     return <div className={css.root} />;
@@ -99,11 +112,12 @@ const BlogListPage = props => {
   const pageData = pageAssetsData?.[pageId]?.data;
   const blocks = pageData?.sections?.[0]?.blocks || [];
 
+  const allTags = ['All', ...new Set(blocks.map(block => getInfoFromText(block.text?.content || '').tag).filter(Boolean))];
+
+  const filteredBlocks = activeTag === 'All' ? blocks : blocks.filter(block => getInfoFromText(block.text?.content || '').tag === activeTag);
+
   // Extract meta information using the helper function
   const { title, description, schema, socialSharing } = extractPageMetadata(pageData, 'WebPage');
-
-  // TODO: Add tags for blog posts
-  // const tabs = ['All', 'Tips & tricks'];
 
   return (
     <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
@@ -116,19 +130,19 @@ const BlogListPage = props => {
           <h1 className={css.heroTitle}>Blog</h1>
         </div>
         <div className={css.content}>
-          {/* <div className={css.tabs}>
-            {tabs.map(tab => (
+          <div className={css.tabs}>
+            {allTags.map(tag => (
               <button
-                key={tab}
-                className={activeTab === tab ? css.activeTab : css.tab}
-                onClick={() => setActiveTab(tab)}
+                key={tag}
+                className={activeTag === tag ? css.activeTab : css.tab}
+                onClick={() => setActiveTag(tag)}
               >
-                {tab}
+                {tag}
               </button>
             ))}
-          </div> */}
+          </div>
           <div className={css.grid}>
-            {blocks.map((block, i) => (
+            {filteredBlocks.map((block, i) => (
               <BlogCard key={i} block={block} />
             ))}
           </div>

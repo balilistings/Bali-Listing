@@ -18,6 +18,7 @@ import { extractPageMetadata } from '../../util/seo';
 import css from './BlogPage.module.css';
 import { SocialMediaLink } from '../PageBuilder/Primitives/Link/SocialMediaLink.js';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
+import { BlogCard, getInfoFromText } from '../BlogListPage/BlogListPage.js';
 
 const Markdown = ({ content }) => {
   const result = unified()
@@ -95,10 +96,13 @@ const BlogPage = props => {
   );
 
   // Fallback to page section title if no meta title is available
-  const title = extractedTitle || section.title?.content;
-  const [dateString, author = 'Balilistings Team'] = section.description?.content
-    .replace('Published on ', '')
-    .split(' - ');
+  const title = section.title?.content || extractedTitle;
+  const [
+    dateString,
+    author = 'Balilistings Team',
+    currentBlogTag = '',
+  ] = section.description?.content.replace('Published on ', '').split(' - ');
+
   const blocks = section.blocks || [];
   const firstImageBlockIndex = blocks.findIndex(b => b.media?.image);
   const firstImageBlock = firstImageBlockIndex > -1 ? blocks[firstImageBlockIndex] : null;
@@ -106,9 +110,20 @@ const BlogPage = props => {
   const firstImageAlt = firstImageBlock?.media?.alt || firstImageBlock?.title?.content;
   const firstImageVariants = firstImage ? Object.keys(firstImage.attributes?.variants || {}) : [];
 
+  // Related articles logic
+  const allBlogBlocks = pageAssetsData?.blogList?.data?.sections?.[0]?.blocks || [];
+  const currentBlogPath = `/p/${blogId}`;
+
+  const taggedArticles = allBlogBlocks.filter(
+    block =>
+      getInfoFromText(block.text?.content || '').tag === currentBlogTag &&
+      block.callToAction?.href !== currentBlogPath
+  );
+  const relatedArticles = taggedArticles.sort(() => 0.5 - Math.random()).slice(0, 3);
+
   return (
     <Page
-      {...{ title, description, schema, socialSharing }}
+      {...{ title: extractedTitle, description, schema, socialSharing }}
       config={config}
       author={author}
       published={dateString}
@@ -178,6 +193,17 @@ const BlogPage = props => {
                 );
               })}
             </div>
+
+            {relatedArticles.length > 0 && (
+              <div className={css.relatedArticlesSection}>
+                <h2 className={css.relatedArticlesTitle}>Related Articles</h2>
+                <div className={css.relatedArticlesGrid}>
+                  {relatedArticles.map((block, i) => (
+                    <BlogCard key={i} block={block} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <CTABlock />
