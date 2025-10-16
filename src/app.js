@@ -3,8 +3,8 @@ import { any, string } from 'prop-types';
 
 import { HelmetProvider } from 'react-helmet-async';
 import { Provider, useSelector, useDispatch } from 'react-redux';
-import difference from 'lodash/difference';
 import mapValues from 'lodash/mapValues';
+import loadable from '@loadable/component';
 
 // Configs and store setup
 import defaultConfig from './config/configDefault';
@@ -16,12 +16,12 @@ import { RouteConfigurationProvider } from './context/routeConfigurationContext'
 import { ConfigurationProvider } from './context/configurationContext';
 import { useLocale, getInitialLocale } from './context/localeContext';
 import { setLocale, setMessages } from './ducks/locale.duck';
-import { mergeConfig } from './util/configHelpers';
+import { mergeConfig, addMissingTranslations } from './util/configHelpers';
 import { IntlProvider } from './util/reactIntl';
 import { includeCSSProperties } from './util/style';
 import { IncludeScripts } from './util/includeScripts';
 
-import { MaintenanceMode, CookieConsent } from './components';
+import { CookieConsent } from './components';
 
 // routing
 import routeConfiguration from './routing/routeConfiguration';
@@ -30,6 +30,15 @@ import { LocaleBrowserRouter, LocaleStaticRouter } from './routing/LocaleRouter'
 
 // Sharetribe Web Template uses English translations as default translations.
 import defaultMessages from './translations/en.json';
+
+const MaintenanceModeError = loadable(() =>
+  import(/* webpackChunkName: "MaintenanceModeError" */ './components/MaintenanceMode/MaintenanceModeError')
+);
+const EnvironmentVariableWarning = loadable(() =>
+  import(
+    /* webpackChunkName: "EnvironmentVariableWarning" */ './components/EnvironmentVariableWarning/EnvironmentVariableWarning'
+  )
+);
 
 // If you want to change the language of default (fallback) translations,
 // change the imports to match the wanted locale:
@@ -53,27 +62,6 @@ import defaultMessages from './translations/en.json';
 // The "./translations/en.json" has generic English translations
 // that should work as a default translation if some translation keys are missing
 // from the hosted translation.json (which can be edited in Console).
-
-// If translation key is missing from a locale's messages,
-// corresponding key will be added from `defaultMessages` (en.json)
-// to prevent missing translation key errors.
-const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) => {
-  const sourceKeys = Object.keys(sourceLangTranslations);
-  const targetKeys = Object.keys(targetLangTranslations);
-
-  // if there's no translations defined for target language, return source translations
-  if (targetKeys.length === 0) {
-    return sourceLangTranslations;
-  }
-  const missingKeys = difference(sourceKeys, targetKeys);
-
-  const addMissingTranslation = (translations, missingKey) => ({
-    ...translations,
-    [missingKey]: sourceLangTranslations[missingKey],
-  });
-
-  return missingKeys.reduce(addMissingTranslation, targetLangTranslations);
-};
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
@@ -128,64 +116,6 @@ const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
     <IntlProvider locale={locale} messages={finalMessages} textComponent="span">
       {children}
     </IntlProvider>
-  );
-};
-
-const MaintenanceModeError = props => {
-  const { locale, helmetContext, hostedTranslations = {} } = props;
-
-  const localeMessages = isTestEnv
-    ? mapValues(defaultMessages, (val, key) => key)
-    : defaultMessages;
-
-  const finalMessages = addMissingTranslations(defaultMessages, {
-    ...localeMessages,
-    ...hostedTranslations,
-  });
-
-  return (
-    <IntlProvider locale={locale} messages={finalMessages} textComponent="span">
-      <HelmetProvider context={helmetContext}>
-        <MaintenanceMode />
-      </HelmetProvider>
-    </IntlProvider>
-  );
-};
-
-// This displays a warning if environment variable key contains a string "SECRET"
-const EnvironmentVariableWarning = props => {
-  const suspiciousEnvKey = props.suspiciousEnvKey;
-  // https://github.com/sharetribe/flex-integration-api-examples#warning-usage-with-your-web-app--website
-  const containsINTEG = str => str.toUpperCase().includes('INTEG');
-  return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-      }}
-    >
-      <div style={{ width: '600px' }}>
-        <p>
-          Are you sure you want to reveal to the public web an environment variable called:{' '}
-          <b>{suspiciousEnvKey}</b>
-        </p>
-        <p>
-          All the environment variables that start with <i>REACT_APP_</i> prefix will be part of the
-          published React app that's running on a browser. Those variables are, therefore, visible
-          to anyone on the web. Secrets should only be used on a secure environment like the server.
-        </p>
-        {containsINTEG(suspiciousEnvKey) ? (
-          <p>
-            {'Note: '}
-            <span style={{ color: 'red' }}>
-              Do not use Integration API directly from the web app.
-            </span>
-          </p>
-        ) : null}
-      </div>
-    </div>
   );
 };
 
