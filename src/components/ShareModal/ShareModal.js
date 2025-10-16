@@ -19,6 +19,8 @@ const ShareModal = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
+  if (typeof window === 'undefined') return null;
+
   const currentUrl = window.location.href;
 
   const copyLink = async () => {

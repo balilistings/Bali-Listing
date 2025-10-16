@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useLocation, useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import { setCurrency } from '../../../../../ducks/currency.js';
-import { useLocale, languageNames } from '../../../../../context/localeContext.js';
+import { useLocale, languageNames, useUpdateLocale } from '../../../../../context/localeContext.js';
+import { setMessages } from '../../../../../ducks/locale.duck.js';
 import { Menu, MenuLabel, MenuContent, MenuItem } from '../../../../../components/index.js';
 import { ReactComponent as MenuIcon } from './lang-menu.svg';
 
@@ -19,7 +20,8 @@ const currencies = [
 ];
 
 const LanguageCurrencyMenu = ({ config, currentPage, scrollToBottom }) => {
-  const { locale, updateLocale, updateMessages, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
+  const { locale, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
+  const updateLocale = useUpdateLocale();
   const location = useLocation();
   const history = useHistory();
 
@@ -45,7 +47,7 @@ const LanguageCurrencyMenu = ({ config, currentPage, scrollToBottom }) => {
 
     import(`../../../../../translations/${newLocale}.json`)
       .then(newMessages => {
-        updateMessages(newMessages.default);
+        dispatch(setMessages(newMessages.default));
         updateLocale(newLocale);
 
         if (newLocale === DEFAULT_LOCALE) {

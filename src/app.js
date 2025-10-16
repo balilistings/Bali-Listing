@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { any, string } from 'prop-types';
 
 import { HelmetProvider } from 'react-helmet-async';
-import { Provider } from 'react-redux';
-import loadable from '@loadable/component';
+import { Provider, useSelector, useDispatch } from 'react-redux';
 import difference from 'lodash/difference';
 import mapValues from 'lodash/mapValues';
 
@@ -15,7 +14,8 @@ import configureStore from './store';
 // utils
 import { RouteConfigurationProvider } from './context/routeConfigurationContext';
 import { ConfigurationProvider } from './context/configurationContext';
-import { LocaleProvider, useLocale } from './context/localeContext';
+import { useLocale, getInitialLocale } from './context/localeContext';
+import { setLocale, setMessages } from './ducks/locale.duck';
 import { mergeConfig } from './util/configHelpers';
 import { IntlProvider } from './util/reactIntl';
 import { includeCSSProperties } from './util/style';
@@ -77,7 +77,30 @@ const addMissingTranslations = (sourceLangTranslations, targetLangTranslations) 
 
 const isTestEnv = process.env.NODE_ENV === 'test';
 
+const LocaleInitializer = () => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user.currentUser);
+  const locale = useSelector(state => state.locale.locale);
 
+  useEffect(() => {
+    if (!locale) {
+      const initialLocale = getInitialLocale(currentUser);
+      dispatch(setLocale(initialLocale));
+
+      if (initialLocale !== 'en') {
+        import(`./translations/${initialLocale}.json`)
+          .then(messages => {
+            dispatch(setMessages(messages.default));
+          })
+          .catch(error => {
+            console.error('Failed to load translation', error);
+          });
+      }
+    }
+  }, [currentUser, locale, dispatch]);
+
+  return null;
+};
 
 const Configurations = props => {
   const { appConfig, children } = props;
@@ -94,9 +117,7 @@ const Configurations = props => {
 const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
   const { locale, messages, DEFAULT_LOCALE } = useLocale();
 
-  const localeMessages = isTestEnv
-    ? mapValues(defaultMessages, (val, key) => key)
-    : messages;
+  const localeMessages = isTestEnv ? mapValues(defaultMessages, (val, key) => key) : messages;
 
   const finalMessages = addMissingTranslations(defaultMessages, {
     ...localeMessages,
@@ -104,11 +125,7 @@ const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
   });
 
   return (
-    <IntlProvider
-      locale={locale}
-      messages={finalMessages}
-      textComponent="span"
-    >
+    <IntlProvider locale={locale} messages={finalMessages} textComponent="span">
       {children}
     </IntlProvider>
   );
@@ -211,21 +228,20 @@ export const ClientApp = props => {
   const logLoadDataCalls = appSettings?.env !== 'test';
 
   return (
-    <LocaleProvider>
+    <Provider store={store}>
       <Configurations appConfig={appConfig}>
         <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
-          <Provider store={store}>
-            <HelmetProvider>
-              <IncludeScripts config={appConfig} />
-              <LocaleBrowserRouter>
-                <Routes logLoadDataCalls={logLoadDataCalls} />
-                <CookieConsent />
-              </LocaleBrowserRouter>
-            </HelmetProvider>
-          </Provider>
+          <HelmetProvider>
+            <LocaleInitializer />
+            <IncludeScripts config={appConfig} />
+            <LocaleBrowserRouter>
+              <Routes logLoadDataCalls={logLoadDataCalls} />
+              <CookieConsent />
+            </LocaleBrowserRouter>
+          </HelmetProvider>
         </LocaleAwareIntlProvider>
       </Configurations>
-    </LocaleProvider>
+    </Provider>
   );
 };
 
@@ -248,20 +264,19 @@ export const ServerApp = props => {
   }
 
   return (
-    <LocaleProvider>
+    <Provider store={store}>
       <Configurations appConfig={appConfig}>
         <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
-          <Provider store={store}>
-            <HelmetProvider context={helmetContext}>
-              <IncludeScripts config={appConfig} />
-              <LocaleStaticRouter location={url} context={context}>
-                <Routes />
-              </LocaleStaticRouter>
-            </HelmetProvider>
-          </Provider>
+          <HelmetProvider context={helmetContext}>
+            <LocaleInitializer />
+            <IncludeScripts config={appConfig} />
+            <LocaleStaticRouter location={url} context={context}>
+              <Routes />
+            </LocaleStaticRouter>
+          </HelmetProvider>
         </LocaleAwareIntlProvider>
       </Configurations>
-    </LocaleProvider>
+    </Provider>
   );
 };
 
