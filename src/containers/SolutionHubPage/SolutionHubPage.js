@@ -16,6 +16,7 @@ import { useConfiguration } from '../../context/configurationContext';
 import { extractPageMetadata } from '../../util/seo';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
+import { FiPlus } from "react-icons/fi";
 
 import css from './SolutionHubPage.module.css';
 
@@ -51,7 +52,7 @@ const SolutionBlock = ({ block, toReact }) => {
     <div className={css.block}>
       {tag && <div className={css.tag}>{tag}</div>}
       <div className={css.imageWrapper}>
-        <IconSolution solutionName={title} />
+        <IconSolution solutionName={title} className={css.blockImage} />
       </div>
       <h3 className={css.blockTitle}>{title}</h3>
       {subtitle && <p className={css.blockSubtitle}>{subtitle}</p>}
@@ -142,10 +143,22 @@ const SolutionHubPage = props => {
               {blocks.map((block, i) => (
                 <SolutionBlock key={i} block={block} toReact={toReact} />
               ))}
+              {/* Hardcoded Promotional Block based on promote.png */}
+              <div className={`${css.block} ${css.promoBlock}`}>
+                <h3 className={css.blockTitle}>Promote your company</h3>
+                <div className={css.plusIconContainer}>
+                  <div className={css.plusIcon}>
+                    <FiPlus color='white'/>
+                  </div>
+                </div>
+                <div className={css.blockText}>
+                  <p>Showcase your service to thousands of Bali renters, buyers, and expats. Partner with us and let your business be discovered by people who need it most.</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <CTABlock />
+        <CTABlock variant="solution" />
       </LayoutSingleColumn>
     </Page>
   );

@@ -38,12 +38,14 @@
 }
 
 .textContent {
-  max-width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 @media (--viewportMedium) {
   .textContent {
     max-width: 480px;
+    margin: 0;
   }
 }
 
@@ -51,7 +53,8 @@
   font-size: 30px;
   font-weight: 700;
   line-height: 1.3;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  margin-top: 0;
   color: #231F20;
 }
 
@@ -66,7 +69,7 @@
 .subtitle {
   font-size: 12px;
   line-height: 1.3;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   color: #8d8d8d;
 }
 
@@ -82,7 +85,7 @@
   font-size: 12px;
   line-height: 1.5;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   color: #231f20;
 }
 
