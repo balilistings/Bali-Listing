@@ -58,7 +58,7 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
     return matchedRoutes.reduce((calls, match) => {
       const { route, params } = match;
       if (typeof route.loadData === 'function' && !route.auth) {
-        calls.push(store.dispatch(route.loadData(params, search, config, match)));
+        calls.push(store.dispatch(route.loadData(params, search, config, match, locale)));
       }
       return calls;
     }, calls);

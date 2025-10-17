@@ -96,12 +96,12 @@ export const fetchFeaturedListings = (
   }
 };
 
-export const loadData = (params, search, config, match) => dispatch => {
+export const loadData = (params, search, config, match, currentLocale) => dispatch => {
   const assetMap = {
     landingPage: ASSET_NAME,
   };
 
-  const pageAsset = constructLocalizedPageAssets(assetMap, match);
+  const pageAsset = constructLocalizedPageAssets(assetMap, match, currentLocale);
 
   return dispatch(fetchPageAssets(pageAsset, true))
     .then(() => {
