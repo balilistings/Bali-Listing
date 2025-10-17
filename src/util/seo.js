@@ -176,6 +176,48 @@ export const metaTagProps = (tagData, config) => {
 };
 
 /**
+ * Generates hreflang links for multilingual SEO
+ * @param {string} currentPath - The current URL path without locale prefix
+ * @param {string} currentLocale - The current locale
+ * @param {Array} supportedLocales - Array of all supported locales
+ * @param {string} marketplaceRootURL - The root URL of the marketplace
+ * @returns {Array} Array of link objects for hreflang tags
+ */
+export const generateHreflangs = (currentPath, currentLocale, supportedLocales, marketplaceRootURL) => {
+  const links = [];
+
+  supportedLocales.forEach(locale => {
+    // Create the href for each locale
+    let href;
+    if (locale === 'en') {
+      // English is the default, so no prefix
+      href = `${marketplaceRootURL}${currentPath}`;
+    } else {
+      // Other locales have the locale prefix
+      href = `${marketplaceRootURL}/${locale}${currentPath}`;
+    }
+
+    // Add x-default for the default locale (English)
+    if (locale === 'en') {
+      links.push({
+        rel: 'alternate',
+        hrefLang: 'x-default',
+        href
+      });
+    }
+
+    // Add the hreflang for the current locale
+    links.push({
+      rel: 'alternate',
+      hrefLang: locale,
+      href
+    });
+  });
+
+  return links;
+};
+
+/**
  * Extracts meta information from page assets data for SEO purposes
  * @param {Object} pageAssetsData - The page assets data containing sections and meta
  * @param {string} schemaType - The schema type for structured data (default: 'WebPage')

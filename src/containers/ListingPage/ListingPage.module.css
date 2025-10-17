@@ -1041,7 +1041,8 @@
   }
 }
 
-.wishlistButton svg {
+.wishlistButton svg,
+.shareButton svg {
   fill: transparent;
   stroke: white;
   transition: all 0.3s ease;
