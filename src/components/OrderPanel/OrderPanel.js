@@ -39,8 +39,11 @@ import PriceVariantPicker from './PriceVariantPicker/PriceVariantPicker';
 import css from './OrderPanel.module.css';
 
 import { types as sdkTypes } from '../../util/sdkLoader';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { createShortUrl } from '../../util/api';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
+import { handleToggleFavorites, isFavorite } from '../../util/userFavorites';
+import { updateProfile } from '../../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
 
 const { Money } = sdkTypes;
 
@@ -355,9 +358,12 @@ const getAvailabilityDisplay = (availableper, intl) => {
  */
 const OrderPanel = props => {
   const [mounted, setMounted] = useState(false);
+  const [contacting, setContacting] = useState(false);
   const intl = useIntl();
   const location = useLocation();
   const history = useHistory();
+  const dispatch = useDispatch();
+  const routes = useRouteConfiguration();
   const tabs = preparePriceTabs(
     props.listing?.attributes?.publicData,
     props.marketplaceCurrency,
@@ -365,7 +371,7 @@ const OrderPanel = props => {
   );
   const [selectedTab, setSelectedTab] = useState(tabs[tabs.length - 1]);
 
-    const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
 
@@ -530,55 +536,74 @@ const OrderPanel = props => {
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
   const handleWhatsappClick = async () => {
+    if (contacting) {
+      return;
+    }
+    setContacting(true);
+
     if (!currentUser) {
       const currentUrl = window.location.pathname + window.location.search;
       history.push({
         pathname: '/login',
-        state: { from: currentUrl }
+        state: { from: currentUrl },
       });
+      setContacting(false);
       return;
     }
 
-    // Clean phone number - keep only digits
-    const cleanedNumber = phonenumber ? phonenumber.replace(/\D/g, '') : '';
-
-    if (cleanedNumber) {
-      const currentUrl = window.location.href;
-      const hostUrl = `${window.location.protocol}//${window.location.host}`;
-      
-      // Generate short URL
-      let shortUrl = currentUrl;
-      try {
-        const response = await createShortUrl({ url: currentUrl });
-        shortUrl = response.shortUrl;
-      } catch (error) {
-        console.error('Error generating short URL:', error);
-        // If short URL generation fails, we'll use the original URL
-      }
-      
-      const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${shortUrl}. Can we discuss details?`;
-      const encodedMessage = encodeURIComponent(message);
-      
-      // Open WhatsApp with the cleaned phone number and prefilled message
-      const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
-      window.open(whatsappUrl, '_blank');
-
-      if (window.gtag) {
-        window.gtag('event', 'click_contact_owner', {
-          category: 'engagement',
-          listing_id: listing.attributes.id,
-          clicker: currentUser.attributes.email,
-          contact_value: 1,
-        });
-      }
-
-      if (window.fbq) {
-        fbq('track', 'Click Contact Owner', {
-          listing_id: listing.id,
-          listing_name: listing.attributes.title,
-        });
-      }
+    const listingId = listing.id.uuid;
+    if (!isFavorite(currentUser, listingId)) {
+      handleToggleFavorites({
+        currentUser,
+        history,
+        location,
+        routes,
+        params: { id: listingId },
+        onUpdateFavorites: payload => dispatch(updateProfile(payload)),
+      })(false);
     }
+
+    setTimeout(() => {
+      const cleanedNumber = phonenumber ? phonenumber.replace(/\D/g, '') : '';
+      if (cleanedNumber) {
+        const currentUrl = window.location.href;
+        const hostUrl = `${window.location.protocol}//${window.location.host}`;
+
+        let shortUrl = currentUrl;
+        createShortUrl({ url: currentUrl })
+          .then(response => {
+            shortUrl = response.shortUrl;
+          })
+          .catch(error => {
+            console.error('Error generating short URL:', error);
+          })
+          .finally(() => {
+            const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${shortUrl}. Can we discuss details?`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+
+            if (window.gtag) {
+              window.gtag('event', 'click_contact_owner', {
+                category: 'engagement',
+                listing_id: listing.attributes.id,
+                clicker: currentUser.attributes.email,
+                contact_value: 1,
+              });
+            }
+
+            if (window.fbq) {
+              fbq('track', 'Click Contact Owner', {
+                listing_id: listing.id,
+                listing_name: listing.attributes.title,
+              });
+            }
+            setContacting(false);
+          });
+      } else {
+        setContacting(false);
+      }
+    }, 1500);
   };
 
   const listingIsAvailableNow = isAvailableNow(availableper);
@@ -640,7 +665,10 @@ const OrderPanel = props => {
             {intl.formatMessage({ id: 'OrderPanel.pricePerAre' })}:{' '}
             {formatMoneyIfSupportedCurrency(
               new Money(
-                convertUnitToSubUnit(needPriceConversion ? Math.ceil(priceperare * USDConversionRate) : priceperare, unitDivisor(marketplaceCurrency)),
+                convertUnitToSubUnit(
+                  needPriceConversion ? Math.ceil(priceperare * USDConversionRate) : priceperare,
+                  unitDivisor(marketplaceCurrency)
+                ),
                 selectedCurrency
               ),
               intl
@@ -722,6 +750,7 @@ const OrderPanel = props => {
             onSubmit={onSubmit}
             agentorowner={agentorowner}
             handleWhatsappClick={handleWhatsappClick}
+            contacting={contacting}
           />
         ) : !isKnownProcess ? (
           <p className={css.errorSidebar}>
