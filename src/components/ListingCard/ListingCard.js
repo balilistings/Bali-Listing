@@ -13,7 +13,7 @@ import { createSlug } from '../../util/urlHelpers';
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
 import css from './ListingCard.module.css';
-import { handleToggleFavorites } from '../../util/userFavorites';
+import { handleToggleFavorites, isFavorite as isFavoriteUtil } from '../../util/userFavorites';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -227,7 +227,7 @@ export const ListingCard = props => {
   // ✅ FIXED: Process images with proper fallback chain
   const imagesUrls = currentListing.images?.map(img => getBestImageUrl(img)).filter(Boolean) || [];
 
-  const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(id);
+  const isFavorite = isFavoriteUtil(currentUser, id);
 
   const onToggleFavorites = e => {
     e.preventDefault();
