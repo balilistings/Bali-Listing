@@ -103,11 +103,11 @@ export const loadData = (params, search, config, match, currentLocale) => dispat
 
   const pageAsset = constructLocalizedPageAssets(assetMap, match, currentLocale);
 
-  return dispatch(fetchPageAssets(pageAsset, true))
-    .then(() => {
-      dispatch(fetchFeaturedListings());
-      return true;
-    })
+  const pageAssetsPromise = dispatch(fetchPageAssets(pageAsset, true));
+  const featuredListingsPromise = dispatch(fetchFeaturedListings());
+
+  return Promise.all([pageAssetsPromise, featuredListingsPromise])
+    .then(() => true)
     .catch(e => {
       log.error(e, 'landing-page-fetch-failed');
     });
