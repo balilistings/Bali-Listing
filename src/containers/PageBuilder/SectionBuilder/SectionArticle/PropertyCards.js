@@ -10,7 +10,7 @@ import { NamedLink } from '../../../../components/NamedLink/NamedLink';
 import { sortTags, capitaliseFirstLetter } from '../../../../util/helper';
 import { createSlug } from '../../../../util/urlHelpers';
 import { useHistory, useLocation } from 'react-router-dom';
-import { handleToggleFavorites } from '../../../../util/userFavorites';
+import { handleToggleFavorites, isFavorite as isFavoriteUtil } from '../../../../util/userFavorites';
 import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import classNames from 'classnames';
@@ -368,7 +368,7 @@ const PropertyCards = () => {
         />
       </div>
       <div className={styles.cardsWrapper}>
-        {!listings?.length ? (
+        {featuredListingsInProgress ? (
           'Loading..'
         ) : (
           <>
@@ -419,9 +419,7 @@ const PropertyCards = () => {
                 price = price * USDConversionRate;
               }
 
-              const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
-                card.id.uuid
-              );
+              const isFavorite = isFavoriteUtil(currentUser, card.id.uuid);
               const onToggleFavorites = e => {
                 e.preventDefault();
                 e.stopPropagation();
