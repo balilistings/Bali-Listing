@@ -4,7 +4,8 @@ import { connect } from 'react-redux';
 
 import { FormattedMessage, injectIntl } from '../../util/reactIntl';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
-import remove from './img/remove.png';
+import { FaTrash } from "react-icons/fa";
+import { checkIsProvider } from '../../util/userHelpers';
 
 import { unfavoriteListing, unfavoriteAllListings } from './FavoriteListingsPage.duck';
 
@@ -19,6 +20,7 @@ import {
 
 import TopbarContainer from '../TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
+import NotFoundPage from '../NotFoundPage/NotFoundPage';
 
 import css from './FavoriteListingsPage.module.css';
 
@@ -32,7 +34,12 @@ export const FavoriteListingsPageComponent = props => {
     scrollingDisabled,
     intl,
     dispatch,
+    currentUser,
   } = props;
+
+  if (currentUser && checkIsProvider(currentUser)) {
+    return <NotFoundPage staticContext={props.staticContext} />;
+  }
 
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -145,28 +152,31 @@ export const FavoriteListingsPageComponent = props => {
           {/* Show content when not loading and no error */}
           {!queryInProgress && !queryFavoritesError && (
             <>
-              <div>
-  {selectedIds.length > 0 && (
-    <div className={css.buttonGroup}>
-      <button
-        className={css.removeSelected}
-        onClick={handleUnfavoriteSelected}
-        title={`Unfavorite selected (${selectedIds.length})`}
-        style={{ marginLeft: '8px' }}
-      >
-        <img src={remove} alt="unfavorite selected" />
-      </button>
-    
-      <button
-        onClick={handleUnfavoriteAll}
-        className={css.removeAll}
-        title="Unfavorite all listings"
-      >
-        🗑️ Unfavorite All
-      </button>
-    </div>
-  )}
-</div>
+              {/* Button Group - Tetap muncul meski tidak ada yang terpilih */}
+              <div className={css.buttonGroup}>
+                {/* Tombol Unfavorite Selected - hanya muncul jika ada yang terpilih */}
+                {selectedIds.length > 0 && (
+                  <button
+                    onClick={handleUnfavoriteSelected}
+                    className={css.removeSelected}
+                    title={intl.formatMessage({ id: 'FavoriteListingsPage.unfavoriteSelected' })}
+                  >
+                    <FaTrash className={css.removeIcon} />
+                  </button>
+                )}
+                
+                {/* Tombol Unfavorite All - selalu muncul jika ada listings */}
+                {listings.length > 0 && (
+                  <button
+                    onClick={handleUnfavoriteAll}
+                    className={css.removeAll}
+                    title={intl.formatMessage({ id: 'FavoriteListingsPage.unfavoriteAll' })}
+                  >
+                      <FormattedMessage id="Unfavorite All" />
+                  </button>
+                )}
+              </div>
+
               {/* Listings grid */}
               <div className={css.listingCards}>
                 {listings.length > 0
