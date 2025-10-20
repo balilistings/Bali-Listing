@@ -9,6 +9,10 @@ import classNames from 'classnames';
 const EAGERLOADED_IMAGES = 1;
 
 const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'medium' }) => {
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop });
   const setSliderNode = useDisableBodyScrollOnSwipe();
 
@@ -51,7 +55,7 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
     };
   }, [emblaApi, onSelect]);
 
-  const showArrows = loop || (prevBtnEnabled || nextBtnEnabled);
+  const showArrows = loop || prevBtnEnabled || nextBtnEnabled;
 
   const slides = children
     ? React.Children.map(children, (child, index) => (
@@ -61,12 +65,22 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
       ))
     : images.map((img, imgIdx) => (
         <div className={styles.embla__slide} key={imgIdx}>
-          <img
-            src={img}
-            alt={title}
-            className={styles.image + ' ' + styles.imageFade}
-            loading={Math.abs(imgIdx - selectedIndex) <= EAGERLOADED_IMAGES ? 'eager' : 'lazy'}
-          />
+          {imgIdx === 0 || isClient ? (
+            <img
+              src={img}
+              alt={title}
+              className={styles.image + ' ' + styles.imageFade}
+              loading={
+                isClient
+                  ? Math.abs(imgIdx - selectedIndex) <= EAGERLOADED_IMAGES
+                    ? 'eager'
+                    : 'lazy'
+                  : 'eager'
+              }
+            />
+          ) : (
+            <div className={styles.image + ' ' + styles.imageFade} />
+          )}
         </div>
       ));
 
