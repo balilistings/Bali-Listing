@@ -1,5 +1,8 @@
 const { saveUrlMapping, findOriginalUrl } = require('./urlShortenerModel');
 
+const SUPABASE_URL = process.env.SUPABASE_URL;
+
+
 /**
  * Generate a random short code
  * @param {number} length - Length of the short code
@@ -20,11 +23,15 @@ const generateShortCode = (length = 6) => {
  * @returns {Promise} - Resolves with the short code
  */
 const createShortUrl = async (originalUrl) => {
+  if (!SUPABASE_URL) {
+    return originalUrl;
+  }
+
   // Generate a unique short code
   let shortCode;
   let isUnique = false;
   let attempts = 0;
-  const maxAttempts = 5;
+  const maxAttempts = 8;
   
   while (!isUnique && attempts < maxAttempts) {
     shortCode = generateShortCode(6);

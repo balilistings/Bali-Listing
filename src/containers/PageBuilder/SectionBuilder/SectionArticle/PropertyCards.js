@@ -368,7 +368,7 @@ const PropertyCards = () => {
         />
       </div>
       <div className={styles.cardsWrapper}>
-        {!listings?.length ? (
+        {featuredListingsInProgress ? (
           'Loading..'
         ) : (
           <>

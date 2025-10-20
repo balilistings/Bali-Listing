@@ -43,10 +43,10 @@ router.post('/', async (req, res) => {
     }
     
     // Validate hostname - must match the server's hostname
-    // const serverHostname = req.get('host');
-    // if (!isHostnameAllowed(url, serverHostname)) {
-    //   return res.status(400).json({ error: 'URL hostname must match the server hostname.' });
-    // }
+    const serverHostname = req.get('host');
+    if (!isHostnameAllowed(url, serverHostname)) {
+      return res.status(400).json({ error: 'URL hostname must match the server hostname.' });
+    }
     
     const shortCode = await createShortUrl(url);
     const shortUrl = `${req.protocol}://${req.get('host')}/sh/${shortCode}`;

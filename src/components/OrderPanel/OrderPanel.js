@@ -539,7 +539,6 @@ const OrderPanel = props => {
     if (contacting) {
       return;
     }
-    setContacting(true);
 
     if (!currentUser) {
       const currentUrl = window.location.pathname + window.location.search;
@@ -547,12 +546,14 @@ const OrderPanel = props => {
         pathname: '/login',
         state: { from: currentUrl },
       });
-      setContacting(false);
       return;
     }
 
     const listingId = listing.id.uuid;
-    if (!isFavorite(currentUser, listingId)) {
+    const isFav = isFavorite(currentUser, listingId);
+
+    if (!isFav) {
+      setContacting(true);
       handleToggleFavorites({
         currentUser,
         history,
@@ -563,7 +564,7 @@ const OrderPanel = props => {
       })(false);
     }
 
-    setTimeout(() => {
+    const openWhatsapp = () => {
       const cleanedNumber = phonenumber ? phonenumber.replace(/\D/g, '') : '';
       if (cleanedNumber) {
         const currentUrl = window.location.href;
@@ -575,7 +576,7 @@ const OrderPanel = props => {
             shortUrl = response.shortUrl;
           })
           .catch(error => {
-            console.error('Error generating short URL:', error);
+            // console.error('Error generating short URL:', error);
           })
           .finally(() => {
             const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${shortUrl}. Can we discuss details?`;
@@ -603,7 +604,13 @@ const OrderPanel = props => {
       } else {
         setContacting(false);
       }
-    }, 1500);
+    };
+
+    if (isFav) {
+      openWhatsapp();
+    } else {
+      setTimeout(openWhatsapp, 1000);
+    }
   };
 
   const listingIsAvailableNow = isAvailableNow(availableper);

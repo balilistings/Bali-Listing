@@ -1,11 +1,12 @@
 // This model is now using Supabase.
-// Make sure you have created the `url_mapping` table in your Supabase project with the following columns:
-// - short_code: TEXT (Primary Key)
-// - original_url: TEXT
-// - created_at: TIMESTAMPTZ (default: now())
 
 const supabase = require('../../api-util/supabase');
 const supabaseService = require('../../api-util/supabaseService');
+const NodeCache = require('node-cache');
+
+// Cache for 30 minutes
+const urlCache = new NodeCache({ stdTTL: 1800 });
+
 
 /**
  * Save a URL mapping to the database
@@ -14,6 +15,10 @@ const supabaseService = require('../../api-util/supabaseService');
  * @returns {Promise} - Resolves with the saved record
  */
 const saveUrlMapping = async (shortCode, originalUrl) => {
+  if (!supabaseService) {
+    return null;
+  }
+
   const { data, error } = await supabaseService
     .from('url_mapping')
     .insert([
@@ -34,13 +39,21 @@ const saveUrlMapping = async (shortCode, originalUrl) => {
  * @returns {Promise} - Resolves with the original URL or null if not found
  */
 const findOriginalUrl = async (shortCode) => {
-  const { data, error } = await supabaseService
+  if (!supabase) {
+    return null;
+  }
+
+  const cachedUrl = urlCache.get(shortCode);
+  if (cachedUrl) {
+    return cachedUrl;
+  }
+
+  const { data, error } = await supabase
     .from('url_mapping')
     .select('original_url')
     .eq('short_code', shortCode)
     .single();
     
-console.log("findOriginalUrl", shortCode, data, error);
 
   if (error) {
     // PGRST116: "Not a single row was found"
@@ -51,7 +64,13 @@ console.log("findOriginalUrl", shortCode, data, error);
     throw error;
   }
 
-  return data ? data.original_url : null;
+  const originalUrl = data ? data.original_url : null;
+
+  if (originalUrl) {
+    urlCache.set(shortCode, originalUrl);
+  }
+
+  return originalUrl;
 };
 
 module.exports = {
