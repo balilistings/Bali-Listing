@@ -110,7 +110,7 @@ const isInboxPage = found =>
 // It's used as handle for currentPage check.
 const getResolvedCurrentPage = (location, routeConfiguration, SUPPORTED_LOCALES) => {
   const cleanPathname = removeLocaleFromPath(location.pathname, SUPPORTED_LOCALES);
-  
+
   const matchedRoutes = matchPathname(cleanPathname, routeConfiguration);
   if (matchedRoutes.length > 0) {
     const found = matchedRoutes[0];
@@ -162,7 +162,7 @@ const TopbarComponent = props => {
     showGenericError,
     config,
     routeConfiguration,
-    openCustomFilters
+    openCustomFilters,
   } = props;
 
   const { SUPPORTED_LOCALES } = useLocale();
@@ -245,7 +245,8 @@ const TopbarComponent = props => {
   // Custom links are sorted so that group="primary" are always at the beginning of the list.
   const sortedCustomLinks = sortCustomLinks(config.topbar?.customLinks);
   const customLinks = getResolvedCustomLinks(sortedCustomLinks, routeConfiguration);
-  const resolvedCurrentPage = currentPage || getResolvedCurrentPage(location, routeConfiguration, SUPPORTED_LOCALES);
+  const resolvedCurrentPage =
+    currentPage || getResolvedCurrentPage(location, routeConfiguration, SUPPORTED_LOCALES);
 
   const notificationDot = notificationCount > 0 ? <div className={css.notificationDot} /> : null;
 
@@ -336,7 +337,7 @@ const TopbarComponent = props => {
           linkToExternalSite={config?.topbar?.logoLink}
         />
         <div className={css.mobileContent}>
-         {checkIsProvider(currentUser) && (
+          {checkIsProvider(currentUser) && (
             <NamedLink name="NewListingPage" className={css.addListing}>
               <FormattedMessage id="TopbarDesktop.addListing" />
             </NamedLink>
