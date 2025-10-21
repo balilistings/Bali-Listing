@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import appSettings from '../../../config/settings';
 import { useConfiguration } from '../../../context/configurationContext';
 import { useRouteConfiguration } from '../../../context/routeConfigurationContext';
+import { checkIsProvider } from '../../../util/userHelpers';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { isMainSearchTypeKeywords, isOriginInUse } from '../../../util/search';
@@ -335,9 +336,11 @@ const TopbarComponent = props => {
           linkToExternalSite={config?.topbar?.logoLink}
         />
         <div className={css.mobileContent}>
-          <NamedLink name="NewListingPage" className={css.addListing}>
-            <FormattedMessage id="TopbarDesktop.addListing" />
-          </NamedLink>
+         {checkIsProvider(currentUser) && (
+            <NamedLink name="NewListingPage" className={css.addListing}>
+              <FormattedMessage id="TopbarDesktop.addListing" />
+            </NamedLink>
+          )}
           {/* {SUPPORTED_LOCALES.length > 1 && resolvedCurrentPage !== 'EditListingPage' && (
             <LanguageSelector isMobile={true} />
           )} */}

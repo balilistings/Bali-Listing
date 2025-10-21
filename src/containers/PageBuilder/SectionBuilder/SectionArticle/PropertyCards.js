@@ -5,6 +5,7 @@ import useDisableBodyScrollOnSwipe from '../../../../util/useDisableBodyScrollOn
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { getListingsById } from '../../../../ducks/marketplaceData.duck';
+import { checkIsProvider } from '../../../../util/userHelpers';
 import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
 import { NamedLink } from '../../../../components/NamedLink/NamedLink';
 import { sortTags, capitaliseFirstLetter } from '../../../../util/helper';
@@ -445,11 +446,13 @@ const PropertyCards = () => {
                 >
                   <div className={styles.imageWrapper}>
                     <ImageSlider loop={images.length > 1} images={imagesUrls} title={title} buttonSize='large'/>
-                    <button 
+                    {!checkIsProvider(currentUser) && (
+                    <button
                       className={classNames(styles.wishlistButton, isFavorite ? styles.active : '')} 
                       onClick={onToggleFavorites}>
                       <IconCollection name="icon-waislist" />
                     </button>
+                  )}
                   </div>
                   <div className={styles.cardDetails}>
                     <div className={styles.cardDetailsTop}>

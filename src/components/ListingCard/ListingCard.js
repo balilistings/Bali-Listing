@@ -9,6 +9,7 @@ import { ensureListing, ensureUser } from '../../util/data';
 import { useIntl } from '../../util/reactIntl';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
+import { checkIsProvider } from '../../util/userHelpers';
 
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
@@ -245,14 +246,14 @@ export const ListingCard = props => {
 
   return (
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
-      {showWishlistButton && (
-        <button 
-          className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
-          onClick={onToggleFavorites}
-        >
-          <IconCollection name="icon-waislist" />
-        </button>
-      )}
+{showWishlistButton && !checkIsProvider(currentUser) && (
+  <button 
+    className={classNames(css.wishlistButton, isFavorite ? css.active : '')} 
+    onClick={onToggleFavorites}
+  >
+    <IconCollection name="icon-waislist" />
+  </button>
+)}
 
       <div className={css.imageWrapper}>
         <ImageSlider loop={imagesUrls.length > 1} images={imagesUrls} title={title} />
