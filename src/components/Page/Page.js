@@ -16,6 +16,7 @@ import { apiBaseUrl } from '../../util/api';
 import { getSupportedLocales } from '../../util/translation';
 
 import css from './Page.module.css';
+import { useIsScrollingDisabled } from '../../ducks/ui.duck';
 
 const preventDefault = e => {
   e.preventDefault();
@@ -321,7 +322,6 @@ class PageComponent extends Component {
  * @param {string} [props.className] - Custom class that extends the default class for the root element
  * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
  * @param {ReactNode} props.children - The children to render
- * @param {boolean} props.scrollingDisabled - Whether the scrolling is disabled
  * @param {string} props.referrer - Handle referrer policy
  * @param {string} props.author - The author
  * @param {string} props.openGraphType - The open graph type (aka 'og:type')
@@ -343,6 +343,7 @@ const Page = props => {
   const intl = useIntl();
   const { locale } = useLocale();
   const supportedLocales = getSupportedLocales();
+  const scrollingDisabled = useIsScrollingDisabled();
 
   // Extract the path without the locale prefix for hreflang generation
   const pathname = location.pathname;
@@ -370,6 +371,7 @@ const Page = props => {
       intl={intl}
       hreflangLinks={hreflangLinks}
       {...props}
+      scrollingDisabled={scrollingDisabled}
     />
   );
 };
