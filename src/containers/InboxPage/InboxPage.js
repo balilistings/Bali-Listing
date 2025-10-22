@@ -34,7 +34,7 @@ import {
   NamedLink,
   NotificationBadge,
   Page,
-  PaginationLinks,
+  // PaginationLinks,
   TabNav,
   IconSpinner,
   TimeRange,
@@ -42,6 +42,7 @@ import {
   // LayoutSideNavigation,
 } from '../../components';
 import LayoutSideNavigation from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation';
+import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';

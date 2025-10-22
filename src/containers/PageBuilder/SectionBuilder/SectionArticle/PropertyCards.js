@@ -351,12 +351,6 @@ const PropertyCards = () => {
             }
             onClick={e => {
               setActiveTab(tab.id);
-              // Add bump animation
-              if (tabRefs.current[i]) {
-                tabRefs.current[i].classList.remove(styles.tabBump);
-                void tabRefs.current[i].offsetWidth; // force reflow
-                tabRefs.current[i].classList.add(styles.tabBump);
-              }
               const location = customLocationBounds.find(elm => elm.id === tab.id);
               dispatch(fetchFeaturedListings({ bounds: location.bounds }));
             }}

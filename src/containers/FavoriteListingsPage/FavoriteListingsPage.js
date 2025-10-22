@@ -12,11 +12,12 @@ import { unfavoriteListing, unfavoriteAllListings } from './FavoriteListingsPage
 import {
   H3,
   Page,
-  PaginationLinks,
+  // PaginationLinks,
   UserNav,
   // LayoutSingleColumn,
 } from '../../components';
 import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
+import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 
 import ListingCard from '../../components/ListingCard/ListingCard';
 import TopbarContainer from '../TopbarContainer/TopbarContainer';

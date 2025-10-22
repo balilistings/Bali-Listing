@@ -1,12 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
+const isSsr = typeof window === 'undefined';
+
 const LazyRender = props => {
   const { children, placeholderHeight = 200, rootMargin = '400px' } = props;
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(isSsr);
   const placeholderRef = useRef(null);
 
   useEffect(() => {
+    if (isVisible) {
+      return;
+    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -29,7 +34,7 @@ const LazyRender = props => {
         observer.unobserve(pRef);
       }
     };
-  }, [rootMargin]);
+  }, [isVisible, rootMargin]);
 
   return isVisible ? (
     children

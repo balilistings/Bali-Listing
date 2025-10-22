@@ -8,7 +8,7 @@ import PreviewResolverPage from '../containers/PreviewResolverPage/PreviewResolv
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and
 // at that point css bundling / imports will happen in wrong order.
-import { NamedRedirect } from '../components';
+import NamedRedirect from '../components/NamedRedirect/NamedRedirect';
 
 const pageDataLoadingAPI = getPageDataLoadingAPI();
 

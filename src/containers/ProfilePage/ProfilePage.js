@@ -41,11 +41,10 @@ import {
   Page,
   AvatarLarge,
   NamedLink,
-  Reviews,
   ButtonTabNavHorizontal,
-  // LayoutSideNavigation,
   NamedRedirect,
 } from '../../components';
+import Reviews from '../../components/Reviews/Reviews';
 import LayoutSideNavigation from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
