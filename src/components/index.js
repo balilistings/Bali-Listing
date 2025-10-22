@@ -49,7 +49,6 @@ export { Heading, H1, H2, H3, H4, H5, H6  } from './Heading/Heading';
 // Other independent components
 export { default as AspectRatioWrapper } from './AspectRatioWrapper/AspectRatioWrapper';
 export { default as ExternalLink } from './ExternalLink/ExternalLink';
-export { default as ExpandingTextarea } from './ExpandingTextarea/ExpandingTextarea';
 export { default as Form } from './Form/Form';
 export { default as LimitedAccessBanner } from './LimitedAccessBanner/LimitedAccessBanner';
 export { default as Logo } from './Logo/Logo';
@@ -79,7 +78,6 @@ export { default as Button, PrimaryButton, PrimaryButtonInline, SecondaryButton,
 export { default as ImageFromFile } from './ImageFromFile/ImageFromFile';
 export { default as LinkedLogo } from './Logo/LinkedLogo';
 export { default as ListingLink } from './ListingLink/ListingLink';
-export { default as PaginationLinks } from './PaginationLinks/PaginationLinks';
 export { default as ReviewRating } from './ReviewRating/ReviewRating';
 
 // Menu
@@ -125,4 +123,3 @@ export { default as UserNav } from './UserNav/UserNav';
 export { default as Avatar, AvatarSmall, AvatarMedium, AvatarLarge } from './Avatar/Avatar';
 
 export { default as Page } from './Page/Page';
-export { default as Reviews } from './Reviews/Reviews';

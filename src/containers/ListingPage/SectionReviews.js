@@ -1,6 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
-import { Heading, H2, Reviews } from '../../components';
+import { Heading, H2 } from '../../components';
+import Reviews from '../../components/Reviews/Reviews';
 
 import css from './ListingPage.module.css';
 

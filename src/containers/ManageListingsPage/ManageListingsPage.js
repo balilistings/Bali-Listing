@@ -16,13 +16,14 @@ import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck
 import {
   H3,
   Page,
-  PaginationLinks,
+  // PaginationLinks,
   UserNav,
   // LayoutSingleColumn,
   NamedLink,
   Modal,
 } from '../../components';
 import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
+import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';

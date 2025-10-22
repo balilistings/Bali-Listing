@@ -6,7 +6,6 @@ import SectionColumns from './SectionColumns';
 import SectionArticle from './SectionArticle';
 import SectionFeatures from './SectionFeatures';
 import SectionCarousel from './SectionCarousel';
-import SectionHero from './SectionHero';
 
 // Main component: SectionBuilder
 import SectionBuilder from './SectionBuilder';
