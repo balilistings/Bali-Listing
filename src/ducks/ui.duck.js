@@ -1,5 +1,7 @@
 // ================ Action types ================ //
 
+import { shallowEqual, useSelector } from "react-redux";
+
 export const DISABLE_SCROLLING = 'app/ui/DISABLE_SCROLLING';
 
 // ================ Reducer ================ //
@@ -49,5 +51,11 @@ export const manageDisableScrolling = (componentId, disableScrolling) => ({
 
 export const isScrollingDisabled = state => {
   const { disableScrollRequests } = state.ui;
+  return disableScrollRequests.some(r => r.disableScrolling);
+};
+
+export const useIsScrollingDisabled = () => {
+  const uiState = useSelector(state => state.ui || {}, shallowEqual);
+  const { disableScrollRequests } = uiState;
   return disableScrollRequests.some(r => r.disableScrolling);
 };

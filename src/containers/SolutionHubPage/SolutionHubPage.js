@@ -17,9 +17,10 @@ import { useConfiguration } from '../../context/configurationContext';
 import { extractPageMetadata } from '../../util/seo';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
-import { FiPlus } from "react-icons/fi";
+import { FiPlus } from 'react-icons/fi';
 
 import css from './SolutionHubPage.module.css';
+import { useIsScrollingDisabled } from '../../ducks/ui.duck.js';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -125,7 +126,11 @@ const SolutionHubPage = props => {
     descriptionParts.length > 2 ? descriptionParts[2].trim() : descriptionParts[0];
 
   return (
-    <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
+    <Page
+      {...{ title, description, schema, socialSharing }}
+      config={config}
+      className={css.root}
+    >
       <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.hero}>
           <Spiral className={css.spiral} />
@@ -149,11 +154,14 @@ const SolutionHubPage = props => {
                 <h3 className={css.blockTitle}>Promote your company</h3>
                 <div className={css.plusIconContainer}>
                   <div className={css.plusIcon}>
-                    <FiPlus color='white'/>
+                    <FiPlus color="white" />
                   </div>
                 </div>
                 <div className={css.blockText}>
-                  <p>Showcase your service to thousands of Bali renters, buyers, and expats. Partner with us and let your business be discovered by people who need it most.</p>
+                  <p>
+                    Showcase your service to thousands of Bali renters, buyers, and expats. Partner
+                    with us and let your business be discovered by people who need it most.
+                  </p>
                 </div>
               </div>
             </div>
