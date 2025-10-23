@@ -14,10 +14,16 @@ import PageBuilder from '../PageBuilder/PageBuilder';
 
 export const LandingPageComponent = props => {
   const { pageAssetsData, inProgress, error } = props;
+  const useNewPages = process.env.REACT_APP_USE_NEW_PAGES === 'true';
+  const data = pageAssetsData?.[camelize(ASSET_NAME)]?.data
+
+  if (!useNewPages) {
+    data.sections = data.sections.filter(section => section.sectionId !== 'our_services');
+  }
 
   return (
     <PageBuilder
-      pageAssetsData={pageAssetsData?.[camelize(ASSET_NAME)]?.data}
+      pageAssetsData={data}
       inProgress={inProgress}
       error={error}
       fallbackPage={<FallbackPage error={error} />}

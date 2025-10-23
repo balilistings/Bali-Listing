@@ -126,10 +126,6 @@ const SectionBuilder = props => {
         const classes = classNames({ [css.darkTheme]: isDarkTheme });
         const sectionId = getUniqueSectionId(section.sectionId, index);
 
-        if (section.sectionName === 'Our Services') {
-          return null;
-        }
-
         if (Section) {
           const sectionEl = (
             <Section
