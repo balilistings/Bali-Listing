@@ -33,11 +33,18 @@ import { LocaleBrowserRouter, LocaleStaticRouter } from './routing/LocaleRouter'
 import defaultMessages from './translations/en.json';
 
 const MaintenanceModeError = loadable(() =>
-  import(/* webpackChunkName: "MaintenanceModeError" */ './components/MaintenanceMode/MaintenanceModeError')
+  import(
+    /* webpackChunkName: "MaintenanceModeError" */ './components/MaintenanceMode/MaintenanceModeError'
+  )
 );
 const EnvironmentVariableWarning = loadable(() =>
   import(
     /* webpackChunkName: "EnvironmentVariableWarning" */ './components/EnvironmentVariableWarning/EnvironmentVariableWarning'
+  )
+);
+const HelpWidget = loadable(() =>
+  import(
+    /* webpackChunkName: "HelpWidget" */ './containers/HelpWidget/HelpWidget'
   )
 );
 
@@ -96,7 +103,6 @@ const AppInitializers = () => {
 const Configurations = props => {
   const { appConfig, children } = props;
   const routeConfig = routeConfiguration(appConfig.layout, appConfig?.accessControl);
-  const locale = isTestEnv ? 'en' : appConfig.localization.locale;
 
   return (
     <ConfigurationProvider value={appConfig}>
@@ -168,6 +174,7 @@ export const ClientApp = props => {
             <AppInitializers />
             <IncludeScripts config={appConfig} />
             <LocaleBrowserRouter>
+              {appConfig.chatbotEnabled && <HelpWidget />}
               <Routes logLoadDataCalls={logLoadDataCalls} />
               <CookieConsent />
             </LocaleBrowserRouter>
