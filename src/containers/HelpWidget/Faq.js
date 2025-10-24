@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";  // ← tambahkan useEffect di sini
 import "./Faq.css";
-import logo from "./logo.png";
-import arrow from "./arrow.png";
+import { ReactComponent as Logo } from '../../assets/balilistings-logo-icon.svg';
 
 const Faq = ({ onBack }) => {
   const faqData = [
@@ -53,7 +52,7 @@ const Faq = ({ onBack }) => {
       {/* Header */}
       <div className="faq-header">
         <div className="logo">
-          <img src={logo} alt="Logo" />
+          <Logo alt="Logo Bali Listings"/>
           <span>Bali Listings</span>
         </div>
         <div className="title">FAQ</div>
@@ -65,7 +64,7 @@ const Faq = ({ onBack }) => {
           <details key={idx}>
             <summary>
               {item.question}
-              <img src={arrow} className="arrow" alt="arrow" />
+              {/* <img src={arrow} className="arrow" alt="arrow" /> */}
             </summary>
             <p>{item.answer}</p>
           </details>
@@ -76,24 +75,6 @@ const Faq = ({ onBack }) => {
       <div className="faq-footer">
         <a href="#">View all FAQs</a>
       </div>
-
-      {/* Tombol back ke HelpWidget */}
-      {onBack && (
-        <button
-          onClick={onBack}
-          style={{
-            fontSize: "12px",
-            marginBottom: "15px",
-            background: "transparent",
-            border: "none",
-            color: "#EB2BE8",
-            fontWeight: "700",
-            cursor: "pointer",
-          }}
-        >
-          ← Back
-        </button>
-      )}
     </div>
   );
 };

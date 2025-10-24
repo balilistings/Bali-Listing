@@ -68,6 +68,9 @@ const defaultConfig = {
   // multi currency configuration
   multiCurrencyEnabled: process.env.REACT_APP_MULTICURRENCY_ENABLED === 'true',
 
+  // chatbot configuration
+  chatbotEnabled: process.env.REACT_APP_CHATBOT_ENABLED === 'true',
+
   // Note: Facebook app id is used for Facebook login, but it is also used for tracking:
   // Facebook counts shares with app or page associated by this id
   // Currently it is unset, but you can read more about fb:app_id from

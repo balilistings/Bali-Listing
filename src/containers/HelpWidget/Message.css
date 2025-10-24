@@ -128,8 +128,12 @@ body {
 /* Footer */
 .chat-footer {
   padding: 10px;
-  background: #fafafa;
 }
+
+.chat-footer, .chat-body {
+  background: #f2f2f2;
+}  
+
 
 .input-wrapper {
   position: relative;
@@ -165,6 +169,7 @@ body {
 .send {
   width: 15px;
   height: 15px;
+  color: white;
 }
 
 .input-wrapper input::placeholder {

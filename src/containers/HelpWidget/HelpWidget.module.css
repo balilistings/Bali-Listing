@@ -1,9 +1,13 @@
-.hlWidget {
+.openWidgetContainer {
   position: fixed;
-  bottom: 20px;
+  bottom: 48px;
   right: 20px;
   z-index: 9999;
+  max-height: calc(100vh - 40px);
+  overflow: visible; /* Allow close button to be visible outside the content */
+}
 
+.hlWidget {
   height: 390px;
   width: 356px;
   background: #EB2BE8;
@@ -15,8 +19,57 @@
   font-family: 'Mulish';
   box-sizing: border-box;
   padding-top: 20px;
+  position: relative; /* Establish positioning context */
 }
 
+/* Add specific padding for containers with close button */
+.openWidgetContainer > *:not(.closeButton) {
+  padding-bottom: 36px; /* Add space at bottom for close button */
+}
+
+.defaultWidget {
+  position: fixed;
+  bottom: 36px;
+  right: 20px;
+  z-index: 9999;
+  background: #EB2BE8;
+  border-radius: 10px;
+  padding: 14px;
+  color: white;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.defaultWidgetIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.defaultWidgetText {
+  font-family: 'Mulish';
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.closeButton {
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: absolute;
+  bottom: -42px;
+  right: 0;
+  z-index: 10000; /* Ensure it's above other content */
+}
 
 
 .hlLogo {
