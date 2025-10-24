@@ -15,7 +15,7 @@ import { IconClose } from '../../components';
 
 const HelpWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentView, setCurrentView] = useState('main'); // 'main', 'faq', or 'message'
+  const [currentView, setCurrentView] = useState('main');
 
   const handleCloseWidget = () => {
     setIsOpen(false);
