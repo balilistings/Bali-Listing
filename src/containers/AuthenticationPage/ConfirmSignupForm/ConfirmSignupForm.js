@@ -93,6 +93,10 @@ const ConfirmSignupFormComponent = props => (
 
       const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
 
+      // Separate fields based on pub_role value
+      const roleSpecificField = userFieldProps.find(({ key }) => key === 'pub_role');
+      const otherUserFields = userFieldProps.filter(({ key }) => key !== 'pub_role');
+
       const noUserTypes = !userType && !(userTypes?.length > 0);
       const userTypeConfig = userTypes.find(config => config.userType === userType);
       const showDefaultUserFields = userType || noUserTypes;
@@ -100,7 +104,15 @@ const ConfirmSignupFormComponent = props => (
 
       const classes = classNames(rootClassName || css.root, className);
       const submitInProgress = inProgress;
-      const providerDisabled = userType === 'provider' ? !selfieDocumentLink : false;
+
+      let providerDisabled = false;
+      if (userType === 'provider') {
+        providerDisabled =
+          pub_role === 'company'
+            ? !values.companyDocumentLink
+            : !values.idDocumentLink || !selfieDocumentLink;
+      }
+
       const submitDisabled = invalid || submitInProgress || providerDisabled;
 
       // If authInfo is not available we should not show the ConfirmForm
@@ -130,6 +142,11 @@ const ConfirmSignupFormComponent = props => (
             userTypes={userTypes}
             hasExistingUserType={!!preselectedUserType}
             intl={intl}
+            validate={validators.required(
+              intl.formatMessage({
+                id: 'FieldSelectUserType.required',
+              })
+            )}
           />
 
           {showDefaultUserFields ? (
@@ -208,8 +225,8 @@ const ConfirmSignupFormComponent = props => (
             <ImageUploader
               label={
                 pub_role === 'company'
-                  ? 'Screenshot/Picture NIB or NPWP Mentioning Company Name'
-                  : 'ID Document (KTP/Driving License/Passport)'
+                  ? intl.formatMessage({ id: 'SignupForm.companyNib' })
+                  : intl.formatMessage({ id: 'SignupForm.idDocument' })
               }
               columns={1}
               dropzoneHeight="100px"
@@ -218,18 +235,25 @@ const ConfirmSignupFormComponent = props => (
               onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
             />
           ) : null}
+          
+          {/* Render the pub_role field separately if it exists */}
+          {roleSpecificField ? (
+            <div className={css.customFields}>
+              <CustomExtendedDataField {...roleSpecificField} formId={formId} />
+            </div>
+          ) : null}
 
           {showCustomUserFields ? (
             <div className={css.customFields}>
-              {userFieldProps.map(({ key, ...fieldProps }) => (
+              {otherUserFields.map(({ key, ...fieldProps }) => (
                 <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
               ))}
             </div>
           ) : null}
 
-          {userType === 'provider' && pub_role ? (
+          {userType === 'provider' && pub_role && pub_role !== 'company' ? (
             <ImageUploader
-              label="Add a selfie of you holding your ID card"
+              label={intl.formatMessage({ id: 'SignupForm.selfieDocument' })}
               columns={1}
               dropzoneHeight="100px"
               labelText=""
