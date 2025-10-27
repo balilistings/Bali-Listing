@@ -5,8 +5,9 @@ import { ReactComponent as Logo } from '../../assets/balilistings-logo-icon.svg'
 import { ReactComponent as Person1 } from '../../assets/help-widget/person-1.svg';
 import { ReactComponent as UserAvatar } from '../../assets/help-widget/usericon.svg';
 import { IoIosSend } from 'react-icons/io';
+import { IconClose } from '../../components';
 
-const Message = ({ onBack }) => {
+const Message = ({ onClose, className }) => {
   const [messages, setMessages] = useState([
     {
       sender: 'admin',
@@ -32,19 +33,13 @@ const Message = ({ onBack }) => {
     setInputValue('');
   };
 
-  const handleKeyPress = e => {
-    if (e.key === 'Enter') {
-      handleSend();
-    }
-  };
-
   return (
-    <div className="chat-widget">
+    <div className={`chat-widget ${className || ''}`}>
       {/* Header */}
       <div className="chat-header">
         <div className="header-left">
           <Logo src={Logo} alt="Logo" className="logo" />
-          
+
           <div className="text-header">Bali Listings</div>
         </div>
         <span>Support</span>
@@ -78,10 +73,13 @@ const Message = ({ onBack }) => {
 
       {/* Footer */}
       <div className="chat-footer">
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          handleSend();
-        }} className="input-wrapper">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            handleSend();
+          }}
+          className="input-wrapper"
+        >
           <input
             type="text"
             placeholder="Type here..."
@@ -93,6 +91,9 @@ const Message = ({ onBack }) => {
             <IoIosSend className="send" />
           </button>
         </form>
+        <button onClick={onClose} className="chat-close-button">
+          <IconClose />
+        </button>
       </div>
     </div>
   );

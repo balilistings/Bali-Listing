@@ -1,23 +1,12 @@
-body {
-  font-family: 'Mulish';
-  background: #f2f2f2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0; 
-}
+@import '../../styles/customMediaQueries.css';
 
 .chat-widget {
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
-
-  width: 354px;
-  height: 510px;
+  width: 100%;
+  height: 100%;
   background: #f2f2f2;
-  border-radius: 20px;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   display: flex;
   flex-direction: column;
 }
@@ -31,8 +20,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   flex-shrink: 0;
 }
 
@@ -64,11 +53,9 @@ body {
 .chat-body {
   flex: 1;
   padding: 15px;
-  background: #fafafa;
   display: flex;
   flex-direction: column;
   gap: 15px;
-  overflow-y: auto;
 }
 
 /* Messages */
@@ -98,6 +85,7 @@ body {
   padding: 10px 15px;
   border-radius: 0px 10px 10px 10px;
   font-size: 14px;
+  min-width: 96px;
 }
 
 .admin .message {
@@ -124,19 +112,24 @@ body {
   display: block;
 }
 
+.username-admin,
+.username {
+  font-size: 8px;
+}
+
 /* Footer */
 .chat-footer {
   padding: 10px;
-}
-
-.chat-footer, .chat-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: #f2f2f2;
-}  
-
+}
 
 .input-wrapper {
   position: relative;
   width: 100%;
+  flex-grow: 1;
 }
 
 .input-wrapper input {
@@ -174,4 +167,40 @@ body {
 .input-wrapper input::placeholder {
   color: #c4c4c4;
   font-size: 14px;
+}
+
+.chat-close-button {
+  background: #ffffff;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+@media (--viewportMedium) {
+  .chat-widget {
+    width: 354px;
+    height: 510px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  .chat-header {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+  }
+
+  .chat-close-button {
+    display: none;
+  }
+
+  .chat-footer {
+    display: block;
+  }
 }
