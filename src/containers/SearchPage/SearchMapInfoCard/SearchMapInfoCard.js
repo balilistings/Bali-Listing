@@ -370,7 +370,7 @@ const SearchMapInfoCard = props => {
             d="M1.5 10L10.5 1M1.5 1L10.5 10"
             stroke="#231F20"
             stroke-width="1.5"
-            stroke-linecap="round"
+            strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>

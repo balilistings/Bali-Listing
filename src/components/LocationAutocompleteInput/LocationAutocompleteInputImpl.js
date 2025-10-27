@@ -804,7 +804,7 @@ class LocationAutocompleteInputImplementation extends Component {
                   d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5"
                   stroke="#231F20"
                   stroke-width="1.5"
-                  stroke-linecap="round"
+                  strokeLinecap="round"
                   strokeLinejoin="round"
                 />
               </svg>
@@ -857,7 +857,7 @@ class LocationAutocompleteInputImplementation extends Component {
                         d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5"
                         stroke="#231F20"
                         stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                     </svg>

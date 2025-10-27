@@ -93,7 +93,7 @@ const SortByPopup = props => {
           mode === 'mobile' ? <>
             <span>
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.52344 1.375H12.2109M1.52344 4.75H8.83594M1.52344 8.125H8.83594M12.2109 4.75V13.75M12.2109 13.75L9.39844 10.9375M12.2109 13.75L15.0234 10.9375" stroke="#F74DF4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M1.52344 1.375H12.2109M1.52344 4.75H8.83594M1.52344 8.125H8.83594M12.2109 4.75V13.75M12.2109 13.75L9.39844 10.9375M12.2109 13.75L15.0234 10.9375" stroke="#F74DF4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
 
             </span>
@@ -111,7 +111,7 @@ const SortByPopup = props => {
           <h2 className={css.menuItemMobileTitle}>
             <span className={css.menuItemMobileTitleIcon}>
               <svg width="16" height="15" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1.52344 1.375H12.2109M1.52344 4.75H8.83594M1.52344 8.125H8.83594M12.2109 4.75V13.75M12.2109 13.75L9.39844 10.9375M12.2109 13.75L15.0234 10.9375" stroke="#F74DF4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M1.52344 1.375H12.2109M1.52344 4.75H8.83594M1.52344 8.125H8.83594M12.2109 4.75V13.75M12.2109 13.75L9.39844 10.9375M12.2109 13.75L15.0234 10.9375" stroke="#F74DF4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
             Sort by
