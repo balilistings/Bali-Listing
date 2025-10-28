@@ -127,12 +127,9 @@ const ConfirmSignupFormComponent = props => (
         form.change('selfieDocumentLink', file);
       };
 
-      const handleIdDocument = file => {
-        form.change('idDocumentLink', file);
-      };
-
-      const handleCompanyDocument = file => {
+      const handleCompanyOrIdDocument = file => {
         form.change('companyDocumentLink', file);
+        form.change('idDocumentLink', file);
       };
 
       return (
@@ -221,6 +218,13 @@ const ConfirmSignupFormComponent = props => (
             </div>
           ) : null}
 
+          {/* Render the pub_role field separately if it exists */}
+          {roleSpecificField ? (
+            <div className={css.customFields}>
+              <CustomExtendedDataField {...roleSpecificField} formId={formId} />
+            </div>
+          ) : null}
+
           {userType === 'provider' ? (
             <ImageUploader
               label={
@@ -232,15 +236,8 @@ const ConfirmSignupFormComponent = props => (
               dropzoneHeight="100px"
               labelText=""
               maxImages={1}
-              onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
+              onProfileChange={handleCompanyOrIdDocument}
             />
-          ) : null}
-          
-          {/* Render the pub_role field separately if it exists */}
-          {roleSpecificField ? (
-            <div className={css.customFields}>
-              <CustomExtendedDataField {...roleSpecificField} formId={formId} />
-            </div>
           ) : null}
 
           {showCustomUserFields ? (

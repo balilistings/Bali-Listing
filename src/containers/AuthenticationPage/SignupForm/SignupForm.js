@@ -145,12 +145,9 @@ const SignupFormComponent = props => (
         form.change('selfieDocumentLink', file);
       };
 
-      const handleIdDocument = file => {
-        form.change('idDocumentLink', file);
-      };
-
-      const handleCompanyDocument = file => {
+      const handleCompanyOrIdDocument = file => {
         form.change('companyDocumentLink', file);
+        form.change('idDocumentLink', file);
       };
 
       return (
@@ -276,7 +273,7 @@ const SignupFormComponent = props => (
                 dropzoneHeight="100px"
                 labelText=""
                 maxImages={1}
-                onProfileChange={pub_role === 'company' ? handleCompanyDocument : handleIdDocument}
+                onProfileChange={handleCompanyOrIdDocument}
               />
             ) : null}
             {/* Render all other custom fields except pub_role */}
