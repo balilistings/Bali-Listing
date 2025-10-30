@@ -44,7 +44,7 @@ const EnvironmentVariableWarning = loadable(() =>
 );
 const HelpWidget = loadable(() =>
   import(
-    /* webpackChunkName: "HelpWidget" */ './containers/HelpWidget/HelpWidget'
+    /* webpackChunkName: "HelpWidget" */ './containers/HelpWidget'
   )
 );
 
