@@ -2,7 +2,7 @@ import React, { useEffect } from "react";  // ← tambahkan useEffect di sini
 import "./Faq.css";
 import { ReactComponent as Logo } from '../../assets/balilistings-logo-icon.svg';
 
-const Faq = ({ onBack }) => {
+const Faq = ({ className }) => {
   const faqData = [
     {
       question: "Lorem Ipsum Is Simple dummy text 1",
@@ -48,7 +48,7 @@ const Faq = ({ onBack }) => {
   }, []);
 
   return (
-    <div className="faq-container">
+    <div className={`faq-container ${className || ''}`}>
       {/* Header */}
       <div className="faq-header">
         <div className="logo">

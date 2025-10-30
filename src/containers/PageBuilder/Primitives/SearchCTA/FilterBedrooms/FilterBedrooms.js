@@ -205,7 +205,7 @@ const BedroomDropdown = ({
                         d="M10.375 1H1.625"
                         stroke="#231F20"
                         stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                     </svg>
@@ -233,7 +233,7 @@ const BedroomDropdown = ({
                         d="M6 1.625V10.375M10.375 6H1.625"
                         stroke="#231F20"
                         stroke-width="1.5"
-                        stroke-linecap="round"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                       />
                     </svg>
