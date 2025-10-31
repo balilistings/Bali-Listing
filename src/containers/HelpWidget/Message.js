@@ -24,40 +24,60 @@ const senderDetails = {
 const MessageItem = memo(({ message }) => {
   const { sender, text, results } = message;
   const { avatar: Avatar, name } = senderDetails[sender];
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const hasManyResults = Array.isArray(results) && results.length > 3;
+  const visibleResults = hasManyResults && !isExpanded ? results.slice(0, 3) : results;
 
   return (
     <div className={`message-container ${sender}`} role="listitem">
       <Avatar className="avatar" aria-hidden="true" />
       <div className="message-content">
         <div className="message">
-          <span className={sender === 'admin' ? 'username-admin' : 'username'}>
+          <p className={sender === 'admin' ? 'username-admin' : 'username'}>
             {name}
-          </span>
+          </p>
           {text.split('\n').map((line, i) => (
-            <span key={i}>
+            <p key={i} className="message-text">
               {line}
               <br />
-            </span>
+            </p>
           ))}
         </div>
         {Array.isArray(results) && results.length > 0 && (
-          <div className="results">
-            {results.map((result, index) => (
-              <a
-                key={index}
-                href={result.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="result-link"
-              >
-                <div className="result">
-                  <div className="result-title">{result.title}</div>
-                  <div className="result-description">{result.description}</div>
-                  <div className="result-price">{result.price}</div>
-                </div>
-              </a>
-            ))}
-          </div>
+          <>
+            <div className={`results ${hasManyResults && !isExpanded ? 'results-collapsed' : ''}`}>
+              {visibleResults.map((result, index) => (
+                <a
+                  key={index}
+                  href={result.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="result-link"
+                >
+                  <div className="result">
+                    <div className="result-title">{result.title}</div>
+                    <div className="result-description">{result.description}</div>
+                    <div className="result-price">{result.price}</div>
+                  </div>
+                </a>
+              ))}
+            </div>
+            {hasManyResults && !isExpanded && (
+              <div className="show-more-container">
+                <button onClick={() => setIsExpanded(true)} className="show-more-button">
+                  Show more
+                </button>
+              </div>
+            )}
+            {hasManyResults && isExpanded && (
+              <div className="show-less-container">
+                <button onClick={() => setIsExpanded(false)} className="show-less-button">
+                  Show less
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
