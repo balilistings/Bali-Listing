@@ -109,13 +109,12 @@
 
 .message-text {
   line-height: 1.3;
-  font-size: 12px;
+  font-size: 14px;
   color: #231F20;
   font-weight: 600;
 }
 
 .message-container.user .message-text {
- font-size: 14px; 
  color: #fff;
 }
 
