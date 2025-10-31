@@ -56,7 +56,14 @@ const request = (path, options = {}) => {
   // If headers are not set, we assume that the body should be serialized as transit format.
   const shouldSerializeBody =
     (!headers || headers['Content-Type'] === 'application/transit+json') && body;
-  const bodyMaybe = shouldSerializeBody ? { body: serialize(body) } : {};
+
+  const bodyIsJson = headers && headers['Content-Type'] === 'application/json' && body;
+
+  const bodyMaybe = shouldSerializeBody
+    ? { body: serialize(body) }
+    : bodyIsJson
+    ? { body: JSON.stringify(body) }
+    : {};
 
   const fetchOptions = {
     credentials: credentials || 'include',
@@ -90,7 +97,7 @@ const request = (path, options = {}) => {
 
 // Keep the previous parameter order for the post method.
 // For now, only POST has own specific function, but you can create more or use request directly.
-const post = (path, body, options = {}) => {
+export const post = (path, body, options = {}) => {
   const requestOptions = {
     ...options,
     method: methods.POST,

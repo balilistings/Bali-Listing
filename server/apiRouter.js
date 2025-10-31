@@ -24,6 +24,7 @@ const { generatePresignedUrlR2 } = require('./api/R2');
 const { getConversionRate } = require('./api/currency');
 // URL Shortener endpoints
 const urlShortenerRouter = require('./api/url-shortener/urlShortenerRouter');
+const chatbotRouter = require('./api/chatbot/chatbotRouter');
 
 const router = express.Router();
 
@@ -35,6 +36,9 @@ router.use(
     type: 'application/transit+json',
   })
 );
+
+// middleware for parsing application/json
+router.use(bodyParser.json());
 
 // Deserialize Transit body string to JS data
 router.use((req, res, next) => {
@@ -92,5 +96,8 @@ router.get('/currency/conversion-rate', getConversionRate);
 
 // URL Shortener endpoints
 router.use('/url-shortener', urlShortenerRouter);
+
+// Chatbot endpoints
+router.use('/chatbot', chatbotRouter);
 
 module.exports = router;

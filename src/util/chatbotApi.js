@@ -1,10 +1,47 @@
+import { post } from './api';
+
+const useProxy = process.env.REACT_APP_CHATBOT_PROXY === 'true';
+
 const getChatbotApiUrl = () => {
   const baseUrl =
     process.env.REACT_APP_CHATBOT_API_URL || 'https://mock-chatbot-api.balilisting.com';
   return baseUrl;
 };
 
-export const registerClient = async () => {
+export const registerClient = () => {
+  if (useProxy) {
+    return post(
+      getChatbotApiUrl(),
+      {},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } else {
+    return registerClientExternal();
+  }
+};
+
+export const sendQuery = (sessionId, clientId, query) => {
+  if (useProxy) {
+    const body = {
+      session_id: sessionId,
+      client_id: clientId,
+      query: query,
+    };
+    return post(getChatbotApiUrl(), body, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  } else {
+    return sendQueryExternal(sessionId, clientId, query);
+  }
+};
+
+export const registerClientExternal = async () => {
   try {
     const response = await fetch(`${getChatbotApiUrl()}/client/register`, {
       method: 'POST',
@@ -24,7 +61,7 @@ export const registerClient = async () => {
   }
 };
 
-export const sendQuery = async (sessionId, clientId, query) => {
+export const sendQueryExternal = async (sessionId, clientId, query) => {
   try {
     const response = await fetch(`${getChatbotApiUrl()}/chat/query`, {
       method: 'POST',
