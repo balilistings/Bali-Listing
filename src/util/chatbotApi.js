@@ -11,7 +11,7 @@ const getChatbotApiUrl = () => {
 export const registerClient = () => {
   if (useProxy) {
     return post(
-      getChatbotApiUrl(),
+      '/api/chatbot/client/register',
       {},
       {
         headers: {
@@ -31,7 +31,7 @@ export const sendQuery = (sessionId, clientId, query) => {
       client_id: clientId,
       query: query,
     };
-    return post(getChatbotApiUrl(), body, {
+    return post('/api/chatbot/chat/query', body, {
       headers: {
         'Content-Type': 'application/json',
       },
