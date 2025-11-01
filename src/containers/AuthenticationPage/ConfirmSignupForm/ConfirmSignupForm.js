@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Form as FinalForm } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
 import classNames from 'classnames';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { propTypes } from '../../../util/types';
@@ -28,248 +29,278 @@ import css from './ConfirmSignupForm.module.css';
 const getSoleUserTypeMaybe = userTypes =>
   Array.isArray(userTypes) && userTypes.length === 1 ? userTypes[0].userType : null;
 
-const ConfirmSignupFormComponent = props => (
-  <FinalForm
-    {...props}
-    mutators={{ ...arrayMutators }}
-    initialValues={{ userType: props.preselectedUserType || getSoleUserTypeMaybe(props.userTypes) }}
-    render={formRenderProps => {
+const ConfirmSignupFormComponent = props => {
+  const { history, location, ...rest } = props;
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    if (formRef.current) {
       const {
-        rootClassName,
-        className,
-        formId,
-        handleSubmit,
-        inProgress,
-        invalid,
-        intl,
-        termsAndConditions,
-        authInfo,
-        idp,
-        preselectedUserType,
-        userTypes,
-        userFields,
-        values,
         form,
-      } = formRenderProps;
-
-      const { userType, selfieDocumentLink, pub_role } = values || {};
-
-      // email
-      const emailRequired = validators.required(
-        intl.formatMessage({
-          id: 'ConfirmSignupForm.emailRequired',
-        })
-      );
-      const emailValid = validators.emailFormatValid(
-        intl.formatMessage({
-          id: 'ConfirmSignupForm.emailInvalid',
-        })
-      );
-
-      // Custom user fields. Since user types are not supported here,
-      // only fields with no user type id limitation are selected.
-
-      const filterUserFields =
-        pub_role === undefined
-          ? userFields.filter(
-              elm =>
-                ![
-                  'companyname',
-                  'id_card_nik',
-                  'id_npwp_nik',
-                  'company_address',
-                  'company_registration',
-                ].includes(elm.key)
-            )
-          : pub_role === 'individual'
-          ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
-          : pub_role === 'freelance'
-          ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
-          : pub_role === 'company'
-          ? userFields.filter(elm =>
-              ['companyname', 'company_address', 'company_registration', 'role'].includes(elm.key)
-            )
-          : [];
-
-      const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
-
-      // Separate fields based on pub_role value
-      const roleSpecificField = userFieldProps.find(({ key }) => key === 'pub_role');
-      const otherUserFields = userFieldProps.filter(({ key }) => key !== 'pub_role');
-
-      const noUserTypes = !userType && !(userTypes?.length > 0);
-      const userTypeConfig = userTypes.find(config => config.userType === userType);
-      const showDefaultUserFields = userType || noUserTypes;
-      const showCustomUserFields = (userType || noUserTypes) && userFieldProps?.length > 0;
-
-      const classes = classNames(rootClassName || css.root, className);
-      const submitInProgress = inProgress;
-
-      let providerDisabled = false;
-      if (userType === 'provider') {
-        providerDisabled =
-          pub_role === 'company'
-            ? !values.companyDocumentLink
-            : !values.idDocumentLink || !selfieDocumentLink;
+        initialValues: { userType },
+      } = formRef.current.getState();
+      const search = new URLSearchParams(location.search);
+      const userTypeInURL = search.get('userType');
+      if (userTypeInURL && userType !== userTypeInURL) {
+        form.change('userType', userTypeInURL);
       }
+    }
+  }, [location.search]);
 
-      const submitDisabled = invalid || submitInProgress || providerDisabled;
+  return (
+    <FinalForm
+      {...rest}
+      mutators={{ ...arrayMutators }}
+      initialValues={{ userType: props.preselectedUserType || getSoleUserTypeMaybe(props.userTypes) }}
+      render={formRenderProps => {
+        const {
+          rootClassName,
+          className,
+          formId,
+          handleSubmit,
+          inProgress,
+          invalid,
+          intl,
+          termsAndConditions,
+          authInfo,
+          idp,
+          preselectedUserType,
+          userTypes,
+          userFields,
+          values,
+          form,
+        } = formRenderProps;
 
-      // If authInfo is not available we should not show the ConfirmForm
-      if (!authInfo) {
-        return;
-      }
+        const { userType, selfieDocumentLink, pub_role } = values || {};
 
-      // Initial values from idp provider
-      const { email, firstName, lastName } = authInfo;
+        // email
+        const emailRequired = validators.required(
+          intl.formatMessage({
+            id: 'ConfirmSignupForm.emailRequired',
+          })
+        );
+        const emailValid = validators.emailFormatValid(
+          intl.formatMessage({
+            id: 'ConfirmSignupForm.emailInvalid',
+          })
+        );
 
-      const handleSelfieDocument = file => {
-        form.change('selfieDocumentLink', file);
-      };
+        // Custom user fields. Since user types are not supported here,
+        // only fields with no user type id limitation are selected.
 
-      const handleCompanyOrIdDocument = file => {
-        form.change('companyDocumentLink', file);
-        form.change('idDocumentLink', file);
-      };
+        const filterUserFields =
+          pub_role === undefined
+            ? userFields.filter(
+                elm =>
+                  ![
+                    'companyname',
+                    'id_card_nik',
+                    'id_npwp_nik',
+                    'company_address',
+                    'company_registration',
+                  ].includes(elm.key)
+              )
+            : pub_role === 'individual'
+            ? userFields.filter(elm => ['id_card_nik', 'role'].includes(elm.key))
+            : pub_role === 'freelance'
+            ? userFields.filter(elm => ['id_npwp_nik', 'role'].includes(elm.key))
+            : pub_role === 'company'
+            ? userFields.filter(elm =>
+                ['companyname', 'company_address', 'company_registration', 'role'].includes(
+                  elm.key
+                )
+              )
+            : [];
 
-      return (
-        <Form className={classes} onSubmit={handleSubmit}>
-          <FieldSelectUserType
-            name="userType"
-            userTypes={userTypes}
-            hasExistingUserType={!!preselectedUserType}
-            intl={intl}
-            validate={validators.required(
-              intl.formatMessage({
-                id: 'FieldSelectUserType.required',
-              })
-            )}
-          />
+        const userFieldProps = getPropsForCustomUserFieldInputs(filterUserFields, intl, userType);
 
-          {showDefaultUserFields ? (
-            <div className={css.defaultUserFields}>
-              <FieldTextInput
-                type="email"
-                id={formId ? `${formId}.email` : 'email'}
-                name="email"
-                autoComplete="email"
-                label={intl.formatMessage({
-                  id: 'ConfirmSignupForm.emailLabel',
-                })}
-                placeholder={intl.formatMessage({
-                  id: 'ConfirmSignupForm.emailPlaceholder',
-                })}
-                initialValue={email}
-                validate={validators.composeValidators(emailRequired, emailValid)}
-              />
-              <div className={css.name}>
+        // Separate fields based on pub_role value
+        const roleSpecificField = userFieldProps.find(({ key }) => key === 'pub_role');
+        const otherUserFields = userFieldProps.filter(({ key }) => key !== 'pub_role');
+
+        const noUserTypes = !userType && !(userTypes?.length > 0);
+        const userTypeConfig = userTypes.find(config => config.userType === userType);
+        const showDefaultUserFields = userType || noUserTypes;
+        const showCustomUserFields = (userType || noUserTypes) && userFieldProps?.length > 0;
+
+        const classes = classNames(rootClassName || css.root, className);
+        const submitInProgress = inProgress;
+
+        let providerDisabled = false;
+        if (userType === 'provider') {
+          providerDisabled =
+            pub_role === 'company'
+              ? !values.companyDocumentLink
+              : !values.idDocumentLink || !selfieDocumentLink;
+        }
+
+        const submitDisabled = invalid || submitInProgress || providerDisabled;
+
+        // If authInfo is not available we should not show the ConfirmForm
+        if (!authInfo) {
+          return;
+        }
+
+        // Initial values from idp provider
+        const { email, firstName, lastName } = authInfo;
+
+        const handleSelfieDocument = file => {
+          form.change('selfieDocumentLink', file);
+        };
+
+        const handleCompanyOrIdDocument = file => {
+          form.change('companyDocumentLink', file);
+          form.change('idDocumentLink', file);
+        };
+
+        const handleUserTypeChange = value => {
+          const search = new URLSearchParams(location.search);
+          search.set('userType', value);
+          history.push({
+            search: search.toString(),
+          });
+        };
+
+        return (
+          <Form className={classes} onSubmit={handleSubmit}>
+            <FieldSelectUserType
+              name="userType"
+              userTypes={userTypes}
+              hasExistingUserType={!!preselectedUserType}
+              intl={intl}
+              validate={validators.required(
+                intl.formatMessage({
+                  id: 'FieldSelectUserType.required',
+                })
+              )}
+              onChanged={handleUserTypeChange}
+            />
+
+            {showDefaultUserFields ? (
+              <div className={css.defaultUserFields}>
                 <FieldTextInput
-                  className={css.firstNameRoot}
-                  type="text"
-                  id={formId ? `${formId}.firstName` : 'firstName'}
-                  name="firstName"
-                  autoComplete="given-name"
+                  type="email"
+                  id={formId ? `${formId}.email` : 'email'}
+                  name="email"
+                  autoComplete="email"
                   label={intl.formatMessage({
-                    id: 'ConfirmSignupForm.firstNameLabel',
+                    id: 'ConfirmSignupForm.emailLabel',
                   })}
                   placeholder={intl.formatMessage({
-                    id: 'ConfirmSignupForm.firstNamePlaceholder',
+                    id: 'ConfirmSignupForm.emailPlaceholder',
                   })}
-                  initialValue={firstName}
-                  validate={validators.required(
-                    intl.formatMessage({
-                      id: 'ConfirmSignupForm.firstNameRequired',
-                    })
-                  )}
+                  initialValue={email}
+                  validate={validators.composeValidators(emailRequired, emailValid)}
                 />
-                <FieldTextInput
-                  className={css.lastNameRoot}
-                  type="text"
-                  id={formId ? `${formId}.lastName` : 'lastName'}
-                  name="lastName"
-                  autoComplete="family-name"
-                  label={intl.formatMessage({
-                    id: 'ConfirmSignupForm.lastNameLabel',
-                  })}
-                  placeholder={intl.formatMessage({
-                    id: 'ConfirmSignupForm.lastNamePlaceholder',
-                  })}
-                  initialValue={lastName}
-                  validate={validators.required(
-                    intl.formatMessage({
-                      id: 'ConfirmSignupForm.lastNameRequired',
-                    })
-                  )}
+                <div className={css.name}>
+                  <FieldTextInput
+                    className={css.firstNameRoot}
+                    type="text"
+                    id={formId ? `${formId}.firstName` : 'firstName'}
+                    name="firstName"
+                    autoComplete="given-name"
+                    label={intl.formatMessage({
+                      id: 'ConfirmSignupForm.firstNameLabel',
+                    })}
+                    placeholder={intl.formatMessage({
+                      id: 'ConfirmSignupForm.firstNamePlaceholder',
+                    })}
+                    initialValue={firstName}
+                    validate={validators.required(
+                      intl.formatMessage({
+                        id: 'ConfirmSignupForm.firstNameRequired',
+                      })
+                    )}
+                  />
+                  <FieldTextInput
+                    className={css.lastNameRoot}
+                    type="text"
+                    id={formId ? `${formId}.lastName` : 'lastName'}
+                    name="lastName"
+                    autoComplete="family-name"
+                    label={intl.formatMessage({
+                      id: 'ConfirmSignupForm.lastNameLabel',
+                    })}
+                    placeholder={intl.formatMessage({
+                      id: 'ConfirmSignupForm.lastNamePlaceholder',
+                    })}
+                    initialValue={lastName}
+                    validate={validators.required(
+                      intl.formatMessage({
+                        id: 'ConfirmSignupForm.lastNameRequired',
+                      })
+                    )}
+                  />
+                </div>
+
+                <UserFieldDisplayName
+                  formName="ConfirmSignupForm"
+                  className={css.row}
+                  userTypeConfig={userTypeConfig}
+                  intl={intl}
+                />
+                <UserFieldPhoneNumber
+                  formName="ConfirmSignupForm"
+                  className={css.row}
+                  userTypeConfig={userTypeConfig}
+                  intl={intl}
                 />
               </div>
+            ) : null}
 
-              <UserFieldDisplayName
-                formName="ConfirmSignupForm"
-                className={css.row}
-                userTypeConfig={userTypeConfig}
-                intl={intl}
+            {/* Render the pub_role field separately if it exists */}
+            {roleSpecificField ? (
+              <div className={css.customFields}>
+                <CustomExtendedDataField {...roleSpecificField} formId={formId} />
+              </div>
+            ) : null}
+
+            {userType === 'provider' ? (
+              <ImageUploader
+                label={
+                  pub_role === 'company'
+                    ? intl.formatMessage({ id: 'SignupForm.companyNib' })
+                    : intl.formatMessage({ id: 'SignupForm.idDocument' })
+                }
+                columns={1}
+                dropzoneHeight="100px"
+                labelText=""
+                maxImages={1}
+                onProfileChange={handleCompanyOrIdDocument}
               />
-              <UserFieldPhoneNumber
-                formName="ConfirmSignupForm"
-                className={css.row}
-                userTypeConfig={userTypeConfig}
-                intl={intl}
+            ) : null}
+
+            {showCustomUserFields ? (
+              <div className={css.customFields}>
+                {otherUserFields.map(({ key, ...fieldProps }) => (
+                  <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
+                ))}
+              </div>
+            ) : null}
+
+            {userType === 'provider' && pub_role && pub_role !== 'company' ? (
+              <ImageUploader
+                label={intl.formatMessage({ id: 'SignupForm.selfieDocument' })}
+                columns={1}
+                dropzoneHeight="100px"
+                labelText=""
+                maxImages={1}
+                onProfileChange={handleSelfieDocument}
               />
+            ) : null}
+
+            <div className={css.bottomWrapper}>
+              {termsAndConditions}
+              <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
+                <FormattedMessage id="ConfirmSignupForm.signUp" values={{ idp: idp }} />
+              </PrimaryButton>
             </div>
-          ) : null}
-
-          {/* Render the pub_role field separately if it exists */}
-          {roleSpecificField ? (
-            <div className={css.customFields}>
-              <CustomExtendedDataField {...roleSpecificField} formId={formId} />
-            </div>
-          ) : null}
-
-          {userType === 'provider' ? (
-            <ImageUploader
-              label={
-                pub_role === 'company'
-                  ? intl.formatMessage({ id: 'SignupForm.companyNib' })
-                  : intl.formatMessage({ id: 'SignupForm.idDocument' })
-              }
-              columns={1}
-              dropzoneHeight="100px"
-              labelText=""
-              maxImages={1}
-              onProfileChange={handleCompanyOrIdDocument}
-            />
-          ) : null}
-
-          {showCustomUserFields ? (
-            <div className={css.customFields}>
-              {otherUserFields.map(({ key, ...fieldProps }) => (
-                <CustomExtendedDataField key={key} {...fieldProps} formId={formId} />
-              ))}
-            </div>
-          ) : null}
-
-          {userType === 'provider' && pub_role && pub_role !== 'company' ? (
-            <ImageUploader
-              label={intl.formatMessage({ id: 'SignupForm.selfieDocument' })}
-              columns={1}
-              dropzoneHeight="100px"
-              labelText=""
-              maxImages={1}
-              onProfileChange={handleSelfieDocument}
-            />
-          ) : null}
-
-          <div className={css.bottomWrapper}>
-            {termsAndConditions}
-            <PrimaryButton type="submit" inProgress={submitInProgress} disabled={submitDisabled}>
-              <FormattedMessage id="ConfirmSignupForm.signUp" values={{ idp: idp }} />
-            </PrimaryButton>
-          </div>
-        </Form>
-      );
-    }}
-  />
-);
+          </Form>
+        );
+      }}
+    />
+  );
+};
 
 /**
  * A component that renders the confirm signup form, which is used with SSO authentication.
@@ -288,7 +319,22 @@ const ConfirmSignupFormComponent = props => (
  */
 const ConfirmSignupForm = props => {
   const intl = useIntl();
-  return <ConfirmSignupFormComponent {...props} intl={intl} />;
+  const history = useHistory();
+  const location = useLocation();
+  const { preselectedUserType, userTypes, ...rest } = props;
+  const queryUserType = new URLSearchParams(location.search).get('userType');
+  const soleUserType = getSoleUserTypeMaybe(userTypes);
+
+  return (
+    <ConfirmSignupFormComponent
+      {...rest}
+      intl={intl}
+      history={history}
+      location={location}
+      userTypes={userTypes}
+      preselectedUserType={queryUserType || preselectedUserType || soleUserType}
+    />
+  );
 };
 
 export default ConfirmSignupForm;

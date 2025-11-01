@@ -620,7 +620,8 @@ export const AuthenticationPageComponent = props => {
   const isConfirm = tab === 'confirm';
   const userTypeInPushState = location.state?.userType || null;
   const userTypeInAuthInfo = isConfirm && authInfo?.userType ? authInfo?.userType : null;
-  const userType = pathParams?.userType || userTypeInPushState || userTypeInAuthInfo || null;
+  const userTypeInURL = new URLSearchParams(location.search).get('userType');
+  const userType = pathParams?.userType || userTypeInPushState || userTypeInAuthInfo || userTypeInURL || null;
 
   const { userTypes = [] } = config.user;
   const preselectedUserType = userTypes.find(conf => conf.userType === userType)?.userType || null;
