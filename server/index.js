@@ -192,6 +192,7 @@ app.get('/sitemap-:resource', sitemapResourceRoute);
 app.get('/site.webmanifest', webmanifestResourceRoute);
 
 const localeMiddleware = require('./localeMiddleware');
+const rewriteMiddleware = require('./rewriteMiddleware');
 
 // These .well-known/* endpoints will be enabled if you are using this template as OIDC proxy
 // https://www.sharetribe.com/docs/cookbook-social-logins-and-sso/setup-open-id-connect-proxy/
@@ -226,37 +227,11 @@ app.use('/api', apiRouter);
 // URL Shortener redirect route
 app.use('/sh', shortUrlRouter);
 
-const supabase = require('./api-util/supabase');
-const { v4: uuidV4, validate: uuidValidate } = require('uuid');
-
 // Middleware for locale detection
 app.use(localeMiddleware);
 
-app.use(async (req, res, next) => {
-  if (req.path.startsWith('/user/')) {
-    const pathParts = req.path.split('/');
-    const slugOrId = pathParts[2];
-
-    if (slugOrId && !uuidValidate(slugOrId)) {
-      try {
-        const { data, error } = await supabase
-          .from('provider_users')
-          .select('id')
-          .eq('slug', slugOrId)
-          .single();
-
-        if (error) {
-          console.error('Error fetching from Supabase:', error);
-        } else if (data) {
-          req.url = req.url.replace(`/user/${slugOrId}`, `/u/${data.id}`);
-        }
-      } catch (err) {
-        console.error('Supabase query failed:', err);
-      }
-    }
-  }
-  next();
-});
+// Middleware to rewrite user URLs from /user/{slug} to /u/{id}
+app.use('/user', rewriteMiddleware);
 
 const noCacheHeaders = {
   'Cache-control': 'no-cache, no-store, must-revalidate',
