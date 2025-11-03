@@ -6,6 +6,7 @@ import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers';
 import { validate as uuidValidate } from 'uuid';
+import { apiBaseUrl, get } from '../../util/api';
 
 const { UUID } = sdkTypes;
 
@@ -278,14 +279,8 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
   if (uuidValidate(slug)) {
     return loadProfileData(new UUID(slug));
   } else {
-    return fetch(`/api/user/${slug}`)
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        } else {
-          throw new Error('Failed to fetch user ID');
-        }
-      })
+    return get(`/api/users/by-slug/${slug}`)
+
       .then(data => {
         return loadProfileData(new UUID(data.userId));
       })

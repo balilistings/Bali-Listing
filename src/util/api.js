@@ -49,7 +49,7 @@ const methods = {
 };
 
 // If server/api returns data from SDK, you should set Content-Type to 'application/transit+json'
-const request = (path, options = {}) => {
+const request = async (path, options = {}) => {
   const url = `${apiBaseUrl()}${path}`;
   const { credentials, headers, body, ...rest } = options;
 
@@ -74,7 +74,7 @@ const request = (path, options = {}) => {
     ...rest,
   };
 
-  return window.fetch(url, fetchOptions).then(res => {
+  return window.fetch(url, fetchOptions).then(async res => {
     const contentTypeHeader = res.headers.get('Content-Type');
     const contentType = contentTypeHeader ? contentTypeHeader.split(';')[0] : null;
 
@@ -102,6 +102,16 @@ export const post = (path, body, options = {}) => {
     ...options,
     method: methods.POST,
     body,
+  };
+
+  return request(path, requestOptions);
+};
+
+// Generic GET request helper
+export const get = (path, options = {}) => {
+  const requestOptions = {
+    ...options,
+    method: methods.GET,
   };
 
   return request(path, requestOptions);

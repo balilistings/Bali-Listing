@@ -244,7 +244,6 @@ app.use(async (req, res, next) => {
           .select('id')
           .eq('slug', slugOrId)
           .single();
-        console.log(data);
 
         if (error) {
           console.error('Error fetching from Supabase:', error);
