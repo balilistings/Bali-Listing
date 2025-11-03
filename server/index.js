@@ -192,6 +192,7 @@ app.get('/sitemap-:resource', sitemapResourceRoute);
 app.get('/site.webmanifest', webmanifestResourceRoute);
 
 const localeMiddleware = require('./localeMiddleware');
+const rewriteMiddleware = require('./rewriteMiddleware');
 
 // These .well-known/* endpoints will be enabled if you are using this template as OIDC proxy
 // https://www.sharetribe.com/docs/cookbook-social-logins-and-sso/setup-open-id-connect-proxy/
@@ -229,6 +230,9 @@ app.use('/sh', shortUrlRouter);
 // Middleware for locale detection
 app.use(localeMiddleware);
 
+// Middleware to rewrite user URLs from /user/{slug} to /u/{id}
+app.use('/user', rewriteMiddleware);
+
 const noCacheHeaders = {
   'Cache-control': 'no-cache, no-store, must-revalidate',
 };
@@ -251,18 +255,18 @@ app.get('*', async (req, res) => {
   // Until we have a better plan for caching dynamic content and we
   // make sure that no sensitive data can appear in the prefetched
   // data, let's disable response caching altogether.
-      // Custom caching for landing page.
-      const { getSupportedLocales } = require('../src/util/translation');
-      const SUPPORTED_LOCALES = getSupportedLocales();
-      const pathParts = req.url.split('/').filter(p => p);
-      const isLandingPage =
-        req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
+  // Custom caching for landing page.
+  const { getSupportedLocales } = require('../src/util/translation');
+  const SUPPORTED_LOCALES = getSupportedLocales();
+  const pathParts = req.url.split('/').filter(p => p);
+  const isLandingPage =
+    req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
 
-      if (isLandingPage && PAGE_CACHE_DURATION > 0) {
-        res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
-      } else {
-        res.set(noCacheHeaders);
-      }
+  if (isLandingPage && PAGE_CACHE_DURATION > 0) {
+    res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
+  } else {
+    res.set(noCacheHeaders);
+  }
 
   // Get chunk extractors from node and web builds
   // https://loadable-components.com/docs/api-loadable-server/#chunkextractor

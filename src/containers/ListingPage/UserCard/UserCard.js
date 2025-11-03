@@ -11,6 +11,7 @@ import { AvatarLarge, NamedLink, InlineTextButton } from '../../../components';
 import IconCollection from '../../../components/IconCollection/IconCollection';
 import css from './UserCard.module.css';
 import { useSelector } from 'react-redux';
+import { get } from '../../../util/api';
 
 // Approximated collapsed size so that there are ~three lines of text
 // in the desktop layout in the author section of the ListingPage.
@@ -78,16 +79,33 @@ const ExpandableBio = props => {
  */
 const UserCard = props => {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [authorSlug, setAuthorSlug] = useState(null);
 
-  const { rootClassName, className, user, currentUser, onContactUser, showContact = true, listingId } = props;
+    const { rootClassName, className, user, currentUser, onContactUser, showContact = true, listingId } = props;
 
   const userIsCurrentUser = user && user.type === 'currentUser';
   const ensuredUser = userIsCurrentUser ? ensureCurrentUser(user) : ensureUser(user);
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
+
+  useEffect(() => {
+    setMounted(true);
+    const fetchAuthorSlug = async () => {
+      const userId = ensuredUser?.id?.uuid;
+      if (!userId) return;
+
+      try {
+        const response = await get(`/api/users/${userId}/slug`);
+        setAuthorSlug(response.slug);
+      } catch (err) {
+        console.error('Failed to fetch author slug:', err);
+      }
+    };
+
+    fetchAuthorSlug();
+  }, [ensuredUser?.id?.uuid]);
+
+
   const isCurrentUser =
     ensuredUser.id && ensuredCurrentUser.id && ensuredUser.id.uuid === ensuredCurrentUser.id.uuid;
   const { displayName, bio, publicData: userPublicData } = ensuredUser.attributes.profile;
@@ -136,40 +154,27 @@ const UserCard = props => {
       </NamedLink>
     ) : null;
 
-  const links = ensuredUser.id ? (
-    <p className={linkClasses}>
-      <NamedLink className={css.link} name="ProfilePage" params={{ id: ensuredUser.id.uuid }}>
-        <FormattedMessage id="UserCard.viewProfileLink" />
-      </NamedLink>
-      {separator}
-      {mounted && isCurrentUser ? editProfileMobile : contact}
-    </p>
-  ) : null;
-
   return (
     <div className={classes}>
-      <div className={css.content}>
-       <div className={css.avatarWrapper}>
-       <AvatarLarge className={css.avatar} user={user} />
-      <span className={css.profileBadge}>
-      <IconCollection name="icon_profile_badge" />
-      </span>
-       </div>
+      <NamedLink className={css.content} name={authorSlug ? "ProfilePageSlug" : "ProfilePage"} params={{ id: authorSlug ? authorSlug : ensuredUser.id.uuid }}>
+        <div className={css.avatarWrapper}>
+          <AvatarLarge className={css.avatar} user={user} disableProfileLink />
+          <span className={css.profileBadge}>
+            <IconCollection name="icon_profile_badge" />
+          </span>
+        </div>
         <div className={css.info}>
           <div className={css.headingRow}>
             <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
             {editProfileDesktop}
           </div>
-         
           {/* {links} */}
           <p className={css.owner}>
             <FormattedMessage id={agentorowner === 'agent' ? 'UserCard.Agent' : 'UserCard.Owner'} />
           </p>
         </div>
-      </div>
-      {hasBio ? <h5 className={css.aboutTitle}>
-      About:
-      </h5> : null}
+      </NamedLink>
+      {hasBio ? <h5 className={css.aboutTitle}>About:</h5> : null}
       {hasBio ? <ExpandableBio className={css.mobileBio} bio={bio} /> : null}
     </div>
   );

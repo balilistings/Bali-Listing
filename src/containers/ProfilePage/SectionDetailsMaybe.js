@@ -52,8 +52,8 @@ const SectionDetailsMaybe = props => {
       <ul className={css.details}>
         {existingUserFields.map(detail => (
           <li key={detail.key} className={css.detailsRow}>
-            <span className={css.detailLabel}>{detail.label}</span>
-            <span>{detail.value}</span>
+            <FormattedMessage id={detail.label} />
+            <FormattedMessage id={detail.value} />
           </li>
         ))}
       </ul>

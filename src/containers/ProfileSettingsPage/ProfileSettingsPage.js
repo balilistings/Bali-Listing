@@ -34,17 +34,20 @@ const onImageUploadHandler = (values, fn) => {
 };
 
 const ViewProfileLink = props => {
-  const { userUUID, isUnauthorizedUser } = props;
+  const { userUUID, slug, isUnauthorizedUser } = props;
+  const pageName = slug ? "ProfilePageSlug" : "ProfilePageVariant";
+  const id = slug ? slug : userUUID;
+
   return userUUID && isUnauthorizedUser ? (
     <NamedLink
       className={css.profileLink}
-      name="ProfilePageVariant"
-      params={{ id: userUUID, variant: PROFILE_PAGE_PENDING_APPROVAL_VARIANT }}
+      name={pageName}
+      params={{ id, variant: PROFILE_PAGE_PENDING_APPROVAL_VARIANT }}
     >
       <FormattedMessage id="ProfileSettingsPage.viewProfileLink" />
     </NamedLink>
   ) : userUUID ? (
-    <NamedLink className={css.profileLink} name="ProfilePage" params={{ id: userUUID }}>
+    <NamedLink className={css.profileLink} name={pageName} params={{ id }}>
       <FormattedMessage id="ProfileSettingsPage.viewProfileLink" />
     </NamedLink>
   ) : null;
@@ -195,7 +198,7 @@ export const ProfileSettingsPageComponent = props => {
               <FormattedMessage id="ProfileSettingsPage.heading" />
             </H3>
 
-            <ViewProfileLink userUUID={user?.id?.uuid} isUnauthorizedUser={isUnauthorizedUser} />
+            <ViewProfileLink userUUID={user?.id?.uuid} slug={user?.slug} isUnauthorizedUser={isUnauthorizedUser} />
           </div>
           {profileSettingsForm}
         </div>
