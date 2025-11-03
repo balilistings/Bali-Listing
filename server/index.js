@@ -226,8 +226,38 @@ app.use('/api', apiRouter);
 // URL Shortener redirect route
 app.use('/sh', shortUrlRouter);
 
+const supabase = require('./api-util/supabase');
+const { v4: uuidV4, validate: uuidValidate } = require('uuid');
+
 // Middleware for locale detection
 app.use(localeMiddleware);
+
+app.use(async (req, res, next) => {
+  if (req.path.startsWith('/user/')) {
+    const pathParts = req.path.split('/');
+    const slugOrId = pathParts[2];
+
+    if (slugOrId && !uuidValidate(slugOrId)) {
+      try {
+        const { data, error } = await supabase
+          .from('provider_users')
+          .select('id')
+          .eq('slug', slugOrId)
+          .single();
+        console.log(data);
+
+        if (error) {
+          console.error('Error fetching from Supabase:', error);
+        } else if (data) {
+          req.url = req.url.replace(`/user/${slugOrId}`, `/u/${data.id}`);
+        }
+      } catch (err) {
+        console.error('Supabase query failed:', err);
+      }
+    }
+  }
+  next();
+});
 
 const noCacheHeaders = {
   'Cache-control': 'no-cache, no-store, must-revalidate',
@@ -251,18 +281,18 @@ app.get('*', async (req, res) => {
   // Until we have a better plan for caching dynamic content and we
   // make sure that no sensitive data can appear in the prefetched
   // data, let's disable response caching altogether.
-      // Custom caching for landing page.
-      const { getSupportedLocales } = require('../src/util/translation');
-      const SUPPORTED_LOCALES = getSupportedLocales();
-      const pathParts = req.url.split('/').filter(p => p);
-      const isLandingPage =
-        req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
+  // Custom caching for landing page.
+  const { getSupportedLocales } = require('../src/util/translation');
+  const SUPPORTED_LOCALES = getSupportedLocales();
+  const pathParts = req.url.split('/').filter(p => p);
+  const isLandingPage =
+    req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
 
-      if (isLandingPage && PAGE_CACHE_DURATION > 0) {
-        res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
-      } else {
-        res.set(noCacheHeaders);
-      }
+  if (isLandingPage && PAGE_CACHE_DURATION > 0) {
+    res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
+  } else {
+    res.set(noCacheHeaders);
+  }
 
   // Get chunk extractors from node and web builds
   // https://loadable-components.com/docs/api-loadable-server/#chunkextractor

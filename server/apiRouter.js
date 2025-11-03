@@ -22,6 +22,7 @@ const { authenticateFacebook, authenticateFacebookCallback } = require('./api/au
 const { authenticateGoogle, authenticateGoogleCallback } = require('./api/auth/google');
 const { generatePresignedUrlR2 } = require('./api/R2');
 const { getConversionRate } = require('./api/currency');
+const { getUserIdBySlug } = require('./api/user');
 // URL Shortener endpoints
 const urlShortenerRouter = require('./api/url-shortener/urlShortenerRouter');
 const chatbotRouter = require('./api/chatbot/chatbotRouter');
@@ -93,6 +94,9 @@ router.post('/r2/generate-presigned-url', generatePresignedUrlR2);
 
 // currency conversion endpoint
 router.get('/currency/conversion-rate', getConversionRate);
+
+// User endpoint
+router.get('/user/:slug', getUserIdBySlug);
 
 // URL Shortener endpoints
 router.use('/url-shortener', urlShortenerRouter);
