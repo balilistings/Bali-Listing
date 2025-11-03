@@ -20,11 +20,32 @@ const senderDetails = {
   },
 };
 
+// Helper function to convert price string to pure number
+const convertPriceToNumber = (priceString, rate) => {
+  if (!priceString) return 0;
+  // Remove "Rp", spaces, commas, and any non-digit characters except decimal points
+  const isRental =
+    priceString.endsWith('year') || priceString.endsWith('month') || priceString.endsWith('week');
+  const suffix = isRental ? priceString.split('/').pop() : '';
+
+  const numericString = priceString.replace(/[^\d.]/g, '').replace(/\./g, '');
+  let intPrice = parseInt(numericString, 10) * rate || 0;
+
+  if (!isRental) intPrice /= 100;
+  const formattedPrice = intPrice.toLocaleString('en-US');
+
+  return isRental ? `${formattedPrice}/${suffix}` : formattedPrice;
+};
+
 // MessageItem component for rendering individual messages
 const MessageItem = memo(({ message }) => {
   const { sender, text, results } = message;
   const { avatar: Avatar, name } = senderDetails[sender];
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
 
   const hasManyResults = Array.isArray(results) && results.length > 3;
   const visibleResults = hasManyResults && !isExpanded ? results.slice(0, 3) : results;
@@ -34,9 +55,7 @@ const MessageItem = memo(({ message }) => {
       <Avatar className="avatar" aria-hidden="true" />
       <div className="message-content">
         <div className="message">
-          <p className={sender === 'admin' ? 'username-admin' : 'username'}>
-            {name}
-          </p>
+          <p className={sender === 'admin' ? 'username-admin' : 'username'}>{name}</p>
           {text.split('\n').map((line, i) => (
             <p key={i} className="message-text">
               {line}
@@ -58,7 +77,13 @@ const MessageItem = memo(({ message }) => {
                   <div className="result">
                     <div className="result-title">{result.title}</div>
                     <div className="result-description">{result.description}</div>
-                    <div className="result-price">{result.price}</div>
+                    <div className="result-price">
+                      {needPriceConversion ? 'USD' : 'Rp'}{' '}
+                      {convertPriceToNumber(
+                        result.price,
+                        needPriceConversion ? USDConversionRate : 1
+                      )}
+                    </div>
                   </div>
                 </a>
               ))}
@@ -113,8 +138,8 @@ const ChatInput = memo(({ inputValue, setInputValue, handleSend, onClose, isSess
         autoComplete="off"
         aria-label="Type your message"
       />
-      <button 
-        type="submit" 
+      <button
+        type="submit"
         disabled={inputValue.trim() === '' || !isSessionActive}
         aria-label="Send message"
       >
@@ -129,6 +154,7 @@ const ChatInput = memo(({ inputValue, setInputValue, handleSend, onClose, isSess
 
 // Main Message component
 import { getChatMessagesKey } from './storageKeys';
+import { useSelector } from 'react-redux';
 
 // ... (rest of the imports)
 
@@ -204,7 +230,11 @@ const Message = ({ onClose, className, session }) => {
 
     if (session) {
       try {
-        const botResponse = await sendQuery(session.session_id, session.client_id, currentInputValue);
+        const botResponse = await sendQuery(
+          session.session_id,
+          session.client_id,
+          currentInputValue
+        );
         const messageText = botResponse.needs_clarification
           ? botResponse.clarification_question
           : botResponse.ai_message;
@@ -232,8 +262,14 @@ const Message = ({ onClose, className, session }) => {
   return (
     <div className={`chat-widget ${className || ''}`} role="dialog" aria-labelledby="chat-header">
       <ChatHeader />
-      
-      <div ref={chatBodyRef} className="chat-body" role="log" aria-live="polite" aria-label="Chat messages">
+
+      <div
+        ref={chatBodyRef}
+        className="chat-body"
+        role="log"
+        aria-live="polite"
+        aria-label="Chat messages"
+      >
         {messages.map((msg, index) => (
           <MessageItem key={index} message={msg} />
         ))}
@@ -253,7 +289,7 @@ const Message = ({ onClose, className, session }) => {
           </div>
         )}
       </div>
-      
+
       <ChatInput
         inputValue={inputValue}
         setInputValue={setInputValue}
