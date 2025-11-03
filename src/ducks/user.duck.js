@@ -3,13 +3,14 @@ import { denormalisedResponseEntities, ensureOwnListing } from '../util/data';
 import * as log from '../util/log';
 import { LISTING_STATE_DRAFT } from '../util/types';
 import { storableError } from '../util/errors';
-import { isUserAuthorized } from '../util/userHelpers';
+import { isUserAuthorized, isUserProvider } from '../util/userHelpers';
 import { getTransitionsNeedingProviderAttention } from '../transactions/transaction';
 import Cookies from 'js-cookie';
 
 import { authInfo } from './auth.duck';
 import { stripeAccountCreateSuccess } from './stripeConnectAccount.duck';
 import { saveCookieConsent } from './cookieConsent.duck';
+import { get } from '../util/api';
 
 // ================ Action types ================ //
 
@@ -416,6 +417,16 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
 
       // set current user id to the logger
       log.setUserId(currentUser.id.uuid);
+
+      if (isUserProvider(currentUser)) {
+        get(`/api/users/${currentUser.id.uuid}/slug`)
+          .then(response => {
+            currentUser.slug = response.slug;
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      }
       dispatch(currentUserShowSuccess(currentUser));
       return currentUser;
     })
