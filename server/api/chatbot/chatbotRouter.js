@@ -4,7 +4,7 @@ const axios = require('axios');
 const router = express.Router();
 
 const getChatbotApiUrl = () => {
-  return process.env.CHATBOT_API_URL || 'https://mock-chatbot-api.balilisting.com';
+  return process.env.REACT_APP_CHATBOT_API_URL || 'https://mock-chatbot-api.balilisting.com';
 };
 
 router.post('/client/register', async (req, res) => {
