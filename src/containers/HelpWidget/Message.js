@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback, memo, useRef } from 'react';
 import './Message.css';
+import { getChatMessagesKey, getListingDataKey } from './storageKeys';
+import { useSelector } from 'react-redux';
+import { types as sdkTypes } from '../../util/sdkLoader';
 
 import { sendQuery } from '../../util/chatbotApi';
 
@@ -8,6 +11,7 @@ import { ReactComponent as Person1 } from '../../assets/help-widget/person-1.svg
 import { ReactComponent as UserAvatar } from '../../assets/help-widget/usericon.svg';
 import { IoIosSend } from 'react-icons/io';
 import { IconClose } from '../../components';
+import IconCollection from '../../components/IconCollection/IconCollection';
 
 const senderDetails = {
   admin: {
@@ -37,15 +41,111 @@ const convertPriceToNumber = (priceString, rate) => {
   return isRental ? `${formattedPrice}/${suffix}` : formattedPrice;
 };
 
+// ResultItem component for rendering individual result links
+const ResultItem = ({ result }) => {
+  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
+  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
+  const needPriceConversion = selectedCurrency === 'USD';
+
+  // Extract listing ID once
+  const listingId = result.link.split('/l/').pop();
+  const storageKey = getListingDataKey(listingId);
+
+  const [listingData, setListingData] = useState(() => {
+    // Initialize state from sessionStorage
+    try {
+      const cachedData = sessionStorage.getItem(storageKey);
+      if (cachedData) {
+        return JSON.parse(cachedData);
+      }
+    } catch (error) {
+      console.error('Could not load listing data from sessionStorage', error);
+    }
+    return null;
+  });
+
+  useEffect(() => {
+    const sdk = window.app.sdk;
+    if (!sdk || listingData) return; // Skip if SDK not available or we already have data
+
+    // Only fetch from SDK if we don't have cached data
+    const show = sdk.listings.show({
+      id: new sdkTypes.UUID(listingId),
+      include: ['author', 'author.profileImage', 'images'],
+      'fields.listing': ['title'],
+      'fields.image': ['variants.scaled-small'],
+    });
+    show.then(res => {
+      setListingData(res.data);
+      // Save to sessionStorage for future use
+      try {
+        sessionStorage.setItem(storageKey, JSON.stringify(res.data));
+      } catch (error) {
+        console.error('Could not save listing data to sessionStorage', error);
+      }
+    });
+  }, [listingId, storageKey, listingData]);
+
+  // Get thumbnail image from first included image
+  const thumbnailUrl = listingData?.included?.find(item => item.type === 'image')?.attributes
+    ?.variants?.['scaled-small']?.url;
+
+  // Get lister name from included user data
+  const listerName = listingData?.included?.find(item => item.type === 'user')?.attributes?.profile
+    ?.displayName;
+
+  return (
+    <a href={result.link} target="_blank" rel="noopener noreferrer" className="result-link">
+      <div className="result">
+        <div className="result-header">
+          {thumbnailUrl ? (
+            <img
+              src={thumbnailUrl}
+              alt={listerName || 'Listing image'}
+              className="result-thumbnail"
+            />
+          ) : (
+            <div className="result-thumbnail placeholder">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z"
+                  fill="white"
+                  opacity="0.5"
+                />
+              </svg>
+            </div>
+          )}
+          <div className="result-meta">
+            <div className="result-title">{result.title}</div>
+            {listerName && (
+              <div className="result-lister">
+                {listerName}
+                <IconCollection name="icon_profile_badge" />
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="result-description">{result.description}</div>
+        <div className="result-price">
+          {needPriceConversion ? 'USD' : 'Rp'}{' '}
+          {convertPriceToNumber(result.price, needPriceConversion ? USDConversionRate : 1)}
+        </div>
+      </div>
+    </a>
+  );
+};
+
 // MessageItem component for rendering individual messages
 const MessageItem = memo(({ message }) => {
   const { sender, text, results } = message;
   const { avatar: Avatar, name } = senderDetails[sender];
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
-  const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
-  const needPriceConversion = selectedCurrency === 'USD';
 
   const hasManyResults = Array.isArray(results) && results.length > 3;
   const visibleResults = hasManyResults && !isExpanded ? results.slice(0, 3) : results;
@@ -67,25 +167,7 @@ const MessageItem = memo(({ message }) => {
           <>
             <div className={`results ${hasManyResults && !isExpanded ? 'results-collapsed' : ''}`}>
               {visibleResults.map((result, index) => (
-                <a
-                  key={index}
-                  href={result.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="result-link"
-                >
-                  <div className="result">
-                    <div className="result-title">{result.title}</div>
-                    <div className="result-description">{result.description}</div>
-                    <div className="result-price">
-                      {needPriceConversion ? 'USD' : 'Rp'}{' '}
-                      {convertPriceToNumber(
-                        result.price,
-                        needPriceConversion ? USDConversionRate : 1
-                      )}
-                    </div>
-                  </div>
-                </a>
+                <ResultItem key={index} result={result} />
               ))}
             </div>
             {hasManyResults && !isExpanded && (
@@ -151,12 +233,6 @@ const ChatInput = memo(({ inputValue, setInputValue, handleSend, onClose, isSess
     </button>
   </div>
 ));
-
-// Main Message component
-import { getChatMessagesKey } from './storageKeys';
-import { useSelector } from 'react-redux';
-
-// ... (rest of the imports)
 
 // Main Message component
 const Message = ({ onClose, className, session }) => {

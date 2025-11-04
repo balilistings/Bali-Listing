@@ -9,6 +9,11 @@
   box-shadow: none;
   display: flex;
   flex-direction: column;
+
+  & a {
+    text-decoration: none;
+    color: inherit;
+  }
 }
 
 /* Header */
@@ -209,11 +214,60 @@
   display: block;
 }
 
+.result-header {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.result-thumbnail {
+  width: 75px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.icon_profile_badge {
+  width: 12px;
+  height: 12px;
+}
+
+.result-thumbnail.placeholder {
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-meta {
+  flex: 1;
+  min-width: 0; /* Allows text to ellipsis */
+}
+
 .result-title {
   font-weight: bold;
   font-size: 14px;
   color: #333;
   margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;  
+}
+
+.result-lister {
+  font-size: 11px;
+  color: #333;
+  font-weight: 600;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  & svg {
+    width: 20px;
+    fill: none;
+  }
 }
 
 .result-description {
@@ -232,7 +286,7 @@
 }
 
 .results-collapsed {
-  max-height: 330px; /* approx 3 items */
+  max-height: 520px;
   overflow: hidden;
   position: relative;
   padding-bottom: 30px;
