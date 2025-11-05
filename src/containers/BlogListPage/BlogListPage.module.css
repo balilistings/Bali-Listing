@@ -27,6 +27,11 @@ p {
   overflow: hidden;
   background-color: #ffe2fe;
   padding: 40px 0;
+  margin-right: 8px;
+  margin-left: 8px;
+  margin-top: 4px;
+  border-radius: 15px;
+
   text-align: center;
   margin-bottom: 40px;
 

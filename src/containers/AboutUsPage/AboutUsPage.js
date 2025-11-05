@@ -81,11 +81,17 @@ const AboutUsPage = props => {
     shallowEqual
   );
 
+  const retrieved = useRef(false);
+
   useEffect(() => {
     if (inProgress || pageAssetsData?.[pageId]) {
       return;
     }
-    dispatch(loadData(params));
+    
+    if (!retrieved.current) {
+      dispatch(loadData(params));
+      retrieved.current = true;
+    }
   }, [dispatch, params, pageId, inProgress, pageAssetsData]);
 
   if (inProgress) {
