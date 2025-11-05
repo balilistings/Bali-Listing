@@ -1,3 +1,5 @@
+@import '../../styles/customMediaQueries.css';
+
 .root {
   border-radius: 20px;
   overflow: hidden;
@@ -10,21 +12,32 @@ blockquote {
 
 .item {
   background-color: #f2f2f2;
-  margin-bottom: 16px;
+  margin-bottom: 8px; /* Mobile default */
+  border-radius: 10px; /* Mobile default */
   padding: 0 0 0 0;
-  border-radius: 20px;
+
+  @media (--viewportMedium) {
+    margin-bottom: 16px;
+    border-radius: 20px;
+  }
 }
 
 .title {
-  font-size: 22px;
+  font-size: 16px; /* Mobile default */
   font-weight: 700;
   cursor: pointer;
-  padding: 28px 28px;
+  padding: 18px 14px; /* Mobile default */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 32px;
+  gap: 16px; /* Mobile default */
   font-family: Istok Web;
+
+  @media (--viewportMedium) {
+    font-size: 22px;
+    padding: 28px 28px;
+    gap: 32px;
+  }
 }
 
 .contentWrapper {
@@ -38,9 +51,12 @@ blockquote {
 }
 
 .content {
-  padding: 10px 28px;
-  /* padding-top: 10px; */
+  padding: 10px 14px; /* Mobile default */
   line-height: 1.5;
+
+  @media (--viewportMedium) {
+    padding: 10px 28px;
+  }
 }
 
 .content p,
@@ -57,17 +73,23 @@ ul {
 }
 
 .icon {
-  width: 34px;
-  height: 34px;
+  width: 30px; /* Mobile default */
+  height: 30px; /* Mobile default */
   border-radius: 50%;
   background-color: #f74df4;
   color: white;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: 20px; /* Mobile default */
   flex-shrink: 0;
   transition: transform 0.3s ease;
+
+  @media (--viewportMedium) {
+    width: 34px;
+    height: 34px;
+    font-size: 24px;
+  }
 }
 
 .rotated {

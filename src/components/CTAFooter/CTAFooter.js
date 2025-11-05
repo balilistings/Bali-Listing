@@ -12,31 +12,33 @@ const CTA = ({ variant = 'primary' }) => {
     variant === 'primary' ? 'CTAFooter.startButton' : 'CTAFooter.startButtonSolution';
 
   return (
-    <div className={css.root}>
-      <div className={css.circleLineLeft} />
-      <div className={css.circleLineRight} />
-      <img src={sofaSrc} className={css.sofa} alt="cta-sofa" fetchpriority="low" />
+    <div className={css.container}>
+      <div className={css.root}>
+        <div className={css.circleLineLeft} />
+        <div className={css.circleLineRight} />
+        <img src={sofaSrc} className={css.sofa} alt="cta-sofa" fetchpriority="low" />
 
-      <div className={css.content}>
-        <div className={css.textContent}>
-          <h1 className={css.title}>
-            <FormattedMessage
-              id={title}
-              defaultMessage="Ready to list your villa or find your next home"
-            />
-          </h1>
-          <p className={css.subtitle}>
-            <FormattedMessage
-              id={subtitle}
-              defaultMessage="We're building the future of real estate in Bali"
-            />
-          </p>
-          <p className={css.tagline}>
-            <FormattedMessage id={tagline}/>
-          </p>
-          <Button className={css.button}>
-            <FormattedMessage id={startButton} defaultMessage="Start now" />
-          </Button>
+        <div className={css.content}>
+          <div className={css.textContent}>
+            <h1 className={css.title}>
+              <FormattedMessage
+                id={title}
+                defaultMessage="Ready to list your villa or find your next home"
+              />
+            </h1>
+            <p className={css.subtitle}>
+              <FormattedMessage
+                id={subtitle}
+                defaultMessage="We're building the future of real estate in Bali"
+              />
+            </p>
+            <p className={css.tagline}>
+              <FormattedMessage id={tagline} />
+            </p>
+            <Button className={css.button}>
+              <FormattedMessage id={startButton} defaultMessage="Start now" />
+            </Button>
+          </div>
         </div>
       </div>
     </div>
