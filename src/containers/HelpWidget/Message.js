@@ -2,7 +2,11 @@ import React, { useState, useEffect, useCallback, memo, useRef } from 'react';
 import './Message.css';
 import { getChatMessagesKey, getListingDataKey } from './storageKeys';
 import { useSelector } from 'react-redux';
+import { useHistory, useLocation } from 'react-router-dom';
 import { types as sdkTypes } from '../../util/sdkLoader';
+import { createResourceLocatorString } from '../../util/routes';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
+import { getSearchPageResourceLocatorStringParams } from '../SearchPage/SearchPage.shared';
 
 import { sendQuery } from '../../util/chatbotApi';
 
@@ -12,6 +16,8 @@ import { ReactComponent as UserAvatar } from '../../assets/help-widget/usericon.
 import { IoIosSend } from 'react-icons/io';
 import { IconClose } from '../../components';
 import IconCollection from '../../components/IconCollection/IconCollection';
+import { formatPriceInMillions } from '../../components/ListingCard/ListingCard';
+import { Link } from 'react-router-dom';
 
 const senderDetails = {
   admin: {
@@ -24,21 +30,23 @@ const senderDetails = {
   },
 };
 
-// Helper function to convert price string to pure number
-const convertPriceToNumber = (priceString, rate) => {
-  if (!priceString) return 0;
-  // Remove "Rp", spaces, commas, and any non-digit characters except decimal points
-  const isRental =
-    priceString.endsWith('year') || priceString.endsWith('month') || priceString.endsWith('week');
-  const suffix = isRental ? priceString.split('/').pop() : '';
+const getPrice = (attributes, rate) => {
+  const isRentals = attributes.publicData.categoryLevel1 === 'rentalvillas';
+  const publicData = attributes.publicData;
 
-  const numericString = priceString.replace(/[^\d.]/g, '').replace(/\./g, '');
-  let intPrice = parseInt(numericString, 10) * rate || 0;
+  const price =
+    (isRentals
+      ? publicData.yearprice || publicData.monthprice || publicData.weekprice
+      : attributes.price.amount / 100) * rate;
 
-  if (!isRental) intPrice /= 100;
-  const formattedPrice = intPrice.toLocaleString('en-US');
-
-  return isRental ? `${formattedPrice}/${suffix}` : formattedPrice;
+  const suffix = isRentals
+    ? publicData.yearprice
+      ? '/year'
+      : publicData.monthprice
+      ? '/month'
+      : '/week'
+    : '';
+  return formatPriceInMillions(price) + suffix;
 };
 
 // ResultItem component for rendering individual result links
@@ -72,7 +80,7 @@ const ResultItem = ({ result }) => {
     const show = sdk.listings.show({
       id: new sdkTypes.UUID(listingId),
       include: ['author', 'author.profileImage', 'images'],
-      'fields.listing': ['title'],
+      'fields.listing': ['title', 'price', 'publicData'],
       'fields.image': ['variants.scaled-small'],
     });
     show.then(res => {
@@ -93,6 +101,10 @@ const ResultItem = ({ result }) => {
   // Get lister name from included user data
   const listerName = listingData?.included?.find(item => item.type === 'user')?.attributes?.profile
     ?.displayName;
+
+  const priceToDisplay = listingData?.data.attributes
+    ? getPrice(listingData.data?.attributes, needPriceConversion ? USDConversionRate : 1)
+    : result.price;
 
   return (
     <a href={result.link} target="_blank" rel="noopener noreferrer" className="result-link">
@@ -132,10 +144,11 @@ const ResultItem = ({ result }) => {
           </div>
         </div>
         <div className="result-description">{result.description}</div>
-        <div className="result-price">
-          {needPriceConversion ? 'USD' : 'Rp'}{' '}
-          {convertPriceToNumber(result.price, needPriceConversion ? USDConversionRate : 1)}
-        </div>
+        {listingData?.data.attributes && (
+          <div className="result-price">
+            {needPriceConversion ? 'USD' : 'Rp'} {priceToDisplay}
+          </div>
+        )}
       </div>
     </a>
   );
@@ -143,12 +156,14 @@ const ResultItem = ({ result }) => {
 
 // MessageItem component for rendering individual messages
 const MessageItem = memo(({ message }) => {
-  const { sender, text, results } = message;
+  const { sender, text, results, filterUrl } = message;
   const { avatar: Avatar, name } = senderDetails[sender];
   const [isExpanded, setIsExpanded] = useState(false);
 
   const hasManyResults = Array.isArray(results) && results.length > 3;
   const visibleResults = hasManyResults && !isExpanded ? results.slice(0, 3) : results;
+
+  const searchPageLink = filterUrl && <Link to={'/' + filterUrl} className="search-page-link">Go to search list</Link>
 
   return (
     <div className={`message-container ${sender}`} role="listitem">
@@ -169,6 +184,7 @@ const MessageItem = memo(({ message }) => {
               {visibleResults.map((result, index) => (
                 <ResultItem key={index} result={result} />
               ))}
+              {searchPageLink}
             </div>
             {hasManyResults && !isExpanded && (
               <div className="show-more-container">
@@ -182,6 +198,7 @@ const MessageItem = memo(({ message }) => {
                 <button onClick={() => setIsExpanded(false)} className="show-less-button">
                   Show less
                 </button>
+                {searchPageLink}
               </div>
             )}
           </>
@@ -314,10 +331,13 @@ const Message = ({ onClose, className, session }) => {
         const messageText = botResponse.needs_clarification
           ? botResponse.clarification_question
           : botResponse.ai_message;
+
+        const { filter_url } = botResponse;
         const adminMessage = {
           sender: 'admin',
           text: messageText,
           results: botResponse.results || [],
+          filterUrl: filter_url,
         };
         setMessages(prev => [...prev, adminMessage]);
       } catch (error) {

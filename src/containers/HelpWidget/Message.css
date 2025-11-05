@@ -19,7 +19,6 @@
 /* Header */
 .chat-header {
   background: #eb2be8;
-  height: 110px;
   color: #fff;
   padding: 20px;
   display: flex;
@@ -202,6 +201,7 @@
   padding: 12px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.2s ease-in-out;
+  min-height: 150px;
 }
 
 .result:hover {
@@ -301,6 +301,22 @@
   height: 60px;
   background: linear-gradient(to top, #f2f2f2, transparent);
   pointer-events: none;
+}
+
+.search-page-link {
+  display: inline-block;
+  color: #eb2be8 !important;
+  text-decoration: underline;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 10px 5px;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.search-page-link:hover {
+  color: #f74df4 !important;
+  text-decoration: underline;
 }
 
 .show-more-container {
