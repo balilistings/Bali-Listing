@@ -120,10 +120,10 @@ const handleLocationChanged = (dispatch, location, routeConfiguration, delayed) 
  */
 class RouteComponentRenderer extends Component {
   componentDidMount() {
-    const { dispatch, location, routeConfiguration } = this.props;
+    const { dispatch, location, routeConfiguration, route } = this.props;
     this.delayed = null;
 
-    if (window.isInitialClientRender) {
+    if (window.isInitialClientRender && route.disableRefetchDataClientSide) {
       // Don't call loadData on the initial client-side render
       // because the data is already preloaded by the server.
       window.isInitialClientRender = false;
@@ -132,6 +132,7 @@ class RouteComponentRenderer extends Component {
       // and we need to load the data.
       callLoadData(this.props);
     }
+    window.isInitialClientRender = false;
 
     handleLocationChanged(dispatch, location, routeConfiguration, this.delayed);
   }

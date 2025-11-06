@@ -209,6 +209,7 @@
   "CustomFilter.PropertyType.house": "House",
   "CustomFilter.PropertyType.room": "Room",
   "CustomFilters.showListingsButton": "Show {resultsCount} listings",
+  "LocationSelector.radius": "Distance",
   "DatePicker.clearButton": "Clear value",
   "DatePicker.screenreader.blockedDate": "{date} is not available",
   "DatePicker.screenreader.chooseDate": "Choose {date}",

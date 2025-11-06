@@ -83,18 +83,21 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'LandingPage',
       component: LandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     {
       path: '/p/:pageId',
       name: 'CMSPage',
       component: CMSPage,
       loadData: pageDataLoadingAPI.CMSPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     {
       path: '/blog/:blogId',
       name: 'SingularBlogPage',
       component: SingularBlogPage,
       loadData: pageDataLoadingAPI.SingularBlogPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     // NOTE: when the private marketplace feature is enabled, the '/s' route is disallowed by the robots.txt resource.
     // If you add new routes that start with '/s*' (e.g. /support), you should add them to the robotsPrivateMarketplace.txt file.
@@ -123,6 +126,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       ...authForPrivateMarketplace,
       component: ListingPage,
       loadData: pageDataLoadingAPI.ListingPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     {
       path: '/l/:slug/:id/checkout',
