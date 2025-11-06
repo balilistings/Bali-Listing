@@ -209,6 +209,7 @@
   "CustomFilter.PropertyType.house": "Rumah",
   "CustomFilter.PropertyType.room": "Kamar",
   "CustomFilters.showListingsButton": "Tampilkan {resultsCount} listing",
+  "LocationSelector.radius": "Jarak",
   "DatePicker.clearButton": "Hapus nilai",
   "DatePicker.screenreader.blockedDate": "{date} tidak tersedia",
   "DatePicker.screenreader.chooseDate": "Pilih {date}",
