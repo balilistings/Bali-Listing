@@ -1,14 +1,11 @@
-import React, { useState, useEffect, useCallback, memo, useRef } from 'react';
+import { useState, useEffect, useCallback, memo, useRef } from 'react';
 import './Message.css';
 import { getChatMessagesKey, getListingDataKey } from './storageKeys';
 import { useSelector } from 'react-redux';
-import { useHistory, useLocation } from 'react-router-dom';
 import { types as sdkTypes } from '../../util/sdkLoader';
-import { createResourceLocatorString } from '../../util/routes';
-import { useRouteConfiguration } from '../../context/routeConfigurationContext';
-import { getSearchPageResourceLocatorStringParams } from '../SearchPage/SearchPage.shared';
 
 import { sendQuery } from '../../util/chatbotApi';
+import { buildSearchUrl } from '../../util/searchUrlBuilder';
 
 import { ReactComponent as Logo } from '../../assets/balilistings-logo-icon.svg';
 import { ReactComponent as Person1 } from '../../assets/help-widget/person-1.svg';
@@ -332,12 +329,13 @@ const Message = ({ onClose, className, session }) => {
           ? botResponse.clarification_question
           : botResponse.ai_message;
 
-        const { filter_url } = botResponse;
+        const { filter_url, filters_used, coords } = botResponse;
+        const filterUrl = filters_used ? buildSearchUrl(filters_used, coords) : filter_url;
         const adminMessage = {
           sender: 'admin',
           text: messageText,
           results: botResponse.results || [],
-          filterUrl: filter_url,
+          filterUrl: filterUrl,
         };
         setMessages(prev => [...prev, adminMessage]);
       } catch (error) {
