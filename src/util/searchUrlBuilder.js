@@ -32,11 +32,50 @@ const radiusToBoundsString = (lat, lng, radiusKm) => {
 const buildSearchUrl = (filtersUsed = {}, coords) => {
   const params = [];
 
-  // Special handling for price range (combines price_min and price_max)
-  if (filtersUsed.price_min !== null || filtersUsed.price_max !== null) {
-    const min = filtersUsed.price_min ? filtersUsed.price_min * 100 : 0;
-    const max = filtersUsed.price_max ? filtersUsed.price_max * 100 : 999000000000;
-    params.push(`price=${min}%2C${max}`);
+  // Special handling based on category and rent_duration
+  const category = filtersUsed.category || 'rentalvillas'; // default to rental
+  
+  if (filtersUsed.rent_duration) {
+    // For rental properties with rent duration specified
+    const rentDuration = filtersUsed.rent_duration;
+    
+    // Use different default price ranges based on rental period (from PriceSelector component)
+    let defaultMin, defaultMax;
+    if (rentDuration === 'weekly') {
+      defaultMin = 1000000;   // 1M
+      defaultMax = 150000000; // 150M
+    } else if (rentDuration === 'yearly') {
+      defaultMin = 50000000;   // 50M
+      defaultMax = 5000000000; // 5000M
+    } else {
+      // monthly (default)
+      defaultMin = 1000000;   // 1M
+      defaultMax = 500000000; // 500M
+    }
+    
+    // Use provided price range or defaults based on rental period
+    const rentPriceMin = filtersUsed.price_min || defaultMin;
+    const rentPriceMax = filtersUsed.price_max || defaultMax;
+    
+    let priceParam = null;
+    if (rentDuration === 'weekly') {
+      priceParam = 'pub_weekprice';
+    } else if (rentDuration === 'monthly') {
+      priceParam = 'pub_monthprice';
+    } else if (rentDuration === 'yearly') {
+      priceParam = 'pub_yearprice';
+    }
+    
+    if (priceParam) {
+      params.push(`${priceParam}=${rentPriceMin}%2C${rentPriceMax}`);
+    }
+  } else if (category === 'villaforsale' || category === 'landforsale') {
+    // For sale properties use the simple price parameter
+    if (filtersUsed.price_min != null || filtersUsed.price_max != null) {
+      const min = filtersUsed.price_min || 1000000;
+      const max = filtersUsed.price_max || 999000000000;
+      params.push(`price=${min}%2C${max}`);
+    }
   }
 
   // Add bounds if coords are provided
@@ -57,9 +96,9 @@ const buildSearchUrl = (filtersUsed = {}, coords) => {
 
   // Value transformations
   const valueMap = {
-    pub_categoryLevel1: (value) => value,
+    pub_categoryLevel1: value => value,
     // Convert price order
-    sort: (value) => {
+    sort: value => {
       if (value === 'asc') return '-price';
       if (value === 'desc') return 'price';
       return value;
@@ -68,7 +107,12 @@ const buildSearchUrl = (filtersUsed = {}, coords) => {
 
   Object.keys(filtersUsed).forEach(key => {
     const value = filtersUsed[key];
-    if (value === null || value === undefined) return;
+    if (value == null) return;
+
+    // Skip rent_duration and price_min/price_max as they're handled separately
+    if (['rent_duration', 'price_min', 'price_max'].includes(key)) {
+      return;
+    }
 
     const urlKey = keyMap[key];
     if (!urlKey) return;
