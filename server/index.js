@@ -262,12 +262,6 @@ app.get('*', async (req, res) => {
   const isLandingPage =
     req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
 
-  if (isLandingPage && PAGE_CACHE_DURATION > 0) {
-    res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
-  } else {
-    res.set(noCacheHeaders);
-  }
-
   // Get chunk extractors from node and web builds
   // https://loadable-components.com/docs/api-loadable-server/#chunkextractor
   const { nodeExtractor, webExtractor } = getExtractors();
@@ -325,13 +319,16 @@ app.get('*', async (req, res) => {
             // It looks like the user is logged in.
             // Full verification would require actual call to API
             // to refresh the access token
+            res.set(noCacheHeaders);
             res.status(200).send(html);
           } else {
             // Current token is anonymous.
+            res.set(noCacheHeaders);
             res.status(401).send(html);
           }
         });
       } else if (context.forbidden) {
+        res.set(noCacheHeaders);
         res.status(403).send(html);
       } else if (context.url) {
         // React Router injects the context.url if a redirect was rendered
@@ -339,8 +336,14 @@ app.get('*', async (req, res) => {
       } else if (context.notfound) {
         // NotFoundPage component injects the context.notfound when a
         // 404 should be returned
+        res.set(noCacheHeaders);
         res.status(404).send(html);
       } else {
+        if (isLandingPage && PAGE_CACHE_DURATION > 0) {
+          res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
+        } else {
+          res.set(noCacheHeaders);
+        }
         res.send(html);
       }
     })

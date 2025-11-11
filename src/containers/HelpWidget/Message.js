@@ -27,27 +27,43 @@ const senderDetails = {
   },
 };
 
-const getPrice = (attributes, rate) => {
-  const isRentals = attributes.publicData.categoryLevel1 === 'rentalvillas';
+const getPrice = (attributes, rate, rentDuration = null) => {
   const publicData = attributes.publicData;
+  const isRental = publicData.categoryLevel1 === 'rentalvillas';
 
-  const price =
-    (isRentals
-      ? publicData.yearprice || publicData.monthprice || publicData.weekprice
-      : attributes.price.amount / 100) * rate;
+  if (!isRental) {
+    const price = attributes.price.amount / 100;
+    return formatPriceInMillions(price * rate);
+  }
 
-  const suffix = isRentals
-    ? publicData.yearprice
-      ? '/year'
-      : publicData.monthprice
-      ? '/month'
-      : '/week'
-    : '';
-  return formatPriceInMillions(price) + suffix;
+  // Define price priority for each rental duration type
+  const pricePriority = {
+    weekly: ['weekprice', 'monthprice', 'yearprice'],
+    monthly: ['monthprice', 'weekprice', 'yearprice'],
+    yearly: ['yearprice', 'monthprice', 'weekprice'],
+  };
+
+  // Default to yearly priority if duration not specified or invalid
+  const priority = pricePriority[rentDuration] ?? pricePriority.yearly;
+
+  // Find first available price key
+  const priceKey = priority.find(key => publicData[key]);
+
+  // Suffix mapping
+  const suffixMap = {
+    weekprice: '/week',
+    monthprice: '/month',
+    yearprice: '/year',
+  };
+
+  const price = publicData[priceKey];
+  const suffix = suffixMap[priceKey] || '';
+
+  return formatPriceInMillions(price * rate) + suffix;
 };
 
 // ResultItem component for rendering individual result links
-const ResultItem = ({ result }) => {
+const ResultItem = ({ result, rentDuration }) => {
   const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
@@ -100,7 +116,11 @@ const ResultItem = ({ result }) => {
     ?.displayName;
 
   const priceToDisplay = listingData?.data.attributes
-    ? getPrice(listingData.data?.attributes, needPriceConversion ? USDConversionRate : 1)
+    ? getPrice(
+        listingData.data?.attributes,
+        needPriceConversion ? USDConversionRate : 1,
+        rentDuration
+      )
     : result.price;
 
   return (
@@ -153,14 +173,18 @@ const ResultItem = ({ result }) => {
 
 // MessageItem component for rendering individual messages
 const MessageItem = memo(({ message }) => {
-  const { sender, text, results, filterUrl } = message;
+  const { sender, text, results, filterUrl, rentDuration } = message;
   const { avatar: Avatar, name } = senderDetails[sender];
   const [isExpanded, setIsExpanded] = useState(false);
 
   const hasManyResults = Array.isArray(results) && results.length > 3;
   const visibleResults = hasManyResults && !isExpanded ? results.slice(0, 3) : results;
 
-  const searchPageLink = filterUrl && <Link to={'/' + filterUrl} className="search-page-link">Go to search list</Link>
+  const searchPageLink = filterUrl && (
+    <Link to={'/' + filterUrl} className="search-page-link">
+      Go to search list
+    </Link>
+  );
 
   return (
     <div className={`message-container ${sender}`} role="listitem">
@@ -179,9 +203,9 @@ const MessageItem = memo(({ message }) => {
           <>
             <div className={`results ${hasManyResults && !isExpanded ? 'results-collapsed' : ''}`}>
               {visibleResults.map((result, index) => (
-                <ResultItem key={index} result={result} />
+                <ResultItem key={index} result={result} rentDuration={rentDuration} />
               ))}
-              {searchPageLink}
+              {!hasManyResults && searchPageLink}
             </div>
             {hasManyResults && !isExpanded && (
               <div className="show-more-container">
@@ -331,11 +355,16 @@ const Message = ({ onClose, className, session }) => {
 
         const { filter_url, filters_used, coords } = botResponse;
         const filterUrl = filters_used ? buildSearchUrl(filters_used, coords) : filter_url;
+
+        // Get rent duration from filters_used if available
+        const rentDuration = filters_used?.rent_duration;
+
         const adminMessage = {
           sender: 'admin',
           text: messageText,
           results: botResponse.results || [],
           filterUrl: filterUrl,
+          rentDuration: rentDuration, // Add rentDuration to the admin message
         };
         setMessages(prev => [...prev, adminMessage]);
       } catch (error) {
