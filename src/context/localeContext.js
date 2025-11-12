@@ -49,8 +49,6 @@ export const useUpdateLocale = () => {
   const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
 
   return (newLocale) => {
-    console.log('from update locale');
-    
     if (SUPPORTED_LOCALES.includes(newLocale)) {
       // Always set the cookie, as it's used for server-side redirects
       // and provides an immediate hint to the server.
@@ -60,8 +58,6 @@ export const useUpdateLocale = () => {
       document.cookie = `userLocale=${newLocale};${expires};path=/`;
 
       if (currentUser) {
-        console.log('save locale', newLocale);
-        
         dispatch(saveLocale(newLocale));
       } else {
         localStorage.setItem('locale', newLocale);

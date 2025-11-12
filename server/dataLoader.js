@@ -53,7 +53,9 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
 
   const dataLoadingCalls = hostedConfigAsset => {
     const config = mergeConfig(hostedConfigAsset, defaultConfig);
-    const matchedRoutes = matchPathname(pathname, routeConfiguration(config.layout));
+    const pathnameWithoutLocale =
+      locale !== 'en' ? pathname.replace(`/${locale}`, '') || '/' : pathname;
+    const matchedRoutes = matchPathname(pathnameWithoutLocale, routeConfiguration(config.layout));
     const calls = [store.dispatch(fetchConversionRate())];
     return matchedRoutes.reduce((calls, match) => {
       const { route, params } = match;
