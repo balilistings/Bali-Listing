@@ -23,7 +23,7 @@ const CustomAvailablePerComponent = props => {
   const handleSelectChange = e => {
     const newValue = e.target.value; // This will be "yes" or "no"
     input.onChange(newValue);
-    if (newValue === "yes") {
+    if (newValue === 'yes') {
       // When user selects "yes", we clear the date field.
       form.change(dateFieldName, null);
     }
@@ -34,7 +34,7 @@ const CustomAvailablePerComponent = props => {
 
   // On initial load, if the selection is "yes", make sure date field is cleared
   React.useEffect(() => {
-    if (selection === "yes") {
+    if (selection === 'yes') {
       form.change(dateFieldName, null);
     }
   }, [selection, form, dateFieldName]);
@@ -45,7 +45,7 @@ const CustomAvailablePerComponent = props => {
         {label ? (
           <LabelWithTooltip
             label={label}
-            id={formId ? `${formId}.${input.name}-select` : `${input.name}-select`}
+            id={'EditListingDetailsForm.pub_availableper'}
           />
         ) : null}
         <select
@@ -54,8 +54,8 @@ const CustomAvailablePerComponent = props => {
           onChange={handleSelectChange}
           className={classNames(css.select, { [css.selectError]: hasError })}
         >
-          <option value="yes">{intl.formatMessage({ id: 'FieldBoolean.yes' })}</option>
-          <option value="no">{intl.formatMessage({ id: 'FieldBoolean.no' })}</option>
+          <option value="yes">Yes</option>
+          <option value="no">No</option>
         </select>
         <ValidationError fieldMeta={meta} />
       </div>
@@ -63,10 +63,7 @@ const CustomAvailablePerComponent = props => {
       {selection === 'no' ? (
         <div style={{ marginTop: '24px' }}>
           <LabelWithTooltip
-            label={intl.formatMessage({
-              id: 'CustomExtendedDataField.availablePerDateLabel',
-              defaultMessage: 'Availability Date',
-            })}
+            label="Availability Date"
             id={formId ? `${formId}.${dateFieldName}-date` : `${dateFieldName}-date`}
           />
           {/* This is a standard Field for the date picker. It gets its initial value from the form's initialValues. */}
@@ -106,7 +103,7 @@ const CustomAvailablePerComponent = props => {
 };
 
 const CustomAvailablePerField = props => {
-  return <Field component={CustomAvailablePerComponent}  {...props} />;
+  return <Field component={CustomAvailablePerComponent} {...props} />;
 };
 
 export default CustomAvailablePerField;
