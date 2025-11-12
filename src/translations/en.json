@@ -387,7 +387,7 @@
   "EditListingTooltip.Freehold": "Select “Freehold” for outright ownership, or “Leasehold” for leased property.",
   "EditListingTooltip.agentorowner": "Select if you’re the owner or an agent; this builds trust with users.",
   "EditListingTooltip.amenities": "Click on an amenity to include it in the listing",
-  "EditListingTooltip.availableper": "Select “Yes” if the property is available immediately, or “No” if it’s available later. This helps users filter for properties they can book right away.",
+  "EditListingTooltip.availableper": "Select “Yes” if the property is available immediately, or “No” if it’s available later. if you choose No you still need to set availability to “Yes” later even if you set an availability date.",
   "EditListingTooltip.bathrooms": "Choose the number of bathrooms (e.g., 1, 2, 3+); select “0” for land.",
   "EditListingTooltip.bedrooms": "Choose the number of bedrooms (e.g., 1, 2, 3+); select “0” for land",
   "EditListingTooltip.furnished": "Select “Yes” if the property is furnished, or “No” if it’s unfurnished. Choose “Semi” if it is partly furnished.",
