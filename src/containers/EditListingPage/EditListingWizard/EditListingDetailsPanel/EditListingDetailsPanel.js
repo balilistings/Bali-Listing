@@ -220,7 +220,7 @@ const getInitialValues = (
   listingFields,
   listingCategories,
   categoryKey,
-  userPhoneNumber,
+  userPhoneNumber
 ) => {
   const { description, title, publicData, privateData } = props?.listing?.attributes || {};
   const { listingType } = publicData;
@@ -253,13 +253,10 @@ const getInitialValues = (
       nestedCategories,
       listingFields
     ),
-    ...(shouldAddDefaultPhone 
-      ? { pub_phonenumber: defaultPhoneValue } 
-      : {}),
-    
+    ...(shouldAddDefaultPhone ? { pub_phonenumber: defaultPhoneValue } : {}),
+    ...(publicData.availableDate ? { availableDate: publicData.availableDate } : {}),
   };
 };
-
 /**
  * The EditListingDetailsPanel component.
  *
@@ -311,8 +308,10 @@ const EditListingDetailsPanel = props => {
       return listinTypesMatch && unitTypesMatch;
     });
 
-  const userPhoneNumber = useSelector(state => state.user.currentUser.attributes.profile.protectedData.phoneNumber);
-    
+  const userPhoneNumber = useSelector(
+    state => state.user.currentUser.attributes.profile.protectedData.phoneNumber
+  );
+
   const initialValues = getInitialValues(
     props,
     existingListingTypeInfo,
@@ -320,7 +319,7 @@ const EditListingDetailsPanel = props => {
     listingFields,
     listingCategories,
     categoryKey,
-    userPhoneNumber,
+    userPhoneNumber
   );
 
   const noListingTypesSet = listingTypes?.length === 0;
@@ -390,6 +389,8 @@ const EditListingDetailsPanel = props => {
                 unitType,
                 ...cleanedNestedCategories,
                 ...publicListingFields,
+                // Explicitly add availableDate if it exists in values
+                ...(values.availableDate && { availableDate: values.availableDate }),
               },
               privateData: privateListingFields,
               ...setNoAvailabilityForUnbookableListings(transactionProcessAlias),

@@ -1,114 +1,112 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useForm, Field } from 'react-final-form';
 import dayjs from 'dayjs';
-import css from './CustomAvailablePerField.module.css';
+import classNames from 'classnames';
+
+import { ValidationError } from '../../../components';
+
 import SingleDatePicker from '../../DatePicker/DatePickers/SingleDatePicker';
 import LabelWithTooltip from '../../LabelWithTooltip/LabelWithTooltip';
+import css from './CustomAvailablePerField.module.css';
 
-const CustomAvailablePerField = props => {
-  const { input, label, formId, name, intl } = props;
+// This is the "dumb" component that renders the UI.
+// In this approach, the parent Field with format/parse will handle the conversion
+// So input.value will already be the string "yes" or "no"
+const CustomAvailablePerComponent = props => {
+  const { input, meta, label, intl, formId } = props;
+  const form = useForm();
+  const dateFieldName = 'availableDate';
 
-  const fieldValue = input?.value;
+  // input.value is now the string "yes" or "no" thanks to format function
+  const selection = input.value;
 
-  // Determine initial selection based on field values
-  const getInitialSelection = () => {
-    if (fieldValue === 'yes' || fieldValue === 'no') {
-      return fieldValue;
-    }
-
-    // Handle new date format
-    if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
-      const date = dayjs.utc(fieldValue);
-      if (date.isValid && date.isValid()) {
-        const today = dayjs.utc().startOf('day');
-        return date.isSameOrBefore(today) ? 'yes' : 'no';
-      }
-    }
-    return 'yes';
-  };
-
-  // Determine initial date based on field values
-  const getInitialDate = () => {
-    if (fieldValue === 'yes' || fieldValue === 'no') {
-      return null;
-    }
-
-    if (fieldValue && typeof fieldValue === 'string' && fieldValue.match(/^\d{4}-\d{2}-\d{2}/)) {
-      const date = dayjs.utc(fieldValue);
-      if (date.isValid && date.isValid()) {
-        return date.toDate();
-      }
-    }
-
-    return null;
-  };
-
-  const [selection, setSelection] = useState(getInitialSelection());
-  const [selectedDate, setSelectedDate] = useState(getInitialDate());
-
-  // Handle dropdown selection change
   const handleSelectChange = e => {
-    const value = e.target.value;
-    setSelection(value);
-
-    if (value === 'yes') {
-      const today = dayjs.utc().startOf('day');
-      const todayString = today.format('YYYY-MM-DD');
-      setSelectedDate(today.toDate());
-      input.onChange(todayString);
-    } else if (value === 'no') {
-      setSelectedDate(null);
-      input.onChange(null);
+    const newValue = e.target.value; // This will be "yes" or "no"
+    input.onChange(newValue);
+    if (newValue === "yes") {
+      // When user selects "yes", we clear the date field.
+      form.change(dateFieldName, null);
     }
   };
 
-  // Handle date picker change
-  const handleDateChange = date => {
-    if (date) {
-      const dayjsDate = dayjs(date);
-      setSelectedDate(dayjsDate.toDate());
-      const dateString = dayjsDate.format('YYYY-MM-DD');
-      input.onChange(dateString);
-    } else {
-      setSelectedDate(null);
-      input.onChange(null);
+  const { touched, error } = meta;
+  const hasError = touched && error;
+
+  // On initial load, if the selection is "yes", make sure date field is cleared
+  React.useEffect(() => {
+    if (selection === "yes") {
+      form.change(dateFieldName, null);
     }
-  };
+  }, [selection, form, dateFieldName]);
 
   return (
     <div className={css.customField}>
       <div className={css.fieldSelect}>
-        {label ? <LabelWithTooltip label={label} id={'id'} /> : null}
+        {label ? (
+          <LabelWithTooltip
+            label={label}
+            id={formId ? `${formId}.${input.name}-select` : `${input.name}-select`}
+          />
+        ) : null}
         <select
-          id={formId ? `${formId}.${name}-select` : `${name}-select`}
+          id={formId ? `${formId}.${input.name}-select` : `${input.name}-select`}
           value={selection}
           onChange={handleSelectChange}
-          className={css.select}
+          className={classNames(css.select, { [css.selectError]: hasError })}
         >
           <option value="yes">{intl.formatMessage({ id: 'FieldBoolean.yes' })}</option>
           <option value="no">{intl.formatMessage({ id: 'FieldBoolean.no' })}</option>
         </select>
+        <ValidationError fieldMeta={meta} />
       </div>
 
-      {selection === 'no' && (
-        <div style={{ marginTop: '16px' }}>
-          <SingleDatePicker
-            id={formId ? `${formId}.${name}-date` : `${name}-date`}
-            name={name}
-            label={intl.formatMessage({ id: 'CustomExtendedDataField.availablePerDateLabel' })}
-            placeholderText={intl.formatMessage({
-              id: 'CustomExtendedDataField.availablePerDatePlaceholder',
+      {selection === 'no' ? (
+        <div style={{ marginTop: '24px' }}>
+          <LabelWithTooltip
+            label={intl.formatMessage({
+              id: 'CustomExtendedDataField.availablePerDateLabel',
+              defaultMessage: 'Availability Date',
             })}
-            value={selectedDate}
-            onChange={handleDateChange}
-            isDayBlocked={day => {
-              const today = dayjs().startOf('day');
-              return dayjs(day).isBefore(today);
+            id={formId ? `${formId}.${dateFieldName}-date` : `${dateFieldName}-date`}
+          />
+          {/* This is a standard Field for the date picker. It gets its initial value from the form's initialValues. */}
+          <Field
+            name={dateFieldName}
+            render={({ input: datePickerInput, meta: datePickerMeta }) => {
+              const date = datePickerInput.value ? dayjs.utc(datePickerInput.value).toDate() : null;
+              const handleDateChange = dateObject => {
+                if (dateObject) {
+                  const dateString = dayjs(dateObject).format('YYYY-MM-DD');
+                  datePickerInput.onChange(dateString);
+                } else {
+                  datePickerInput.onChange(null);
+                }
+              };
+              return (
+                <SingleDatePicker
+                  id={formId ? `${formId}.${dateFieldName}-date` : `${dateFieldName}-date`}
+                  input={datePickerInput}
+                  meta={datePickerMeta}
+                  placeholderText={intl.formatMessage({
+                    id: 'CustomExtendedDataField.availablePerDatePlaceholder',
+                  })}
+                  value={date}
+                  onChange={handleDateChange}
+                  onFocus={datePickerInput.onFocus}
+                  onBlur={datePickerInput.onBlur}
+                  isDayBlocked={day => dayjs(day).isBefore(dayjs().startOf('day'))}
+                />
+              );
             }}
           />
         </div>
-      )}
+      ) : null}
     </div>
   );
+};
+
+const CustomAvailablePerField = props => {
+  return <Field component={CustomAvailablePerComponent}  {...props} />;
 };
 
 export default CustomAvailablePerField;
