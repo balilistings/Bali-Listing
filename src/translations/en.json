@@ -729,6 +729,7 @@
   "OrderBreakdown.total": "Total price",
   "OrderPanel.author": "{name}",
   "OrderPanel.availableNow": "Available Now!",
+  "OrderPanel.availableFrom": "Available from",
   "OrderPanel.closedListingButtonText": "Sorry, this listing has been closed.",
   "OrderPanel.contactAgent": "Contact Agent",
   "OrderPanel.contactOwner": "Contact Owner",

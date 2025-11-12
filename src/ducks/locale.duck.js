@@ -58,7 +58,6 @@ export const setMessages = messages => ({
 
 export const saveLocale = (locale, messages) => (dispatch, getState) => {
   dispatch(saveLocaleRequest());
-  dispatch(setLocale(locale));
   if (messages) {
     dispatch(setMessages(messages));
   }
@@ -80,6 +79,7 @@ export const saveLocale = (locale, messages) => (dispatch, getState) => {
         throw e;
       });
   } else {
+    dispatch(setLocale(locale));
     if (typeof window !== 'undefined') {
       localStorage.setItem('locale', locale);
     }

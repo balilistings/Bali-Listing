@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { any, string } from 'prop-types';
 
 import { HelmetProvider } from 'react-helmet-async';
-import { Provider, useSelector, useDispatch } from 'react-redux';
+import { Provider, useSelector, useDispatch, shallowEqual } from 'react-redux';
 import mapValues from 'lodash/mapValues';
 import loadable from '@loadable/component';
 

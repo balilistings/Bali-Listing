@@ -528,6 +528,7 @@
   "OrderBreakdown.total": "Total harga",
   "OrderPanel.author": "{name}",
   "OrderPanel.availableNow": "Tersedia sekarang!",
+  "OrderPanel.availableFrom": "Tersedia mulai",
   "OrderPanel.closedListingButtonText": "Maaf, daftar ini telah ditutup.",
   "OrderPanel.contactAgent": "Hubungi agen",
   "OrderPanel.contactOwner": "Hubungi pemilik",
