@@ -157,7 +157,7 @@
     width: 1019px;
     height: 1019px;
     top: -239px;
-    right: -320px;
+    right: -340px;
     left: auto;
   }
 }
@@ -175,7 +175,7 @@
     width: 1040px;
     height: 1039px;
     top: -352px;
-    right: -312px;
+    right: -332px;
     left: auto;
   }
 }
@@ -193,11 +193,10 @@
 
 @media (--viewportMedium) {
   .sofa {
-    height: 360px;
-    top: 44px;
+    height: 344px;
     right: 0;
     left: auto;
-    bottom: auto;
+    bottom: 0;
     width: auto;
   }
 }

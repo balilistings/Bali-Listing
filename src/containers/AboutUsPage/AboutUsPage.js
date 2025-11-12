@@ -81,17 +81,12 @@ const AboutUsPage = props => {
     shallowEqual
   );
 
-  const retrieved = useRef(false);
-
   useEffect(() => {
-    if (inProgress || pageAssetsData?.[pageId]) {
+    if (inProgress || pageAssetsData?.[pageId]?.data) {
       return;
     }
-    
-    if (!retrieved.current) {
-      dispatch(loadData(params));
-      retrieved.current = true;
-    }
+
+    dispatch(loadData(params));
   }, [dispatch, params, pageId, inProgress, pageAssetsData]);
 
   if (inProgress) {
@@ -286,10 +281,7 @@ const AboutUsPage = props => {
 
   return (
     <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
-      <LayoutSingleColumn
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
+      <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.hero}>
           <Spiral className={css.spiral} />
           <h1 className={css.heroTitle}>
