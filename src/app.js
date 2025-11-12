@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { any, string } from 'prop-types';
 
 import { HelmetProvider } from 'react-helmet-async';
@@ -43,9 +43,7 @@ const EnvironmentVariableWarning = loadable(() =>
   )
 );
 const HelpWidget = loadable(() =>
-  import(
-    /* webpackChunkName: "HelpWidget" */ './containers/HelpWidget'
-  )
+  import(/* webpackChunkName: "HelpWidget" */ './containers/HelpWidget')
 );
 
 // If you want to change the language of default (fallback) translations,
@@ -75,27 +73,43 @@ const isTestEnv = process.env.NODE_ENV === 'test';
 
 const AppInitializers = () => {
   const dispatch = useDispatch();
-  const currentUser = useSelector(state => state.user.currentUser);
+  const currentLocale = useSelector(
+    state => state.user.currentUser?.attributes?.profile?.protectedData?.locale
+  );
+  const currentCurrency = useSelector(
+    state => state.user.currentUser?.attributes?.profile?.protectedData?.currency
+  );
+
+  const localeInitialized = useRef(false);
+  const currencyInitialized = useRef(false);
 
   useEffect(() => {
     // Initialize Locale
-    const initialLocale = getInitialLocale(currentUser);
-    dispatch(setLocale(initialLocale));
+    if (!localeInitialized.current) {
+      const initialLocale = getInitialLocale(currentLocale);
+      dispatch(setLocale(initialLocale));
 
-    if (initialLocale !== 'en') {
-      import(`./translations/${initialLocale}.json`)
-        .then(messages => {
-          dispatch(setMessages(messages.default));
-        })
-        .catch(error => {
-          console.error('Failed to load translation', error);
-        });
+      if (initialLocale !== 'en') {
+        import(`./translations/${initialLocale}.json`)
+          .then(messages => {
+            dispatch(setMessages(messages.default));
+          })
+          .catch(error => {
+            console.error('Failed to load translation', error);
+          });
+      }
+      localeInitialized.current = true;
     }
+  }, [currentLocale, dispatch]);
 
+  useEffect(() => {
     // Initialize Currency
-    const initialCurrency = getInitialCurrency(currentUser);
-    dispatch(setCurrency(initialCurrency));
-  }, [currentUser, dispatch]);
+    if (!currencyInitialized.current) {
+      const initialCurrency = getInitialCurrency(currentCurrency);
+      dispatch(setCurrency(initialCurrency));
+      currencyInitialized.current = true;
+    }
+  }, [currentCurrency, dispatch]);
 
   return null;
 };
@@ -122,7 +136,7 @@ const LocaleAwareIntlProvider = ({ hostedTranslations, children }) => {
   });
 
   return (
-    <IntlProvider locale={locale} messages={finalMessages} textComponent="span">
+    <IntlProvider locale={locale || DEFAULT_LOCALE} messages={finalMessages} textComponent="span">
       {children}
     </IntlProvider>
   );

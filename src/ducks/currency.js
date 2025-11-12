@@ -127,12 +127,9 @@ export const fetchConversionRate = () => (dispatch, getState, sdk) => {
 const DEFAULT_CURRENCY = 'IDR';
 const SUPPORTED_CURRENCIES = ['IDR', 'USD'];
 
-export const getInitialCurrency = currentUser => {
-  if (currentUser && currentUser.attributes?.profile?.protectedData?.currency) {
-    const storedCurrency = currentUser.attributes.profile.protectedData.currency;
-    if (SUPPORTED_CURRENCIES.includes(storedCurrency)) {
-      return storedCurrency;
-    }
+export const getInitialCurrency = currentCurrency => {
+  if (currentCurrency && SUPPORTED_CURRENCIES.includes(currentCurrency)) {
+    return currentCurrency;
   }
 
   if (typeof window === 'undefined') {

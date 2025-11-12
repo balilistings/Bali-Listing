@@ -15,9 +15,9 @@ const SUPPORTED_LOCALES = getSupportedLocales();
 const DEFAULT_LOCALE = 'en';
 
 // This function is now only used for initialization in the app.
-export const getInitialLocale = currentUser => {
-  if (currentUser && currentUser.attributes?.profile?.protectedData?.locale) {
-    return currentUser.attributes.profile.protectedData.locale;
+export const getInitialLocale = currentLocale => {
+  if (currentLocale && SUPPORTED_LOCALES.includes(currentLocale)) {
+    return currentLocale;
   }
 
   if (typeof window === 'undefined') {
@@ -39,7 +39,7 @@ export const getInitialLocale = currentUser => {
 
 export const useLocale = () => {
   const locale = useSelector(state => state.locale.locale);
-  const messages = useSelector(state => state.locale.messages);
+  const messages = useSelector(state => state.locale.messages, shallowEqual);
 
   return { locale, messages, SUPPORTED_LOCALES, DEFAULT_LOCALE, languageNames };
 };
@@ -48,7 +48,9 @@ export const useUpdateLocale = () => {
   const dispatch = useDispatch();
   const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
 
-  return newLocale => {
+  return (newLocale) => {
+    console.log('from update locale');
+    
     if (SUPPORTED_LOCALES.includes(newLocale)) {
       // Always set the cookie, as it's used for server-side redirects
       // and provides an immediate hint to the server.
@@ -58,6 +60,8 @@ export const useUpdateLocale = () => {
       document.cookie = `userLocale=${newLocale};${expires};path=/`;
 
       if (currentUser) {
+        console.log('save locale', newLocale);
+        
         dispatch(saveLocale(newLocale));
       } else {
         localStorage.setItem('locale', newLocale);
