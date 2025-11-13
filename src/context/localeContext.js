@@ -8,7 +8,7 @@ export const languageNames = {
   de: 'Deutsch',
   es: 'Español',
   id: 'Bahasa Indonesia',
-  ru: 'Russian',
+  ru: 'Русский',
 };
 
 const SUPPORTED_LOCALES = getSupportedLocales();

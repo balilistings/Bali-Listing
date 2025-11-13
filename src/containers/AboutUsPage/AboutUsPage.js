@@ -20,6 +20,7 @@ import css from './AboutUsPage.module.css';
 import { FormattedMessage } from 'react-intl';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
+import { useLocale } from '../../context/localeContext.js';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -74,7 +75,9 @@ const AboutUsPage = props => {
 
   // intentional to use new content page, to make it easier to switch between the old about page and the new one because of the content difference
   // TODO: move "about-new" content to "about", and then change the page id here to "about". Right now it's retrieving content from both "about" and "about-new"
+  const { locale } = useLocale();
   const pageId = 'about-new';
+  const loaded = useRef('');
 
   const { pageAssetsData, inProgress, error } = useSelector(
     state => state.hostedAssets || {},
@@ -82,12 +85,13 @@ const AboutUsPage = props => {
   );
 
   useEffect(() => {
-    if (inProgress || pageAssetsData?.[pageId]?.data) {
+    if (loaded.current === locale || inProgress || pageAssetsData?.[pageId]?.data) {
       return;
     }
 
-    dispatch(loadData(params));
-  }, [dispatch, params, pageId, inProgress, pageAssetsData]);
+    dispatch(loadData(params, locale));
+    loaded.current = locale;
+  }, [dispatch, locale, params, pageId, inProgress, pageAssetsData]);
 
   if (inProgress) {
     return <div className={css.root} />;
