@@ -7,7 +7,7 @@ import sofaSrc from './cta-sofa.webp';
 const CTA = ({ variant = 'primary' }) => {
   const title = variant === 'primary' ? 'CTAFooter.title' : 'CTAFooter.titleSolution';
   const subtitle = variant === 'primary' ? 'CTAFooter.subtitle' : 'CTAFooter.subtitleSolution';
-  const tagline = variant === 'primary' ? 'CTAFooter.tagline' : 'CTAFooter.taglineSolution';
+  const tagline = 'CTAFooter.tagline';
   const startButton =
     variant === 'primary' ? 'CTAFooter.startButton' : 'CTAFooter.startButtonSolution';
 
@@ -32,9 +32,11 @@ const CTA = ({ variant = 'primary' }) => {
                 defaultMessage="We're building the future of real estate in Bali"
               />
             </p>
-            <p className={css.tagline}>
-              <FormattedMessage id={tagline} />
-            </p>
+            {variant === 'primary' && (
+              <p className={css.tagline}>
+                <FormattedMessage id={tagline} />
+              </p>
+            )}
             <Button className={css.button}>
               <FormattedMessage id={startButton} defaultMessage="Start now" />
             </Button>
