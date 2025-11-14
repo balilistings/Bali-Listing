@@ -212,7 +212,7 @@
 .modalContainer {
   composes: marketplaceModalInMobileBaseStyles from global;
   padding: var(--modalPadding);
-  width: 60%;
+  width: 70%;
   margin-left: auto;
   height: 100vh;  
 

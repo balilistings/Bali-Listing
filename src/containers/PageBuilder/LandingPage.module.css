@@ -460,7 +460,7 @@ padding: 0;
       & > div {
         background: #fff;
         border-radius: 20px;
-        padding: 0px;
+        padding: 0 24px;
         position: relative;
         display: flex;
         justify-content: space-between;
