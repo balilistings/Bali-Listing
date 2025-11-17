@@ -2,8 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import classNames from 'classnames';
+import { useLocation, useHistory } from 'react-router-dom';
 
 import { useConfiguration } from '../../context/configurationContext';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import {
   REVIEW_TYPE_OF_PROVIDER,
@@ -46,6 +48,9 @@ import {
 } from '../../components';
 import Reviews from '../../components/Reviews/Reviews';
 import LayoutSideNavigation from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation';
+import IconCollection from '../../components/IconCollection/IconCollection';
+import { createResourceLocatorString } from '../../util/routes';
+
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -57,6 +62,7 @@ import SectionTextMaybe from './SectionTextMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
 import SectionYoutubeVideoMaybe from './SectionYoutubeVideoMaybe';
 import ListingCard from '../../components/ListingCard/ListingCard';
+import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
@@ -210,8 +216,57 @@ export const CustomUserFields = props => {
   );
 };
 
+const categoryIconMapping = {
+  rentalvillas: 'rentals_icon',
+  villaforsale: 'sale_icon',
+  landforsale: 'icon_Land',
+};
+
+const CategoryFilter = props => {
+  const { onCategoryChange, initialValue } = props;
+  const intl = useIntl();
+
+  const categories = [
+    {
+      id: 'rentalvillas',
+      name: 'PageBuilder.SearchCTA.rentals',
+      icon: <IconCollection name="rentals_icon" />,
+    },
+    {
+      id: 'villaforsale',
+      name: 'PageBuilder.SearchCTA.forSale',
+      icon: <IconCollection name="sale_icon" />,
+    },
+    {
+      id: 'landforsale',
+      name: 'PageBuilder.SearchCTA.land',
+      icon: <IconCollection name="icon_Land" />,
+    },
+  ];
+
+  return (
+    <div className={css.categoryGrid}>
+      {categories.map(category => (
+        <div
+          key={category.id}
+          className={classNames(css.categoryCard, {
+            [css.selected]: initialValue === category.id,
+          })}
+          onClick={() => onCategoryChange(category.id)}
+        >
+          <div className={css.iconContainer}>
+            <IconCollection name={categoryIconMapping[category.id]} />
+          </div>
+          <span className={css.categoryName}>{intl.formatMessage({ id: category.name })}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const MainContent = props => {
   const [mounted, setMounted] = useState(false);
+  const config = useConfiguration();
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -221,6 +276,7 @@ export const MainContent = props => {
     bio,
     displayName,
     listings,
+    pagination,
     queryListingsError,
     reviews = [],
     queryReviewsError,
@@ -230,7 +286,31 @@ export const MainContent = props => {
     intl,
     hideReviews,
     userTypeRoles,
+    params,
+    routes,
   } = props;
+
+    const history = useHistory();
+  const location = useLocation();
+
+  const handleCategoryChange = category => {
+    const { search } = location;
+    const oldQueryParams = new URLSearchParams(search);
+    const newQueryParams = {};
+    oldQueryParams.forEach((value, key) => {
+      if (key !== 'pub_categoryLevel1') {
+        newQueryParams[key] = value;
+      }
+    });
+
+    if (category) {
+      newQueryParams.pub_categoryLevel1 = category;
+    }
+
+    history.push(
+      createResourceLocatorString('ProfilePage', routes, params, newQueryParams)
+    );
+  };
 
   const hasListings = listings.length > 0;
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;
@@ -249,6 +329,17 @@ export const MainContent = props => {
   const listingsContainerClasses = classNames(css.listingsContainer, {
     [css.withBioMissingAbove]: !hasBio,
   });
+
+  const paginationLinks =
+    pagination && pagination.totalPages > 1 ? (
+      <PaginationLinks
+        className={css.pagination}
+        pageName="ProfilePage"
+        pagePathParams={params}
+        pageSearchParams={location.search}
+        pagination={pagination}
+      />
+    ) : null;
 
   if (userShowError || queryListingsError) {
     return (
@@ -278,6 +369,10 @@ export const MainContent = props => {
           <H4 as="h2" className={css.listingsTitle}>
             <FormattedMessage id="ProfilePage.listingsTitle" values={{ count: listings.length }} />
           </H4>
+          <CategoryFilter
+            onCategoryChange={handleCategoryChange}
+            initialValue={new URLSearchParams(location.search).get('pub_categoryLevel1') || ''}
+          />
           <ul className={css.listings}>
             {listings.map(l => (
               <li className={css.listing} key={l.id.uuid}>
@@ -285,6 +380,7 @@ export const MainContent = props => {
               </li>
             ))}
           </ul>
+          {paginationLinks}
         </div>
       ) : null}
       {hideReviews ? null : isMobileLayout ? (
@@ -324,6 +420,7 @@ export const ProfilePageComponent = props => {
   const config = useConfiguration();
   const intl = useIntl();
   const [mounted, setMounted] = useState(false);
+  const routes = useRouteConfiguration();
 
   useEffect(() => {
     setMounted(true);
@@ -449,6 +546,8 @@ export const ProfilePageComponent = props => {
           hideReviews={hasNoViewingRightsOnPrivateMarketplace}
           intl={intl}
           userTypeRoles={userTypeRoles}
+          params={pathParams}
+          routes={routes}
           {...rest}
         />
       </LayoutSideNavigation>
@@ -463,6 +562,7 @@ const mapStateToProps = state => {
     userShowError,
     queryListingsError,
     userListingRefs,
+    pagination,
     reviews = [],
     queryReviewsError,
   } = state.ProfilePage;
@@ -482,6 +582,7 @@ const mapStateToProps = state => {
     userShowError,
     queryListingsError,
     listings: getMarketplaceEntities(state, userListingRefs),
+    pagination,
     reviews,
     queryReviewsError,
   };

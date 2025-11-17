@@ -1,7 +1,7 @@
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import { fetchCurrentUser } from '../../ducks/user.duck';
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
-import { PROFILE_PAGE_PENDING_APPROVAL_VARIANT } from '../../util/urlHelpers';
+import { PROFILE_PAGE_PENDING_APPROVAL_VARIANT, parse } from '../../util/urlHelpers';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers';
@@ -9,6 +9,8 @@ import { validate as uuidValidate } from 'uuid';
 import { apiBaseUrl, get } from '../../util/api';
 
 const { UUID } = sdkTypes;
+
+const RESULT_PAGE_SIZE = 24;
 
 // ================ Action types ================ //
 
@@ -31,6 +33,7 @@ export const QUERY_REVIEWS_ERROR = 'app/ProfilePage/QUERY_REVIEWS_ERROR';
 const initialState = {
   userId: null,
   userListingRefs: [],
+  pagination: null,
   userShowError: null,
   queryListingsError: null,
   reviews: [],
@@ -55,13 +58,16 @@ export default function profilePageReducer(state = initialState, action = {}) {
 
         // Empty listings only when user id changes
         userListingRefs: payload.userId === state.userId ? state.userListingRefs : [],
-
+        pagination: payload.userId === state.userId ? state.pagination : null,
         queryListingsError: null,
       };
     case QUERY_LISTINGS_SUCCESS:
-      return { ...state, userListingRefs: payload.listingRefs };
+      const listingRefs = payload.data.data
+        .filter(l => !l.attributes.deleted)
+        .map(l => ({ id: l.id, type: 'listing' }));
+      return { ...state, userListingRefs: listingRefs, pagination: payload.data.meta };
     case QUERY_LISTINGS_ERROR:
-      return { ...state, userListingRefs: [], queryListingsError: payload };
+      return { ...state, userListingRefs: [], pagination: null, queryListingsError: payload };
     case QUERY_REVIEWS_REQUEST:
       return { ...state, queryReviewsError: null };
     case QUERY_REVIEWS_SUCCESS:
@@ -100,9 +106,9 @@ export const queryListingsRequest = userId => ({
   payload: { userId },
 });
 
-export const queryListingsSuccess = listingRefs => ({
+export const queryListingsSuccess = response => ({
   type: QUERY_LISTINGS_SUCCESS,
-  payload: { listingRefs },
+  payload: { data: response.data },
 });
 
 export const queryListingsError = e => ({
@@ -128,11 +134,14 @@ export const queryReviewsError = e => ({
 
 // ================ Thunks ================ //
 
-export const queryUserListings = (userId, config, ownProfileOnly = false) => (
-  dispatch,
-  getState,
-  sdk
-) => {
+export const queryUserListings = (
+  userId,
+  config,
+  ownProfileOnly = false,
+  perPage,
+  page,
+  category
+) => (dispatch, getState, sdk) => {
   dispatch(queryListingsRequest(userId));
 
   const {
@@ -145,9 +154,16 @@ export const queryUserListings = (userId, config, ownProfileOnly = false) => (
   const queryParams = {
     include: ['author', 'images'],
     'fields.listing': ['title', 'geolocation', 'price', 'deleted', 'state', 'publicData'],
-    'fields.image': [`variants.${variantPrefix}`, `variants.${variantPrefix}-2x`, 'variants.landscape-crop2x',],
+    'fields.image': [
+      `variants.${variantPrefix}`,
+      `variants.${variantPrefix}-2x`,
+      'variants.landscape-crop2x',
+    ],
     ...createImageVariantConfig(`${variantPrefix}`, 400, aspectRatio),
     ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
+    perPage,
+    page,
+    pub_categoryLevel1: category,
   };
 
   const listingsPromise = ownProfileOnly
@@ -162,13 +178,8 @@ export const queryUserListings = (userId, config, ownProfileOnly = false) => (
 
   return listingsPromise
     .then(response => {
-      // Pick only the id and type properties from the response listings
-      const listings = response.data.data;
-      const listingRefs = listings
-        .filter(l => l => !l.attributes.deleted && l.attributes.state === 'published')
-        .map(({ id, type }) => ({ id, type }));
       dispatch(addMarketplaceEntities(response));
-      dispatch(queryListingsSuccess(listingRefs));
+      dispatch(queryListingsSuccess(response));
       return response;
     })
     .catch(e => dispatch(queryListingsError(storableError(e))));
@@ -222,6 +233,13 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
   // in case this page load fails.
   dispatch(setInitialState());
 
+  const queryParams = parse(search, {
+    latlng: ['origin'],
+    latlngBounds: ['bounds'],
+  });
+
+  const { page = 1, pub_categoryLevel1 } = queryParams;
+
   const loadProfileData = userId => {
     if (isPreviewForCurrentUser) {
       return dispatch(fetchCurrentUser(fetchCurrentUserOptions)).then(() => {
@@ -229,7 +247,9 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
           // Scenario: 'active' user somehow tries to open a link for "variant" profile
           return Promise.all([
             dispatch(showUser(userId, config)),
-            dispatch(queryUserListings(userId, config)),
+            dispatch(
+              queryUserListings(userId, config, false, RESULT_PAGE_SIZE, page, pub_categoryLevel1)
+            ),
             dispatch(queryUserReviews(userId)),
           ]);
         } else if (isCurrentUser(userId, currentUser)) {
@@ -263,7 +283,16 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     } else if (canFetchOwnProfileOnly) {
       return Promise.all([
         dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
-        dispatch(queryUserListings(userId, config, canFetchOwnProfileOnly)),
+        dispatch(
+          queryUserListings(
+            userId,
+            config,
+            canFetchOwnProfileOnly,
+            RESULT_PAGE_SIZE,
+            page,
+            pub_categoryLevel1
+          )
+        ),
         dispatch(showUserRequest(userId)),
       ]);
     }
@@ -271,7 +300,9 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     return Promise.all([
       dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
       dispatch(showUser(userId, config)),
-      dispatch(queryUserListings(userId, config)),
+      dispatch(
+        queryUserListings(userId, config, false, RESULT_PAGE_SIZE, page, pub_categoryLevel1)
+      ),
       dispatch(queryUserReviews(userId)),
     ]);
   };
