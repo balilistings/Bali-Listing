@@ -20,6 +20,7 @@ import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ImageSlider from '../ImageSlider/ImageSlider';
+import PromotedBadge from './PromotedBadge';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -193,7 +194,7 @@ export const ListingCard = props => {
   const currentListing = ensureListing(listing);
 
   const id = currentListing.id.uuid;
-  const { title = '', price: p, publicData } = currentListing.attributes;
+  const { title = '', price: p, publicData, metadata } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
   const {
@@ -217,6 +218,8 @@ export const ListingCard = props => {
   const routes = useRouteConfiguration();
 
   const price = isRentals ? null : p.amount / 100;
+  const isSearchPage = routeLocation.pathname === '/s';
+  const isPromoted = isSearchPage && metadata.promoted;
 
   const setActivePropsMaybe = setActiveListing
     ? {
@@ -225,7 +228,6 @@ export const ListingCard = props => {
       }
     : null;
 
-  // ✅ FIXED: Process images with proper fallback chain
   const imagesUrls = currentListing.images?.map(img => getBestImageUrl(img)).filter(Boolean) || [];
 
   const isFavorite = isFavoriteUtil(currentUser, id);
@@ -257,6 +259,11 @@ export const ListingCard = props => {
 
       <div className={css.imageWrapper}>
         <ImageSlider loop={imagesUrls.length > 1} images={imagesUrls} title={title} />
+        {isPromoted ? (
+          <div className={css.promotedBadgeWrapper}>
+            <PromotedBadge />
+          </div>
+        ) : null}
       </div>
       <div className={css.info}>
         <div className={css.tags}>

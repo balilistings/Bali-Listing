@@ -18,7 +18,7 @@ import {
   Button,
   FieldTextInput,
 } from '../../../../components';
-import FieldLocationAutocompleteInput from '../../../../components/LocationAutocompleteInput/LocationAutocompleteInput';
+import { FieldLocationAutocompleteInput } from '../../../../components/LocationAutocompleteInput/LocationAutocompleteInput';
 
 // Import modules from this directory
 import css from './EditListingLocationForm.module.css';
