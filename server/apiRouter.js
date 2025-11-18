@@ -26,6 +26,7 @@ const { getUserIdBySlug, getSlugByUserId } = require('./api/user');
 // URL Shortener endpoints
 const urlShortenerRouter = require('./api/url-shortener/urlShortenerRouter');
 const chatbotRouter = require('./api/chatbot/chatbotRouter');
+const reviewsRouter = require('./api/reviews');
 
 const router = express.Router();
 
@@ -104,5 +105,8 @@ router.use('/url-shortener', urlShortenerRouter);
 
 // Chatbot endpoints
 router.use('/chatbot', chatbotRouter);
+
+// Reviews endpoint
+router.use('/reviews', reviewsRouter);
 
 module.exports = router;
