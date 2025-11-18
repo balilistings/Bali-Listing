@@ -3,6 +3,7 @@ const https = require('https');
 const Decimal = require('decimal.js');
 const log = require('../log');
 const sharetribeSdk = require('sharetribe-flex-sdk');
+const sharetribeIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { fetchRate } = require('./currencyLogic');
 const NodeCache = require('node-cache');
@@ -211,6 +212,21 @@ exports.getTrustedSdk = req => {
       typeHandlers,
       ...baseUrlMaybe,
     });
+  });
+};
+
+// Integration SDK is used for server-to-server communication.
+// It needs CLIENT_ID and CLIENT_SECRET.
+exports.getIntegrationSdk = () => {
+  return sharetribeIntegrationSdk.createInstance({
+    transitVerbose: TRANSIT_VERBOSE,
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    httpAgent,
+    httpsAgent,
+    tokenStore: sharetribeIntegrationSdk.tokenStore.memoryStore(),
+    typeHandlers,
+    ...baseUrlMaybe,
   });
 };
 
