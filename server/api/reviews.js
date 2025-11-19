@@ -42,44 +42,40 @@ router.get('/:listingId', (req, res) => {
 // Body: { listingId, rating }
 router.post('/', (req, res) => {
   const { listingId, rating } = req.body;
-  const sdk = getSdk(req, res);
   const integrationSdk = getIntegrationSdk();
 
-  let currentUser;
+  const currentUserId = req.locals?.currentUser?.id;
+  if (!currentUserId) {
+    const error = new Error('No user found');
+    error.status = 401; // Unauthorized
+    return handleError(res, error);
+  }
+
   let listingAuthorId;
 
-  // 1. Authenticate the user
-  sdk.currentUser
-    .show()
-    .then(response => {
-      currentUser = response.data.data;
-      if (!currentUser) {
-        throw new Error('No user found');
-      }
-
-      // 2. Fetch the listing that is being reviewed
-      return integrationSdk.listings.show({
-        id: listingId,
-        'fields.listing': 'privateData',
-        include: ['author'],
-      });
+  // 1. Fetch the listing that is being reviewed
+  integrationSdk.listings
+    .show({
+      id: listingId,
+      'fields.listing': 'privateData',
+      include: ['author'],
     })
     .then(listingResponse => {
       const listing = listingResponse.data.data;
       listingAuthorId = listing.relationships.author.data.id;
       const reviews = listing.attributes.privateData?.reviews || [];
 
-      // 3. Check if the user has already reviewed this listing
-      const existingReview = reviews.find(r => r.authorId === currentUser.id.uuid);
+      // 2. Check if the user has already reviewed this listing
+      const existingReview = reviews.find(r => r.authorId === currentUserId);
       if (existingReview) {
         const error = new Error('User has already reviewed this listing.');
         error.status = 409;
         throw error;
       }
 
-      // 4. Add the new review
+      // 3. Add the new review
       const newReview = {
-        authorId: currentUser.id.uuid,
+        authorId: currentUserId,
         rating: rating,
       };
 
@@ -93,7 +89,7 @@ router.post('/', (req, res) => {
       });
     })
     .then(updateResponse => {
-      // 5. Listing updated. Now update author's rating.
+      // 4. Listing updated. Now update author's rating.
       return integrationSdk.users
         .show({
           id: listingAuthorId,
@@ -122,7 +118,7 @@ router.post('/', (req, res) => {
         });
     })
     .then(updateResponse => {
-      // 6. Send the successful response
+      // 5. Send the successful response
       res.send(updateResponse.data);
     })
     .catch(e => {

@@ -275,12 +275,6 @@ app.get('*', async (req, res) => {
 
   const sdk = sdkUtils.getSdk(req, res);
 
-  sdk.authInfo().then(authInfo => {
-    console.log("AuthInfo:", authInfo);
-  }).catch(e => {
-    console.log("Error fetching authInfo:", e.message);
-  });
-
   dataLoader
     .loadData(req.url, sdk, appInfo)
     .then(data => {
