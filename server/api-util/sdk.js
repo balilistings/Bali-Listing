@@ -14,7 +14,9 @@ const CACHE_TTL = process.env.REACT_APP_LANDING_PAGE_CACHE_TTL || 0;
 const cache = new NodeCache({ stdTTL: CACHE_TTL });
 
 const CLIENT_ID = process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID;
+const INTEGRATION_CLIENT_ID = process.env.REACT_APP_SHARETRIBE_INTEGRATION_SDK_CLIENT_ID;
 const CLIENT_SECRET = process.env.SHARETRIBE_SDK_CLIENT_SECRET;
+const INTEGRATION_CLIENT_SECRET = process.env.SHARETRIBE_INTEGRATION_SDK_CLIENT_SECRET;
 const USING_SSL = process.env.REACT_APP_SHARETRIBE_USING_SSL === 'true';
 const TRANSIT_VERBOSE = process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true';
 const MAX_SOCKETS = process.env.MAX_SOCKETS;
@@ -219,14 +221,14 @@ exports.getTrustedSdk = req => {
 // It needs CLIENT_ID and CLIENT_SECRET.
 exports.getIntegrationSdk = () => {
   return sharetribeIntegrationSdk.createInstance({
-    transitVerbose: TRANSIT_VERBOSE,
-    clientId: CLIENT_ID,
-    clientSecret: CLIENT_SECRET,
-    httpAgent,
-    httpsAgent,
-    tokenStore: sharetribeIntegrationSdk.tokenStore.memoryStore(),
-    typeHandlers,
-    ...baseUrlMaybe,
+    // transitVerbose: TRANSIT_VERBOSE,
+    clientId: INTEGRATION_CLIENT_ID,
+    clientSecret: INTEGRATION_CLIENT_SECRET,
+    // httpAgent,
+    // httpsAgent,
+    // tokenStore: sharetribeIntegrationSdk.tokenStore.memoryStore(),
+    // typeHandlers,
+    // ...baseUrlMaybe,
   });
 };
 
