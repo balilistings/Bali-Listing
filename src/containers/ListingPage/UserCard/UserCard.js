@@ -119,8 +119,10 @@ const UserCard = props => {
 
   const hasBio = !!bio;
   const classes = classNames(rootClassName || css.root, className);
-  const rating = (userMetadata.rating.total / userMetadata.rating.count).toFixed(1);
-  const ratingCount = userMetadata.rating.count;
+  const rating = userMetadata.rating
+    ? (userMetadata.rating.total || 0 / userMetadata.rating.count).toFixed(1)
+    : 0;
+  const ratingCount = userMetadata.rating?.count || 0;
   const linkClasses = classNames(css.links, {
     [css.withBioMissingAbove]: !hasBio,
   });
@@ -188,9 +190,7 @@ const UserCard = props => {
           {!!userMetadata.rating && (
             <div className={css.ratingSection}>
               <IoMdStar className={css.starIcon} />
-              <span className={css.ratingValue}>
-                {rating}
-              </span>
+              <span className={css.ratingValue}>{rating}</span>
               <span className={css.reviewCount}>({ratingCount} Reviews)</span>
             </div>
           )}
