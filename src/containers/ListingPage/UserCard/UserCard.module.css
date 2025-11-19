@@ -1,16 +1,83 @@
 @import '../../../styles/customMediaQueries.css';
 
-.root {}
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.mainContentWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
 
 .content {
   display: flex;
   flex-direction: row;
   align-items: center;
   text-decoration: none;
+  flex-grow: 1;
 
   &:hover {
     cursor: pointer;
     text-decoration: none;
+  }
+}
+
+.rightContentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Align items to the right */
+  margin-left: auto; /* Push to the right */
+  margin-top: 10px; /* Space from content */
+
+  @media (--viewportMedium) {
+    margin-top: 0;
+    margin-left: 20px; /* Space between content and this wrapper */
+  }
+}
+
+.ratingSection {
+  display: flex;
+  align-items: center;
+  /* Removed margin-left: auto; and margin-top: 10px; - handled by .rightContentWrapper */
+}
+
+.starIcon {
+  color: #FFC107;
+  margin-right: 5px;
+  font-size: 18px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.ratingValue {
+  font-family: Mulish;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #231F20;
+  margin-right: 5px;
+
+  @media screen and (max-width: 768px) {
+    font-size: 12px;
+  }
+}
+
+.reviewCount {
+  font-family: Mulish;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 130%;
+  letter-spacing: 0%;
+  color: #8D8D8D;
+
+  @media screen and (max-width: 768px) {
+    font-size: 10px;
   }
 }
 
@@ -131,14 +198,15 @@
 }
 
 .desktopBio {
-  display: none;
+  composes: p from global;
+  display: none; /* Hidden by default */
+  padding: 0;
+  margin: 0;
+  white-space: nowrap;
+  margin-top: 10px; /* Space from rating */
 
   @media (--viewportMedium) {
-    display: inline;
-
-    &::before {
-      content: ' ';
-    }
+    display: inline; /* Make it visible on desktop */
   }
 }
 
@@ -229,13 +297,14 @@
 
 .editProfileDesktop {
   composes: p from global;
-  display: none;
+  display: none; /* Hidden by default */
   padding: 0;
   margin: 0;
   white-space: nowrap;
+  margin-top: 10px; /* Space from rating */
 
   @media (--viewportMedium) {
-    display: inline;
+    display: inline; /* Make it visible on desktop */
   }
 }
 

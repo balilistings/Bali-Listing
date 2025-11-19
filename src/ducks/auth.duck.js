@@ -1,7 +1,7 @@
 import * as log from '../util/log';
 import { storableError } from '../util/errors';
 import { clearCurrentUser, fetchCurrentUser } from './user.duck';
-import { createUserWithIdp } from '../util/api';
+import { createUserWithIdp, post } from '../util/api';
 import { clearUserLocaleCookie } from '../util/cookies';
 import { clearChatHistory } from '../containers/HelpWidget/useChatSession';
 
@@ -207,6 +207,7 @@ export const logout = () => (dispatch, getState, sdk) => {
       clearUserLocaleCookie(); // Clear the userLocale cookie
       clearChatHistory();
       dispatch(userLogout());
+      post('/api/clear-user', {});
     })
     .catch(e => dispatch(logoutError(storableError(e))));
 };

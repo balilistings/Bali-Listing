@@ -176,3 +176,12 @@ export const createShortUrl = body => {
   
   return post('/api/url-shortener', body);
 };
+
+// Submit a user review for a listing
+//
+// This endpoint allows an authenticated user to submit a rating for a listing.
+//
+// See `server/api/reviews.js` for implementation details.
+export const submitReview = body => {
+  return post('/api/reviews', body);
+};
