@@ -27,6 +27,7 @@ const { getUserIdBySlug, getSlugByUserId } = require('./api/user');
 const urlShortenerRouter = require('./api/url-shortener/urlShortenerRouter');
 const chatbotRouter = require('./api/chatbot/chatbotRouter');
 const reviewsRouter = require('./api/reviews');
+const logout = require('./api/logout');
 
 const router = express.Router();
 
@@ -58,6 +59,8 @@ router.use((req, res, next) => {
 });
 
 // ================ API router endpoints: ================ //
+
+router.post('/clear-user', logout);
 
 router.get('/initiate-login-as', initiateLoginAs);
 router.get('/login-as', loginAs);

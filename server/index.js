@@ -173,6 +173,9 @@ if (ENABLE_STATIC_ASSET_CACHING) {
 
 app.use(cookieParser());
 
+const attachCurrentUser = require('./middleware/attachCurrentUser');
+app.use(attachCurrentUser);
+
 // We don't serve favicon.ico from root. PNG images are used instead for icons through link elements.
 app.get('/favicon.ico', (req, res) => {
   res.status(404).send('favicon.ico not found.');
@@ -272,6 +275,12 @@ app.get('*', async (req, res) => {
 
   const sdk = sdkUtils.getSdk(req, res);
 
+  sdk.authInfo().then(authInfo => {
+    console.log("AuthInfo:", authInfo);
+  }).catch(e => {
+    console.log("Error fetching authInfo:", e.message);
+  });
+
   dataLoader
     .loadData(req.url, sdk, appInfo)
     .then(data => {
@@ -315,6 +324,7 @@ app.get('*', async (req, res) => {
         // user isn't logged in to view the page that requires
         // authentication.
         sdk.authInfo().then(authInfo => {
+          console.log("AuthInfo:", authInfo);
           if (authInfo && authInfo.isAnonymous === false) {
             // It looks like the user is logged in.
             // Full verification would require actual call to API
