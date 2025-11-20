@@ -1,5 +1,4 @@
 const { createClient } = require('@supabase/supabase-js');
-// import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
@@ -8,8 +7,12 @@ let supabaseService = null;
 if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
   supabaseService = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 } else {
-  console.error('Supabase service client is not initialized. Make sure SUPABASE_URL and SUPABASE_SERVICE_KEY are set.');
+  console.error(
+    'Supabase service client is not initialized. Make sure SUPABASE_URL and SUPABASE_SERVICE_KEY are set.'
+  );
 }
+
+module.exports = supabaseService;
 
 /**
  * Generate unique slugs for users in the provider_users table
@@ -22,15 +25,14 @@ const generateUniqueUserSlugs = async () => {
       .from('provider_users')
       .select('id, first_name, last_name, slug');
 
-      console.log(users);
-      
+    console.log(users);
 
     if (fetchError) {
       throw fetchError;
     }
 
     // Helper function to create slug from name parts
-    const createSlug = (str) => {
+    const createSlug = str => {
       let text = str
         .toString()
         .toLowerCase()
@@ -89,7 +91,7 @@ const generateUniqueUserSlugs = async () => {
       // Check if slug already exists and make it unique
       let uniqueSlug = slug;
       let counter = 1;
-      
+
       while (true) {
         // Check if the slug already exists for another user
         const { data: existingUser, error: checkError } = await supabaseService
@@ -132,10 +134,4 @@ const generateUniqueUserSlugs = async () => {
     console.error('Error in generateUniqueUserSlugs:', error);
     return { success: false, error: error.message };
   }
-};
-
-
-module.exports = {
-  ...supabaseService,
-  generateUniqueUserSlugs
 };
