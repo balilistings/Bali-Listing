@@ -12,11 +12,13 @@ export default function ImageUploader({
   label = 'label',
   userId = null, // Required for R2 storage path
   storagePath = 'documents', // Default storage path
+  maxSize = 20 * 1024 * 1024, // Default max size: 20MB
 }) {
   const [images, setImages] = useState([]);
   const [profileIndex, setProfileIndex] = useState(0);
   const [uploadProgress, setUploadProgress] = useState([]);
   const [uploadedUrls, setUploadedUrls] = useState([]);
+  const [rejectionError, setRejectionError] = useState(null);
 
   const uploadFileToR2 = async (file, progressIndex) => {
     try {
@@ -116,7 +118,22 @@ export default function ImageUploader({
   };
 
   const onDrop = useCallback(
-    async acceptedFiles => {
+    async (acceptedFiles, fileRejections) => {
+      setRejectionError(null);
+
+      if (fileRejections.length > 0) {
+        const error = fileRejections[0].errors[0];
+        if (error.code === 'file-too-large') {
+          const maxSizeInMB = (maxSize / 1024 / 1024).toFixed(2);
+          setRejectionError(
+            `The file is too large. Please select a file smaller than ${maxSizeInMB}MB.`
+          );
+        } else {
+          setRejectionError(error.message);
+        }
+        return;
+      }
+
       const newFiles = acceptedFiles.map(file =>
         Object.assign(file, { preview: URL.createObjectURL(file) })
       );
@@ -179,13 +196,14 @@ export default function ImageUploader({
         onProfileChange(firstSuccessfulUpload.url);
       }
     },
-    [maxImages, images.length, userId, storagePath, onProfileChange]
+    [maxImages, images.length, userId, storagePath, onProfileChange, maxSize]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'image/*': [], 'application/pdf': [] },
     multiple: false,
+    maxSize,
   });
 
   useEffect(() => {
@@ -249,6 +267,8 @@ export default function ImageUploader({
           </p>
         </div>
       )}
+
+      {rejectionError && <p className={css.rejectionError}>{rejectionError}</p>}
 
       <div className={css.imageGrid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
         {images.map((file, index) => (
