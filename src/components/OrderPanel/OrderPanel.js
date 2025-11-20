@@ -587,7 +587,8 @@ const OrderPanel = props => {
             if (window.gtag) {
               window.gtag('event', 'click_contact_owner', {
                 category: 'engagement',
-                listing_id: listing.attributes.id,
+                listing_id: listing.id.uuid,
+                author_id: author.id.uuid,
                 clicker: currentUser.attributes.email,
                 contact_value: 1,
               });
@@ -595,7 +596,7 @@ const OrderPanel = props => {
 
             if (window.fbq) {
               fbq('track', 'Click Contact Owner', {
-                listing_id: listing.id,
+                listing_id: listing.id.uuid,
                 listing_name: listing.attributes.title,
               });
             }

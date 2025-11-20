@@ -28,6 +28,7 @@ const urlShortenerRouter = require('./api/url-shortener/urlShortenerRouter');
 const chatbotRouter = require('./api/chatbot/chatbotRouter');
 const reviewsRouter = require('./api/reviews');
 const logout = require('./api/logout');
+const analyticsRouter = require('./api/analytics');
 
 const router = express.Router();
 
@@ -111,5 +112,8 @@ router.use('/chatbot', chatbotRouter);
 
 // Reviews endpoint
 router.use('/reviews', reviewsRouter);
+
+// Analytics endpoint
+router.use('/analytics', analyticsRouter);
 
 module.exports = router;
