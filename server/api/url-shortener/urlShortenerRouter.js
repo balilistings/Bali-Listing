@@ -16,7 +16,7 @@ router.use(bodyParser.json());
 function isHostnameAllowed(urlString, serverHostname) {
   try {
     const url = new URL(urlString);
-    return url.hostname === serverHostname;
+    return url.hostname === serverHostname || url.hostname === 'localhost' || url.hostname === '127.0.0.1';
   } catch (err) {
     return false;
   }
