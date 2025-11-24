@@ -161,6 +161,11 @@ if (typeof window !== 'undefined') {
       sdkTypes,
       store,
     };
+  } else {
+    // Expose sdk for components that use it directly (e.g. HelpWidget)
+    window.app = {
+      sdk,
+    };
   }
 }
 
