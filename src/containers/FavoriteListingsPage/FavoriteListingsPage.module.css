@@ -13,9 +13,6 @@
     margin: 72px auto 0 auto;
   }
 
-  @media (--viewportXLarge) {
-    max-width: var(--contentMaxWidth);
-  }
 }
 
 .heading {
@@ -23,9 +20,6 @@
 
   @media (--viewportMedium) {
     margin: 0 24px 32px 38px;
-  }
-
-  @media (--viewportLarge) {
   }
 }
 
@@ -178,11 +172,6 @@
   }
 }
 
-@media (--viewportXLarge) {
-  .listingCard {
-    max-width: 320px;
-  }
-}
 
 
 /* Jika ListingCard_root adalah root component generated */

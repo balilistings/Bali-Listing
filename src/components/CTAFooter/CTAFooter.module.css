@@ -11,23 +11,47 @@
 
 .root {
   background: linear-gradient(to bottom, #ffffff 0%, #ffffff 20%, #fed5fd 100%);
-  padding: 40px 24px;
   margin: 40px 8px 0;
   border-radius: 10px;
   position: relative;
-  overflow: hidden;
   height: 570px;
-  max-width: 1242px;
   width: 100%;
+}
+
+.inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: inherit;
+  padding: 40px 24px;
 }
 
 @media (--viewportMedium) {
   .root {
     background: linear-gradient(to right, #ffffff 0%, #ffffff 20%, #ffd1fe 100%);
-    padding: 64px 0;
-    margin: 80px 8px 8px;
+    margin: 80px auto 32px auto;
     border-radius: 20px;
     height: auto;
+    max-width: 1242px;
+  }
+
+  .root::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    width: 100vw;
+    background: #ffffff;
+    /* z-index: -1; */
+    border-radius: 10px 0 0 10px;
+    padding-left: 12px;
+  }
+
+  .inner {
+    padding: 64px 0;
+    padding-left: 100px;
   }
 }
 

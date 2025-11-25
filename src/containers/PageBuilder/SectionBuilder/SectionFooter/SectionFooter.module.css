@@ -5,7 +5,7 @@
 }
 
 .footer {
-  max-width: 1284px;
+  /* max-width: 1284px; */
 
   /* display: grid; */
   /* grid-template-columns: repeat(1, 1fr); */
@@ -19,7 +19,7 @@
   }
 }
 .footerInner {
-  max-width: calc(1237px + 64px);
+  max-width: 1244px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
