@@ -128,7 +128,7 @@ const AboutUsPage = props => {
 
     if (i === 0) {
       return (
-        <AnimatedWrapper key={i} className={css.section}>
+        <AnimatedWrapper key={i} className={`${css.section} ${css.sectionWidth}`}>
           <h2 className={css.sectionTitle} style={{ whiteSpace: 'pre-line' }}>
             {title}
           </h2>
@@ -140,7 +140,9 @@ const AboutUsPage = props => {
       // Mission, Explore
       const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
       return (
-        <AnimatedWrapper key={i} className={css.missionParent}>
+        <AnimatedWrapper key={i} className={`${css.missionParent} ${
+          i === 1 ? css.missionBackground : css.sectionWidth
+        }`}>
           <h2 className={`${css.missionTitle} ${css.mobileOnly}`}>{title}</h2>
           <div className={css.missionSection}>
             {image ? (
@@ -162,7 +164,7 @@ const AboutUsPage = props => {
     }
     if (i === 2) {
       return (
-        <AnimatedWrapper key={i} className={css.differentSection}>
+        <AnimatedWrapper key={i} className={`${css.differentSection} ${css.sectionWidth}`}>
           <h2 className={css.differentTitle} style={{ whiteSpace: 'pre-line' }}>
             {title}
           </h2>
@@ -217,7 +219,7 @@ const AboutUsPage = props => {
 
       const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
       return (
-        <AnimatedWrapper key={i} className={css.missionParent}>
+        <AnimatedWrapper key={i} className={`${css.missionParent} ${css.sectionWidth}`}>
           <h3 className={`${css.mobileOnly}`}>{title}</h3>
           <div className={css.missionSection}>
             {image ? (
@@ -265,7 +267,7 @@ const AboutUsPage = props => {
           : [];
 
       return (
-        <AnimatedWrapper key={i} className={css.statsSection}>
+        <AnimatedWrapper key={i} className={`${css.statsSection} `}>
           <h2 className={css.statsTitle}>{title}</h2>
           <p className={css.statsText}>{mainText}</p>
           <div className={css.statsContainer}>
@@ -299,7 +301,7 @@ const AboutUsPage = props => {
             }
             if (i === 2) {
               return (
-                <AnimatedWrapper key="group-2-5" className={css.featureGroup}>
+                <AnimatedWrapper key="group-2-5" className={`${css.featureGroup} ${css.sectionWidth}`}>
                   {blocks.slice(2, 6).map((b, j) => renderBlock(b, j + 2))}
                 </AnimatedWrapper>
               );
