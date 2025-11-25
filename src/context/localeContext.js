@@ -1,5 +1,6 @@
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { saveLocale, setLocale } from '../ducks/locale.duck';
+import { useCallback } from 'react';
 const { getSupportedLocales } = require('../util/translation');
 
 export const languageNames = {
@@ -46,23 +47,28 @@ export const useLocale = () => {
 
 export const useUpdateLocale = () => {
   const dispatch = useDispatch();
-  const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
+  const currentUser = useSelector(state => state.user.currentUser?.id.uuid);
 
-  return (newLocale) => {
-    if (SUPPORTED_LOCALES.includes(newLocale)) {
-      // Always set the cookie, as it's used for server-side redirects
-      // and provides an immediate hint to the server.
-      const d = new Date();
-      d.setTime(d.getTime() + 365 * 24 * 60 * 60 * 1000);
-      const expires = `expires=${d.toUTCString()}`;
-      document.cookie = `userLocale=${newLocale};${expires};path=/`;
+  const updateLocale = useCallback(
+    newLocale => {
+      if (SUPPORTED_LOCALES.includes(newLocale)) {
+        // Always set the cookie, as it's used for server-side redirects
+        // and provides an immediate hint to the server.
+        const d = new Date();
+        d.setTime(d.getTime() + 365 * 24 * 60 * 60 * 1000);
+        const expires = `expires=${d.toUTCString()}`;
+        document.cookie = `userLocale=${newLocale};${expires};path=/`;
 
-      if (currentUser) {
-        dispatch(saveLocale(newLocale));
-      } else {
-        localStorage.setItem('locale', newLocale);
-        dispatch(setLocale(newLocale));
+        if (currentUser) {
+          dispatch(saveLocale(newLocale));
+        } else {
+          localStorage.setItem('locale', newLocale);
+          dispatch(setLocale(newLocale));
+        }
       }
-    }
-  };
+    },
+    [currentUser, dispatch]
+  );
+
+  return updateLocale;
 };

@@ -56,34 +56,25 @@ export const setMessages = messages => ({
 
 // ================ Thunks ================ //
 
-export const saveLocale = (locale, messages) => (dispatch, getState) => {
+// Only for logged in user
+export const saveLocale = (locale, messages) => dispatch => {
   dispatch(saveLocaleRequest());
   if (messages) {
     dispatch(setMessages(messages));
   }
 
-  const { currentUser } = getState().user;
-
-  if (currentUser) {
-    return dispatch(
-      updateProfile({
-        protectedData: { locale },
-      })
-    )
-      .then(response => {
-        dispatch(saveLocaleSuccess());
-        return response;
-      })
-      .catch(e => {
-        dispatch(saveLocaleError(storableError(e)));
-        throw e;
-      });
-  } else {
-    dispatch(setLocale(locale));
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', locale);
-    }
-    dispatch(saveLocaleSuccess());
-    return Promise.resolve();
-  }
+  return dispatch(
+    updateProfile({
+      protectedData: { locale },
+    })
+  )
+    .then(response => {
+      dispatch(saveLocaleSuccess());
+      dispatch(setLocale(locale));
+      return response;
+    })
+    .catch(e => {
+      dispatch(saveLocaleError(storableError(e)));
+      throw e;
+    });
 };

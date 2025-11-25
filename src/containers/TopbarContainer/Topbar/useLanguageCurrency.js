@@ -3,6 +3,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { saveCurrency } from '../../../ducks/currency.js';
 import { useLocale, useUpdateLocale } from '../../../context/localeContext.js';
 import { setMessages } from '../../../ducks/locale.duck.js';
+import { useCallback } from 'react';
 
 const currencies = [
   { code: 'IDR', name: 'Indonesian Rupiah', symbol: 'RP' },
@@ -21,9 +22,9 @@ export const useLanguageCurrency = (config, currentPage) => {
     dispatch(saveCurrency(currency));
   };
 
-  const onLanguageChange = newLocale => {
+  const onLanguageChange = useCallback(async (newLocale) => {
     if (newLocale === locale) {
-      return Promise.resolve();
+      return ;
     }
 
     return import(`../../../translations/${newLocale}.json`)
@@ -59,7 +60,7 @@ export const useLanguageCurrency = (config, currentPage) => {
       .catch(error => {
         console.error('Failed to load translation', error);
       });
-  };
+  }, [dispatch, history, location, locale, updateLocale]);
 
   const showCurrencyToggler =
     config.multiCurrencyEnabled && ['LandingPage', 'search', 'ListingPage'].includes(currentPage);
