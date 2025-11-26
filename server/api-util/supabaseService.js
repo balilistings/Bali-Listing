@@ -15,15 +15,17 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
 module.exports = supabaseService;
 
 /**
- * Generate unique slugs for users in the provider_users table
- * Creates slugs based on first_name and last_name, ensuring uniqueness
+ * Generate unique slugs for users in the sharetribe_users table
+ * Creates slugs based on first_name and surname, ensuring uniqueness
  */
 const generateUniqueUserSlugs = async () => {
+  const tableName = 'sharetribe_users';
+
   try {
-    // Get all users that have first_name and last_name but no slug or an empty slug
+    // Get all users that have first_name and surname but no slug or an empty slug
     const { data: users, error: fetchError } = await supabaseService
-      .from('provider_users')
-      .select('id, first_name, last_name, slug');
+      .from(tableName)
+      .select('user_id, first_name, surname, slug');
 
     console.log(users);
 
@@ -84,8 +86,8 @@ const generateUniqueUserSlugs = async () => {
 
     // Process each user
     for (const user of users) {
-      // Create initial slug from first_name and last_name
-      const name = `${user.first_name || ''} ${user.last_name || ''}`.trim();
+      // Create initial slug from first_name and surname
+      const name = `${user.first_name || ''} ${user.surname || ''}`.trim();
       let slug = createSlug(name);
 
       // Check if slug already exists and make it unique
@@ -95,10 +97,10 @@ const generateUniqueUserSlugs = async () => {
       while (true) {
         // Check if the slug already exists for another user
         const { data: existingUser, error: checkError } = await supabaseService
-          .from('provider_users')
-          .select('id')
+          .from(tableName)
+          .select('user_id')
           .eq('slug', uniqueSlug)
-          .not('id', 'eq', user.id) // Exclude current user from check
+          .not('user_id', 'eq', user.user_id) // Exclude current user from check
           .single();
 
         if (checkError && checkError.code === 'PGRST116') {
@@ -117,14 +119,14 @@ const generateUniqueUserSlugs = async () => {
 
       // Update the user with the unique slug
       const { error: updateError } = await supabaseService
-        .from('provider_users')
+        .from(tableName)
         .update({ slug: uniqueSlug })
-        .eq('id', user.id);
+        .eq('user_id', user.user_id);
 
       if (updateError) {
-        console.error(`Error updating user ${user.id} with slug ${uniqueSlug}:`, updateError);
+        console.error(`Error updating user ${user.user_id} with slug ${uniqueSlug}:`, updateError);
       } else {
-        console.log(`Updated user ${user.id} with slug: ${uniqueSlug}`);
+        console.log(`Updated user ${user.user_id} with slug: ${uniqueSlug}`);
       }
     }
 

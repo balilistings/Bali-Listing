@@ -1,5 +1,7 @@
 const supabase = require('../api-util/supabase');
 
+// const SUPABASE_ENV = process.env.SUPABASE_ENV;
+const supabaseTableName = 'sharetribe_users';
 const getUserIdBySlug = async (req, res) => {
   const { slug } = req.params;
 
@@ -7,8 +9,8 @@ const getUserIdBySlug = async (req, res) => {
 
   try {
     const { data, error } = await supabase
-      .from('provider_users')
-      .select('id')
+      .from(supabaseTableName)
+      .select('user_id')
       .eq('slug', slug)
       .single();
 
@@ -18,7 +20,7 @@ const getUserIdBySlug = async (req, res) => {
     }
 
     if (data) {
-      return res.status(200).send({ userId: data.id });
+      return res.status(200).send({ userId: data.user_id });
     } else {
       return res.status(404).send({ error: 'User not found' });
     }
@@ -35,9 +37,9 @@ const getSlugByUserId = async (req, res) => {
 
   try {
     const { data, error } = await supabase
-      .from('provider_users')
+      .from(supabaseTableName)
       .select('slug')
-      .eq('id', userId)
+      .eq('user_id', userId)
       .single();
 
     if (error) {
