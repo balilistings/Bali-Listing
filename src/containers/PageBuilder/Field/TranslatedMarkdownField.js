@@ -12,6 +12,7 @@ const TranslatedLink = linkProps => {
   const translationMap = {
     'About Us': 'TranslatedLink.aboutUs',
     'Search listings': 'TranslatedLink.searchListings',
+    'Post a new listing': 'TranslatedLink.postNewListing',
     'Terms of service': 'TranslatedLink.termsOfService',
     'Terms of privacy': 'TranslatedLink.termsOfPrivacy',
     Blog: 'TranslatedLink.blog',

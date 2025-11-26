@@ -82,7 +82,15 @@ const UserCard = props => {
   const [mounted, setMounted] = useState(false);
   const [authorSlug, setAuthorSlug] = useState(null);
 
-    const { rootClassName, className, user, currentUser, onContactUser, showContact = true, listingId } = props;
+  const {
+    rootClassName,
+    className,
+    user,
+    currentUser,
+    onContactUser,
+    showContact = true,
+    listingId,
+  } = props;
 
   const userIsCurrentUser = user && user.type === 'currentUser';
   const ensuredUser = userIsCurrentUser ? ensureCurrentUser(user) : ensureUser(user);
@@ -138,9 +146,12 @@ const UserCard = props => {
       onClick={handleContactUserClick}
       enforcePagePreloadFor="SignupPage"
     >
-      <FormattedMessage id="UserCard.contactUser" values={{ 
-        userType: agentorowner === 'agent' ? 'Agent' : 'Owner' 
-      }} />
+      <FormattedMessage
+        id="UserCard.contactUser"
+        values={{
+          userType: agentorowner === 'agent' ? 'Agent' : 'Owner',
+        }}
+      />
     </InlineTextButton>
   ) : null;
 
@@ -197,7 +208,11 @@ const UserCard = props => {
           {editProfileDesktop}
         </div>
       </div>
-      {hasBio ? <h5 className={css.aboutTitle}>About:</h5> : null}
+      {hasBio ? (
+        <h5 className={css.aboutTitle}>
+          <FormattedMessage id="UserCard.AboutTitle" />
+        </h5>
+      ) : null}
       {hasBio ? <ExpandableBio className={css.mobileBio} bio={bio} /> : null}
     </div>
   );
