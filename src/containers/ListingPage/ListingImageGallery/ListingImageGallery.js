@@ -240,11 +240,9 @@ const ListingImageGallery = props => {
         }}
       >
         <button className={css.openFullscreen} onClick={onClick}>
-          {/* <FormattedMessage
+          <FormattedMessage
             id="ListingImageGallery.viewImagesButton"
-            values={{ count: images.length }}
-          /> */}
-          All Photos
+          />
         </button>
       </div>
     );
