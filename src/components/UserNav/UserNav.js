@@ -43,7 +43,9 @@ const UserNav = props => {
       ]
     : [];
 
-  const favoriteTabMaybe = showFavoriteListingPage && !isProvider
+  
+  const useFavPage = process.env.REACT_APP_FAV_PAGE_ENABLED === 'true';
+  const favoriteTabMaybe = useFavPage && showFavoriteListingPage && !isProvider
     ? [
         {
           text: <FormattedMessage id="Favorite Listings" />,

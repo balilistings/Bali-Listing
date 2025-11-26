@@ -178,7 +178,8 @@ const TopbarMobileMenu = props => {
     </NamedLink>
   ) : null;
 
-  const favoriteListingsLinkMaybe = checkIsCustomer(currentUser) ? (
+  const useFavPage = process.env.REACT_APP_FAV_PAGE_ENABLED === 'true';
+  const favoriteListingsLinkMaybe = checkIsCustomer(currentUser) && useFavPage ? (
     <NamedLink
       className={classNames(css.navigationLink, currentPageClass('FavoriteListingsPage'))}
       name="FavoriteListingsPage"
