@@ -57,6 +57,7 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
     </NamedLink>
   );
 };
+ const useFavPage = process.env.REACT_APP_FAV_PAGE_ENABLED === 'true';
 
 const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink }) => {
   const currentPageClass = page => {
@@ -104,7 +105,7 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
           </NamedLink>
         </MenuItem>
 
-        {checkIsCustomer(currentUser) && (
+        {checkIsCustomer(currentUser) && useFavPage && (
           <MenuItem key="FavoriteListingsPage">
             <NamedLink
               className={classNames(css.menuLink, currentPageClass('FavoriteListingsPage'))}
