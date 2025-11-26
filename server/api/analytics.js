@@ -11,9 +11,16 @@ const router = express.Router();
  * Initializes the Google Analytics Data Client.
  * The credentials are parsed from the GOOGLE_ANALYTICS_API_JSON_KEY environment variable.
  */
-const analyticsDataClient = new BetaAnalyticsDataClient({
-  credentials: JSON.parse(process.env.GOOGLE_ANALYTICS_API_JSON_KEY),
-});
+let analyticsDataClient = null;
+if (process.env.GOOGLE_ANALYTICS_API_JSON_KEY) {
+  try {
+    analyticsDataClient = new BetaAnalyticsDataClient({
+      credentials: JSON.parse(process.env.GOOGLE_ANALYTICS_API_JSON_KEY),
+    });
+  } catch (e) {
+    console.error('Failed to parse GOOGLE_ANALYTICS_API_JSON_KEY:', e);
+  }
+}
 
 const propertyId = process.env.GOOGLE_ANALYTICS_PROPERTY_ID;
 
@@ -31,6 +38,14 @@ router.get('/events', async (req, res) => {
     return res.status(400).send({
       error: 'Missing required query parameters: listingId',
     });
+  }
+
+  // Add failsafe for analyticsDataClient and propertyId
+  if (!analyticsDataClient) {
+    return res.status(500).send({ error: 'Google Analytics API credentials are not configured.' });
+  }
+  if (!propertyId) {
+    return res.status(500).send({ error: 'Google Analytics property ID is not configured.' });
   }
 
   const eventNames = ['click_contact_owner'];
