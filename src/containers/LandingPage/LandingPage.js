@@ -14,7 +14,7 @@ export const LandingPage = () => {
   const useNewPages = process.env.REACT_APP_USE_NEW_PAGES === 'true';
   const data = pageAssetsData?.[camelize(ASSET_NAME)]?.data;
 
-  if (!useNewPages) {
+  if (!useNewPages && data) {
     data.sections = data.sections.filter(section => section.sectionId !== 'our_services');
   }
 
