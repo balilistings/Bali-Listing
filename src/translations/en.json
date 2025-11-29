@@ -626,6 +626,8 @@
   "ListingPage.customListingField.closed": "Closed",
   "ListingPage.customListingField.semi": "Semi",
   "ListingPage.customListingField.weeklyCleaning": "Weekly cleaning",
+  "ListingPage.sectionText.readLess": "Read less",
+  "ListingPage.sectionText.readMore": "Read more",
   "LoadableComponentErrorBoundaryPage.description": "It looks like the app needs to be updated! Please refresh the page or go back to {link}.",
   "LoadableComponentErrorBoundaryPage.heading": "Oops, we couldn't fetch the page.",
   "LoadableComponentErrorBoundaryPage.landingPageLink": "landing page",

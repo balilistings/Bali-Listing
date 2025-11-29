@@ -4,6 +4,7 @@ import { richText } from '../../util/richText';
 import ReactDOMServer from 'react-dom/server';
 
 import css from './ListingPage.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 const MAX_VISIBLE_CHARS = 300; // Characters to show before "Read More"
@@ -79,7 +80,9 @@ const SectionTextMaybe = props => {
         )}
         {needsReadMore && (
           <button onClick={handleToggle} className={css.readMoreButton} type="button">
-            {isExpanded ? 'Read Less' : 'Read More'}
+            <FormattedMessage
+              id={isExpanded ? 'ListingPage.sectionText.readLess' : 'ListingPage.sectionText.readMore'}
+            />
           </button>
         )}
       </div>
