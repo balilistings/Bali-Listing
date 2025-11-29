@@ -415,7 +415,7 @@ background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox=
     grid-template-columns: repeat(3, 1fr);
   }
   .gridCol4 {
-    grid-template-columns: 15% 25% 12% 18% 181px;
+    grid-template-columns: 20% 25% 12% 18% 181px;
     gap: 0;
   }
 }
