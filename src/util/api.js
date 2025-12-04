@@ -190,5 +190,9 @@ export const submitReview = body => {
 //
 // See `server/api/listings.js`
 export const updateListingState = body => {
-  return post('/api/listings/update-state', body);
+  return post('/api/listings/update-state', body, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };
