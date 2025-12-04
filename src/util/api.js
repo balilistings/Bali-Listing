@@ -185,3 +185,14 @@ export const createShortUrl = body => {
 export const submitReview = body => {
   return post('/api/reviews', body);
 };
+
+// Update listing state in Supabase
+//
+// See `server/api/listings.js`
+export const updateListingState = body => {
+  return post('/api/listings/update-state', body, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
