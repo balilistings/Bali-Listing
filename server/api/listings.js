@@ -1,4 +1,4 @@
-const supabase = require('../api-util/supabase');
+const supabaseService = require('../api-util/supabaseService');
 
 const supabaseTableName = 'sharetribe_listings';
 
@@ -15,7 +15,7 @@ const updateListingState = async (req, res) => {
   }
 
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseService
       .from(supabaseTableName)
       .update(updateData)
       .eq('listing_id', listingId)
