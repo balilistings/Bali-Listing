@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, StaticRouter, useLocation, useHistory } from 'react-router-dom';
-import { useLocale } from '../context/localeContext';
+import { useLocale, useUpdateLocale } from '../context/localeContext';
 
 // This component handles locale detection and redirection
 const LocaleHandler = ({ isServer = false }) => {
-  const { locale, updateLocale, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
+  const { locale, SUPPORTED_LOCALES, DEFAULT_LOCALE } = useLocale();
+  const updateLocale = useUpdateLocale();
   const location = useLocation();
   const history = useHistory();
 
@@ -29,25 +30,20 @@ const LocaleHandler = ({ isServer = false }) => {
         }
       }
     } else {
-      // If no locale in URL, check if we need to redirect to a saved locale
-      // But only redirect if the saved locale is NOT the default locale
-      const savedLocale = localStorage.getItem('locale');
-      
-      // Check if user has explicitly chosen to use the default locale
-      // by looking for a special flag in localStorage
+      // If no locale in URL, check if we need to redirect to the current locale from state
+      // But only redirect if the locale is NOT the default locale
       const useDefaultLocale = localStorage.getItem('useDefaultLocale') === 'true';
 
       if (
-        savedLocale &&
-        SUPPORTED_LOCALES.includes(savedLocale) &&
-        savedLocale !== DEFAULT_LOCALE &&
+        locale &&
+        SUPPORTED_LOCALES.includes(locale) &&
+        locale !== DEFAULT_LOCALE &&
         !useDefaultLocale
       ) {
         // Redirect to the same path with locale prefix
-        const newPath = `/${savedLocale}${location.pathname}${location.search}${location.hash}`;
+        const newPath = `/${locale}${location.pathname}${location.search}${location.hash}`;
         history.replace(newPath);
       }
-      // If savedLocale is default or not set, we stay on the current path (no prefix for default)
     }
   }, [
     location.pathname,
@@ -82,17 +78,6 @@ export const LocaleStaticRouter = ({ location, context, children, ...rest }) => 
   );
 };
 
-// Helper function to get the locale from a path
-export const getLocaleFromPath = (pathname, SUPPORTED_LOCALES) => {
-  const pathParts = pathname.split('/').filter(part => part !== '');
-
-  if (pathParts.length > 0 && SUPPORTED_LOCALES.includes(pathParts[0])) {
-    return pathParts[0];
-  }
-
-  return null;
-};
-
 // Helper function to add locale prefix to a path
 export const addLocaleToPath = (pathname, locale, SUPPORTED_LOCALES, DEFAULT_LOCALE) => {
   // If locale is not supported or is the default, don't add prefix
@@ -119,3 +104,4 @@ export const removeLocaleFromPath = (pathname, SUPPORTED_LOCALES) => {
 
   return pathname;
 };
+

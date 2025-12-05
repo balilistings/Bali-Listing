@@ -4,33 +4,45 @@ import Button from '../Button/Button';
 import css from './CTAFooter.module.css';
 import sofaSrc from './cta-sofa.webp';
 
-const CTA = () => {
-  return (
-    <div className={css.root}>
-      <div className={css.circleLineLeft} />
-      <div className={css.circleLineRight} />
-      <img src={sofaSrc} className={css.sofa} alt="cta-sofa" fetchpriority='low'/>
+const CTA = ({ variant = 'primary' }) => {
+  const title = variant === 'primary' ? 'CTAFooter.title' : 'CTAFooter.titleSolution';
+  const subtitle = variant === 'primary' ? 'CTAFooter.subtitle' : 'CTAFooter.subtitleSolution';
+  const tagline = 'CTAFooter.tagline';
+  const startButton =
+    variant === 'primary' ? 'CTAFooter.startButton' : 'CTAFooter.startButtonSolution';
 
-      <div className={css.content}>
-        <div className={css.textContent}>
-          <h1 className={css.title}>
-            <FormattedMessage
-              id="CTAFooter.title"
-              defaultMessage="Ready to list your villa or find your next home"
-            />
-          </h1>
-          <p className={css.subtitle}>
-            <FormattedMessage
-              id="CTAFooter.subtitle"
-              defaultMessage="We're building the future of real estate in Bali"
-            />
-          </p>
-          <p className={css.tagline}>
-            <FormattedMessage id="CTAFooter.tagline" defaultMessage="Smarter. Safer. Built for people." />
-          </p>
-          <Button className={css.button}>
-            <FormattedMessage id="CTAFooter.startButton" defaultMessage="Start now" />
-          </Button>
+  return (
+    <div className={css.container}>
+      <div className={css.root}>
+        <div className={css.inner}>
+          <div className={css.circleLineLeft} />
+          <div className={css.circleLineRight} />
+          <img src={sofaSrc} className={css.sofa} alt="cta-sofa" fetchpriority="low" />
+
+          <div className={css.content}>
+            <div className={css.textContent}>
+              <h1 className={css.title}>
+                <FormattedMessage
+                  id={title}
+                  defaultMessage="Ready to list your villa or find your next home"
+                />
+              </h1>
+              <p className={css.subtitle}>
+                <FormattedMessage
+                  id={subtitle}
+                  defaultMessage="We're building the future of real estate in Bali"
+                />
+              </p>
+              {variant === 'primary' && (
+                <p className={css.tagline}>
+                  <FormattedMessage id={tagline} />
+                </p>
+              )}
+              <Button className={css.button}>
+                <FormattedMessage id={startButton} defaultMessage="Start now" />
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

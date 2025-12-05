@@ -286,6 +286,11 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
   const seatsMaybe = seatsSearchParams(seats, datesMaybe);
   const sortMaybe = sort === config.search.sortConfig.relevanceKey ? {} : { sort };
 
+  // Add meta_promoted as default sort
+  sortMaybe.sort
+    ? (sortMaybe.sort = 'meta_promoted,' + sortMaybe.sort)
+    : (sortMaybe.sort = 'meta_promoted,createdAt');
+
   const params = {
     // The rest of the params except invalid nested category-related params
     // Note: invalid independent search params are still passed through
@@ -363,8 +368,8 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     : {};
 
   const {
-    aspectWidth = 1,
-    aspectHeight = 1,
+    aspectWidth = 388,
+    aspectHeight = 282,
     variantPrefix = 'listing-card',
   } = config.layout.listingImage;
   const aspectRatio = aspectHeight / aspectWidth;
@@ -377,17 +382,25 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
       page,
       perPage: RESULT_PAGE_SIZE,
       include: ['author', 'images'],
-      'fields.listing': ['title', 'geolocation', 'price', 'deleted', 'state', 'publicData'],
+      'fields.listing': [
+        'title',
+        'geolocation',
+        'price',
+        'deleted',
+        'state',
+        'publicData',
+        'metadata',
+      ],
       'fields.user': ['profile.displayName', 'profile.abbreviatedName'],
       'fields.image': [
         'variants.scaled-small',
         'variants.scaled-medium',
         `variants.${variantPrefix}`,
-        `variants.${variantPrefix}-2x`,
+        // `variants.${variantPrefix}-2x`,
         'variants.landscape-crop2x',
       ],
-      ...createImageVariantConfig(`${variantPrefix}`, 400, aspectRatio),
-      ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
+      ...createImageVariantConfig(`${variantPrefix}`, 640, aspectRatio),
+      // ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
       // 'limit.images': 1,
     },
     config

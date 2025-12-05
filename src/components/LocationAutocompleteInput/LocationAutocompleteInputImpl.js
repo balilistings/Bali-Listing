@@ -5,8 +5,6 @@ import debounce from 'lodash/debounce';
 import { useConfiguration } from '../../context/configurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 
-import { IconCollection, IconSpinner } from '../../components';
-
 import IconHourGlass from './IconHourGlass';
 import IconCurrentLocation from './IconCurrentLocation';
 import * as geocoderMapbox from './GeocoderMapbox';
@@ -14,6 +12,7 @@ import * as geocoderGoogleMaps from './GeocoderGoogleMaps';
 
 import css from './LocationAutocompleteInput.module.css';
 import EventBus from '../../util/EventBus';
+import IconCollection from '../IconCollection/IconCollection';
 
 const DEBOUNCE_WAIT_TIME = 300;
 const DEBOUNCE_WAIT_TIME_FOR_SHORT_QUERIES = 1000;
@@ -805,8 +804,8 @@ class LocationAutocompleteInputImplementation extends Component {
                   d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5"
                   stroke="#231F20"
                   stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
             </div>
@@ -858,8 +857,8 @@ class LocationAutocompleteInputImplementation extends Component {
                         d="M1.5 10.5L10.5 1.5M1.5 1.5L10.5 10.5"
                         stroke="#231F20"
                         stroke-width="1.5"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                       />
                     </svg>
                   </div>

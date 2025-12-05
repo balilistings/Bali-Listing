@@ -1,8 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
+import { useDispatch, useSelector, shallowEqual } from 'react-redux';
+import { saveLocale, setLocale } from '../ducks/locale.duck';
 const { getSupportedLocales } = require('../util/translation');
-
-const LocaleContext = createContext();
 
 export const languageNames = {
   en: 'English',
@@ -10,13 +8,18 @@ export const languageNames = {
   de: 'Deutsch',
   es: 'Español',
   id: 'Bahasa Indonesia',
-  ru: 'Russian',
+  ru: 'Русский',
 };
 
 const SUPPORTED_LOCALES = getSupportedLocales();
 const DEFAULT_LOCALE = 'en';
 
-const getInitialLocale = () => {
+// This function is now only used for initialization in the app.
+export const getInitialLocale = currentLocale => {
+  if (currentLocale && SUPPORTED_LOCALES.includes(currentLocale)) {
+    return currentLocale;
+  }
+
   if (typeof window === 'undefined') {
     return DEFAULT_LOCALE;
   }
@@ -26,48 +29,40 @@ const getInitialLocale = () => {
     return pathParts[0];
   }
 
+  const storedLocale = localStorage.getItem('locale');
+  if (storedLocale && SUPPORTED_LOCALES.includes(storedLocale)) {
+    return storedLocale;
+  }
+
   return DEFAULT_LOCALE;
 };
 
-export const LocaleProvider = ({ children }) => {
-  const [locale, setLocale] = useState(getInitialLocale());
-  const [messages, setMessages] = useState(() => {
-    try {
-      return JSON.parse(window.__TRANSLATIONS__);
-    } catch (e) {
-      return {};
-    }
-  });
+export const useLocale = () => {
+  const locale = useSelector(state => state.locale.locale);
+  const messages = useSelector(state => state.locale.messages, shallowEqual);
 
-  useEffect(() => {
-    if (locale !== DEFAULT_LOCALE) {
-      localStorage.setItem('locale', locale);
-    } else {
-      localStorage.removeItem('locale');
-    }
-  }, [locale, DEFAULT_LOCALE]);
-
-  const updateLocale = newLocale => {
-    if (SUPPORTED_LOCALES.includes(newLocale)) {
-      setLocale(newLocale);
-    }
-  };
-
-  const updateMessages = newMessages => {
-    setMessages(newMessages);
-  };
-
-  return (
-    <LocaleContext.Provider value={{ locale, messages, updateLocale, updateMessages, SUPPORTED_LOCALES, DEFAULT_LOCALE }}>
-      {children}
-    </LocaleContext.Provider>
-  );
+  return { locale, messages, SUPPORTED_LOCALES, DEFAULT_LOCALE, languageNames };
 };
 
-export const useLocale = () => {
-  const context = useContext(LocaleContext);
-  if (!context) {
-    throw new Error('useLocale must be used within a LocaleProvider');
-  }
-  return context;
+export const useUpdateLocale = () => {
+  const dispatch = useDispatch();
+  const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
+
+  return (newLocale) => {
+    if (SUPPORTED_LOCALES.includes(newLocale)) {
+      // Always set the cookie, as it's used for server-side redirects
+      // and provides an immediate hint to the server.
+      const d = new Date();
+      d.setTime(d.getTime() + 365 * 24 * 60 * 60 * 1000);
+      const expires = `expires=${d.toUTCString()}`;
+      document.cookie = `userLocale=${newLocale};${expires};path=/`;
+
+      if (currentUser) {
+        dispatch(saveLocale(newLocale));
+      } else {
+        localStorage.setItem('locale', newLocale);
+        dispatch(setLocale(newLocale));
+      }
+    }
+  };
 };

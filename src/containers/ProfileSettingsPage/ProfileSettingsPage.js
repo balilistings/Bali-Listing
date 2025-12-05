@@ -15,7 +15,8 @@ import {
 } from '../../util/userHelpers';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
-import { H3, Page, UserNav, NamedLink, LayoutSingleColumn } from '../../components';
+import { H3, Page, UserNav, NamedLink } from '../../components';
+import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -33,7 +34,10 @@ const onImageUploadHandler = (values, fn) => {
 };
 
 const ViewProfileLink = props => {
-  const { userUUID, isUnauthorizedUser } = props;
+  const { userUUID, slug, isUnauthorizedUser } = props;
+  const pageName = slug ? "ProfilePageSlug" : "ProfilePage";
+  const id = slug ? slug : userUUID;
+
   return userUUID && isUnauthorizedUser ? (
     <NamedLink
       className={css.profileLink}
@@ -43,7 +47,7 @@ const ViewProfileLink = props => {
       <FormattedMessage id="ProfileSettingsPage.viewProfileLink" />
     </NamedLink>
   ) : userUUID ? (
-    <NamedLink className={css.profileLink} name="ProfilePage" params={{ id: userUUID }}>
+    <NamedLink className={css.profileLink} name={pageName} params={{ id }}>
       <FormattedMessage id="ProfileSettingsPage.viewProfileLink" />
     </NamedLink>
   ) : null;
@@ -194,7 +198,7 @@ export const ProfileSettingsPageComponent = props => {
               <FormattedMessage id="ProfileSettingsPage.heading" />
             </H3>
 
-            <ViewProfileLink userUUID={user?.id?.uuid} isUnauthorizedUser={isUnauthorizedUser} />
+            <ViewProfileLink userUUID={user?.id?.uuid} slug={user?.slug} isUnauthorizedUser={isUnauthorizedUser} />
           </div>
           {profileSettingsForm}
         </div>

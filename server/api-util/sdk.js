@@ -3,11 +3,20 @@ const https = require('https');
 const Decimal = require('decimal.js');
 const log = require('../log');
 const sharetribeSdk = require('sharetribe-flex-sdk');
+const sharetribeIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { fetchRate } = require('./currencyLogic');
+const NodeCache = require('node-cache');
+
+// Cache TTL in seconds.
+// If set to 0, caching is disabled.
+const CACHE_TTL = process.env.REACT_APP_LANDING_PAGE_CACHE_TTL || 0;
+const cache = new NodeCache({ stdTTL: CACHE_TTL });
 
 const CLIENT_ID = process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID;
+const INTEGRATION_CLIENT_ID = process.env.REACT_APP_SHARETRIBE_INTEGRATION_SDK_CLIENT_ID;
 const CLIENT_SECRET = process.env.SHARETRIBE_SDK_CLIENT_SECRET;
+const INTEGRATION_CLIENT_SECRET = process.env.SHARETRIBE_INTEGRATION_SDK_CLIENT_SECRET;
 const USING_SSL = process.env.REACT_APP_SHARETRIBE_USING_SSL === 'true';
 const TRANSIT_VERBOSE = process.env.REACT_APP_SHARETRIBE_SDK_TRANSIT_VERBOSE === 'true';
 const MAX_SOCKETS = process.env.MAX_SOCKETS;
@@ -120,6 +129,46 @@ exports.getSdk = (req, res) => {
     ...assetCdnBaseUrlMaybe,
   });
 
+  const originalListingsQuery = sdk.listings.query;
+  if (CACHE_TTL > 0) {
+    sdk.listings.query = params => {
+      if (params.pub_isFeatured) {
+        const cacheKey = 'featured_listings:' + JSON.stringify(params);
+        const cached = cache.get(cacheKey);
+        if (cached) {
+          return Promise.resolve(cached);
+        }
+        return originalListingsQuery.call(sdk.listings, params).then(res => {
+          cache.set(cacheKey, res);
+          return res;
+        });
+      }
+      return originalListingsQuery.call(sdk.listings, params);
+    };
+  }
+
+  const wrapWithCache = (sdk, methodName, prefix) => {
+    const originalMethod = sdk[methodName];
+    if (CACHE_TTL > 0 && originalMethod) {
+      sdk[methodName] = params => {
+        const cacheKey = prefix + JSON.stringify(params);
+        const cached = cache.get(cacheKey);
+        if (cached) {
+          return Promise.resolve(cached);
+        }
+        return originalMethod.call(sdk, params).then(res => {
+          cache.set(cacheKey, res);
+          return res;
+        });
+      };
+    }
+  };
+
+  wrapWithCache(sdk, 'assetByVersion', 'asset_by_version:');
+  wrapWithCache(sdk, 'assetByAlias', 'asset_by_alias:');
+  wrapWithCache(sdk, 'assetsByVersion', 'assets_by_version:');
+  wrapWithCache(sdk, 'assetsByAlias', 'assets_by_alias:');
+
   const currency = {
     getConversionRate: () => {
       return fetchRate().then(data => ({ data }));
@@ -165,6 +214,21 @@ exports.getTrustedSdk = req => {
       typeHandlers,
       ...baseUrlMaybe,
     });
+  });
+};
+
+// Integration SDK is used for server-to-server communication.
+// It needs CLIENT_ID and CLIENT_SECRET.
+exports.getIntegrationSdk = () => {
+  return sharetribeIntegrationSdk.createInstance({
+    // transitVerbose: TRANSIT_VERBOSE,
+    clientId: INTEGRATION_CLIENT_ID,
+    clientSecret: INTEGRATION_CLIENT_SECRET,
+    // httpAgent,
+    // httpsAgent,
+    // tokenStore: sharetribeIntegrationSdk.tokenStore.memoryStore(),
+    // typeHandlers,
+    // ...baseUrlMaybe,
   });
 };
 

@@ -11,7 +11,8 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage';
 import { loadData } from './AboutUsPage.duck';
-import { Page, LayoutSingleColumn } from '../../components/index.js';
+import { Page } from '../../components/index.js';
+import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
 import { useConfiguration } from '../../context/configurationContext';
 import { extractPageMetadata } from '../../util/seo';
 
@@ -19,6 +20,7 @@ import css from './AboutUsPage.module.css';
 import { FormattedMessage } from 'react-intl';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
+import { useLocale } from '../../context/localeContext.js';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -73,7 +75,9 @@ const AboutUsPage = props => {
 
   // intentional to use new content page, to make it easier to switch between the old about page and the new one because of the content difference
   // TODO: move "about-new" content to "about", and then change the page id here to "about". Right now it's retrieving content from both "about" and "about-new"
+  const { locale } = useLocale();
   const pageId = 'about-new';
+  const loaded = useRef('');
 
   const { pageAssetsData, inProgress, error } = useSelector(
     state => state.hostedAssets || {},
@@ -81,11 +85,13 @@ const AboutUsPage = props => {
   );
 
   useEffect(() => {
-    if (inProgress || pageAssetsData?.[pageId]) {
+    if (loaded.current === locale || inProgress || pageAssetsData?.[pageId]?.data) {
       return;
     }
-    dispatch(loadData(params));
-  }, [dispatch, params, pageId, inProgress, pageAssetsData]);
+
+    dispatch(loadData(params, locale));
+    loaded.current = locale;
+  }, [dispatch, locale, params, pageId, inProgress, pageAssetsData]);
 
   if (inProgress) {
     return <div className={css.root} />;
@@ -122,7 +128,7 @@ const AboutUsPage = props => {
 
     if (i === 0) {
       return (
-        <AnimatedWrapper key={i} className={css.section}>
+        <AnimatedWrapper key={i} className={`${css.section} ${css.sectionWidth}`}>
           <h2 className={css.sectionTitle} style={{ whiteSpace: 'pre-line' }}>
             {title}
           </h2>
@@ -134,7 +140,9 @@ const AboutUsPage = props => {
       // Mission, Explore
       const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
       return (
-        <AnimatedWrapper key={i} className={css.missionParent}>
+        <AnimatedWrapper key={i} className={`${css.missionParent} ${
+          i === 1 ? css.missionBackground : css.sectionWidth
+        }`}>
           <h2 className={`${css.missionTitle} ${css.mobileOnly}`}>{title}</h2>
           <div className={css.missionSection}>
             {image ? (
@@ -156,7 +164,7 @@ const AboutUsPage = props => {
     }
     if (i === 2) {
       return (
-        <AnimatedWrapper key={i} className={css.differentSection}>
+        <AnimatedWrapper key={i} className={`${css.differentSection} ${css.sectionWidth}`}>
           <h2 className={css.differentTitle} style={{ whiteSpace: 'pre-line' }}>
             {title}
           </h2>
@@ -211,7 +219,7 @@ const AboutUsPage = props => {
 
       const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
       return (
-        <AnimatedWrapper key={i} className={css.missionParent}>
+        <AnimatedWrapper key={i} className={`${css.missionParent} ${css.sectionWidth}`}>
           <h3 className={`${css.mobileOnly}`}>{title}</h3>
           <div className={css.missionSection}>
             {image ? (
@@ -259,7 +267,7 @@ const AboutUsPage = props => {
           : [];
 
       return (
-        <AnimatedWrapper key={i} className={css.statsSection}>
+        <AnimatedWrapper key={i} className={`${css.statsSection} `}>
           <h2 className={css.statsTitle}>{title}</h2>
           <p className={css.statsText}>{mainText}</p>
           <div className={css.statsContainer}>
@@ -279,10 +287,7 @@ const AboutUsPage = props => {
 
   return (
     <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
-      <LayoutSingleColumn
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
+      <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.hero}>
           <Spiral className={css.spiral} />
           <h1 className={css.heroTitle}>
@@ -296,7 +301,7 @@ const AboutUsPage = props => {
             }
             if (i === 2) {
               return (
-                <AnimatedWrapper key="group-2-5" className={css.featureGroup}>
+                <AnimatedWrapper key="group-2-5" className={`${css.featureGroup} ${css.sectionWidth}`}>
                   {blocks.slice(2, 6).map((b, j) => renderBlock(b, j + 2))}
                 </AnimatedWrapper>
               );

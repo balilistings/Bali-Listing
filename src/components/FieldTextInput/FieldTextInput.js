@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { Field } from 'react-final-form';
 import classNames from 'classnames';
-import { ValidationError, ExpandingTextarea } from '../../components';
+import { ValidationError } from '../../components';
+import ExpandingTextarea from '../../components/ExpandingTextarea/ExpandingTextarea';
 
 import css from './FieldTextInput.module.css';
 import LabelWithTooltip from '../LabelWithTooltip/LabelWithTooltip';

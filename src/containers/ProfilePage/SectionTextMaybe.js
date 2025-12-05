@@ -1,8 +1,8 @@
-import React from 'react';
 import { Heading } from '../../components';
 import { richText } from '../../util/richText';
 
 import css from './ProfilePage.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
@@ -20,7 +20,7 @@ const SectionTextMaybe = props => {
     <div className={css.sectionText}>
       {heading ? (
         <Heading as="h2" rootClassName={css.sectionHeading}>
-          {heading}
+          <FormattedMessage id={heading} />
         </Heading>
       ) : null}
       <p className={textClass}>{content}</p>

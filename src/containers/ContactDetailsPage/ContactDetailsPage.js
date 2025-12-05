@@ -12,7 +12,8 @@ import { showCreateListingLinkForUser, showPaymentDetailsForUser } from '../../u
 import { sendVerificationEmail } from '../../ducks/user.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 
-import { H3, Page, UserNav, LayoutSideNavigation } from '../../components';
+import { H3, Page, UserNav } from '../../components';
+import LayoutSideNavigation from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -104,14 +105,14 @@ export const ContactDetailsPageComponent = props => {
   ) : null;
 
   const title = intl.formatMessage({ id: 'ContactDetailsPage.title' });
+  const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
 
   const showManageListingsLink = showCreateListingLinkForUser(config, currentUser);
-  const { showPayoutDetails, showPaymentMethods } = showPaymentDetailsForUser(config, currentUser);
   const accountSettingsNavProps = {
-    currentPage: 'ContactDetailsPage',
+      currentPage: 'ContactDetailsPage',
     showPaymentMethods,
     showPayoutDetails,
-  };
+};
 
   return (
     <Page title={title} scrollingDisabled={scrollingDisabled}>

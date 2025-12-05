@@ -49,14 +49,21 @@ const methods = {
 };
 
 // If server/api returns data from SDK, you should set Content-Type to 'application/transit+json'
-const request = (path, options = {}) => {
+const request = async (path, options = {}) => {
   const url = `${apiBaseUrl()}${path}`;
   const { credentials, headers, body, ...rest } = options;
 
   // If headers are not set, we assume that the body should be serialized as transit format.
   const shouldSerializeBody =
     (!headers || headers['Content-Type'] === 'application/transit+json') && body;
-  const bodyMaybe = shouldSerializeBody ? { body: serialize(body) } : {};
+
+  const bodyIsJson = headers && headers['Content-Type'] === 'application/json' && body;
+
+  const bodyMaybe = shouldSerializeBody
+    ? { body: serialize(body) }
+    : bodyIsJson
+    ? { body: JSON.stringify(body) }
+    : {};
 
   const fetchOptions = {
     credentials: credentials || 'include',
@@ -67,7 +74,7 @@ const request = (path, options = {}) => {
     ...rest,
   };
 
-  return window.fetch(url, fetchOptions).then(res => {
+  return window.fetch(url, fetchOptions).then(async res => {
     const contentTypeHeader = res.headers.get('Content-Type');
     const contentType = contentTypeHeader ? contentTypeHeader.split(';')[0] : null;
 
@@ -90,11 +97,21 @@ const request = (path, options = {}) => {
 
 // Keep the previous parameter order for the post method.
 // For now, only POST has own specific function, but you can create more or use request directly.
-const post = (path, body, options = {}) => {
+export const post = (path, body, options = {}) => {
   const requestOptions = {
     ...options,
     method: methods.POST,
     body,
+  };
+
+  return request(path, requestOptions);
+};
+
+// Generic GET request helper
+export const get = (path, options = {}) => {
+  const requestOptions = {
+    ...options,
+    method: methods.GET,
   };
 
   return request(path, requestOptions);
@@ -147,4 +164,35 @@ export const createUserWithIdp = body => {
 
 export const getPresignedUrlR2 = body => {
   return post('/api/r2/generate-presigned-url', body);
+};
+
+// Create a shortened URL
+//
+// This endpoint creates a short URL for the given long URL.
+// The short URL will be in the format: hostname/shortCode
+//
+// See `server/api/url-shortener/urlShortenerRouter.js` for implementation details.
+export const createShortUrl = body => {
+  
+  return post('/api/url-shortener', body);
+};
+
+// Submit a user review for a listing
+//
+// This endpoint allows an authenticated user to submit a rating for a listing.
+//
+// See `server/api/reviews.js` for implementation details.
+export const submitReview = body => {
+  return post('/api/reviews', body);
+};
+
+// Update listing state in Supabase
+//
+// See `server/api/listings.js`
+export const updateListingState = body => {
+  return post('/api/listings/update-state', body, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
 };

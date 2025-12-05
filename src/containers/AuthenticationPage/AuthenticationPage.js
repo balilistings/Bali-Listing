@@ -31,14 +31,12 @@ import {
   Heading,
   IconSpinner,
   NamedRedirect,
-  LinkTabNavHorizontal,
   SocialLoginButton,
-  ResponsiveBackgroundImageContainer,
   Modal,
-  LayoutSingleColumn,
+  // LayoutSingleColumn,
   NamedLink,
 } from '../../components';
-
+import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 
@@ -240,8 +238,8 @@ export const AuthenticationForms = props => {
         ...pickUserFieldsData(rest, 'protected', userType, userFields),
         ...getNonUserFieldParams(rest, userFields),
         ...(selfieDocumentLink && { selfieDocumentLink }),
-        ...(idDocumentLink && { idDocumentLink }),
-        ...(companyDocumentLink && { companyDocumentLink }),
+        ...(idDocumentLink && rest.pub_role !== 'company' && { idDocumentLink }),
+        ...(companyDocumentLink && rest.pub_role === 'company' && { companyDocumentLink }),
         ...(pub_companyname && { companyname: pub_companyname }),
         ...(pub_id_card_nik && { id_card_nik: pub_id_card_nik }),
         ...(pub_id_npwp_nik && { id_npwp_nik: pub_id_npwp_nik }),
@@ -622,7 +620,8 @@ export const AuthenticationPageComponent = props => {
   const isConfirm = tab === 'confirm';
   const userTypeInPushState = location.state?.userType || null;
   const userTypeInAuthInfo = isConfirm && authInfo?.userType ? authInfo?.userType : null;
-  const userType = pathParams?.userType || userTypeInPushState || userTypeInAuthInfo || null;
+  const userTypeInURL = new URLSearchParams(location.search).get('userType');
+  const userType = pathParams?.userType || userTypeInPushState || userTypeInAuthInfo || userTypeInURL || null;
 
   const { userTypes = [] } = config.user;
   const preselectedUserType = userTypes.find(conf => conf.userType === userType)?.userType || null;

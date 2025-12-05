@@ -36,6 +36,7 @@ const passport = require('passport');
 
 const auth = require('./auth');
 const apiRouter = require('./apiRouter');
+const shortUrlRouter = require('./redirectRouter');
 const wellKnownRouter = require('./wellKnownRouter');
 const webmanifestResourceRoute = require('./resources/webmanifest');
 const robotsTxtRoute = require('./resources/robotsTxt');
@@ -172,6 +173,9 @@ if (ENABLE_STATIC_ASSET_CACHING) {
 
 app.use(cookieParser());
 
+const attachCurrentUser = require('./middleware/attachCurrentUser');
+app.use(attachCurrentUser);
+
 // We don't serve favicon.ico from root. PNG images are used instead for icons through link elements.
 app.get('/favicon.ico', (req, res) => {
   res.status(404).send('favicon.ico not found.');
@@ -189,6 +193,9 @@ app.get('/sitemap-:resource', sitemapResourceRoute);
 // you can reach the manifest from http://localhost:3500/site.webmanifest
 // The corresponding <link> element is set in src/components/Page/Page.js
 app.get('/site.webmanifest', webmanifestResourceRoute);
+
+const localeMiddleware = require('./localeMiddleware');
+const rewriteMiddleware = require('./rewriteMiddleware');
 
 // These .well-known/* endpoints will be enabled if you are using this template as OIDC proxy
 // https://www.sharetribe.com/docs/cookbook-social-logins-and-sso/setup-open-id-connect-proxy/
@@ -220,6 +227,15 @@ app.use(passport.initialize());
 // Server-side routes that do not render the application
 app.use('/api', apiRouter);
 
+// URL Shortener redirect route
+app.use('/sh', shortUrlRouter);
+
+// Middleware for locale detection
+app.use(localeMiddleware);
+
+// Middleware to rewrite user URLs from /user/{slug} to /u/{id}
+app.use('/user', rewriteMiddleware);
+
 const noCacheHeaders = {
   'Cache-control': 'no-cache, no-store, must-revalidate',
 };
@@ -242,18 +258,12 @@ app.get('*', async (req, res) => {
   // Until we have a better plan for caching dynamic content and we
   // make sure that no sensitive data can appear in the prefetched
   // data, let's disable response caching altogether.
-      // Custom caching for landing page.
-      const { getSupportedLocales } = require('../src/util/translation');
-      const SUPPORTED_LOCALES = getSupportedLocales();
-      const pathParts = req.url.split('/').filter(p => p);
-      const isLandingPage =
-        req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
-
-      if (isLandingPage && PAGE_CACHE_DURATION > 0) {
-        res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
-      } else {
-        res.set(noCacheHeaders);
-      }
+  // Custom caching for landing page.
+  const { getSupportedLocales } = require('../src/util/translation');
+  const SUPPORTED_LOCALES = getSupportedLocales();
+  const pathParts = req.url.split('/').filter(p => p);
+  const isLandingPage =
+    req.url === '/' || (pathParts.length === 1 && SUPPORTED_LOCALES.includes(pathParts[0]));
 
   // Get chunk extractors from node and web builds
   // https://loadable-components.com/docs/api-loadable-server/#chunkextractor
@@ -268,8 +278,31 @@ app.get('*', async (req, res) => {
   dataLoader
     .loadData(req.url, sdk, appInfo)
     .then(data => {
+      const { preloadedState, hostedConfig } = data;
+      const locale = req.locale;
+      let translations;
+      try {
+        translations = require(`../src/translations/${locale}.json`);
+      } catch (e) {
+        translations = require('../src/translations/en.json');
+      }
+
+      const updatedPreloadedState = {
+        ...preloadedState,
+        locale: {
+          locale: locale,
+          messages: translations,
+        },
+      };
+
+      const updatedData = {
+        preloadedState: updatedPreloadedState,
+        translations,
+        hostedConfig,
+      };
+
       const cspNonce = cspEnabled ? res.locals.cspNonce : null;
-      return renderer.render(req.url, context, data, renderApp, webExtractor, cspNonce);
+      return renderer.render(req.url, context, updatedData, renderApp, webExtractor, cspNonce);
     })
     .then(html => {
       if (dev) {
@@ -285,17 +318,21 @@ app.get('*', async (req, res) => {
         // user isn't logged in to view the page that requires
         // authentication.
         sdk.authInfo().then(authInfo => {
+          console.log("AuthInfo:", authInfo);
           if (authInfo && authInfo.isAnonymous === false) {
             // It looks like the user is logged in.
             // Full verification would require actual call to API
             // to refresh the access token
+            res.set(noCacheHeaders);
             res.status(200).send(html);
           } else {
             // Current token is anonymous.
+            res.set(noCacheHeaders);
             res.status(401).send(html);
           }
         });
       } else if (context.forbidden) {
+        res.set(noCacheHeaders);
         res.status(403).send(html);
       } else if (context.url) {
         // React Router injects the context.url if a redirect was rendered
@@ -303,8 +340,14 @@ app.get('*', async (req, res) => {
       } else if (context.notfound) {
         // NotFoundPage component injects the context.notfound when a
         // 404 should be returned
+        res.set(noCacheHeaders);
         res.status(404).send(html);
       } else {
+        if (isLandingPage && PAGE_CACHE_DURATION > 0) {
+          res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
+        } else {
+          res.set(noCacheHeaders);
+        }
         res.send(html);
       }
     })

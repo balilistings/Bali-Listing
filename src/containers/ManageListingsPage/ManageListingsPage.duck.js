@@ -4,6 +4,7 @@ import { createImageVariantConfig } from '../../util/sdkLoader';
 import { parse } from '../../util/urlHelpers';
 
 import { fetchCurrentUser } from '../../ducks/user.duck';
+import { updateListingState } from '../../util/api'; // Import the new API helper
 
 // Pagination page size might need to be dynamic on responsive page layouts
 // Current design has max 3 columns 42 is divisible by 2 and 3
@@ -304,6 +305,12 @@ export const closeListing = listingId => (dispatch, getState, sdk) => {
   return sdk.ownListings
     .close({ id: listingId }, { expand: true })
     .then(response => {
+      // Call custom API to update Supabase
+      updateListingState({
+        listingId: listingId.uuid,
+        state: 'closed',
+        listing_deleted: true,
+      }).catch(e => console.error('Failed to update Supabase listing state:', e));
       dispatch(closeListingSuccess(response));
       return response;
     })
@@ -318,6 +325,12 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
   return sdk.ownListings
     .open({ id: listingId }, { expand: true })
     .then(response => {
+      // Call custom API to update Supabase
+      updateListingState({
+        listingId: listingId.uuid,
+        state: 'published',
+        listing_deleted: false,
+      }).catch(e => console.error('Failed to update Supabase listing state:', e));
       dispatch(openListingSuccess(response));
       return response;
     })

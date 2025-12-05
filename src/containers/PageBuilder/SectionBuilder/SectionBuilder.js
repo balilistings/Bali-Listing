@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import LazyRender from '../../../components/LazyRender';
 
 // Section components
 import SectionArticle from './SectionArticle';
@@ -125,12 +126,8 @@ const SectionBuilder = props => {
         const classes = classNames({ [css.darkTheme]: isDarkTheme });
         const sectionId = getUniqueSectionId(section.sectionId, index);
 
-        if (section.sectionName === 'Our Services') {
-          return null;
-        }
-
         if (Section) {
-          return (
+          const sectionEl = (
             <Section
               key={`${sectionId}_i${index}`}
               className={classes}
@@ -141,6 +138,16 @@ const SectionBuilder = props => {
               sectionId={sectionId}
             />
           );
+
+          // Lazy render all sections after the first 2
+          if (index > 1) {
+            return (
+              <LazyRender key={`${sectionId}_i${index}`} placeholderHeight={400}>
+                {sectionEl}
+              </LazyRender>
+            );
+          }
+          return sectionEl;
         } else {
           // If the section type is unknown, the app can't know what to render
           console.warn(

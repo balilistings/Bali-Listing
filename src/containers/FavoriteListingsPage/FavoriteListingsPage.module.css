@@ -1,0 +1,289 @@
+@import '../../styles/customMediaQueries.css';
+*, *::before, *::after { box-sizing: border-box; }
+
+.messagePanel,
+.listingPanel {
+  margin: 24px auto 0 auto;
+
+  @media (--viewportMedium) {
+    margin: 48px auto 0 auto;
+  }
+
+  @media (--viewportLarge) {
+    margin: 72px auto 0 auto;
+  }
+
+}
+
+.heading {
+  margin: 0 24px 24px 24px;
+
+  @media (--viewportMedium) {
+    margin: 0 24px 32px 38px;
+  }
+}
+
+/* Responsive tweaks for heading */
+@media (max-width: 549px) {
+  .heading {
+    margin: 0 16px 16px 45px;
+    font-size: 18px;
+  }
+}
+
+.listingCards {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 20px;
+  width: 100%;
+  justify-items: stretch;
+  max-width: 473px;
+  margin: 0 auto;
+
+  @media (min-width: 550px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+    max-width: 100%;
+    padding: 0 32px;
+  }
+
+  @media (--viewportMedium) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    max-width: 100%;
+  }
+
+  @media (--viewportLarge) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  @media (--viewportXLarge) {
+    gap: 32px;
+  }
+}
+
+/* BUTTON GROUP - FIXED */
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 24px;
+  margin-bottom: 20px;
+  margin-top: -40px;
+  flex-wrap: wrap;
+}
+
+.removeAll,
+.removeSelected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  color: #eb2be8;
+  padding: 10px 16px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.removeAll:hover,
+.removeSelected:hover {
+  text-decoration: underline #eb2be8;
+  color: black;
+  background: rgba(235, 43, 232, 0.1);
+}
+
+.removeIcon {
+  transition: transform 0.2s ease;
+  fill: #eb2be8;
+  height: 20px;
+  width: auto;
+}
+
+.removeSelected:hover .removeIcon,
+.removeAll:hover .removeIcon {
+  color: black;
+  transform: scale(1.1);
+}
+
+
+/* Mobile responsive for buttons */
+@media (max-width: 549px) {
+  .buttonGroup {
+    margin-right: 18px;
+    margin-top: -50px;
+    margin-bottom: 16px;
+    justify-content: flex-end;
+  }
+  
+  .removeAll,
+  .removeSelected {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Tablet responsive */
+@media (min-width: 550px) and (max-width: 1023px) {
+  .buttonGroup {
+    padding: 0 32px;
+    margin-top: -48px;
+  }
+}
+
+@media (--viewportMedium) {
+  .buttonGroup {
+    padding: 0 40px;
+    margin-top: -56px;
+  }
+}
+
+@media (--viewportLarge) {
+  .buttonGroup {
+    padding: 0 48px;
+    margin-top: -64px;
+  }
+}
+
+.listingCard {
+  width: 100%;
+  max-width: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 550px) and (max-width: 767px) {
+  .listingCard {
+    max-width: 100%;
+  }
+}
+
+@media (--viewportMedium) {
+  .listingCard {
+    max-width: 460px;
+  }
+}
+
+@media (--viewportLarge) {
+  .listingCard {
+    max-width: 400px;
+  }
+}
+
+
+
+/* Jika ListingCard_root adalah root component generated */
+.ListingCard_root,
+.ListingCard_root a,
+.listingCard > a {
+  display: block;
+  width: 100%;
+}
+
+.listingCard .slick-slide,
+.listingCard .slick-track .slick-slide {
+  width: 100% !important;
+  display: block;
+}
+
+.listingCard .slick-list,
+.listingCard .slick-track {
+  width: 100% !important;
+}
+
+/* Gambar di dalam card: isi penuh, crop rapi jika diperlukan */
+.ListingCard_image img,
+.listingCard img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover; /* jika mau crop; ubah ke 'contain' kalau mau fit penuh */
+}
+
+.listingCard .ListingCard_content {
+  flex: 1 1 auto;
+}
+
+.selectCircle {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.selectCircle:hover {
+  border-color: #c922ce;
+  transform: scale(1.1);
+}
+
+.selectCircle.selected {
+  border-color: #c922ce;
+  background: #d81ee9;
+}
+
+.selectCircle.selected::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Mobile adjustments */
+@media (max-width: 549px) {
+  .listingCard {
+    max-width: 100%;
+  }
+
+  .selectCircle {
+    top: 17px;
+    right: 25px;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 550px) and (max-width: 1023px) {
+  .selectCircle {
+    top: 16px;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+  }
+}
+
+.pagination {
+  margin: 40px auto 0 auto;
+  max-width: 1600px;
+  padding: 0 24px;
+
+  @media (min-width: 550px) {
+    padding: 0 32px;
+  }
+
+  @media (--viewportMedium) {
+    padding: 0 40px;
+  }
+
+  @media (--viewportLarge) {
+    padding: 0 48px;
+  }
+}
+
+/* Debugging helper: tambahkan kelas .debug-outline ke listingCard yang bermasalah untuk menampilkan outline */
+.listingCard.debug-outline { outline: 2px dashed rgba(200,50,50,0.6); }
+
+/* End of file */

@@ -1,7 +1,9 @@
 import * as log from '../util/log';
 import { storableError } from '../util/errors';
 import { clearCurrentUser, fetchCurrentUser } from './user.duck';
-import { createUserWithIdp } from '../util/api';
+import { createUserWithIdp, post } from '../util/api';
+import { clearUserLocaleCookie } from '../util/cookies';
+import { clearChatHistory } from '../containers/HelpWidget/useChatSession';
 
 const authenticated = authInfo => authInfo?.isAnonymous === false;
 const loggedInAs = authInfo => authInfo?.isLoggedInAs === true;
@@ -179,7 +181,10 @@ export const login = (username, password) => (dispatch, getState, sdk) => {
   // just dispatches the login error action.
   return sdk
     .login({ username, password })
-    .then(() => dispatch(fetchCurrentUser({ afterLogin: true })))
+    .then(() => {
+      clearChatHistory();
+      dispatch(fetchCurrentUser({ afterLogin: true }));
+    })
     .then(() => dispatch(loginSuccess()))
     .catch(e => dispatch(loginError(storableError(e))));
 };
@@ -199,7 +204,10 @@ export const logout = () => (dispatch, getState, sdk) => {
       dispatch(logoutSuccess());
       dispatch(clearCurrentUser());
       log.clearUserId();
+      clearUserLocaleCookie(); // Clear the userLocale cookie
+      clearChatHistory();
       dispatch(userLogout());
+      post('/api/clear-user', {});
     })
     .catch(e => dispatch(logoutError(storableError(e))));
 };

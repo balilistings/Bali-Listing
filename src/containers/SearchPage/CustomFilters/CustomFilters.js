@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import css from './CustomFilters.module.css';
 import CategorySelector from './CategorySelector/CategorySelector';
 import LocationSelector from './LocationSelector/LocationSelector';
+import RadiusSelector from './RadiusSelector/RadiusSelector';
 import PriceSelector from './PriceSelector/PriceSelector';
 import SimplePriceSelector from './SimplePriceSelector/SimplePriceSelector';
 import BedroomsSelector from './BedroomsSelector/BedroomsSelector';
@@ -16,8 +17,9 @@ import TenureSelector from './TenureSelector/TenureSelector';
 import LandTitleSelector from './LandTitleSelector/LandTitleSelector';
 import LandZoneSelector from './LandZoneSelector/LandZoneSelector';
 import { useHistory } from 'react-router-dom';
-import { IconCollection } from '../../../components';
+import IconCollection from '../../../components/IconCollection/IconCollection';
 import { FormattedMessage } from 'react-intl';
+import { radiusToBounds } from '../../../util/radiusUtils';
 
 // Configuration for which filters each category needs
 const categoryFilterConfig = {
@@ -130,11 +132,7 @@ const allPubAmentiesKeys = [
   'pub_petfriendly',
 ];
 
-const allPubServicesKeys = [
-  'pub_cleaning_weekly',
-  'pub_electricity',
-  'pub_pool_maintenance',
-];
+const allPubServicesKeys = ['pub_cleaning_weekly', 'pub_electricity', 'pub_pool_maintenance'];
 
 const initialiseAmenities = () => {
   if (typeof window !== 'undefined') {
@@ -278,6 +276,7 @@ function CustomFilters({
 }) {
   const [selectedCategory, setSelectedCategory] = useState(initialiseCategory);
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedRadius, setSelectedRadius] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState(initialisePricePeriod);
   const [priceRange, setPriceRange] = useState(initialiseMainPrice);
   const [simplePriceRange, setSimplePriceRange] = useState(initialisePrice);
@@ -354,18 +353,86 @@ function CustomFilters({
   };
 
   const handleLocationChange = location => {
-    onUpdateCurrentQueryParams({
-      address: location.selectedPlace.address,
-      bounds: location.selectedPlace.bounds,
-    });
+    const { selectedPlace } = location;
+
+    if (selectedPlace) {
+      // If radius is set, calculate new bounds based on radius
+      if (selectedRadius) {
+        let lat, lng;
+
+        if (selectedPlace.origin) {
+          // Autocomplete selected location (SDK format)
+          lat = selectedPlace.origin.lat;
+          lng = selectedPlace.origin.lng;
+        } else if (selectedPlace.center) {
+          // Preset location (array format: [lng, lat])
+          [lng, lat] = selectedPlace.center;
+        }
+
+        if (lat !== undefined && lng !== undefined) {
+          const bounds = radiusToBounds(lat, lng, selectedRadius);
+          setSelectedLocation(selectedPlace);
+          onUpdateCurrentQueryParams({
+            address: selectedPlace.address,
+            bounds: bounds.join(','),
+          });
+          return;
+        }
+      }
+
+      // No radius or couldn't calculate bounds, use original bounds directly
+      setSelectedLocation(selectedPlace);
+      onUpdateCurrentQueryParams({
+        address: selectedPlace.address,
+        bounds: selectedPlace.bounds,
+      });
+    }
   };
 
   const handleLocationReset = () => {
     setSelectedLocation(null);
+    setSelectedRadius(null);
     onUpdateCurrentQueryParams({
       address: null,
       bounds: null,
     });
+  };
+
+  const handleRadiusChange = radius => {
+    setSelectedRadius(radius);
+
+    // If location is set, recalculate bounds with new radius
+    if (selectedLocation) {
+      let lat, lng;
+
+      if (selectedLocation.origin) {
+        // Autocomplete selected location (SDK format)
+        lat = selectedLocation.origin.lat;
+        lng = selectedLocation.origin.lng;
+      } else if (selectedLocation.center) {
+        // Preset location (array format: [lng, lat])
+        [lng, lat] = selectedLocation.center;
+      }
+
+      if (lat !== undefined && lng !== undefined) {
+        const newBounds = radiusToBounds(lat, lng, radius);
+
+        onUpdateCurrentQueryParams({
+          bounds: newBounds.join(','),
+        });
+      }
+    }
+  };
+
+  const handleRadiusReset = () => {
+    setSelectedRadius(null);
+
+    // Recalculate bounds from original location bounds if location exists
+    if (selectedLocation) {
+      onUpdateCurrentQueryParams({
+        bounds: selectedLocation.bounds,
+      });
+    }
   };
 
   const handlePeriodChange = period => {
@@ -412,14 +479,12 @@ function CustomFilters({
     onUpdateCurrentQueryParams({
       price: range.toString(),
     });
-    // setSimplePriceRange(range);
   };
 
   const handleLandSizeRangeChange = range => {
     onUpdateCurrentQueryParams({
       pub_landsize: range.toString(),
     });
-    // setLandSizeRange(range);
   };
 
   const handleBedroomsChange = value => {
@@ -475,9 +540,10 @@ function CustomFilters({
   };
 
   const handlePropertyTypeChange = propertyType => {
-    const paramValue = !propertyType || (Array.isArray(propertyType) && propertyType.length === 0) 
-      ? null 
-      : propertyType.toString();
+    const paramValue =
+      !propertyType || (Array.isArray(propertyType) && propertyType.length === 0)
+        ? null
+        : propertyType.toString();
 
     onUpdateCurrentQueryParams({
       pub_propertytype: paramValue,
@@ -641,6 +707,7 @@ function CustomFilters({
   const handleReset = () => {
     setSelectedCategory('rentalvillas');
     setSelectedLocation(null);
+    setSelectedRadius(null);
     setSelectedPeriod('weekly');
     setPriceRange([0, 50]);
     setSimplePriceRange([0, 1000]);
@@ -690,6 +757,13 @@ function CustomFilters({
             onLocationChange={handleLocationChange}
             onReset={handleLocationReset}
           />
+          {selectedLocation && process.env.REACT_APP_DISPLAY_FILTER_RADIUS === 'true' && (
+            <RadiusSelector
+              selectedRadius={selectedRadius}
+              onRadiusChange={handleRadiusChange}
+              onReset={handleRadiusReset}
+            />
+          )}
 
           {/* Dynamic filters based on category configuration */}
           {availableFilters.includes('price') && (
@@ -775,13 +849,14 @@ function CustomFilters({
             />
           )}
 
-          {availableFilters.includes('services') && (process.env.REACT_APP_DISPLAY_FILTER_SERVICES === 'true') && (
-            <ServicesSelector
-              selectedServices={selectedServices}
-              onServiceChange={handleServiceChange}
-              onReset={handleServiceReset}
-            />
-          )}
+          {availableFilters.includes('services') &&
+            process.env.REACT_APP_DISPLAY_FILTER_SERVICES === 'true' && (
+              <ServicesSelector
+                selectedServices={selectedServices}
+                onServiceChange={handleServiceChange}
+                onReset={handleServiceReset}
+              />
+            )}
 
           {availableFilters.includes('propertyDetails') && (
             <PropertyDetailsSelector

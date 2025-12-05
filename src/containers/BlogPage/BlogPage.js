@@ -11,13 +11,15 @@ import TopbarContainer from '../TopbarContainer/TopbarContainer.js';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import ResponsiveImage from '../../components/ResponsiveImage/ResponsiveImage.js';
 import IconDate from '../../components/IconDate/IconDate.js';
-import { Page, LayoutSingleColumn } from '../../components/index.js';
+import { Page } from '../../components/index.js';
+import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
 import { useConfiguration } from '../../context/configurationContext';
 import { extractPageMetadata } from '../../util/seo';
 
 import css from './BlogPage.module.css';
 import { SocialMediaLink } from '../PageBuilder/Primitives/Link/SocialMediaLink.js';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
+import { BlogCard, getInfoFromText } from '../BlogListPage/BlogListPage.js';
 
 const Markdown = ({ content }) => {
   const result = unified()
@@ -28,7 +30,7 @@ const Markdown = ({ content }) => {
   return <div className={css.markdownContent}>{result}</div>;
 };
 
-const BlogBlock = ({ block, isWide }) => {
+const BlogBlock = ({ block, isWide, hideImage = false }) => {
   const { media, title, text, callToAction } = block;
   const image = media?.image;
   const imageVariants = image ? Object.keys(image.attributes?.variants || {}) : [];
@@ -46,7 +48,7 @@ const BlogBlock = ({ block, isWide }) => {
 
   return (
     <div className={css.blogBlock}>
-      {image?.id && (
+      {!hideImage && image?.id && (
         <div className={imageWrapperClass}>
           <ResponsiveImage
             alt={media.alt || title?.content}
@@ -95,16 +97,34 @@ const BlogPage = props => {
   );
 
   // Fallback to page section title if no meta title is available
-  const title = extractedTitle || section.title?.content;
-  const [dateString, author = 'Balilistings Team'] = section.description?.content
-    .replace('Published on ', '')
-    .split(' - ');
+  const title = section.title?.content || extractedTitle;
+  const [
+    dateString,
+    author = 'Balilistings Team',
+    currentBlogTag = '',
+  ] = section.description?.content.replace('Published on ', '').split(' - ');
+
   const blocks = section.blocks || [];
   const firstImageBlockIndex = blocks.findIndex(b => b.media?.image);
+  const firstImageBlock = firstImageBlockIndex > -1 ? blocks[firstImageBlockIndex] : null;
+  const firstImage = firstImageBlock?.media?.image;
+  const firstImageAlt = firstImageBlock?.media?.alt || firstImageBlock?.title?.content;
+  const firstImageVariants = firstImage ? Object.keys(firstImage.attributes?.variants || {}) : [];
+
+  // Related articles logic
+  const allBlogBlocks = pageAssetsData?.blogList?.data?.sections?.[0]?.blocks || [];
+  const currentBlogPath = `/p/${blogId}`;
+
+  const taggedArticles = allBlogBlocks.filter(
+    block =>
+      getInfoFromText(block.text?.content || '').tag === currentBlogTag &&
+      block.callToAction?.href !== currentBlogPath
+  );
+  const relatedArticles = taggedArticles.sort(() => 0.5 - Math.random()).slice(0, 3);
 
   return (
     <Page
-      {...{ title, description, schema, socialSharing }}
+      {...{ title: extractedTitle, description, schema, socialSharing }}
       config={config}
       author={author}
       published={dateString}
@@ -130,6 +150,19 @@ const BlogPage = props => {
               </div>
             </div>
 
+            {firstImage && (
+              <div className={css.firstImageWrapper}>
+                <div className={css.wideImageWrapper}>
+                  <ResponsiveImage
+                    alt={firstImageAlt}
+                    image={firstImage}
+                    variants={firstImageVariants}
+                    className={css.blockImage}
+                  />
+                </div>
+              </div>
+            )}
+
             <div className={css.sidebar}>
               <SocialMediaLink
                 platform="instagram"
@@ -149,14 +182,29 @@ const BlogPage = props => {
             </div>
 
             <div className={css.content}>
-              {blocks.map((block, index) => (
-                <BlogBlock
-                  key={block.blockName || index}
-                  block={block}
-                  isWide={index === firstImageBlockIndex}
-                />
-              ))}
+              {blocks.map((block, index) => {
+                const hideImage = index === firstImageBlockIndex;
+                return (
+                  <BlogBlock
+                    key={block.blockName || index}
+                    block={block}
+                    isWide={false}
+                    hideImage={hideImage}
+                  />
+                );
+              })}
             </div>
+
+            {relatedArticles.length > 0 && (
+              <div className={css.relatedArticlesSection}>
+                <h2 className={css.relatedArticlesTitle}>Related Articles</h2>
+                <div className={css.relatedArticlesGrid}>
+                  {relatedArticles.map((block, i) => (
+                    <BlogCard key={i} block={block} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
         <CTABlock />

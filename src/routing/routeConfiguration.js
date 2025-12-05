@@ -8,7 +8,7 @@ import PreviewResolverPage from '../containers/PreviewResolverPage/PreviewResolv
 // routeConfiguration needs to initialize containers first
 // Otherwise, components will import form container eventually and
 // at that point css bundling / imports will happen in wrong order.
-import { NamedRedirect } from '../components';
+import NamedRedirect from '../components/NamedRedirect/NamedRedirect';
 
 const pageDataLoadingAPI = getPageDataLoadingAPI();
 
@@ -39,6 +39,7 @@ const StripePayoutPage = loadable(() => import(/* webpackChunkName: "StripePayou
 const TermsOfServicePage = loadable(() => import(/* webpackChunkName: "TermsOfServicePage" */ '../containers/TermsOfServicePage/TermsOfServicePage'));
 const TransactionPage = loadable(() => import(/* webpackChunkName: "TransactionPage" */ '../containers/TransactionPage/TransactionPage'));
 const NoAccessPage = loadable(() => import(/* webpackChunkName: "NoAccessPage" */ '../containers/NoAccessPage/NoAccessPage'));
+const FavoriteListingsPage = loadable(() => import(/* webpackChunkName: "FavoriteListingsPage" */ '../containers/FavoriteListingsPage/FavoriteListingsPage'));
 
 // Styleguide helps you to review current components and develop new ones
 const StyleguidePage = loadable(() => import(/* webpackChunkName: "StyleguidePage" */ '../containers/StyleguidePage/StyleguidePage'));
@@ -82,18 +83,21 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       name: 'LandingPage',
       component: LandingPage,
       loadData: pageDataLoadingAPI.LandingPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     {
       path: '/p/:pageId',
       name: 'CMSPage',
       component: CMSPage,
       loadData: pageDataLoadingAPI.CMSPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     {
       path: '/blog/:blogId',
       name: 'SingularBlogPage',
       component: SingularBlogPage,
       loadData: pageDataLoadingAPI.SingularBlogPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     // NOTE: when the private marketplace feature is enabled, the '/s' route is disallowed by the robots.txt resource.
     // If you add new routes that start with '/s*' (e.g. /support), you should add them to the robotsPrivateMarketplace.txt file.
@@ -122,6 +126,7 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       ...authForPrivateMarketplace,
       component: ListingPage,
       loadData: pageDataLoadingAPI.ListingPage.loadData,
+      disableRefetchDataClientSide: true,
     },
     {
       path: '/l/:slug/:id/checkout',
@@ -163,6 +168,14 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
       component: EditListingPage,
       loadData: pageDataLoadingAPI.EditListingPage.loadData,
     },
+    {
+    path: '/favorites',
+    name: 'FavoriteListingsPage',
+    auth: true,
+    authPage: 'LoginPage',
+    component: FavoriteListingsPage,
+    loadData: pageDataLoadingAPI.FavoriteListingsPage.loadData,
+    },
 
     // Canonical path should be after the `/l/new` path since they
     // conflict and `new` is not a valid listing UUID.
@@ -181,6 +194,13 @@ const routeConfiguration = (layoutConfig, accessControlConfig) => {
     {
       path: '/u/:id',
       name: 'ProfilePage',
+      ...authForPrivateMarketplace,
+      component: ProfilePage,
+      loadData: pageDataLoadingAPI.ProfilePage.loadData,
+    },
+    {
+      path: '/user/:id',
+      name: 'ProfilePageSlug',
       ...authForPrivateMarketplace,
       component: ProfilePage,
       loadData: pageDataLoadingAPI.ProfilePage.loadData,

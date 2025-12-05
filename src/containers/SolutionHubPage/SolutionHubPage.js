@@ -11,13 +11,16 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../FooterContainer/FooterContainer.js';
 import IconSolution from '../../components/IconSolution/IconSolution';
 import { loadData } from './SolutionHubPage.duck';
-import { Page, LayoutSingleColumn } from '../../components/index.js';
+import { Page } from '../../components/index.js';
+import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
 import { useConfiguration } from '../../context/configurationContext';
 import { extractPageMetadata } from '../../util/seo';
 import { ReactComponent as Spiral } from '../../assets/about-us-spiral.svg';
 import CTABlock from '../../components/CTAFooter/CTAFooter.js';
+import { FiPlus } from 'react-icons/fi';
 
 import css from './SolutionHubPage.module.css';
+import { useIsScrollingDisabled } from '../../ducks/ui.duck.js';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -51,7 +54,7 @@ const SolutionBlock = ({ block, toReact }) => {
     <div className={css.block}>
       {tag && <div className={css.tag}>{tag}</div>}
       <div className={css.imageWrapper}>
-        <IconSolution solutionName={title} />
+        <IconSolution solutionName={title} className={css.blockImage} />
       </div>
       <h3 className={css.blockTitle}>{title}</h3>
       {subtitle && <p className={css.blockSubtitle}>{subtitle}</p>}
@@ -123,7 +126,11 @@ const SolutionHubPage = props => {
     descriptionParts.length > 2 ? descriptionParts[2].trim() : descriptionParts[0];
 
   return (
-    <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
+    <Page
+      {...{ title, description, schema, socialSharing }}
+      config={config}
+      className={css.root}
+    >
       <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.hero}>
           <Spiral className={css.spiral} />
@@ -142,10 +149,25 @@ const SolutionHubPage = props => {
               {blocks.map((block, i) => (
                 <SolutionBlock key={i} block={block} toReact={toReact} />
               ))}
+              {/* Hardcoded Promotional Block based on promote.png */}
+              <div className={`${css.block} ${css.promoBlock}`}>
+                <h3 className={css.blockTitle}>Promote your company</h3>
+                <div className={css.plusIconContainer}>
+                  <div className={css.plusIcon}>
+                    <FiPlus color="white" />
+                  </div>
+                </div>
+                <div className={css.blockText}>
+                  <p>
+                    Showcase your service to thousands of Bali renters, buyers, and expats. Partner
+                    with us and let your business be discovered by people who need it most.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <CTABlock />
+        <CTABlock variant="solution" />
       </LayoutSingleColumn>
     </Page>
   );

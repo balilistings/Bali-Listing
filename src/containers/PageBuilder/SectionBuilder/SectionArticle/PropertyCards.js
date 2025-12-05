@@ -1,21 +1,25 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styles from './PropertyCards.module.css';
 import IconCollection from '../../../../components/IconCollection/IconCollection';
-import Slider from 'react-slick';
 import useDisableBodyScrollOnSwipe from '../../../../util/useDisableBodyScrollOnSwipe';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { types as sdkTypes } from '../../../../util/sdkLoader';
 import { getListingsById } from '../../../../ducks/marketplaceData.duck';
+import { checkIsProvider } from '../../../../util/userHelpers';
 import { fetchFeaturedListings } from '../../../LandingPage/LandingPage.duck';
 import { NamedLink } from '../../../../components/NamedLink/NamedLink';
 import { sortTags, capitaliseFirstLetter } from '../../../../util/helper';
 import { createSlug } from '../../../../util/urlHelpers';
 import { useHistory, useLocation } from 'react-router-dom';
-import { handleToggleFavorites } from '../../../../util/userFavorites';
+import {
+  handleToggleFavorites,
+  isFavorite as isFavoriteUtil,
+} from '../../../../util/userFavorites';
 import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.duck';
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
+import ImageSlider from '../../../../components/ImageSlider/ImageSlider';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -50,7 +54,7 @@ export const Icon = ({ type }) => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path="url(#clip0_2022_280)">
+          <g clipPath="url(#clip0_2022_280)">
             <path
               d="M0.650593 7.01098C0.655585 7.01049 0.745093 7.00048 0.750085 6.99999L11.2891 7.004C11.2936 7.00449 11.3446 7.01049 11.3496 7.01101C11.3561 7.0115 11.3626 7.0115 11.3691 7.0115C11.3726 7.0115 11.3766 7.01199 11.3791 7.0115C11.5171 7.0115 11.6291 6.89949 11.6291 6.76149C11.6291 6.71098 11.6146 6.66448 11.5891 6.62548L11.0001 4.71298V1.74999C11.0001 1.061 10.4396 0.5 9.75008 0.5H2.25009C1.56058 0.5 1.00009 1.061 1.00009 1.74999V4.71298L0.392101 6.68848C0.367609 6.76749 0.383593 6.85398 0.435601 6.91798C0.487585 6.98199 0.568093 7.01649 0.650593 7.01098ZM1.75009 4.49998H2.17959L2.41258 3.56799C2.49658 3.23349 2.79608 2.99998 3.14059 2.99998H4.75009C5.1636 2.99998 5.50009 3.33648 5.50009 3.74998V4.49998H6.5001V3.74998C6.5001 3.33648 6.83659 2.99998 7.2501 2.99998H8.8596C9.20411 2.99998 9.50359 3.23349 9.58759 3.56799L9.82058 4.49998H10.2501C10.3881 4.49998 10.5001 4.61199 10.5001 4.74999C10.5001 4.88799 10.3881 5 10.2501 5H9.81257C9.78606 5.075 9.75156 5.147 9.70108 5.21199C9.55757 5.39499 9.34208 5.49999 9.10958 5.49999H7.25008C6.92458 5.49999 6.64958 5.29048 6.54608 5H5.45408C5.35058 5.29051 5.07559 5.49999 4.75009 5.49999H2.89059C2.65809 5.49999 2.44258 5.39499 2.29909 5.21199C2.24859 5.14749 2.21409 5.075 2.1876 5H1.75009C1.61209 5 1.50009 4.88799 1.50009 4.74999C1.50009 4.61199 1.61209 4.49998 1.75009 4.49998Z"
               fill="#231F20"
@@ -76,7 +80,7 @@ export const Icon = ({ type }) => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path="url(#clip0_2022_288)">
+          <g clipPath="url(#clip0_2022_288)">
             <path
               d="M9.16406 5.74219C9.16406 5.35448 8.84864 5.03906 8.46094 5.03906H7.75781C7.37011 5.03906 7.05469 5.35448 7.05469 5.74219V8.20312H9.16406V5.74219Z"
               fill="#231F20"
@@ -114,7 +118,7 @@ export const Icon = ({ type }) => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path="url(#clip0_2022_296)">
+          <g clipPath="url(#clip0_2022_296)">
             <path
               d="M10.8462 1.47231L9.92315 1.01077V0H7.61546V1.01077L6.69238 1.47231V2.30769H10.8462V1.47231Z"
               fill="#231F20"
@@ -156,9 +160,9 @@ export const Icon = ({ type }) => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path="url(#clip0_2022_306)">
+          <g clipPath="url(#clip0_2022_306)">
             <path
-              d="M10.828 4.55826C10.4648 4.1992 10.0436 3.91901 9.58619 3.72637V4.81106C9.58619 5.00487 9.42871 5.16218 9.23467 5.16218C9.04063 5.16218 8.88316 5.00489 8.88316 4.81106V3.50564C8.61271 3.44782 8.33409 3.41833 8.05122 3.41833C7.85718 3.41833 7.66572 3.43214 7.47707 3.45954V4.81106C7.47707 5.00487 7.31959 5.16218 7.12556 5.16218C6.93152 5.16218 6.77404 5.00489 6.77404 4.81106V3.62925C6.62524 3.68004 6.47899 3.73997 6.33557 3.80925C5.28053 4.33357 4.10739 4.49648 2.97761 4.38975C1.36178 4.35579 -0.0548509 5.79087 0.00163344 7.40456C-0.00844468 8.96791 1.38077 10.3504 2.94574 10.3349C3.96374 10.2523 4.98175 10.3445 5.98895 10.7649C6.66131 11.0844 7.36481 11.3381 8.12362 11.3058C10.2862 11.2672 12.0248 9.47702 11.9997 7.31562C11.9875 6.2719 11.5713 5.29254 10.828 4.55826ZM8.3207 8.79635H8.31906C8.00927 8.79471 7.7182 8.67206 7.49908 8.45109C7.35379 8.29451 7.11053 8.25963 6.92985 8.37197V8.37173C6.89329 8.39351 6.85931 8.42159 6.82977 8.45318C6.60784 8.67602 6.31328 8.79797 6.00065 8.79633C5.68804 8.79797 5.39345 8.67602 5.17152 8.45318C5.14199 8.42159 5.10801 8.39348 5.07145 8.37173V8.37197C4.89077 8.25961 4.64751 8.29448 4.50222 8.45109C4.2831 8.67206 3.99206 8.79471 3.68224 8.79635H3.68059C3.48726 8.79635 3.33002 8.64023 3.32908 8.44687C3.32814 8.25284 3.48468 8.09505 3.67895 8.09414C3.80456 8.09367 3.92315 8.04101 4.01078 7.94878C4.33277 7.62342 4.81577 7.51716 5.24299 7.67773C5.31072 7.70255 5.37726 7.73508 5.4396 7.7737V7.77347C5.52374 7.82473 5.602 7.88747 5.67114 7.95909C5.75974 8.04734 5.87737 8.09601 6.00063 8.09393C6.12388 8.09604 6.24154 8.04736 6.33011 7.95909C6.39925 7.88747 6.47751 7.82473 6.56165 7.77347V7.7737C6.62399 7.73508 6.69053 7.70255 6.75827 7.67773C7.18549 7.51716 7.66846 7.62342 7.99047 7.94878C8.07836 8.04101 8.1967 8.09367 8.3223 8.09414C8.51657 8.09508 8.67311 8.25284 8.67217 8.44687C8.67131 8.64021 8.51404 8.79635 8.3207 8.79635ZM8.3207 7.12158H8.31906C8.00927 7.11994 7.7182 6.99729 7.49908 6.77632C7.35379 6.61973 7.11053 6.58486 6.92985 6.69719V6.69696C6.89329 6.71873 6.85931 6.74681 6.82977 6.77841C6.60784 7.00125 6.31328 7.12319 6.00065 7.12155C5.68804 7.12319 5.39345 7.00125 5.17152 6.77841C5.14199 6.74681 5.10801 6.71871 5.07145 6.69696V6.69719C4.89077 6.58484 4.64751 6.61971 4.50222 6.77632C4.2831 6.99729 3.99206 7.11994 3.68224 7.12158H3.68059C3.48726 7.12158 3.33002 6.96546 3.32908 6.7721C3.32814 6.57806 3.48468 6.42028 3.67895 6.41937C3.80456 6.4189 3.92315 6.36623 4.01078 6.27401C4.33277 5.94865 4.81577 5.84238 5.24299 6.00295C5.31072 6.02801 5.37726 6.06054 5.4396 6.09893V6.09869C5.52374 6.14995 5.602 6.21269 5.67114 6.28432C5.75974 6.37256 5.87737 6.42148 6.00063 6.41916C6.12388 6.4215 6.24154 6.37259 6.33011 6.28432C6.39925 6.21269 6.47751 6.14995 6.56165 6.09869V6.09893C6.62399 6.06054 6.69053 6.02801 6.75827 6.00295C7.18549 5.84238 7.66846 5.94865 7.99047 6.27401C8.07836 6.36623 8.1967 6.4189 8.3223 6.41937C8.51657 6.4203 8.67311 6.57806 8.67217 6.7721C8.67131 6.96544 8.51404 7.12158 8.3207 7.12158Z"
+              d="M10.828 4.55826C10.4648 4.1992 10.0436 3.91901 9.58619 3.72637V4.81106C9.58619 5.00487 9.42871 5.16218 9.23467 5.16218C9.04063 5.16218 8.88316 5.00489 8.88316 4.81106V3.50564C8.61271 3.44782 8.33409 3.41833 8.05122 3.41833C7.85718 3.41833 7.66572 3.43214 7.47707 3.45954V4.81106C7.47707 5.00487 7.31959 5.16218 7.12556 5.16218C6.93152 5.16218 6.77404 5.00489 6.77404 4.81106V3.62925C6.62524 3.68004 6.47899 3.73997 6.33557 3.80925C5.28053 4.33357 4.10739 4.49648 2.97761 4.38975C1.36178 4.35579 -0.0548509 5.79087 0.00163344 7.40456C-0.00844468 8.96791 1.38077 10.3504 2.94574 10.3349C3.96374 10.2523 4.98175 10.3445 5.98895 10.7649C6.66131 11.0844 7.36481 11.3381 8.12362 11.3058C10.2862 11.2672 12.0248 9.47702 11.9997 7.31562C11.9875 6.2719 11.5713 5.29254 10.828 4.55826ZM8.3207 8.79635H8.31906C8.00927 8.79471 7.7182 8.67206 7.49908 8.45109C7.35379 8.29451 7.11053 8.25963 6.92985 8.37197V8.37173C6.89329 8.39351 6.85931 8.42159 6.82977 8.45318C6.60784 8.67602 6.31328 8.79797 6.00065 8.79633C5.68804 8.79797 5.39345 8.67602 5.17152 8.45318C5.14199 8.42159 5.10801 8.39348 5.07145 8.37173V8.37197C4.89077 8.25961 4.64751 8.29448 4.50222 8.45109C4.2831 8.67206 3.99206 8.79471 3.68224 8.79635H3.68059C3.48726 8.79635 3.33002 8.64023 3.32908 8.44687C3.32814 8.25284 3.48468 8.09505 3.67895 8.09414C3.80456 8.09367 3.92315 8.04101 4.01078 7.94878C4.33277 7.62342 4.81577 7.51716 5.24299 7.67773C5.31072 7.70255 5.37726 7.73508 5.4396 7.7737V7.77347C5.52374 7.82473 5.602 7.88747 5.67114 7.95909C5.75974 8.04734 5.87737 8.09601 6.00063 8.09393C6.12388 8.09604 6.24154 8.04736 6.33011 7.95909C6.39925 7.88747 6.47751 7.82473 6.56165 7.77347V7.7737C6.62399 7.73508 6.69053 7.70255 6.75827 7.67773C7.18549 7.51716 7.66846 7.62342 7.99047 7.94878C8.07836 8.04101 8.1967 8.09367 8.3223 8.09414C8.51657 8.09508 8.67311 8.25284 8.67217 8.44687C8.67131 8.64021 8.51404 8.79635 8.3207 8.79635ZM8.3207 7.12158H8.31906C8.00927 7.11994 7.7182 6.99729 7.49908 6.77632C7.35379 6.61973 7.11053 6.5... [truncated]"
               fill="#231F20"
             />
             <path
@@ -183,7 +187,7 @@ export const Icon = ({ type }) => {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M0.965918 9.6084L1.79815 8.77618L2.26969 9.24772C2.32689 9.30493 2.40188 9.33354 2.47684 9.33354C2.5518 9.33354 2.6268 9.30493 2.68398 9.24772C2.7984 9.13333 2.7984 8.94782 2.68398 8.8334L2.21244 8.36186L2.67834 7.89596L3.14988 8.36751C3.20709 8.42471 3.28207 8.45333 3.35703 8.45333C3.43199 8.45333 3.50699 8.42471 3.56418 8.36751C3.67859 8.25311 3.67859 8.0676 3.56418 7.95319L3.09264 7.48165L3.55854 7.01575L4.03008 7.48729C4.08729 7.5445 4.16227 7.57311 4.23725 7.57311C4.31223 7.57311 4.38721 7.5445 4.44439 7.48729C4.55881 7.3729 4.55881 7.18739 4.44439 7.07297L3.97285 6.60143L4.43875 6.13553L4.91029 6.60708C4.9675 6.66428 5.04248 6.6929 5.11744 6.6929C5.19242 6.6929 5.2674 6.6643 5.32461 6.60708C5.439 6.49266 5.439 6.30717 5.32461 6.19276L4.85307 5.72122L5.3175 5.25678L5.78906 5.72835C5.84627 5.78555 5.92125 5.81417 5.99621 5.81417C6.07117 5.81417 6.14617 5.78555 6.20336 5.72835C6.31777 5.61395 6.31777 5.42844 6.20336 5.31403L5.7318 4.84247L6.1977 4.37657L6.66926 4.84813C6.72646 4.90534 6.80145 4.93395 6.87641 4.93395C6.95137 4.93395 7.02637 4.90534 7.08355 4.84813C7.19797 4.73374 7.19797 4.54823 7.08355 4.43381L6.61199 3.96225L7.07789 3.49635L7.54943 3.9679C7.60664 4.0251 7.68162 4.05372 7.75658 4.05372C7.83154 4.05372 7.90654 4.0251 7.96373 3.9679C8.07814 3.8535 8.07814 3.66799 7.96373 3.55358L7.49219 3.08202L7.9582 2.61612L8.42975 3.08766C8.48695 3.14487 8.56193 3.17348 8.63689 3.17348C8.71186 3.17348 8.78686 3.14487 8.84404 3.08766C8.95846 2.97327 8.95846 2.78776 8.84404 2.67335L8.3725 2.2018L8.8384 1.7359L9.30998 2.20745C9.36719 2.26465 9.44217 2.29327 9.51713 2.29327C9.59209 2.29327 9.66709 2.26465 9.72428 2.20745C9.83869 2.09305 9.83869 1.90754 9.72428 1.79313L9.25275 1.32159L10.0835 0.490826C10.3612 0.21315 10.8359 0.40981 10.8359 0.802486V9.92006C10.8359 10.1635 10.6386 10.3608 10.3952 10.3608H1.2776C0.884902 10.3608 0.688242 9.88608 0.965918 9.6084ZM5.68762 8.59778H8.8525C8.97422 8.59778 9.07289 8.49911 9.07289 8.37739V5.21252C9.07289 5.01618 8.83551 4.91786 8.69668 5.05668L5.5318 8.22157C5.39295 8.3604 5.49127 8.59778 5.68762 8.59778Z"
+            d="M0.965918 9.6084L1.79815 8.77618L2.26969 9.24772C2.32689 9.30493 2.40188 9.33354 2.47684 9.33354C2.5518 9.33354 2.6268 9.30493 2.68398 9.24772C2.7984 9.13333 2.7984 8.94782 2.68398 8.8334L2.21244 8.36186L2.67834 7.89596L3.14988 8.36751C3.20709 8.42471 3.28207 8.45333 3.35703 8.45333C3.43199 8.45333 3.50699 8.42471 3.56418 8.36751C3.67859 8.25311 3.67859 8.0676 3.56418 7.95319L3.09264 7.48165L3.55854 7.01575L4.03008 7.48729C4.08729 7.5445 4.16227 7.57311 4.23725 7.57311C4.31223 7.57311 4.38721 7.5445 4.44439 7.48729C4.55881 7.3729 4.55881 7.18739 4.44439 7.07297L3.97285 6.60143L4.43875 6.13553L4.91029 6.60708C4.9675 6.66428 5.04248 6.6929 5.11744 6.6929C5.19242 6.6929 5.2674 6.6643 5.32461 6.60708C5.439 6.49266 5.439 6.30717 5.32461 6.19276L4.85307 5.72122L5.3175 5.25678L5.78906 5.72835C5.84627 5.78555 5.92125 5.81417 5.99621 5.81417C6.07117 5.81417 6.14617 5.78555 6.20336 5.72835C6.31777 5.61395 6.31777 5.42844 6.20336 5.31403L5.7318 4.84247L6.1977 4.37657L6.66926 4.84813C6.72646 4.90534 6.80145 4.93395 6.87641 4.93395C6.95137 4.93395 7.02637 4.90534 7.08355 4.84813C7.19797 4.73374 7.19797 4.54823 7.08355 4.43381L6.61199 3.96225L7.07789 3.49635L7.54943 3.9679C7.60664 4.0251 7.68162 4.05372 7.75658 4.05372C7.83154 4.05372 7.90654 4.0251 7.96373 3.9679C8.07814 3.8535 8.07814 3.66799 7.96373 3.55358L7.49219 3.08202L7.9582 2.61612L8.42975 3.08766C8.48695 3.14487 8.56193 3.17348 8.63689 3.17348C8.71186 3.17348 8.78686 3.14487 8.84404 3.08766C8.95846 2.97327 8.95846 2.78776 8.84404 2.67335L8.3725 2.2018L8.8384 1.7359L9.30998 2.20745C9.36719 2.26465 9.44217 2.29327 9.51713 2.29327C9.59209 2.29327 9.66709 2.26465 9.72428 2.20745C9.83869 2.09305 9.83869 1.90754 9.72428 1.79313L9.25275 1.32159L10.0835 0.490826C10.3612 0.21315 10.8359 0.40981 10.8359 0.802486V9.92006C10.8359 10.1635 10.6386 10.3608 10.3952 10.3608H1.2776C0.884902 10.3608 0.688242 9.88608 0.965918 9.6084ZM5.68762 8.59778H8.8525C8.97422 8.59778 9.07289 8.49911 9.07289 8.37739V5.21252C9.07289 5.016... [truncated]"
             fill="#231F20"
           />
         </svg>
@@ -197,7 +201,7 @@ export const Icon = ({ type }) => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g clip-path="url(#clip0_2433_19073)">
+          <g clipPath="url(#clip0_2433_19073)">
             <path
               d="M10.6656 10.5296L10.2 8.54834C9.63594 9.55771 8.73125 10.3218 7.67188 10.7218H10.5141C10.5625 10.7218 10.6062 10.6999 10.6359 10.6624C10.6656 10.6249 10.6766 10.5765 10.6656 10.5296Z"
               fill="#231F20"
@@ -297,34 +301,11 @@ export const customLocationBounds = [
   },
 ];
 
-const CardSlider = props => {
-  const { sliderSettings, images, title } = props;
-  const setSliderNode = useDisableBodyScrollOnSwipe();
-  const sliderRef = useCallback(
-    element => {
-      if (element && element.innerSlider && element.innerSlider.list) {
-        setSliderNode(element.innerSlider.list);
-      }
-    },
-    [setSliderNode]
-  );
-
-  return (
-    <Slider {...sliderSettings} ref={sliderRef} className={styles.slider}>
-      {images.map((img, imgIdx) => (
-        <img
-          src={img}
-          alt={title}
-          className={styles.image + ' ' + styles.imageFade}
-          key={imgIdx}
-        />
-      ))}
-    </Slider>
-  );
-};
-
 const PropertyCards = () => {
-  const { featuredListingIds, featuredListingsInProgress } = useSelector(state => state.LandingPage, shallowEqual);
+  const { featuredListingIds, featuredListingsInProgress } = useSelector(
+    state => state.LandingPage,
+    shallowEqual
+  );
   const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
   const entities = useSelector(state => state.marketplaceData.entities, shallowEqual);
   const listings = getListingsById(entities, featuredListingIds);
@@ -356,73 +337,6 @@ const PropertyCards = () => {
     return () => clearTimeout(timeoutId);
   }, [activeTab]);
 
-  // const handleLike = idx => {
-  //   setLikedCards(likedCards => likedCards.map((liked, i) => (i === idx ? !liked : liked)));
-  // };
-
-  // react-slick settings
-  const sliderSettings = {
-    dots: true,
-    arrows: true,
-    infinite: false,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    lazyLoad: 'progressive',
-    appendDots: dots => (
-      <div className={styles.dots}>
-        <span className={styles.dotsCounter}>
-          {dots.findIndex(dot => 
-            dot.props.className && dot.props.className.includes('slick-active')
-          ) + 1}/{dots.length}
-        </span>
-      </div>
-    ),
-    customPaging: i => <button className={styles.dot}>{i + 1}</button>,
-    nextArrow: (
-      <button className={styles.arrowRight} type="button" aria-label="Next image">
-        <span className={styles.arrowIcon}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="24" height="24" rx="12" fill="white" />
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M14.4965 11.6908C14.5784 11.7728 14.6244 11.884 14.6244 12C14.6244 12.1159 14.5784 12.2271 14.4965 12.3091L10.1215 16.6841C10.0386 16.7614 9.92887 16.8035 9.81552 16.8015C9.70218 16.7995 9.59404 16.7536 9.51388 16.6734C9.43373 16.5932 9.38781 16.4851 9.38581 16.3718C9.38381 16.2584 9.42588 16.1487 9.50316 16.0658L13.569 12L9.50316 7.93412C9.42588 7.85118 9.38381 7.74149 9.38581 7.62815C9.38781 7.5148 9.43373 7.40666 9.51388 7.32651C9.59404 7.24635 9.70218 7.20043 9.81552 7.19843C9.92887 7.19643 10.0386 7.2385 10.1215 7.31578L14.4965 11.6908Z"
-              fill="#231F20"
-            />
-          </svg>
-        </span>
-      </button>
-    ),
-    prevArrow: (
-      <button className={styles.arrowLeft} type="button" aria-label="Previous image">
-        <span className={styles.arrowIcon}>
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect width="24" height="24" rx="12" transform="matrix(-1 0 0 1 24 0)" fill="white" />
-            <path
-              fillRule="evenodd"
-              clipRule="evenodd"
-              d="M9.5035 11.6908C9.42157 11.7728 9.37556 11.884 9.37556 12C9.37556 12.1159 9.42157 12.2271 9.5035 12.3091L13.8785 16.6841C13.9614 16.7614 14.0711 16.8035 14.1845 16.8015C14.2978 16.7995 14.406 16.7536 14.4861 16.6734C14.5663 16.5932 14.6122 16.4851 14.6142 16.3718C14.6162 16.2584 14.5741 16.1487 14.4968 16.0658L10.431 12L14.4968 7.93412C14.5741 7.85118 14.6162 7.74149 14.6142 7.62815C14.6122 7.5148 14.5663 7.40666 14.4861 7.32651C14.406 7.24635 14.2978 7.20043 14.1845 7.19843C14.0711 7.19643 13.9614 7.2385 13.8785 7.31578L9.5035 11.6908Z"
-              fill="#231F20"
-            />
-          </svg>
-        </span>
-      </button>
-    ),
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.tabs} style={{ position: 'relative' }}>
@@ -437,12 +351,6 @@ const PropertyCards = () => {
             }
             onClick={e => {
               setActiveTab(tab.id);
-              // Add bump animation
-              if (tabRefs.current[i]) {
-                tabRefs.current[i].classList.remove(styles.tabBump);
-                void tabRefs.current[i].offsetWidth; // force reflow
-                tabRefs.current[i].classList.add(styles.tabBump);
-              }
               const location = customLocationBounds.find(elm => elm.id === tab.id);
               dispatch(fetchFeaturedListings({ bounds: location.bounds }));
             }}
@@ -468,13 +376,8 @@ const PropertyCards = () => {
             {listings?.map((card, idx) => {
               const { attributes, images, author } = card;
               const imagesUrls = images.map(
-                img => img.attributes.variants['landscape-crop2x']?.url
+                img => img.attributes.variants['featured-listing']?.url
               );
-              // Per-card slider settings
-              const cardSliderSettings = {
-                ...sliderSettings,
-                infinite: images.length > 1,
-              };
               const {
                 title,
                 description,
@@ -517,9 +420,7 @@ const PropertyCards = () => {
                 price = price * USDConversionRate;
               }
 
-              const isFavorite = currentUser?.attributes.profile.privateData.favorites?.includes(
-                card.id.uuid
-              );
+              const isFavorite = isFavoriteUtil(currentUser, card.id.uuid);
               const onToggleFavorites = e => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -544,12 +445,23 @@ const PropertyCards = () => {
                   key={card.id.uuid}
                 >
                   <div className={styles.imageWrapper}>
-                    <CardSlider sliderSettings={cardSliderSettings} images={imagesUrls} title={title} />
-                    <button 
-                      className={classNames(styles.wishlistButton, isFavorite ? styles.active : '')} 
-                      onClick={onToggleFavorites}>
-                      <IconCollection name="icon-waislist" />
-                    </button>
+                    <ImageSlider
+                      loop={images.length > 1}
+                      images={imagesUrls}
+                      title={title}
+                      buttonSize="large"
+                    />
+                    {!checkIsProvider(currentUser) && (
+                      <button
+                        className={classNames(
+                          styles.wishlistButton,
+                          isFavorite ? styles.active : ''
+                        )}
+                        onClick={onToggleFavorites}
+                      >
+                        <IconCollection name="icon-waislist" />
+                      </button>
+                    )}
                   </div>
                   <div className={styles.cardDetails}>
                     <div className={styles.cardDetailsTop}>
@@ -568,7 +480,7 @@ const PropertyCards = () => {
                           params={{ id: author.id.uuid }}
                         >
                           <span className={styles.listedBy}>
-                            {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle'})}:{' '}
+                            {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
                             <span className={styles.listedByName}>
                               {author.attributes.profile.displayName}
                             </span>
@@ -584,7 +496,9 @@ const PropertyCards = () => {
                             <span className={styles.typeIcon}>
                               <IconCollection name="typeIcon" />
                             </span>
-                            <span className={styles.type}>{capitaliseFirstLetter(propertytype)}</span>
+                            <span className={styles.type}>
+                              {capitaliseFirstLetter(propertytype)}
+                            </span>
                           </>
                         )}
                         <span className={styles.locationWrapper}>
@@ -598,12 +512,20 @@ const PropertyCards = () => {
                         <div className={styles.icons}>
                           {!!bedrooms && (
                             <span className={styles.iconItem}>
-                              <Icon type="bed" /> {bedrooms} {intl.formatMessage({ id: 'ListingCard.bedroom' }, { count: bedrooms })}
+                              <Icon type="bed" /> {bedrooms}{' '}
+                              {intl.formatMessage(
+                                { id: 'ListingCard.bedroom' },
+                                { count: bedrooms }
+                              )}
                             </span>
                           )}
                           {!!bathrooms && (
                             <span className={styles.iconItem}>
-                              <Icon type="bath" /> {bathrooms} {intl.formatMessage({ id: 'ListingCard.bathroom' }, { count: bathrooms })}
+                              <Icon type="bath" /> {bathrooms}{' '}
+                              {intl.formatMessage(
+                                { id: 'ListingCard.bathroom' },
+                                { count: bathrooms }
+                              )}
                             </span>
                           )}
                           {!!landsize && isLand && (
@@ -619,14 +541,14 @@ const PropertyCards = () => {
                         </div>
                         <div className={styles.price}>
                           <span className={styles.priceValue}>
-                            {formatPriceInMillions(price)} {needPriceConversion ? "USD" : "IDR"}
+                            {formatPriceInMillions(price)} {needPriceConversion ? 'USD' : 'IDR'}
                           </span>
                           {isRentals && (
                             <span className={styles.priceUnit}>
-                              {monthprice 
-                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' }) 
-                                : weekprice 
-                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' }) 
+                              {monthprice
+                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.monthly' })
+                                : weekprice
+                                ? '/ ' + intl.formatMessage({ id: 'ListingCard.weekly' })
                                 : '/ ' + intl.formatMessage({ id: 'ListingCard.yearly' })}
                             </span>
                           )}

@@ -5,6 +5,8 @@ import { PROFILE_PAGE_PENDING_APPROVAL_VARIANT } from '../../util/urlHelpers';
 import { denormalisedResponseEntities } from '../../util/data';
 import { storableError } from '../../util/errors';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers';
+import { validate as uuidValidate } from 'uuid';
+import { apiBaseUrl, get } from '../../util/api';
 
 const { UUID } = sdkTypes;
 
@@ -208,7 +210,7 @@ export const showUser = (userId, config) => (dispatch, getState, sdk) => {
 const isCurrentUser = (userId, cu) => userId?.uuid === cu?.id?.uuid;
 
 export const loadData = (params, search, config) => (dispatch, getState, sdk) => {
-  const userId = new UUID(params.id);
+  const slug = params.id;
   const isPreviewForCurrentUser = params.variant === PROFILE_PAGE_PENDING_APPROVAL_VARIANT;
   const currentUser = getState()?.user?.currentUser;
   const fetchCurrentUserOptions = {
@@ -220,55 +222,70 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
   // in case this page load fails.
   dispatch(setInitialState());
 
-  if (isPreviewForCurrentUser) {
-    return dispatch(fetchCurrentUser(fetchCurrentUserOptions)).then(() => {
-      if (isCurrentUser(userId, currentUser) && isUserAuthorized(currentUser)) {
-        // Scenario: 'active' user somehow tries to open a link for "variant" profile
-        return Promise.all([
-          dispatch(showUser(userId, config)),
-          dispatch(queryUserListings(userId, config)),
-          dispatch(queryUserReviews(userId)),
-        ]);
-      } else if (isCurrentUser(userId, currentUser)) {
-        // Handle a scenario, where user (in pending-approval state)
-        // tries to see their own profile page.
-        // => just set userId to state
-        return dispatch(showUserRequest(userId));
-      } else {
-        return Promise.resolve({});
-      }
-    });
-  }
+  const loadProfileData = userId => {
+    if (isPreviewForCurrentUser) {
+      return dispatch(fetchCurrentUser(fetchCurrentUserOptions)).then(() => {
+        if (isCurrentUser(userId, currentUser) && isUserAuthorized(currentUser)) {
+          // Scenario: 'active' user somehow tries to open a link for "variant" profile
+          return Promise.all([
+            dispatch(showUser(userId, config)),
+            dispatch(queryUserListings(userId, config)),
+            dispatch(queryUserReviews(userId)),
+          ]);
+        } else if (isCurrentUser(userId, currentUser)) {
+          // Handle a scenario, where user (in pending-approval state)
+          // tries to see their own profile page.
+          // => just set userId to state
+          return dispatch(showUserRequest(userId));
+        } else {
+          return Promise.resolve({});
+        }
+      });
+    }
 
-  // Fetch data for plain profile page.
-  // Note 1: returns 404s if user is not 'active'.
-  // Note 2: In private marketplace mode, this page won't fetch data if the user is unauthorized
-  const isAuthorized = currentUser && isUserAuthorized(currentUser);
-  const isPrivateMarketplace = config.accessControl.marketplace.private === true;
-  const hasNoViewingRights = currentUser && !hasPermissionToViewData(currentUser);
-  const canFetchData = !isPrivateMarketplace || (isPrivateMarketplace && isAuthorized);
-  // On a private marketplace, show active (approved) current user's own page
-  // even if they don't have viewing rights
-  const canFetchOwnProfileOnly =
-    isPrivateMarketplace &&
-    isAuthorized &&
-    hasNoViewingRights &&
-    isCurrentUser(userId, currentUser);
+    // Fetch data for plain profile page.
+    // Note 1: returns 404s if user is not 'active'.
+    // Note 2: In private marketplace mode, this page won't fetch data if the user is unauthorized
+    const isAuthorized = currentUser && isUserAuthorized(currentUser);
+    const isPrivateMarketplace = config.accessControl.marketplace.private === true;
+    const hasNoViewingRights = currentUser && !hasPermissionToViewData(currentUser);
+    const canFetchData = !isPrivateMarketplace || (isPrivateMarketplace && isAuthorized);
+    // On a private marketplace, show active (approved) current user's own page
+    // even if they don't have viewing rights
+    const canFetchOwnProfileOnly =
+      isPrivateMarketplace &&
+      isAuthorized &&
+      hasNoViewingRights &&
+      isCurrentUser(userId, currentUser);
 
-  if (!canFetchData) {
-    return Promise.resolve();
-  } else if (canFetchOwnProfileOnly) {
+    if (!canFetchData) {
+      return Promise.resolve();
+    } else if (canFetchOwnProfileOnly) {
+      return Promise.all([
+        dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
+        dispatch(queryUserListings(userId, config, canFetchOwnProfileOnly)),
+        dispatch(showUserRequest(userId)),
+      ]);
+    }
+
     return Promise.all([
       dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
-      dispatch(queryUserListings(userId, config, canFetchOwnProfileOnly)),
-      dispatch(showUserRequest(userId)),
+      dispatch(showUser(userId, config)),
+      dispatch(queryUserListings(userId, config)),
+      dispatch(queryUserReviews(userId)),
     ]);
-  }
+  };
 
-  return Promise.all([
-    dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
-    dispatch(showUser(userId, config)),
-    dispatch(queryUserListings(userId, config)),
-    dispatch(queryUserReviews(userId)),
-  ]);
+  if (uuidValidate(slug)) {
+    return loadProfileData(new UUID(slug));
+  } else {
+    return get(`/api/users/by-slug/${slug}`)
+
+      .then(data => {
+        return loadProfileData(new UUID(data.userId));
+      })
+      .catch(e => {
+        dispatch(showUserError(storableError(e)));
+      });
+  }
 };

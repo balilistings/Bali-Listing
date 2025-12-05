@@ -1,23 +1,34 @@
 import React from 'react';
 import { FormattedMessage } from '../../util/reactIntl';
 import classNames from 'classnames';
+import { connect } from 'react-redux';
 import { ACCOUNT_SETTINGS_PAGES } from '../../routing/routeConfiguration';
 import { LinkTabNavHorizontal } from '../../components';
+import { selectCurrentUser } from '../../ducks/user.duck';
+import { checkIsProvider } from '../../util/userHelpers';
 
 import css from './UserNav.module.css';
 
 /**
- * A component that renders a navigation bar for a user-specific pages.
- *
- * @component
  * @param {Object} props
- * @param {string} [props.className] - Custom class that extends the default class for the root element
- * @param {string} [props.rootClassName] - Custom class that overrides the default class for the root element
- * @param {string} props.currentPage - The current page (e.g. 'ManageListingsPage')
- * @returns {JSX.Element} User navigation component
+ * @param {string} [props.className]
+ * @param {string} [props.rootClassName]
+ * @param {string} props.currentPage
+ * @param {boolean} [props.showManageListingsLink]
+ * @param {boolean} [props.showFavoriteListingPage]
  */
 const UserNav = props => {
-  const { className, rootClassName, currentPage, showManageListingsLink } = props;
+  const {
+    className,
+    rootClassName,
+    currentPage,
+    showManageListingsLink = false,
+    showFavoriteListingPage = true,
+    currentUser,
+  } = props;
+
+  const isProvider = checkIsProvider(currentUser);
+
   const classes = classNames(rootClassName || css.root, className);
 
   const manageListingsTabMaybe = showManageListingsLink
@@ -32,8 +43,24 @@ const UserNav = props => {
       ]
     : [];
 
+  
+  const useFavPage = process.env.REACT_APP_FAV_PAGE_ENABLED === 'true';
+  const favoriteTabMaybe = useFavPage && showFavoriteListingPage && !isProvider
+    ? [
+        {
+          text: <FormattedMessage id="Favorite Listings" />,
+          selected: currentPage === 'FavoriteListingsPage',
+          disabled: false,
+          linkProps: {
+            name: 'FavoriteListingsPage',
+          },
+        },
+      ]
+    : [];
+
   const tabs = [
     ...manageListingsTabMaybe,
+    ...favoriteTabMaybe,
     {
       text: <FormattedMessage id="UserNav.profileSettings" />,
       selected: currentPage === 'ProfileSettingsPage',
@@ -53,8 +80,17 @@ const UserNav = props => {
   ];
 
   return (
-    <LinkTabNavHorizontal className={classes} tabRootClassName={css.tab} tabs={tabs} skin="dark" />
+    <LinkTabNavHorizontal
+      className={classes}
+      tabRootClassName={css.tab}
+      tabs={tabs}
+      skin="dark"
+    />
   );
 };
+  
+const mapStateToProps = state => ({
+  currentUser: selectCurrentUser(state),
+});
 
-export default UserNav;
+export default connect(mapStateToProps)(UserNav);
