@@ -9,6 +9,7 @@ import { propTypes } from '../../../util/types';
 
 import { AvatarLarge, NamedLink, InlineTextButton } from '../../../components';
 import IconCollection from '../../../components/IconCollection/IconCollection';
+import { IoMdStar } from 'react-icons/io';
 import css from './UserCard.module.css';
 import { useSelector } from 'react-redux';
 import { get } from '../../../util/api';
@@ -105,11 +106,12 @@ const UserCard = props => {
     fetchAuthorSlug();
   }, [ensuredUser?.id?.uuid]);
 
-
   const isCurrentUser =
     ensuredUser.id && ensuredCurrentUser.id && ensuredUser.id.uuid === ensuredCurrentUser.id.uuid;
-  const { displayName, bio, publicData: userPublicData } = ensuredUser.attributes.profile;
-  const agentorowner = useSelector(state => state.marketplaceData.entities.listing[listingId]?.attributes.publicData?.agentorowner);
+  const { displayName, bio, metadata: userMetadata } = ensuredUser.attributes.profile;
+  const agentorowner = useSelector(
+    state => state.marketplaceData.entities.listing[listingId]?.attributes.publicData?.agentorowner
+  );
 
   const handleContactUserClick = () => {
     onContactUser(user);
@@ -117,6 +119,10 @@ const UserCard = props => {
 
   const hasBio = !!bio;
   const classes = classNames(rootClassName || css.root, className);
+  const rating = userMetadata.rating
+    ? (userMetadata.rating.total || 0 / userMetadata.rating.count).toFixed(1)
+    : 0;
+  const ratingCount = userMetadata.rating?.count || 0;
   const linkClasses = classNames(css.links, {
     [css.withBioMissingAbove]: !hasBio,
   });
@@ -156,24 +162,41 @@ const UserCard = props => {
 
   return (
     <div className={classes}>
-      <NamedLink className={css.content} name={authorSlug ? "ProfilePageSlug" : "ProfilePage"} params={{ id: authorSlug ? authorSlug : ensuredUser.id.uuid }}>
-        <div className={css.avatarWrapper}>
-          <AvatarLarge className={css.avatar} user={user} disableProfileLink />
-          <span className={css.profileBadge}>
-            <IconCollection name="icon_profile_badge" />
-          </span>
-        </div>
-        <div className={css.info}>
-          <div className={css.headingRow}>
-            <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
-            {editProfileDesktop}
+      <div className={css.mainContentWrapper}>
+        <NamedLink
+          className={css.content}
+          name={authorSlug ? 'ProfilePageSlug' : 'ProfilePage'}
+          params={{ id: authorSlug ? authorSlug : ensuredUser.id.uuid }}
+        >
+          <div className={css.avatarWrapper}>
+            <AvatarLarge className={css.avatar} user={user} disableProfileLink />
+            <span className={css.profileBadge}>
+              <IconCollection name="icon_profile_badge" />
+            </span>
           </div>
-          {/* {links} */}
-          <p className={css.owner}>
-            <FormattedMessage id={agentorowner === 'agent' ? 'UserCard.Agent' : 'UserCard.Owner'} />
-          </p>
+          <div className={css.info}>
+            <div className={css.headingRow}>
+              <FormattedMessage id="UserCard.heading" values={{ name: displayName }} />
+            </div>
+            {/* {links} */}
+            <p className={css.owner}>
+              <FormattedMessage
+                id={agentorowner === 'agent' ? 'UserCard.Agent' : 'UserCard.Owner'}
+              />
+            </p>
+          </div>
+        </NamedLink>
+        <div className={css.rightContentWrapper}>
+          {!!userMetadata.rating && (
+            <div className={css.ratingSection}>
+              <IoMdStar className={css.starIcon} />
+              <span className={css.ratingValue}>{rating}</span>
+              <span className={css.reviewCount}>({ratingCount} Reviews)</span>
+            </div>
+          )}
+          {editProfileDesktop}
         </div>
-      </NamedLink>
+      </div>
       {hasBio ? <h5 className={css.aboutTitle}>About:</h5> : null}
       {hasBio ? <ExpandableBio className={css.mobileBio} bio={bio} /> : null}
     </div>

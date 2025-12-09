@@ -23,9 +23,13 @@ const { authenticateGoogle, authenticateGoogleCallback } = require('./api/auth/g
 const { generatePresignedUrlR2 } = require('./api/R2');
 const { getConversionRate } = require('./api/currency');
 const { getUserIdBySlug, getSlugByUserId } = require('./api/user');
+const { updateListingState } = require('./api/listings');
 // URL Shortener endpoints
 const urlShortenerRouter = require('./api/url-shortener/urlShortenerRouter');
 const chatbotRouter = require('./api/chatbot/chatbotRouter');
+const reviewsRouter = require('./api/reviews');
+const logout = require('./api/logout');
+const analyticsRouter = require('./api/analytics');
 
 const router = express.Router();
 
@@ -57,6 +61,8 @@ router.use((req, res, next) => {
 });
 
 // ================ API router endpoints: ================ //
+
+router.post('/clear-user', logout);
 
 router.get('/initiate-login-as', initiateLoginAs);
 router.get('/login-as', loginAs);
@@ -95,6 +101,9 @@ router.post('/r2/generate-presigned-url', generatePresignedUrlR2);
 // currency conversion endpoint
 router.get('/currency/conversion-rate', getConversionRate);
 
+// Listing endpoints
+router.post('/listings/update-state', updateListingState);
+
 // User endpoints
 router.get('/users/by-slug/:slug', getUserIdBySlug);
 router.get('/users/:userId/slug', getSlugByUserId);
@@ -104,5 +113,11 @@ router.use('/url-shortener', urlShortenerRouter);
 
 // Chatbot endpoints
 router.use('/chatbot', chatbotRouter);
+
+// Reviews endpoint
+router.use('/reviews', reviewsRouter);
+
+// Analytics endpoint
+router.use('/analytics', analyticsRouter);
 
 module.exports = router;

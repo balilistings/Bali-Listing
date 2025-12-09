@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback, memo, useRef } from 'react';
 import './Message.css';
-import { getChatMessagesKey, getListingDataKey } from './storageKeys';
-import { useSelector } from 'react-redux';
+import { getChatMessagesKey } from './storageKeys';
+import { useSelector, useDispatch } from 'react-redux';
 import { types as sdkTypes } from '../../util/sdkLoader';
+import { getListingsById } from '../../ducks/marketplaceData.duck';
+import { fetchListing } from './HelpWidget.duck';
 
 import { sendQuery } from '../../util/chatbotApi';
 import { buildSearchUrl } from '../../util/searchUrlBuilder';
@@ -64,60 +66,34 @@ const getPrice = (attributes, rate, rentDuration = null) => {
 
 // ResultItem component for rendering individual result links
 const ResultItem = ({ result, rentDuration }) => {
+  const dispatch = useDispatch();
   const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
 
   // Extract listing ID once
   const listingId = result.link.split('/l/').pop();
-  const storageKey = getListingDataKey(listingId);
 
-  const [listingData, setListingData] = useState(() => {
-    // Initialize state from sessionStorage
-    try {
-      const cachedData = sessionStorage.getItem(storageKey);
-      if (cachedData) {
-        return JSON.parse(cachedData);
-      }
-    } catch (error) {
-      console.error('Could not load listing data from sessionStorage', error);
-    }
-    return null;
+  const listing = useSelector(state => {
+    const uuid = new sdkTypes.UUID(listingId);
+    return getListingsById(state.marketplaceData.entities, [uuid])[0];
   });
 
   useEffect(() => {
-    const sdk = window.app.sdk;
-    if (!sdk || listingData) return; // Skip if SDK not available or we already have data
-
-    // Only fetch from SDK if we don't have cached data
-    const show = sdk.listings.show({
-      id: new sdkTypes.UUID(listingId),
-      include: ['author', 'author.profileImage', 'images'],
-      'fields.listing': ['title', 'price', 'publicData'],
-      'fields.image': ['variants.scaled-small'],
-    });
-    show.then(res => {
-      setListingData(res.data);
-      // Save to sessionStorage for future use
-      try {
-        sessionStorage.setItem(storageKey, JSON.stringify(res.data));
-      } catch (error) {
-        console.error('Could not save listing data to sessionStorage', error);
-      }
-    });
-  }, [listingId, storageKey, listingData]);
+    if (!listing) {
+      dispatch(fetchListing(listingId));
+    }
+  }, [listingId, listing, dispatch]);
 
   // Get thumbnail image from first included image
-  const thumbnailUrl = listingData?.included?.find(item => item.type === 'image')?.attributes
-    ?.variants?.['scaled-small']?.url;
+  const thumbnailUrl = listing?.images?.[0]?.attributes?.variants?.['scaled-small']?.url;
 
   // Get lister name from included user data
-  const listerName = listingData?.included?.find(item => item.type === 'user')?.attributes?.profile
-    ?.displayName;
+  const listerName = listing?.author?.attributes?.profile?.displayName;
 
-  const priceToDisplay = listingData?.data.attributes
+  const priceToDisplay = listing?.attributes
     ? getPrice(
-        listingData.data?.attributes,
+        listing.attributes,
         needPriceConversion ? USDConversionRate : 1,
         rentDuration
       )
@@ -161,7 +137,7 @@ const ResultItem = ({ result, rentDuration }) => {
           </div>
         </div>
         <div className="result-description">{result.description}</div>
-        {listingData?.data.attributes && (
+        {listing?.attributes && (
           <div className="result-price">
             {needPriceConversion ? 'USD' : 'Rp'} {priceToDisplay}
           </div>

@@ -178,15 +178,17 @@ const TopbarMobileMenu = props => {
     </NamedLink>
   ) : null;
 
-  const favoriteListingsLinkMaybe = checkIsCustomer(currentUser) ? (
-    <NamedLink
-      className={classNames(css.navigationLink, currentPageClass('FavoriteListingsPage'))}
-      name="FavoriteListingsPage"
-    >
-      <span className={css.menuItemBorder} />
-      <FormattedMessage id="TopbarMobileMenu.favoriteListingsPage" />
-    </NamedLink>
-  ) : null;
+  const useFavPage = process.env.REACT_APP_FAV_PAGE_ENABLED === 'true';
+  const favoriteListingsLinkMaybe =
+    checkIsCustomer(currentUser) && useFavPage ? (
+      <NamedLink
+        className={classNames(css.navigationLink, currentPageClass('FavoriteListingsPage'))}
+        name="FavoriteListingsPage"
+      >
+        <span className={css.menuItemBorder} />
+        <FormattedMessage id="TopbarMobileMenu.favoriteListingsPage" />
+      </NamedLink>
+    ) : null;
 
   return (
     <div className={css.root}>
