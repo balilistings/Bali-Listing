@@ -8,6 +8,7 @@ import TranslatedMarkdownField from '../../Field/TranslatedMarkdownField';
 
 import SectionContainer from '../SectionContainer';
 import css from './SectionFooter.module.css';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 // The number of columns (numberOfColumns) affects styling
 
@@ -62,7 +63,7 @@ const getGridCss = numberOfColumns => {
  * @param {'footer'} props.sectionType
  * @param {number} props.numberOfColumns columns for blocks in footer (1-4)
  * @param {Array<SocialMediaLinkConfig>?} props.socialMediaLinks array of social media link configs
- * @param {Object?} props.slogan
+ * @param {Object?} props.slogan for translation this is discarded
  * @param {Object?} props.copyright
  * @param {Object?} props.appearance
  * @param {Array<BlockConfig>?} props.blocks array of block configs
@@ -88,6 +89,7 @@ const SectionFooter = props => {
   // If external mapping has been included for fields
   // E.g. { h1: { component: MyAwesomeHeader } }
   const fieldComponents = options?.fieldComponents;
+  const intl = useIntl();
   
   // Create custom field components for the footer that use translated markdown
   const customFieldComponents = {
@@ -155,12 +157,12 @@ const SectionFooter = props => {
                 layout={logoLayout}
               />
             </div>
-            <div className={css.sloganMobile}>
-              <Field data={slogan} className={css.slogan} />
+            <div className={css.sloganMobile + ' ' + css.slogan}>
+              <FormattedMessage id="SectionFooter.slogan" />
             </div>
             <div className={css.detailsInfo}>
-              <div className={css.sloganDesktop}>
-                <Field data={slogan} className={css.slogan} />
+              <div className={css.sloganDesktop + ' ' + css.slogan}>
+                <FormattedMessage id="SectionFooter.slogan" />
               </div>
               {showSocialMediaLinks ? (
                 <div className={css.icons}>

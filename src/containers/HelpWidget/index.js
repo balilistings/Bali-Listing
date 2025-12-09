@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import classNames from 'classnames';
 import styles from './HelpWidget.module.css';
 
 import { ReactComponent as HelpIcon } from '../../assets/help-widget/help-icon.svg';
@@ -9,6 +10,8 @@ const HelpWidget = () => {
   const location = useLocation();
 
   const isAuthPage =
+    new URLSearchParams(location.search).get('mobilemenu') === 'open' ||
+    location.pathname.startsWith('/l/draft') ||
     location.pathname === '/login' ||
     location.pathname === '/signup' ||
     location.pathname.startsWith('/signup/');
@@ -23,9 +26,14 @@ const HelpWidget = () => {
     return null;
   }
 
+  const onListingPage = location.pathname.startsWith('/l');
+
   if (!isOpen) {
     return (
-      <div className={styles.defaultWidget} onClick={() => setIsOpen(true)}>
+      <div
+        className={classNames(styles.defaultWidget, { [styles.onListingPage]: onListingPage })}
+        onClick={() => setIsOpen(true)}
+      >
         <HelpIcon className={styles.defaultWidgetIcon} />
         <span className={styles.defaultWidgetText}>Need help?</span>
       </div>

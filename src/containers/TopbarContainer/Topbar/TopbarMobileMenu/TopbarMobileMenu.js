@@ -12,6 +12,8 @@ import { checkIsCustomer } from '../../../../util/userHelpers';
 
 import {
   AvatarLarge,
+  AvatarMedium,
+  AvatarSmall,
   ExternalLink,
   InlineTextButton,
   NamedLink,
@@ -68,6 +70,8 @@ const CustomLinkComponent = ({ linkConfig, currentPage }) => {
  * @param {Function} props.onLogout
  * @returns {JSX.Element} search icon
  */
+import LanguageCurrencyMobileMenu from './LanguageCurrencyMobileMenu';
+
 const TopbarMobileMenu = props => {
   const {
     isAuthenticated,
@@ -78,6 +82,7 @@ const TopbarMobileMenu = props => {
     customLinks,
     onLogout,
     showCreateListingsLink,
+    config,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
@@ -92,55 +97,6 @@ const TopbarMobileMenu = props => {
     );
   });
 
-  const createListingsLinkMaybe = showCreateListingsLink ? (
-    <NamedLink className={css.createNewListingLink} name="NewListingPage">
-      <FormattedMessage id="TopbarMobileMenu.newListingLink" />
-    </NamedLink>
-  ) : null;
-
-  if (!isAuthenticated) {
-    const signup = (
-      <NamedLink name="SignupPage" className={css.signupLink}>
-        <FormattedMessage id="TopbarMobileMenu.signupLink" />
-      </NamedLink>
-    );
-
-    const login = (
-      <NamedLink name="LoginPage" className={css.loginLink}>
-        <FormattedMessage id="TopbarMobileMenu.loginLink" />
-      </NamedLink>
-    );
-
-    const signupOrLogin = (
-      <span className={css.authenticationLinks}>
-        <FormattedMessage id="TopbarMobileMenu.signupOrLogin" values={{ signup, login }} />
-      </span>
-    );
-    return (
-      <div className={css.root}>
-        <div className={css.content}>
-          <div className={css.authenticationGreeting}>
-            <FormattedMessage
-              id="TopbarMobileMenu.unauthorizedGreeting"
-              values={{ lineBreak: <br />, signupOrLogin }}
-            />
-          </div>
-
-          <div className={css.customLinksWrapper}>{extraLinks}</div>
-
-          <div className={css.spacer} />
-        </div>
-        <div className={css.footer}>{createListingsLinkMaybe}</div>
-      </div>
-    );
-  }
-
-  const notificationCountBadge =
-    notificationCount > 0 ? (
-      <NotificationBadge className={css.notificationBadge} count={notificationCount} />
-    ) : null;
-
-  const displayName = user.attributes.profile.firstName;
   const currentPageClass = page => {
     const isAccountSettingsPage =
       page === 'AccountSettingsPage' && ACCOUNT_SETTINGS_PAGES.includes(currentPage);
@@ -148,7 +104,70 @@ const TopbarMobileMenu = props => {
     return currentPage === page || isAccountSettingsPage || isInboxPage ? css.currentPage : null;
   };
 
-  // Hanya tampilkan ManageListings untuk provider
+  if (!isAuthenticated) {
+    const login = (
+      <NamedLink name="LoginPage" className={css.loginLink}>
+        <FormattedMessage id="TopbarMobileMenu.loginLink" />
+      </NamedLink>
+    );
+
+    // const signupOrLogin = (
+    //   <span className={css.authenticationLinks}>
+    //     <FormattedMessage id="TopbarMobileMenu.signupOrLogin" values={{ signup, login }} />
+    //   </span>
+    // );
+    return (
+      <div className={css.root}>
+        <div className={css.content}>
+          {/* <div className={css.authenticationGreeting}>
+            <FormattedMessage
+              id="TopbarMobileMenu.unauthorizedGreeting"
+              values={{ lineBreak: <br />, signupOrLogin }}
+            />
+          </div> */}
+
+          <div className={css.accountLinksWrapper}>
+            {/* <NamedLink
+            className={classNames(css.inbox, currentPageClass(`InboxPage:${inboxTab}`))}
+            name="InboxPage"
+            params={{ tab: inboxTab }}
+          >
+            <span className={css.menuItemBorder} />
+            <FormattedMessage id="TopbarMobileMenu.inboxLink" />
+            {notificationCountBadge}
+          </NamedLink> */}
+
+            <NamedLink
+              className={classNames(css.navigationLink, currentPageClass('LoginPage'))}
+              name="LoginPage"
+            >
+              <FormattedMessage id="TopbarMobileMenu.loginLink" />
+            </NamedLink>
+
+            <NamedLink
+              name="SignupPage"
+              className={classNames(css.navigationLink, currentPageClass('SignupPage'))}
+            >
+              <FormattedMessage id="TopbarMobileMenu.signupLink" />
+            </NamedLink>
+            <LanguageCurrencyMobileMenu config={config} currentPage={currentPage} />
+          </div>
+
+          <div className={css.customLinksWrapper}>{extraLinks}</div>
+
+          <div className={css.spacer} />
+        </div>
+      </div>
+    );
+  }
+
+  // const notificationCountBadge =
+  //   notificationCount > 0 ? (
+  //     <NotificationBadge className={css.notificationBadge} count={notificationCount} />
+  //   ) : null;
+
+  const displayName = user.attributes.profile.firstName;
+
   const manageListingsLinkMaybe = showCreateListingsLink ? (
     <NamedLink
       className={classNames(css.navigationLink, currentPageClass('ManageListingsPage'))}
@@ -160,19 +179,20 @@ const TopbarMobileMenu = props => {
   ) : null;
 
   const useFavPage = process.env.REACT_APP_FAV_PAGE_ENABLED === 'true';
-  const favoriteListingsLinkMaybe = checkIsCustomer(currentUser) && useFavPage ? (
-    <NamedLink
-      className={classNames(css.navigationLink, currentPageClass('FavoriteListingsPage'))}
-      name="FavoriteListingsPage"
-    >
-      <span className={css.menuItemBorder} />
-      <FormattedMessage id="TopbarMobileMenu.favoriteListingsPage" />
-    </NamedLink>
-  ) : null;
+  const favoriteListingsLinkMaybe =
+    checkIsCustomer(currentUser) && useFavPage ? (
+      <NamedLink
+        className={classNames(css.navigationLink, currentPageClass('FavoriteListingsPage'))}
+        name="FavoriteListingsPage"
+      >
+        <span className={css.menuItemBorder} />
+        <FormattedMessage id="TopbarMobileMenu.favoriteListingsPage" />
+      </NamedLink>
+    ) : null;
 
   return (
     <div className={css.root}>
-      <AvatarLarge className={css.avatar} user={currentUser} />
+      <AvatarMedium className={css.avatar} user={currentUser} />
       <div className={css.content}>
         <span className={css.greeting}>
           <FormattedMessage id="TopbarMobileMenu.greeting" values={{ displayName }} />
@@ -182,15 +202,6 @@ const TopbarMobileMenu = props => {
         </InlineTextButton>
 
         <div className={css.accountLinksWrapper}>
-          <NamedLink
-            className={classNames(css.inbox, currentPageClass(`InboxPage:${inboxTab}`))}
-            name="InboxPage"
-            params={{ tab: inboxTab }}
-          >
-            <span className={css.menuItemBorder} />
-            <FormattedMessage id="TopbarMobileMenu.inboxLink" />
-            {notificationCountBadge}
-          </NamedLink>
           {manageListingsLinkMaybe}
           <NamedLink
             className={classNames(css.navigationLink, currentPageClass('ProfileSettingsPage'))}
@@ -207,11 +218,11 @@ const TopbarMobileMenu = props => {
             <FormattedMessage id="TopbarMobileMenu.accountSettingsLink" />
           </NamedLink>
           {favoriteListingsLinkMaybe}
+          <LanguageCurrencyMobileMenu config={config} currentPage={currentPage} />
         </div>
         <div className={css.customLinksWrapper}>{extraLinks}</div>
         <div className={css.spacer} />
       </div>
-      <div className={css.footer}>{createListingsLinkMaybe}</div>
     </div>
   );
 };
