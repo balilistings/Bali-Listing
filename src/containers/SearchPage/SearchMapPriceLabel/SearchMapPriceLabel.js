@@ -36,7 +36,9 @@ class SearchMapPriceLabel extends Component {
     const hasSameRefreshToken =
       this.props.mapComponentRefreshToken === nextProps.mapComponentRefreshToken;
     const hasSameRentPeriodParam = this.props.rentPeriodParam === nextProps.rentPeriodParam;
-    const hasSameCurrencyConversion = this.props.currencyConversion?.selectedCurrency === nextProps.currencyConversion?.selectedCurrency;
+    const hasSameCurrencyConversion =
+      this.props.currencyConversion?.selectedCurrency ===
+      nextProps.currencyConversion?.selectedCurrency;
 
     return !(
       isSameListing &&
@@ -59,6 +61,7 @@ class SearchMapPriceLabel extends Component {
       config,
       rentPeriodParam,
       currencyConversion,
+      locale,
     } = this.props;
 
     const currentListing = ensureListing(listing);
@@ -80,7 +83,9 @@ class SearchMapPriceLabel extends Component {
       actualPrice = actualPrice * currencyConversion?.conversionRate.USD;
     }
     const currency = currencyConversion?.selectedCurrency || 'IDR';
-    let formattedPriceAmount = actualPrice ? formatPriceWithCurrency(actualPrice, currency) : null;
+    let formattedPriceAmount = actualPrice
+      ? formatPriceWithCurrency(actualPrice, currency, locale)
+      : null;
     // Create formatted price if currency is known or alternatively show just the unknown currency.
     const formattedPrice =
       (price && price.currency === config.currency) || isRental

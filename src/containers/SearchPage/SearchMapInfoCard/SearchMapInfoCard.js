@@ -19,7 +19,7 @@ import css from './SearchMapInfoCard.module.css';
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
 const PriceMaybe = props => {
-  const { intl, price, publicData, config, isRentals, currencyConversion } = props;
+  const { intl, price, publicData, config, isRentals, currencyConversion, locale } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
   const foundListingTypeConfig = validListingTypes.find(conf => conf.listingType === listingType);
@@ -29,9 +29,12 @@ const PriceMaybe = props => {
   }
 
   const needPriceConversion = currencyConversion?.selectedCurrency === 'USD';
-  const convertedPrice = needPriceConversion ? price * currencyConversion?.conversionRate.USD : price;
-  
-  const formattedPrice = convertedPrice ? formatPriceInMillions(convertedPrice) : null;
+  const convertedPrice = needPriceConversion
+    ? price * currencyConversion?.conversionRate.USD
+    : price;
+
+  const formattedPrice = convertedPrice ? formatPriceInMillions(convertedPrice, locale) : null;
+
   const priceParams = checkPriceParams();
 
   let suffix;
@@ -66,7 +69,17 @@ const PriceMaybe = props => {
 // ListingCard is the listing info without overlayview or carousel controls
 const ListingCard = props => {
   const history = useHistory();
-  const { className, clickHandler, intl, isInCarousel, listing, urlToListing, config, currencyConversion } = props;
+  const {
+    className,
+    clickHandler,
+    intl,
+    isInCarousel,
+    listing,
+    urlToListing,
+    config,
+    currencyConversion,
+    locale,
+  } = props;
   const { title, price: p, publicData } = listing.attributes;
   const author = ensureUser(listing.author);
 
@@ -262,6 +275,7 @@ const ListingCard = props => {
                 intl={intl}
                 isRentals={isRentals}
                 currencyConversion={currencyConversion}
+                locale={locale}
               />
             </div>
           </div>
@@ -297,6 +311,7 @@ const SearchMapInfoCard = props => {
     config,
     caretPosition,
     currencyConversion,
+    locale,
   } = props;
   const currentListing = ensureListing(listings[currentListingIndex]);
   const hasCarousel = listings.length > 1;
@@ -384,6 +399,7 @@ const SearchMapInfoCard = props => {
         isInCarousel={hasCarousel}
         config={config}
         currencyConversion={currencyConversion}
+        locale={locale}
       />
       {hasCarousel ? (
         <div
