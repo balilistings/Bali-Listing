@@ -45,18 +45,20 @@ const getBestImageUrl = img => {
 };
 
 // Format price in millions if appropriate
-export const formatPriceInMillions = actualPrice => {
+export const formatPriceInMillions = (actualPrice, locale = 'en') => {
   if (!actualPrice) return null;
 
   // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
     const millions = actualPrice / 1000000;
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
     // If it's a whole number, show without decimal
     if (millions % 1 === 0) {
-      return `${millions}M`;
+      return `${millions}${suffix}`;
     } else {
       // Show with one decimal place for partial millions
-      return `${millions.toFixed(1)}M`;
+      return `${millions.toFixed(1)}${suffix}`;
     }
   }
 
@@ -65,13 +67,15 @@ export const formatPriceInMillions = actualPrice => {
 };
 
 // Helper function to format price with currency, handling millions appropriately
-export const formatPriceWithCurrency = (actualPrice, currency = 'IDR') => {
+export const formatPriceWithCurrency = (actualPrice, currency = 'IDR', locale = 'en') => {
   if (actualPrice) {
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
     // Check if the price is greater than 1 million
     if (actualPrice > 1_000_000) {
       const millions = Number(actualPrice) / 1_000_000;
       const formattedMillions = millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1);
-      return `${currency} ${formattedMillions}M`;
+      return `${currency} ${formattedMillions}${suffix}`;
     } else {
       // For smaller amounts, show the actual price with currency
       return `${currency} ${Number(actualPrice).toLocaleString()}`;
@@ -93,6 +97,8 @@ export const checkPriceParams = () => {
 
 const PriceMaybe = props => {
   const { price, publicData, config, isRentals, intl } = props;
+  const locale = props.intl.locale;
+
   const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
@@ -151,11 +157,14 @@ const PriceMaybe = props => {
       return `$${Math.round(priceValue).toLocaleString('en-US')}`;
     }
 
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
+
     // IDR logic
     if (priceValue >= 1000000) {
       const millions = priceValue / 1000000;
       const value = millions % 1 === 0 ? millions : millions.toFixed(1);
-      return `${value}M IDR`;
+      return `${value}${suffix} IDR`;
     }
     return `${priceValue.toLocaleString()} IDR`;
   };

@@ -17,6 +17,7 @@ import { IconClose } from '../../components';
 import IconCollection from '../../components/IconCollection/IconCollection';
 import { formatPriceInMillions } from '../../components/ListingCard/ListingCard';
 import { Link } from 'react-router-dom';
+import { useLocale } from '../../context/localeContext';
 
 const senderDetails = {
   admin: {
@@ -29,13 +30,13 @@ const senderDetails = {
   },
 };
 
-const getPrice = (attributes, rate, rentDuration = null) => {
+const getPrice = (attributes, rate, rentDuration = null, locale = 'en') => {
   const publicData = attributes.publicData;
   const isRental = publicData.categoryLevel1 === 'rentalvillas';
 
   if (!isRental) {
     const price = attributes.price.amount / 100;
-    return formatPriceInMillions(price * rate);
+    return formatPriceInMillions(price * rate, locale);
   }
 
   // Define price priority for each rental duration type
@@ -61,7 +62,7 @@ const getPrice = (attributes, rate, rentDuration = null) => {
   const price = publicData[priceKey];
   const suffix = suffixMap[priceKey] || '';
 
-  return formatPriceInMillions(price * rate) + suffix;
+  return formatPriceInMillions(price * rate, locale) + suffix;
 };
 
 // ResultItem component for rendering individual result links
@@ -70,6 +71,7 @@ const ResultItem = ({ result, rentDuration }) => {
   const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
+  const { locale } = useLocale();
 
   // Extract listing ID once
   const listingId = result.link.split('/l/').pop();
@@ -95,7 +97,8 @@ const ResultItem = ({ result, rentDuration }) => {
     ? getPrice(
         listing.attributes,
         needPriceConversion ? USDConversionRate : 1,
-        rentDuration
+        rentDuration,
+        locale
       )
     : result.price;
 
