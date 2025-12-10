@@ -19,22 +19,25 @@ import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useLocale } from '../../../../context/localeContext';
 import ImageSlider from '../../../../components/ImageSlider/ImageSlider';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
-const formatPriceInMillions = actualPrice => {
+const formatPriceInMillions = (actualPrice, locale = 'en') => {
   if (!actualPrice) return null;
 
   // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
     const millions = actualPrice / 1000000;
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
     // If it's a whole number, show without decimal
     if (millions % 1 === 0) {
-      return `${millions}M`;
+      return `${millions}${suffix}`;
     } else {
       // Show with one decimal place for partial millions
-      return `${millions.toFixed(1)}M`;
+      return `${millions.toFixed(1)}${suffix}`;
     }
   }
 
@@ -318,6 +321,7 @@ const PropertyCards = () => {
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
   const intl = useIntl();
+  const { locale } = useLocale();
   const history = useHistory();
   const routeLocation = useLocation();
   const routes = useRouteConfiguration();
@@ -541,7 +545,7 @@ const PropertyCards = () => {
                         </div>
                         <div className={styles.price}>
                           <span className={styles.priceValue}>
-                            {formatPriceInMillions(price)} {needPriceConversion ? 'USD' : 'IDR'}
+                            {formatPriceInMillions(price, locale)} {needPriceConversion ? 'USD' : 'IDR'}
                           </span>
                           {isRentals && (
                             <span className={styles.priceUnit}>

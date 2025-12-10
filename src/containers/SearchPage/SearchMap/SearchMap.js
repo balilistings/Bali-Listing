@@ -16,6 +16,7 @@ import * as searchMapGoogleMaps from './SearchMapWithGoogleMaps';
 import ReusableMapContainer from './ReusableMapContainer';
 import { setActiveListing } from '../SearchPage.duck';
 import css from './SearchMap.module.css';
+import { useLocale } from '../../../context/localeContext.js';
 
 const REUSABLE_MAP_HIDDEN_HANDLE = 'reusableMapHidden';
 
@@ -240,6 +241,7 @@ export class SearchMapComponent extends Component {
           zoom={zoom}
           config={config}
           currencyConversion={this.props.currencyConversion}
+          locale={this.props.locale}
         />
       </ReusableMapContainer>
     ) : (
@@ -274,6 +276,7 @@ const SearchMap = props => {
   const history = useHistory();
   const dispatch = useDispatch();
   const currencyConversion = useSelector(state => state.currency, shallowEqual);
+  const { locale } = useLocale();
 
   return (
     <SearchMapComponent
@@ -282,6 +285,7 @@ const SearchMap = props => {
       history={history}
       dispatch={dispatch}
       currencyConversion={currencyConversion}
+      locale={locale}
       {...props}
     />
   );
