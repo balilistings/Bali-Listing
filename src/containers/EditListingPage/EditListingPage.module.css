@@ -4,6 +4,7 @@
   /* Size */
   width: 100%;
   height: var(--topbarHeight);
+  padding-left: 21px;
 
   /* Layout for child components */
   display: flex;

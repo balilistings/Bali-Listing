@@ -539,7 +539,8 @@ const PropertyCards = () => {
                           )}
                           {!!landzone && isLand && (
                             <span className={styles.iconItem}>
-                              <Icon type="zone" /> {landzone} Zone
+                              <Icon type="zone" />
+                              {intl.formatMessage({ id: `ListingCard.${landzone.toLowerCase()}zone` })}
                             </span>
                           )}
                         </div>

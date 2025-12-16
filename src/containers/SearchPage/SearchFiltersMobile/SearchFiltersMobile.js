@@ -142,7 +142,10 @@ class SearchFiltersMobileComponent extends Component {
                   </svg>}
 
               </span>
-              {isMapOpen ? 'List' : <FormattedMessage id="SearchFiltersMobile.openMapView" className={css.mapIconText} />}
+              <FormattedMessage
+                id={isMapOpen ? 'SearchFiltersMobile.list' : 'SearchFiltersMobile.openMapView'}
+                className={css.mapIconText}
+              />
             </div>
           ) : null}
         </div>

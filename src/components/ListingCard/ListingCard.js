@@ -338,7 +338,8 @@ export const ListingCard = props => {
                 )}
                 {!!landzone && isLand && (
                   <span className={css.iconItem}>
-                    <Icon type="zone" /> {landzone} Zone
+                    <Icon type="zone" />
+                    {intl.formatMessage({ id: `ListingCard.${landzone.toLowerCase()}zone` })}
                   </span>
                 )}
               </div>

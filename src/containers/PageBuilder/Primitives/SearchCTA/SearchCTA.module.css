@@ -231,7 +231,7 @@
   transition: background 0.2s, color 0.2s;
 
   @media (max-width: 767px) {
-    padding: 9px 15px;
+    padding: 9px 14px;
     font-size: 12px;
     flex: 1;
   }

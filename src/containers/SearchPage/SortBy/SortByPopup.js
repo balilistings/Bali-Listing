@@ -7,6 +7,7 @@ import MenuContent from '../../../components/MenuContent/MenuContent';
 import MenuItem from '../../../components/MenuItem/MenuItem';
 import MenuLabel from '../../../components/MenuLabel/MenuLabel';
 import css from './SortByPopup.module.css';
+import { FormattedMessage } from 'react-intl';
 
 const optionLabel = (options, key) => {
   const option = options.find(o => o.key === key);
@@ -97,7 +98,7 @@ const SortByPopup = props => {
               </svg>
 
             </span>
-            Sort by
+            <FormattedMessage id="SortBy.heading" />
           </> :
 
             <>
@@ -114,7 +115,7 @@ const SortByPopup = props => {
                 <path d="M1.52344 1.375H12.2109M1.52344 4.75H8.83594M1.52344 8.125H8.83594M12.2109 4.75V13.75M12.2109 13.75L9.39844 10.9375M12.2109 13.75L15.0234 10.9375" stroke="#F74DF4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </span>
-            Sort by
+            <FormattedMessage id="SortBy.heading" />
           </h2>
           <span className={css.closeIcon} onClick={() => setIsOpen(false)}>
           <IconCollection name="close_icon" />
