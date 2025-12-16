@@ -202,7 +202,10 @@ const UserCard = props => {
             <div className={css.ratingSection}>
               <IoMdStar className={css.starIcon} />
               <span className={css.ratingValue}>{rating}</span>
-              <span className={css.reviewCount}>({ratingCount} Reviews)</span>
+              <span className={css.reviewCount}>
+                {`${ratingCount} `}
+                <FormattedMessage id="UserCard.review" values={{ count: ratingCount }} />
+              </span>
             </div>
           )}
           {editProfileDesktop}
