@@ -36,7 +36,7 @@
     max-width: 1242px;
   }
 
-  .root::before {
+  /* .root::before {
     content: "";
     position: absolute;
     top: 0;
@@ -44,13 +44,12 @@
     right: 100%;
     width: 100vw;
     background: #ffffff;
-    /* z-index: -1; */
     border-radius: 10px 0 0 10px;
     padding-left: 12px;
-  }
+  } */
 
   .inner {
-    padding: 64px 0;
+    padding: 64px 36px;
     /* padding-left: 100px; */
   }
 }
