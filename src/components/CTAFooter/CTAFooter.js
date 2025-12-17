@@ -12,7 +12,7 @@ const CTA = ({ variant = 'primary' }) => {
     variant === 'primary' ? 'CTAFooter.startButton' : 'CTAFooter.startButtonSolution';
 
   return (
-    <div className={css.container}>
+    // <div className={css.container}>
       <div className={css.root}>
         <div className={css.inner}>
           <div className={css.circleLineLeft} />
@@ -45,7 +45,7 @@ const CTA = ({ variant = 'primary' }) => {
           </div>
         </div>
       </div>
-    </div>
+    // </div>
   );
 };
 

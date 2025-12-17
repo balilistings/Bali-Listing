@@ -271,13 +271,14 @@
   background-color: white;
   border-radius: 10px;
   margin: 0 8px;
+  max-width: 1244px;
+  margin: 0 auto;
 
   @media (--viewportMedium) {
     padding: 80px 20px;
     gap: 20px;
     width: 100%;
     & > * {
-      max-width: 1244px;
       margin: 0 auto;
     }
   }
@@ -289,6 +290,7 @@
   padding: 40px 0;
   width: 100%;
   margin: 0 8px;
+  max-width: 1244px;
 
   @media (--viewportMedium) {
     padding: 80px 20px;
@@ -296,7 +298,6 @@
   }
 
   & > * {
-    max-width: 1244px;
     margin: 0 auto;
   }
 }
