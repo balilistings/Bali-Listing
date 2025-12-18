@@ -25,7 +25,7 @@ function RadiusSelector({ selectedRadius, onRadiusChange, onReset }) {
         </h3>
         {selectedRadius && (
           <button onClick={handleReset} className={css.resetButton}>
-            Reset
+            <FormattedMessage id="CustomFilters.reset" />
           </button>
         )}
       </div>
@@ -35,9 +35,7 @@ function RadiusSelector({ selectedRadius, onRadiusChange, onReset }) {
           <button
             type="button"
             key={option.value}
-            className={`${css.radiusPill} ${
-              selectedRadius === option.value ? css.selected : ''
-            }`}
+            className={`${css.radiusPill} ${selectedRadius === option.value ? css.selected : ''}`}
             onClick={() => handleRadiusSelect(option.value)}
           >
             {option.label}

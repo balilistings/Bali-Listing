@@ -71,11 +71,11 @@ const priceData = (price, currency, intl) => {
 
 const formatRentalPrice = (publicData, currency, intl) => {
   const [price, period] = publicData.yearprice
-    ? [publicData.yearprice, 'Yearly']
+    ? [publicData.yearprice, intl.formatMessage({ id: 'PageBuilder.SearchCTA.PriceFilter.yearly' })]
     : publicData.monthprice
-    ? [publicData.monthprice, 'Monthly']
+    ? [publicData.monthprice, intl.formatMessage({ id: 'PageBuilder.SearchCTA.PriceFilter.monthly' })]
     : publicData.weekprice
-    ? [publicData.weekprice, 'Weekly']
+    ? [publicData.weekprice, intl.formatMessage({ id: 'PageBuilder.SearchCTA.PriceFilter.weekly' })]
     : [];
   const formattedPrice = formatMoney(
     intl,

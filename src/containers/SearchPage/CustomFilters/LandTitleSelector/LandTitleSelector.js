@@ -25,7 +25,7 @@ function LandTitleSelector({ selectedLandTitles, onLandTitlesChange, onReset }) 
       selectedOptions={selectedLandTitles}
       onSelectionChange={onLandTitlesChange}
       onReset={onReset}
-      placeholder="Select Land Title"
+      placeholder={intl.formatMessage({ id: 'CustomFilter.LandTitle.placeholder' })}
     />
   );
 }
