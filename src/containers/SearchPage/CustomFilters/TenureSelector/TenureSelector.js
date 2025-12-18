@@ -1,15 +1,17 @@
 import React from 'react';
 import PillSelector from '../PillSelector/PillSelector';
+import { useIntl } from 'react-intl';
 
 const tenureOptions = [
-  { id: 'freehold', label: 'Freehold' },
-  { id: 'leasehold', label: 'Leasehold' },
+  { id: 'freehold', label: 'CustomFilter.Tenure.freehold' },
+  { id: 'leasehold', label: 'CustomFilter.Tenure.leasehold' },
 ];
 
 function TenureSelector({ selectedTenure, onTenureChange, onReset }) {
+  const intl = useIntl();
   return (
     <PillSelector
-      title="Freehold or leasehold"
+      title={intl.formatMessage({ id: 'CustomFilter.Tenure.title' })}
       options={tenureOptions}
       selectedOption={selectedTenure}
       onOptionChange={onTenureChange}

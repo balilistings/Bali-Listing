@@ -26,7 +26,7 @@ function PropertyDetailsSelector({ selectedPropertyDetail, onPropertyDetailChang
           <FormattedMessage id="CustomFilter.PropertyDetails.title" />
         </h3>
         <button onClick={onReset} className={css.resetButton}>
-          Reset
+          <FormattedMessage id="CustomFilters.reset" />
         </button>
       </div>
 

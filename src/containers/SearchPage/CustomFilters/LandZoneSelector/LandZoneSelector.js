@@ -21,7 +21,7 @@ function LandZoneSelector({ selectedLandZones, onLandZonesChange, onReset }) {
       selectedOptions={selectedLandZones}
       onSelectionChange={onLandZonesChange}
       onReset={onReset}
-      placeholder="Select Land Zone"
+      placeholder={intl.formatMessage({ id: 'CustomFilter.LandZone.placeholder' })}
     />
   );
 }

@@ -30,7 +30,7 @@ function PropertyTypeSelector({ selectedPropertyType, onPropertyTypeChange, onRe
           <FormattedMessage id="CustomFilter.PropertyType.title" />
         </h3>
         <button onClick={handleReset} className={css.resetButton}>
-          Reset
+          <FormattedMessage id="CustomFilters.reset" />
         </button>
       </div>
 
