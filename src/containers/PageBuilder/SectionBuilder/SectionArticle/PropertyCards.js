@@ -21,6 +21,7 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocale } from '../../../../context/localeContext';
 import ImageSlider from '../../../../components/ImageSlider/ImageSlider';
+import { get } from '../../../../util/api';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -43,6 +44,45 @@ const formatPriceInMillions = (actualPrice, locale = 'en') => {
 
   // For smaller amounts, show the actual price
   return `${actualPrice.toLocaleString()}`;
+};
+
+const ProviderInfo = ({ author, intl }) => {
+  const [mounted, setMounted] = useState(false);
+  const [authorSlug, setAuthorSlug] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const fetchAuthorSlug = async () => {
+      const userId = author?.id?.uuid;
+      if (!userId) return;
+
+      try {
+        const response = await get(`/api/users/${userId}/slug`);
+        setAuthorSlug(response.slug);
+      } catch (err) {
+        console.error('Failed to fetch author slug:', err);
+      }
+    };
+
+    fetchAuthorSlug();
+  }, [author?.id?.uuid]);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return (
+    <NamedLink
+      className={styles.listedBy}
+      name={authorSlug ? 'ProfilePageSlug' : 'ProfilePage'}
+      params={{ id: authorSlug ? authorSlug : author.id.uuid }}
+    >
+      <span className={styles.listedBy}>
+        {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
+        <span className={styles.listedByName}>{author.attributes.profile.displayName}</span>
+      </span>
+    </NamedLink>
+  );
 };
 
 export const Icon = ({ type }) => {
@@ -478,18 +518,7 @@ const PropertyCards = () => {
                         {!!Freehold && (
                           <span className={styles.tag}>{capitaliseFirstLetter(Freehold)}</span>
                         )}
-                        <NamedLink
-                          className={styles.listedBy}
-                          name="ProfilePage"
-                          params={{ id: author.id.uuid }}
-                        >
-                          <span className={styles.listedBy}>
-                            {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
-                            <span className={styles.listedByName}>
-                              {author.attributes.profile.displayName}
-                            </span>
-                          </span>
-                        </NamedLink>
+                        <ProviderInfo author={author} intl={intl} />
                       </div>
                       <div className={styles.title}>{title}</div>
                     </div>

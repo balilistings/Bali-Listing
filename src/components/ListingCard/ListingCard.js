@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -11,6 +11,7 @@ import { useIntl } from '../../util/reactIntl';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { checkIsProvider } from '../../util/userHelpers';
+import { get } from '../../util/api';
 
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
@@ -188,6 +189,8 @@ const PriceMaybe = props => {
 export const ListingCard = props => {
   const config = useConfiguration();
   const intl = props.intl || useIntl();
+  const [authorSlug, setAuthorSlug] = useState(null);
+
   const {
     className,
     rootClassName,
@@ -206,6 +209,23 @@ export const ListingCard = props => {
   const { title = '', price: p, publicData, metadata } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
+
+  useEffect(() => {
+    const fetchAuthorSlug = async () => {
+      const userId = author?.id?.uuid;
+      if (!userId) return;
+
+      try {
+        const response = await get(`/api/users/${userId}/slug`);
+        setAuthorSlug(response.slug);
+      } catch (err) {
+        console.error('Failed to fetch author slug:', err);
+      }
+    };
+
+    fetchAuthorSlug();
+  }, [author?.id?.uuid]);
+
   const {
     pricee,
     location,
@@ -283,7 +303,11 @@ export const ListingCard = props => {
           ))}
           {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
           {author?.id?.uuid && (
-            <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
+            <NamedLink
+              className={css.listedBy}
+              name={authorSlug ? 'ProfilePageSlug' : 'ProfilePage'}
+              params={{ id: authorSlug ? authorSlug : author.id.uuid }}
+            >
               <span className={css.listedBy}>
                 {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
                 <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
