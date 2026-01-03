@@ -133,9 +133,6 @@
       "last 1 safari version"
     ]
   },
-  "engines": {
-    "node": "22.20.0"
-  },
   "prettier": {
     "singleQuote": true,
     "trailingComma": "es5",
