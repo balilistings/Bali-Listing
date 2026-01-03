@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { any, array, arrayOf, bool, number, object, oneOfType, shape, string } from 'prop-types';
 import { Helmet } from 'react-helmet-async';
 import { useLocation } from 'react-router-dom';
@@ -362,6 +362,14 @@ const Page = props => {
 
   // Generate hreflang links
   const hreflangLinks = generateHreflangs(pathWithoutLocale, locale, supportedLocales, config.marketplaceRootURL);
+
+    useEffect(() => {
+      console.log('page  mounted');
+  
+      return () => {
+        console.log('page unmounted');
+      };
+    }, []);
 
   return (
     <PageComponent

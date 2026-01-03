@@ -64,7 +64,7 @@ export const BlogCard = ({ block }) => {
           image={image}
           variants={imageVariants}
           className={css.cardImage}
-          sizes={"600px"}
+          sizes={'600px'}
         />
       )}
       <div className={css.cardContent}>
@@ -102,10 +102,6 @@ const BlogListPage = props => {
 
   const [activeTag, setActiveTag] = useState('All');
 
-  if (inProgress) {
-    return <div className={css.root} />;
-  }
-
   if (error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;
   }
@@ -113,19 +109,22 @@ const BlogListPage = props => {
   const pageData = pageAssetsData?.[pageId]?.data;
   const blocks = pageData?.sections?.[0]?.blocks || [];
 
-  const allTags = ['All', ...new Set(blocks.map(block => getInfoFromText(block.text?.content || '').tag).filter(Boolean))];
+  const allTags = [
+    'All',
+    ...new Set(blocks.map(block => getInfoFromText(block.text?.content || '').tag).filter(Boolean)),
+  ];
 
-  const filteredBlocks = activeTag === 'All' ? blocks : blocks.filter(block => getInfoFromText(block.text?.content || '').tag === activeTag);
+  const filteredBlocks =
+    activeTag === 'All'
+      ? blocks
+      : blocks.filter(block => getInfoFromText(block.text?.content || '').tag === activeTag);
 
   // Extract meta information using the helper function
   const { title, description, schema, socialSharing } = extractPageMetadata(pageData, 'WebPage');
 
   return (
     <Page {...{ title, description, schema, socialSharing }} config={config} className={css.root}>
-      <LayoutSingleColumn
-        topbar={<TopbarContainer />}
-        footer={<FooterContainer />}
-      >
+      <LayoutSingleColumn topbar={<TopbarContainer />} footer={<FooterContainer />}>
         <div className={css.hero}>
           <Spiral className={css.spiral} />
           <h1 className={css.heroTitle}>Blog</h1>
@@ -143,7 +142,7 @@ const BlogListPage = props => {
             ))}
           </div>
           <div className={css.grid}>
-            {filteredBlocks.map((block, i) => (
+            {filteredBlocks?.map((block, i) => (
               <BlogCard key={i} block={block} />
             ))}
           </div>
