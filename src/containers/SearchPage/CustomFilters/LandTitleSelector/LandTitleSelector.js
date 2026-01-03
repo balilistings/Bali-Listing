@@ -3,29 +3,31 @@ import DropdownSelector from '../DropdownSelector/DropdownSelector';
 import { useIntl } from 'react-intl';
 
 const landTitleOptions = [
-  { id: 'hakmilik', label: 'Right of ownership (Hak Milik)' },
-  { id: 'HGB', label: 'Right to Build (Hak Guna Bangunan)' },
-  { id: 'HGU', label: 'Right to Cultivate (Hak Guna Usaha)' },
-  { id: 'hakpakai', label: 'Right to Use (Hak Pakai)' },
-  {
-    id: 'hakmilikatas',
-    label: 'Right to Ownership over Stacked Units (Hak Milik Atas Satuan Rumah Susun)',
-  },
-  { id: 'haksewa', label: 'Lease (Hak Sewa)' },
+  { id: 'hakmilik' },
+  { id: 'HGB' },
+  { id: 'HGU' },
+  { id: 'hakpakai' },
+  { id: 'hakmilikatas' },
+  { id: 'haksewa' },
 ];
 
 function LandTitleSelector({ selectedLandTitles, onLandTitlesChange, onReset }) {
   const intl = useIntl();
 
+  const options = landTitleOptions.map(option => ({
+    ...option,
+    label: intl.formatMessage({ id: `CustomFilter.LandTitle.${option.id}` }),
+  }));
+
   return (
     <DropdownSelector
       title={intl.formatMessage({ id: 'CustomFilter.LandTitle.title' })}
       description={intl.formatMessage({ id: 'CustomFilter.LandTitle.description' })}
-      options={landTitleOptions}
+      options={options}
       selectedOptions={selectedLandTitles}
       onSelectionChange={onLandTitlesChange}
       onReset={onReset}
-      placeholder="Select Land Title"
+      placeholder={intl.formatMessage({ id: 'CustomFilter.LandTitle.placeholder' })}
     />
   );
 }

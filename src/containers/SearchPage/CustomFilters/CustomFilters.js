@@ -893,7 +893,7 @@ function CustomFilters({
 
         <div className={css.footer}>
           <button onClick={handleReset} className={css.resetButton}>
-            Reset All
+            <FormattedMessage id="CustomFilters.resetAll" />
           </button>
           <button onClick={onClose} className={css.showListingsButton}>
             <FormattedMessage id="CustomFilters.showListingsButton" values={{ resultsCount }} />

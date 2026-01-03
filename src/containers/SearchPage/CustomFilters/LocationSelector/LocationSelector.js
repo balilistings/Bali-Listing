@@ -89,8 +89,8 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
 
   const handleLocationChange = location => {
     if (
-      mapDetails[(isActive?.id)] &&
-      location.selectedPlace.address === mapDetails[(isActive?.id)]['place_name_en-GB']
+      mapDetails[isActive?.id] &&
+      location.selectedPlace.address === mapDetails[isActive?.id]['place_name_en-GB']
     ) {
     } else {
       onLocationChange(location);
@@ -104,7 +104,7 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
           <FormattedMessage id="PageBuilder.SearchCTA.location" />
         </h3>
         <button onClick={handleReset} className={css.resetButton}>
-          Reset
+          <FormattedMessage id="CustomFilters.reset" />
         </button>
       </div>
 
@@ -136,7 +136,11 @@ function LocationSelector({ selectedLocation, onLocationChange, onReset }) {
                       }`}
                       onClick={() => handleLocationsClick(location)}
                     >
-                      {location.id === 'nearBy' ? <FormattedMessage id={location.name} /> : location.name}
+                      {location.id === 'nearBy' ? (
+                        <FormattedMessage id={location.name} />
+                      ) : (
+                        location.name
+                      )}
                     </button>
                   ))}
                 </div>

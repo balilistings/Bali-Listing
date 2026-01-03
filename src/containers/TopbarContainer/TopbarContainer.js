@@ -8,7 +8,7 @@ import { propTypes } from '../../util/types';
 
 import { sendVerificationEmail, hasCurrentUserErrors } from '../../ducks/user.duck';
 import { logout, authenticationInProgress } from '../../ducks/auth.duck';
-import { manageDisableScrolling } from '../../ducks/ui.duck';
+import { manageDisableScrolling, setMobileMenuOpen } from '../../ducks/ui.duck';
 
 const Topbar = loadable(() => import(/* webpackChunkName: "Topbar" */ './Topbar/Topbar'));
 
@@ -37,6 +37,8 @@ const mapStateToProps = state => {
     sendVerificationEmailError,
   } = state.user;
   const hasGenericError = !!(logoutError || hasCurrentUserErrors(state));
+  const { isMobileMenuOpen } = state.ui;
+
   return {
     authInProgress: authenticationInProgress(state),
     currentUser,
@@ -49,6 +51,7 @@ const mapStateToProps = state => {
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     hasGenericError,
+    isMobileMenuOpen,
   };
 };
 
@@ -56,6 +59,7 @@ const mapDispatchToProps = dispatch => ({
   onLogout: historyPush => dispatch(logout(historyPush)),
   onManageDisableScrolling: (componentId, disableScrolling) =>
     dispatch(manageDisableScrolling(componentId, disableScrolling)),
+  onManageMobileMenuOpen: isOpen => dispatch(setMobileMenuOpen(isOpen)),
   onResendVerificationEmail: () => dispatch(sendVerificationEmail()),
 });
 

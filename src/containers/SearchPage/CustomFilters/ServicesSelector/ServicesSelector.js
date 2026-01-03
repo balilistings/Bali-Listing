@@ -29,7 +29,7 @@ function ServicesSelector({ selectedServices = [], onServiceChange, onReset }) {
           <FormattedMessage id="CustomFilter.Services.title" />
         </h3>
         <button onClick={handleReset} className={css.resetButton}>
-          Reset
+          <FormattedMessage id="CustomFilters.reset" />
         </button>
       </div>
 

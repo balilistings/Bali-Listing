@@ -18,7 +18,7 @@ function PillSelector({ title, options, selectedOption, onOptionChange, onReset 
       <div className={css.header}>
         <h3 className={css.title}>{title}</h3>
         <button onClick={handleReset} className={css.resetButton}>
-          Reset
+          <FormattedMessage id="CustomFilters.reset" />
         </button>
       </div>
 
@@ -30,7 +30,7 @@ function PillSelector({ title, options, selectedOption, onOptionChange, onReset 
             className={`${css.pill} ${selectedOption === option.id ? css.selected : ''}`}
             onClick={() => handleOptionSelect(option.id)}
           >
-            {option.label}
+            <FormattedMessage id={option.label} />
           </button>
         ))}
       </div>

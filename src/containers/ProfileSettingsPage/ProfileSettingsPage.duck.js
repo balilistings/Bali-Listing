@@ -135,6 +135,10 @@ export function uploadImage(actionPayload) {
 
 export const updateProfile = actionPayload => {
   return (dispatch, getState, sdk) => {
+    const { updateInProgress } = getState().ProfileSettingsPage;
+    if (updateInProgress) {
+      return Promise.resolve();
+    }
     dispatch(updateProfileRequest());
 
     const queryParams = {
