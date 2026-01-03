@@ -20,7 +20,6 @@ import CTABlock from '../../components/CTAFooter/CTAFooter.js';
 import { FiPlus } from 'react-icons/fi';
 
 import css from './SolutionHubPage.module.css';
-import { useIsScrollingDisabled } from '../../ducks/ui.duck.js';
 
 const renderAst = new rehypeReact({ createElement: React.createElement }).Compiler;
 
@@ -91,10 +90,6 @@ const SolutionHubPage = props => {
     }
     dispatch(loadData(params));
   }, [dispatch, params, pageId, inProgress, pageAssetsData]);
-
-  if (inProgress) {
-    return <div className={css.root} />;
-  }
 
   if (error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;

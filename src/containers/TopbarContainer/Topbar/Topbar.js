@@ -165,6 +165,8 @@ const TopbarComponent = props => {
     config,
     routeConfiguration,
     openCustomFilters,
+    isMobileMenuOpen,
+    onManageMobileMenuOpen,
   } = props;
 
   const { SUPPORTED_LOCALES } = useLocale();
@@ -239,7 +241,7 @@ const TopbarComponent = props => {
     ? 'sales'
     : 'orders';
 
-  const { mobilemenu, mobilesearch, keywords, address, origin, bounds } = parse(location.search, {
+  const { mobilesearch, keywords, address, origin, bounds } = parse(location.search, {
     latlng: ['origin'],
     latlngBounds: ['bounds'],
   });
@@ -256,7 +258,7 @@ const TopbarComponent = props => {
   const isMobileLayout = hasMatchMedia
     ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
     : true;
-  const isMobileMenuOpen = isMobileLayout && mobilemenu === 'open';
+  const isMobileMenuOpenCheck = isMobileLayout && isMobileMenuOpen;
   const isMobileSearchOpen = isMobileLayout && mobilesearch === 'open';
 
   const mobileMenu = (
@@ -323,12 +325,12 @@ const TopbarComponent = props => {
 
   const modalContainerClasses = classNames(
     css.modalContainer,
-    isMobileMenuOpen && css.modalContainerOpen
+    isMobileMenuOpenCheck && css.modalContainerOpen
   );
 
   const scrollLayerClasses = classNames(
     css.modalScrollLayer,
-    isMobileMenuOpen && css.modalScrollLayerOpen
+    isMobileMenuOpenCheck && css.modalScrollLayerOpen
   );
 
   return (
@@ -360,9 +362,9 @@ const TopbarComponent = props => {
           )} */}
           <Button
             rootClassName={css.menu}
-            onClick={isMobileMenuOpen
-              ? () => redirectToURLWithoutModalState(history, location, 'mobilemenu')
-              : () => redirectToURLWithModalState(history, location, 'mobilemenu')
+            onClick={isMobileMenuOpenCheck
+              ? () => onManageMobileMenuOpen(false)
+              : () => onManageMobileMenuOpen(true)
             }
             title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
           >
@@ -400,8 +402,8 @@ const TopbarComponent = props => {
         className={css.modal}
         containerClassName={modalContainerClasses}
         scrollLayerClassName={scrollLayerClasses}
-        isOpen={isMobileMenuOpen}
-        onClose={() => redirectToURLWithoutModalState(history, location, 'mobilemenu')}
+        isOpen={isMobileMenuOpenCheck}
+        onClose={() => onManageMobileMenuOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
         isClosedClassName={css.isClosed}
         showCloseButton={false}

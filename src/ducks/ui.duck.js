@@ -3,11 +3,13 @@
 import { shallowEqual, useSelector } from "react-redux";
 
 export const DISABLE_SCROLLING = 'app/ui/DISABLE_SCROLLING';
+export const SET_MOBILE_MENU_OPEN = 'app/ui/SET_MOBILE_MENU_OPEN';
 
 // ================ Reducer ================ //
 
 const initialState = {
   disableScrollRequests: [],
+  isMobileMenuOpen: false,
 };
 
 export default function reducer(state = initialState, action = {}) {
@@ -35,6 +37,10 @@ export default function reducer(state = initialState, action = {}) {
       };
     }
 
+    case SET_MOBILE_MENU_OPEN: {
+      return { ...state, isMobileMenuOpen: payload };
+    }
+
     default:
       return state;
   }
@@ -47,12 +53,19 @@ export const manageDisableScrolling = (componentId, disableScrolling) => ({
   payload: { componentId, disableScrolling },
 });
 
+export const setMobileMenuOpen = isOpen => ({
+  type: SET_MOBILE_MENU_OPEN,
+  payload: isOpen,
+});
+
 // ================ Selectors ================ //
 
 export const isScrollingDisabled = state => {
   const { disableScrollRequests } = state.ui;
   return disableScrollRequests.some(r => r.disableScrolling);
 };
+
+export const getIsMobileMenuOpen = state => state.ui.isMobileMenuOpen;
 
 export const useIsScrollingDisabled = () => {
   const uiState = useSelector(state => state.ui || {}, shallowEqual);
