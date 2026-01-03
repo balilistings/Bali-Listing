@@ -3,21 +3,26 @@ import DropdownSelector from '../DropdownSelector/DropdownSelector';
 import { useIntl } from 'react-intl';
 
 const landZoneOptions = [
-  { id: 'Green', label: 'Green' },
-  { id: 'Yellow', label: 'Yellow' },
-  { id: 'Red', label: 'Red' },
-  { id: 'Pink', label: 'Pink' },
-  { id: 'Orange', label: 'Orange' },
+  { id: 'Green' },
+  { id: 'Yellow' },
+  { id: 'Red' },
+  { id: 'Pink' },
+  { id: 'Orange' },
 ];
 
 function LandZoneSelector({ selectedLandZones, onLandZonesChange, onReset }) {
   const intl = useIntl();
 
+  const options = landZoneOptions.map(option => ({
+    ...option,
+    label: intl.formatMessage({ id: `CustomFilter.LandZone.${option.id}` }),
+  }));
+
   return (
     <DropdownSelector
       title={intl.formatMessage({ id: 'CustomFilter.LandZone.title' })}
       description={intl.formatMessage({ id: 'CustomFilter.LandZone.description' })}
-      options={landZoneOptions}
+      options={options}
       selectedOptions={selectedLandZones}
       onSelectionChange={onLandZonesChange}
       onReset={onReset}
