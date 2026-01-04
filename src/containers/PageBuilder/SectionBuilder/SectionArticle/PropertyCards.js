@@ -367,6 +367,12 @@ const PropertyCards = () => {
   const routes = useRouteConfiguration();
 
   useEffect(() => {
+    if (!listings?.length) {
+      dispatch(fetchFeaturedListings());
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
     const timeoutId = setTimeout(() => {
       const idx = tabList.findIndex(tab => tab.id === activeTab);
       if (tabRefs.current[idx]) {
@@ -569,13 +575,16 @@ const PropertyCards = () => {
                           {!!landzone && isLand && (
                             <span className={styles.iconItem}>
                               <Icon type="zone" />
-                              {intl.formatMessage({ id: `ListingCard.${landzone.toLowerCase()}zone` })}
+                              {intl.formatMessage({
+                                id: `ListingCard.${landzone.toLowerCase()}zone`,
+                              })}
                             </span>
                           )}
                         </div>
                         <div className={styles.price}>
                           <span className={styles.priceValue}>
-                            {formatPriceInMillions(price, locale)} {needPriceConversion ? 'USD' : 'IDR'}
+                            {formatPriceInMillions(price, locale)}{' '}
+                            {needPriceConversion ? 'USD' : 'IDR'}
                           </span>
                           {isRentals && (
                             <span className={styles.priceUnit}>

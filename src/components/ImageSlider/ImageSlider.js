@@ -57,6 +57,8 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
 
   const showArrows = loop || prevBtnEnabled || nextBtnEnabled;
 
+  const eagerLimit = isClient ? EAGERLOADED_IMAGES : 0;
+
   const slides = children
     ? React.Children.map(children, (child, index) => (
         <div className={styles.embla__slide} key={index}>
@@ -65,22 +67,16 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
       ))
     : images.map((img, imgIdx) => (
         <div className={styles.embla__slide} key={imgIdx}>
-          {imgIdx === 0 || isClient ? (
-            <img
-              src={img}
-              alt={title}
-              className={styles.image + ' ' + styles.imageFade}
-              loading={
-                isClient
-                  ? Math.abs(imgIdx - selectedIndex) <= EAGERLOADED_IMAGES
-                    ? 'eager'
-                    : 'lazy'
-                  : 'eager'
-              }
-            />
-          ) : (
-            <div className={styles.image + ' ' + styles.imageFade} />
-          )}
+          <img
+            src={img}
+            alt={title}
+            className={styles.image + ' ' + styles.imageFade}
+            loading={
+              Math.abs(imgIdx - selectedIndex) <= eagerLimit
+                ? 'eager'
+                : 'lazy'
+            }
+          />
         </div>
       ));
 
