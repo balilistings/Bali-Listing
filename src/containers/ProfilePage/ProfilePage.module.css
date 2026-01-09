@@ -41,16 +41,21 @@
 
 .mainColumn {
   composes: main from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation.module.css';
+  border-radius: 8px;
 
   @media (--viewportLarge) {
     flex: 2;
     width: auto;
-    border-left: 1px solid var(--colorGrey100);
+    border-left: none;
     padding-right: 36px;
+    background-color: var(--colorWhite);
+    margin-left: 24px;
+    margin-top: 48px;
+    padding: 20px;
   }
 
   @media (--viewportLargeWithPaddings) {
-    padding-right: 0;
+    /* padding-right: 0; */
   }
 }
 
@@ -323,11 +328,7 @@
   margin-bottom: 0;
 
   @media (--viewportMedium) {
-    margin-top: 48px;
-    margin-bottom: 8px;
-  }
-  @media (--viewportLarge) {
-    margin-top: 56px;
+    margin-top: 0;
     margin-bottom: 8px;
   }
 }

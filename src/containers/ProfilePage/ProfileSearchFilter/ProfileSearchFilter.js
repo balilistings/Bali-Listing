@@ -87,17 +87,33 @@ export const ProfileSearchFilter = React.forwardRef((props, ref) => {
     if (tabKey === 'rentalvillas') {
       if (params.pub_weekprice) {
         const [min, max] = params.pub_weekprice.split(',');
-        values.pub_price = { period: 'weekly', minPrice: parseInt(min, 10), maxPrice: parseInt(max, 10) };
+        values.pub_price = {
+          period: 'weekly',
+          minPrice: parseInt(min, 10),
+          maxPrice: parseInt(max, 10),
+        };
       } else if (params.pub_monthprice) {
         const [min, max] = params.pub_monthprice.split(',');
-        values.pub_price = { period: 'monthly', minPrice: parseInt(min, 10), maxPrice: parseInt(max, 10) };
+        values.pub_price = {
+          period: 'monthly',
+          minPrice: parseInt(min, 10),
+          maxPrice: parseInt(max, 10),
+        };
       } else if (params.pub_yearprice) {
         const [min, max] = params.pub_yearprice.split(',');
-        values.pub_price = { period: 'yearly', minPrice: parseInt(min, 10), maxPrice: parseInt(max, 10) };
+        values.pub_price = {
+          period: 'yearly',
+          minPrice: parseInt(min, 10),
+          maxPrice: parseInt(max, 10),
+        };
       }
     } else if (params.price) {
       const [min, max] = params.price.split(',');
-      values.pub_price = { period: 'monthly', minPrice: parseInt(min, 10), maxPrice: parseInt(max, 10) };
+      values.pub_price = {
+        period: 'monthly',
+        minPrice: parseInt(min, 10),
+        maxPrice: parseInt(max, 10),
+      };
     }
 
     if (params.pub_landsize) {
@@ -111,11 +127,13 @@ export const ProfileSearchFilter = React.forwardRef((props, ref) => {
         selectedPlace: {
           address: params.address,
           bounds: params.bounds,
-          origin: params.origin ? {
-            lat: parseFloat(params.origin.split(',')[0]),
-            lng: parseFloat(params.origin.split(',')[1])
-          } : null
-        }
+          origin: params.origin
+            ? {
+                lat: parseFloat(params.origin.split(',')[0]),
+                lng: parseFloat(params.origin.split(',')[1]),
+              }
+            : null,
+        },
       };
     }
 
@@ -329,7 +347,7 @@ export const ProfileSearchFilter = React.forwardRef((props, ref) => {
   };
 
   return (
-    <>
+    <div className={css.filterContainer}>
       <div className={css.tabsWrapper}>
         <div className={css.heroTabs}>
           {tabs.map((tab, idx) => (
@@ -374,14 +392,14 @@ export const ProfileSearchFilter = React.forwardRef((props, ref) => {
                   <span className={css.searchIcon}>
                     <IconCollection name="search_icon" />
                   </span>
-                  <FormattedMessage id="PageBuilder.SearchCTA.buttonLabel" />
+                  {/* <FormattedMessage id="PageBuilder.SearchCTA.buttonLabel" /> */}
                 </button>
               </Form>
             );
           }}
         />
       </div>
-    </>
+    </div>
   );
 });
 

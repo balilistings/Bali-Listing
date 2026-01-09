@@ -1,5 +1,16 @@
 @import '../../../styles/customMediaQueries.css';
 
+.filterContainer {
+  background: #f2f2f2;
+  border-radius: 20px;
+  height: 165px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin-top: 40px;
+}
+
 .filterField {
   display: grid;
   align-items: center;
@@ -29,10 +40,8 @@
 .searchBarContainer {
   composes: align;
   background-color: #fff;
-  border: 1px solid var(--colorGrey200);
   color: var(--colorGrey500);
   border-radius: 10px;
-  box-shadow: var(--boxShadowPopup);
   width: calc(100vw - 40px);
   padding: 10px;
   margin-top: 40px;
@@ -135,22 +144,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
   background: #ff5ce7;
   color: #fff;
   font-family: Mulish, sans-serif;
   font-weight: 700;
   font-size: 14px;
-  line-height: 1;
 
   border: none;
-  border-radius: 100px;
-  padding: 0 25px;
+  border-radius: 100%;
   height: 44px;
+  width: 44px;
   cursor: pointer;
   transition: background 0.2s;
 
-  min-width: 120px;
   white-space: nowrap;
 
   &:hover {
@@ -164,6 +170,7 @@
 
   @media (--viewportLarge) {
     height: 48px;
+    width: 48px;
     font-size: 14px;
   }
 }
@@ -221,7 +228,7 @@
 }
 
 .heroTab:not(:last-child)::after {
-  content: "";
+  content: '';
   position: absolute;
   right: 0;
   top: 25%;

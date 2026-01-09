@@ -351,13 +351,14 @@ export const MainContent = props => {
   }
   return (
     <div>
+      <H4 as="h2" className={css.listingsTitle}>
+        <FormattedMessage id="ProfilePage.listingsTitleNoCount" />
+      </H4>
+
       <ProfileSearchFilter onFilterChange={handleFilterChange} />
 
       {hasListings ? (
         <div className={css.listingsContainer}>
-          <H4 as="h2" className={css.listingsTitle}>
-            <FormattedMessage id="ProfilePage.listingsTitle" values={{ count: listings.length }} />
-          </H4>
           <ul className={css.listings}>
             {listings.map(l => (
               <li className={css.listing} key={l.id.uuid}>

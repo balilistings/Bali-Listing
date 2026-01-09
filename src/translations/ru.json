@@ -704,6 +704,7 @@
   "ProfilePage.editProfileLinkDesktop": "Редактировать профиль",
   "ProfilePage.editProfileLinkMobile": "Редактировать",
   "ProfilePage.listingsTitle": "Мои объявления ({count})",
+  "ProfilePage.listingsTitleNoCount": "Мои объявления",
   "ProfilePage.loadingDataFailed": "Упс, что-то пошло не так. Пожалуйста, попробуйте снова.",
   "ProfilePage.loadingReviewsFailed": "Не удалось загрузить отзывы.",
   "ProfilePage.mobileHeading": "{name}",

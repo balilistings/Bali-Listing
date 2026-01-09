@@ -703,6 +703,7 @@
   "ProfilePage.editProfileLinkDesktop": "Edit profil",
   "ProfilePage.editProfileLinkMobile": "Edit",
   "ProfilePage.listingsTitle": "Listing saya ({count})",
+  "ProfilePage.listingsTitleNoCount": "Listing saya",
   "ProfilePage.loadingDataFailed": "Ups, terjadi kesalahan. Silakan coba lagi.",
   "ProfilePage.loadingReviewsFailed": "Gagal memuat ulasan.",
   "ProfilePage.mobileHeading": "{name}",
