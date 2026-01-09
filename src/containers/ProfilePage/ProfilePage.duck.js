@@ -91,6 +91,8 @@ export const QUERY_REVIEWS_REQUEST = 'app/ProfilePage/QUERY_REVIEWS_REQUEST';
 export const QUERY_REVIEWS_SUCCESS = 'app/ProfilePage/QUERY_REVIEWS_SUCCESS';
 export const QUERY_REVIEWS_ERROR = 'app/ProfilePage/QUERY_REVIEWS_ERROR';
 
+export const SET_LAST_SLUG = 'app/ProfilePage/SET_LAST_SLUG';
+
 // ================ Reducer ================ //
 
 const initialState = {
@@ -101,6 +103,7 @@ const initialState = {
   queryListingsError: null,
   reviews: [],
   queryReviewsError: null,
+  lastSlug: null,
 };
 
 export default function profilePageReducer(state = initialState, action = {}) {
@@ -137,6 +140,9 @@ export default function profilePageReducer(state = initialState, action = {}) {
       return { ...state, reviews: payload };
     case QUERY_REVIEWS_ERROR:
       return { ...state, reviews: [], queryReviewsError: payload };
+
+    case SET_LAST_SLUG:
+      return { ...state, lastSlug: payload };
 
     default:
       return state;
@@ -298,15 +304,24 @@ const isCurrentUser = (userId, cu) => userId?.uuid === cu?.id?.uuid;
 export const loadData = (params, search, config) => (dispatch, getState, sdk) => {
   const slug = params.id;
   const isPreviewForCurrentUser = params.variant === PROFILE_PAGE_PENDING_APPROVAL_VARIANT;
-  const currentUser = getState()?.user?.currentUser;
+  const state = getState();
+  const currentUser = state?.user?.currentUser;
+  const lastSlug = state.ProfilePage.lastSlug;
   const fetchCurrentUserOptions = {
     updateHasListings: false,
     updateNotifications: false,
   };
+  const currentUserId = state.ProfilePage.userId;
 
   // Clear state so that previously loaded data is not visible
   // in case this page load fails.
-  dispatch(setInitialState());
+  // However, if we are navigating on the same profile (e.g. pagination),
+  // we don't want to clear the state as it would trigger a remount of the page.
+  const isSameUser = (lastSlug && lastSlug === slug) || currentUserId?.uuid === slug;
+  if (!isSameUser) {
+    dispatch(setInitialState());
+    dispatch({ type: SET_LAST_SLUG, payload: slug });
+  }
 
   const queryParams = parse(search, {
     latlng: ['origin'],
@@ -381,7 +396,6 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     return loadProfileData(new UUID(slug));
   } else {
     return get(`/api/users/by-slug/${slug}`)
-
       .then(data => {
         return loadProfileData(new UUID(data.userId));
       })

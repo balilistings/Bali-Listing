@@ -11,7 +11,7 @@ import { propTypes } from '../../../util/types';
 import { obfuscatedCoordinates, getMapProviderApiAccess } from '../../../util/maps';
 
 import { hasParentWithClassName } from './SearchMap.helpers.js';
-import * as searchMapMapbox from './SearchMapWithMapbox';
+// import * as searchMapMapbox from './SearchMapWithMapbox';
 import * as searchMapGoogleMaps from './SearchMapWithGoogleMaps';
 import ReusableMapContainer from './ReusableMapContainer';
 import { setActiveListing } from '../SearchPage.duck';
@@ -21,8 +21,9 @@ import { useLocale } from '../../../context/localeContext.js';
 const REUSABLE_MAP_HIDDEN_HANDLE = 'reusableMapHidden';
 
 const getSearchMapVariant = mapProvider => {
-  const isGoogleMapsInUse = mapProvider === 'googleMaps';
-  return isGoogleMapsInUse ? searchMapGoogleMaps : searchMapMapbox;
+  // const isGoogleMapsInUse = mapProvider === 'googleMaps';
+  // return isGoogleMapsInUse ? searchMapGoogleMaps : searchMapMapbox;
+  return searchMapGoogleMaps;
 };
 const getSearchMapVariantHandles = mapProvider => {
   const searchMapVariant = getSearchMapVariant(mapProvider);

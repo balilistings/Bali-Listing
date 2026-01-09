@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { shallowEqual, useSelector } from 'react-redux';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import { useLocation, useHistory } from 'react-router-dom';
+import debounce from 'lodash/debounce';
 
 import { useConfiguration } from '../../context/configurationContext';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
@@ -32,8 +33,10 @@ import {
   isUserAuthorized,
 } from '../../util/userHelpers';
 import { richText } from '../../util/richText';
+import { types as sdkTypes } from '../../util/sdkLoader';
+import { parse } from '../../util/urlHelpers';
 
-import { isScrollingDisabled } from '../../ducks/ui.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import {
   Heading,
@@ -44,16 +47,18 @@ import {
   NamedLink,
   ButtonTabNavHorizontal,
   NamedRedirect,
+  ModalInMobile,
 } from '../../components';
 import Reviews from '../../components/Reviews/Reviews';
-import LayoutSideNavigation from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation';
 import IconCollection from '../../components/IconCollection/IconCollection';
 import { createResourceLocatorString } from '../../util/routes';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+import SearchMap from '../../containers/SearchPage/SearchMap/SearchMap';
 
+import layoutCss from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation.module.css';
 import css from './ProfilePage.module.css';
 import SectionDetailsMaybe from './SectionDetailsMaybe';
 import SectionTextMaybe from './SectionTextMaybe';
@@ -66,6 +71,31 @@ import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
+const getBounds = (listings, urlBounds) => {
+  if (urlBounds) {
+    return urlBounds;
+  }
+  if (!listings || listings.length === 0) {
+    return null;
+  }
+
+  const geolocations = listings.map(l => l.attributes.geolocation).filter(g => !!g);
+
+  if (geolocations.length === 0) {
+    return null;
+  }
+
+  const { LatLng, LatLngBounds } = sdkTypes;
+
+  const lats = geolocations.map(g => g.lat);
+  const lngs = geolocations.map(g => g.lng);
+
+  return new LatLngBounds(
+    new LatLng(Math.max(...lats), Math.max(...lngs)),
+    new LatLng(Math.min(...lats), Math.min(...lngs))
+  );
+};
+
 export const AsideContent = props => {
   const {
     user,
@@ -73,7 +103,6 @@ export const AsideContent = props => {
     showLinkToProfileSettingsPage,
     bio,
     publicData,
-    userFieldConfig,
     intl,
     userTypeRoles,
     pagination,
@@ -298,6 +327,7 @@ export const CustomUserFields = props => {
 
 export const MainContent = props => {
   const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -315,14 +345,30 @@ export const MainContent = props => {
     userTypeRoles,
     params,
     routes,
+    onManageDisableScrolling,
   } = props;
 
   const history = useHistory();
   const location = useLocation();
 
-  const handleFilterChange = newQueryParams => {
-    history.push(createResourceLocatorString('ProfilePage', routes, params, newQueryParams));
-  };
+  const queryParams = parse(location.search, {
+    latlngBounds: ['bounds'],
+  });
+
+  const handleFilterChange = useCallback(
+    newQueryParams => {
+      history.push(
+        createResourceLocatorString('ProfilePageSlug', routes, params, {
+          ...queryParams,
+          ...newQueryParams,
+        })
+      );
+    },
+    [history, routes, params, queryParams]
+  );
+
+  const view = queryParams.view || 'list';
+  const isMapView = view === 'map';
 
   const hasListings = listings.length > 0;
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;
@@ -331,11 +377,25 @@ export const MainContent = props => {
       ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
       : true;
 
+  const { bounds: urlBounds } = queryParams;
+  const bounds = getBounds(listings, urlBounds);
+
+  const onMapMoveEnd = useMemo(
+    () =>
+      debounce((viewportBoundsChanged, data) => {
+        const { viewportBounds } = data;
+        if (viewportBoundsChanged) {
+          handleFilterChange({ bounds: viewportBounds });
+        }
+      }, 300),
+    [handleFilterChange]
+  );
+
   const paginationLinks =
     pagination && pagination.totalPages > 1 ? (
       <PaginationLinks
         className={css.pagination}
-        pageName="ProfilePage"
+        pageName="ProfilePageSlug"
         pagePathParams={params}
         pageSearchParams={location.search}
         pagination={pagination}
@@ -349,15 +409,58 @@ export const MainContent = props => {
       </p>
     );
   }
+
+  const mapContent = (
+    <SearchMap
+      reusableContainerClassName={css.map}
+      rootClassName={css.mapRoot}
+      bounds={bounds}
+      location={location}
+      listings={listings || []}
+      onMapMoveEnd={onMapMoveEnd}
+      onCloseAsModal={() => {
+        onManageDisableScrolling('ProfilePage_map', false);
+      }}
+      messages={intl.messages}
+    />
+  );
+
   return (
     <div>
-      <H4 as="h2" className={css.listingsTitle}>
-        <FormattedMessage id="ProfilePage.listingsTitleNoCount" />
-      </H4>
+      <div className={css.mainContentHeader}>
+        <H4 as="h2" className={css.listingsTitle}>
+          <FormattedMessage id="ProfilePage.listingsTitleNoCount" />
+        </H4>
+        <div className={css.toggleContainer}>
+          <button
+            className={classNames(css.toggleButton, { [css.toggleButtonActive]: !isMapView })}
+            onClick={() => handleFilterChange({ view: 'list' })}
+          >
+            <FormattedMessage id="ProfilePage.mapView" />
+          </button>
+          <button
+            className={classNames(css.toggleButton, { [css.toggleButtonActive]: isMapView })}
+            onClick={() => handleFilterChange({ view: 'map' })}
+          >
+            <FormattedMessage id="ProfilePage.mapView" />
+          </button>
+        </div>
+      </div>
 
       <ProfileSearchFilter onFilterChange={handleFilterChange} />
 
-      {hasListings ? (
+      {isMapView ? (
+        <ModalInMobile
+          className={css.mapContainer}
+          id="ProfilePage_map"
+          isModalOpenOnMobile={isMapView}
+          onClose={() => handleFilterChange({ view: 'list' })}
+          showAsModalMaxWidth={MAX_MOBILE_SCREEN_WIDTH}
+          onManageDisableScrolling={onManageDisableScrolling}
+        >
+          <div className={css.mapWrapper}>{mapContent}</div>
+        </ModalInMobile>
+      ) : hasListings ? (
         <div className={css.listingsContainer}>
           <ul className={css.listings}>
             {listings.map(l => (
@@ -405,20 +508,27 @@ const ProfilePage = props => {
 
   const { params: pathParams, staticContext, location } = props;
 
-  const scrollingDisabled = useSelector(isScrollingDisabled);
+  const dispatch = useDispatch();
+
+  const scrollingDisabled = useSelector(state =>
+    state.ui.disableScrollRequests.some(r => r.disableScrolling)
+  );
   const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
-  const userId = useSelector(state => state.ProfilePage.userId);
+  const userId = useSelector(state => state.ProfilePage.userId, shallowEqual);
   const userShowError = useSelector(state => state.ProfilePage.userShowError);
   const queryListingsError = useSelector(state => state.ProfilePage.queryListingsError);
-  const userListingRefs = useSelector(state => state.ProfilePage.userListingRefs, shallowEqual);
+  const userListingRefs = useSelector(state => state.ProfilePage.userListingRefs);
   const pagination = useSelector(state => state.ProfilePage.pagination, shallowEqual);
   const reviews = useSelector(state => state.ProfilePage.reviews, shallowEqual);
   const queryReviewsError = useSelector(state => state.ProfilePage.queryReviewsError);
 
+  const onManageDisableScrolling = (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling));
+
   const user = useSelector(state => {
     const userMatches = getMarketplaceEntities(state, [{ type: 'user', id: userId }]);
     return userMatches.length === 1 ? userMatches[0] : null;
-  });
+  }, shallowEqual);
 
   const listings = useSelector(
     state => getMarketplaceEntities(state, userListingRefs),
@@ -464,11 +574,31 @@ const ProfilePage = props => {
     ? currentUser != null || userShowError != null
     : user != null || userShowError != null;
 
+  const hasBeenLoadedRef = React.useRef(false);
+  if (isDataLoaded && !hasBeenLoadedRef.current) {
+    hasBeenLoadedRef.current = true;
+  }
   const schemaTitleVars = { name: displayName, marketplaceName: config.marketplaceName };
   const schemaTitle = intl.formatMessage({ id: 'ProfilePage.schemaTitle' }, schemaTitleVars);
 
-  if (!isDataLoaded) {
-    return null;
+  if (!isDataLoaded && !userShowError && !hasBeenLoadedRef.current) {
+    return (
+      <Page
+        scrollingDisabled={scrollingDisabled}
+        title={schemaTitle}
+        schema={{
+          '@context': 'http://schema.org',
+          '@type': 'ProfilePage',
+          name: schemaTitle,
+        }}
+      >
+        <div className={layoutCss.root}>
+          <header className={layoutCss.topbar}>
+            <TopbarContainer />
+          </header>
+        </div>
+      </Page>
+    );
   } else if (!isPreview && isNotFoundError(userShowError)) {
     return <NotFoundPage staticContext={staticContext} />;
   } else if (!isPreview && (isUnauthorizedOnPrivateMarketplace || hasUserPendingApprovalError)) {
@@ -519,41 +649,44 @@ const ProfilePage = props => {
         name: schemaTitle,
       }}
     >
-      <LayoutSideNavigation
-        containerClassName={css.container}
-        sideNavClassName={css.aside}
-        mainColumnClassName={css.mainColumn}
-        topbar={<TopbarContainer />}
-        sideNav={
-          <AsideContent
-            user={profileUser}
-            showLinkToProfileSettingsPage={mounted && isCurrentUserProfile}
-            displayName={displayName}
-            bio={bio}
-            publicData={publicData}
-            userFieldConfig={userFields}
-            intl={intl}
-            userTypeRoles={userTypeRoles}
-            pagination={pagination}
-          />
-        }
-        footer={<FooterContainer />}
-      >
-        <MainContent
-          displayName={displayName}
-          userShowError={userShowError}
-          hideReviews={hasNoViewingRightsOnPrivateMarketplace}
-          intl={intl}
-          userTypeRoles={userTypeRoles}
-          params={pathParams}
-          routes={routes}
-          listings={listings}
-          pagination={pagination}
-          reviews={reviews}
-          queryReviewsError={queryReviewsError}
-          queryListingsError={queryListingsError}
-        />
-      </LayoutSideNavigation>
+      <div className={layoutCss.root}>
+        <header className={layoutCss.topbar}>
+          <TopbarContainer />
+        </header>
+        <div className={css.container}>
+          <aside className={css.aside}>
+            <AsideContent
+              user={profileUser}
+              showLinkToProfileSettingsPage={mounted && isCurrentUserProfile}
+              displayName={displayName}
+              bio={bio}
+              publicData={publicData}
+              userFieldConfig={userFields}
+              intl={intl}
+              userTypeRoles={userTypeRoles}
+              pagination={pagination}
+            />
+          </aside>
+          <main className={css.mainColumn}>
+            <MainContent
+              displayName={displayName}
+              userShowError={userShowError}
+              hideReviews={hasNoViewingRightsOnPrivateMarketplace}
+              intl={intl}
+              userTypeRoles={userTypeRoles}
+              params={pathParams}
+              routes={routes}
+              listings={listings}
+              pagination={pagination}
+              reviews={reviews}
+              queryReviewsError={queryReviewsError}
+              queryListingsError={queryListingsError}
+              onManageDisableScrolling={onManageDisableScrolling}
+            />
+          </main>
+        </div>
+        <FooterContainer />
+      </div>
     </Page>
   );
 };

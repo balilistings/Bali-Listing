@@ -329,8 +329,66 @@
 
   @media (--viewportMedium) {
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 0;
   }
+}
+
+.mainContentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.toggleContainer {
+  display: flex;
+  background-color: #f2f2f2;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.toggleButton {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Mulish', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: transparent;
+  color: #5e5e5e;
+  transition: all 0.2s ease;
+}
+
+.toggleButtonActive {
+  background-color: var(--colorWhite);
+  color: #231f20;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mapContainer {
+  width: 100%;
+  height: 500px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+  border: 1px solid #f2f2f2;
+}
+
+.mapWrapper {
+  min-width: 400px;
+  width: 100%;
+  min-height: 400px;
+  height: 100%;
+}
+
+.mapRoot {
+  background-color: var(--colorGrey100);
+}
+
+.map {
+  width: 100%;
+  height: 100%;
 }
 
 .withBioMissingAbove {

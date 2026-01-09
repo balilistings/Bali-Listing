@@ -238,8 +238,7 @@
 }
 
 .heroTab.active {
-  background: #ff5ce7;
-  color: #fff;
+  color: #ff5ce7;
 }
 
 .heroTab.active::after {
