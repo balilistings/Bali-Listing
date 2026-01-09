@@ -281,7 +281,11 @@ export const SearchCTA = React.forwardRef((props, ref) => {
                   'dateRange',
                 ])}
 
-                <button disabled={!isFormReady || submitDisabled} className={css.submitButton} type="submit">
+                <button
+                  disabled={!isFormReady || submitDisabled}
+                  className={css.submitButton}
+                  type="submit"
+                >
                   <span className={css.searchIcon}>
                     <IconCollection name="search_icon" />
                   </span>

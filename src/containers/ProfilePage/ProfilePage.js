@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
+import { shallowEqual, useSelector } from 'react-redux';
 import classNames from 'classnames';
 import { useLocation, useHistory } from 'react-router-dom';
 
@@ -50,7 +49,6 @@ import Reviews from '../../components/Reviews/Reviews';
 import LayoutSideNavigation from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation';
 import IconCollection from '../../components/IconCollection/IconCollection';
 import { createResourceLocatorString } from '../../util/routes';
-
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
@@ -290,7 +288,7 @@ export const MainContent = props => {
     routes,
   } = props;
 
-    const history = useHistory();
+  const history = useHistory();
   const location = useLocation();
 
   const handleCategoryChange = category => {
@@ -307,9 +305,7 @@ export const MainContent = props => {
       newQueryParams.pub_categoryLevel1 = category;
     }
 
-    history.push(
-      createResourceLocatorString('ProfilePage', routes, params, newQueryParams)
-    );
+    history.push(createResourceLocatorString('ProfilePage', routes, params, newQueryParams));
   };
 
   const hasListings = listings.length > 0;
@@ -401,22 +397,13 @@ export const MainContent = props => {
 };
 
 /**
- * ProfilePageComponent
+ * ProfilePage
  *
  * @component
  * @param {Object} props
- * @param {boolean} props.scrollingDisabled - Whether the scrolling is disabled
- * @param {propTypes.currentUser} props.currentUser - The current user
- * @param {boolean} props.useCurrentUser - Whether to use the current user
- * @param {propTypes.user|propTypes.currentUser} props.user - The user
- * @param {propTypes.error} props.userShowError - The user show error
- * @param {propTypes.error} props.queryListingsError - The query listings error
- * @param {Array<propTypes.listing|propTypes.ownListing>} props.listings - The listings
- * @param {Array<propTypes.review>} props.reviews - The reviews
- * @param {propTypes.error} props.queryReviewsError - The query reviews error
- * @returns {JSX.Element} ProfilePageComponent
+ * @returns {JSX.Element} ProfilePage
  */
-export const ProfilePageComponent = props => {
+const ProfilePage = props => {
   const config = useConfiguration();
   const intl = useIntl();
   const [mounted, setMounted] = useState(false);
@@ -426,15 +413,33 @@ export const ProfilePageComponent = props => {
     setMounted(true);
   }, []);
 
-  const {
-    scrollingDisabled,
-    params: pathParams,
-    currentUser,
-    useCurrentUser,
-    userShowError,
-    user,
-    ...rest
-  } = props;
+  const { params: pathParams, staticContext, location } = props;
+
+  const scrollingDisabled = useSelector(isScrollingDisabled);
+  const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
+  const userId = useSelector(state => state.ProfilePage.userId);
+  const userShowError = useSelector(state => state.ProfilePage.userShowError);
+  const queryListingsError = useSelector(state => state.ProfilePage.queryListingsError);
+  const userListingRefs = useSelector(state => state.ProfilePage.userListingRefs, shallowEqual);
+  const pagination = useSelector(state => state.ProfilePage.pagination, shallowEqual);
+  const reviews = useSelector(state => state.ProfilePage.reviews, shallowEqual);
+  const queryReviewsError = useSelector(state => state.ProfilePage.queryReviewsError);
+
+  const user = useSelector(state => {
+    const userMatches = getMarketplaceEntities(state, [{ type: 'user', id: userId }]);
+    return userMatches.length === 1 ? userMatches[0] : null;
+  });
+
+  const listings = useSelector(
+    state => getMarketplaceEntities(state, userListingRefs),
+    shallowEqual
+  );
+
+  // Show currentUser's data if it's not approved yet
+  const isCurrentUser = userId?.uuid === currentUser?.id?.uuid;
+  const useCurrentUser =
+    isCurrentUser && !(isUserAuthorized(currentUser) && hasPermissionToViewData(currentUser));
+
   const isVariant = pathParams.variant?.length > 0;
   const isPreview = isVariant && pathParams.variant === PROFILE_PAGE_PENDING_APPROVAL_VARIANT;
 
@@ -442,7 +447,7 @@ export const ProfilePageComponent = props => {
   // too empty for the provider at the time they are creating their first listing.
   // To remedy the situation, we redirect Stripe's crawler to the landing page of the marketplace.
   // TODO: When there's more content on the profile page, we should consider by-passing this redirection.
-  const searchParams = rest?.location?.search;
+  const searchParams = location?.search;
   const isStorefront = searchParams
     ? new URLSearchParams(searchParams)?.get('mode') === 'storefront'
     : false;
@@ -450,7 +455,7 @@ export const ProfilePageComponent = props => {
     return <NamedRedirect name="LandingPage" />;
   }
 
-  const isCurrentUser = currentUser?.id && currentUser?.id?.uuid === pathParams.id;
+  const isCurrentUserProfile = currentUser?.id && currentUser?.id?.uuid === pathParams.id;
   const profileUser = useCurrentUser ? currentUser : user;
   const { bio, displayName, publicData, metadata } = profileUser?.attributes?.profile || {};
   const { userFields } = config.user;
@@ -475,7 +480,7 @@ export const ProfilePageComponent = props => {
   if (!isDataLoaded) {
     return null;
   } else if (!isPreview && isNotFoundError(userShowError)) {
-    return <NotFoundPage staticContext={props.staticContext} />;
+    return <NotFoundPage staticContext={staticContext} />;
   } else if (!isPreview && (isUnauthorizedOnPrivateMarketplace || hasUserPendingApprovalError)) {
     return (
       <NamedRedirect
@@ -484,7 +489,7 @@ export const ProfilePageComponent = props => {
       />
     );
   } else if (
-    (!isPreview && hasNoViewingRightsOnPrivateMarketplace && !isCurrentUser) ||
+    (!isPreview && hasNoViewingRightsOnPrivateMarketplace && !isCurrentUserProfile) ||
     isErrorNoViewingPermission(userShowError)
   ) {
     // Someone without viewing rights on a private marketplace is trying to
@@ -503,9 +508,9 @@ export const ProfilePageComponent = props => {
         state={{ from: `${location.pathname}${location.search}${location.hash}` }}
       />
     );
-  } else if (isPreview && mounted && !isCurrentUser) {
+  } else if (isPreview && mounted && !isCurrentUserProfile) {
     // Someone is manipulating the URL, redirect to current user's profile page.
-    return isCurrentUser === false ? (
+    return isCurrentUserProfile === false ? (
       <NamedRedirect name="ProfilePage" params={{ id: currentUser?.id?.uuid }} />
     ) : null;
   } else if ((isPreview || isPrivateMarketplace) && !mounted) {
@@ -525,12 +530,14 @@ export const ProfilePageComponent = props => {
       }}
     >
       <LayoutSideNavigation
+        containerClassName={css.container}
         sideNavClassName={css.aside}
+        mainColumnClassName={css.mainColumn}
         topbar={<TopbarContainer />}
         sideNav={
           <AsideContent
             user={profileUser}
-            showLinkToProfileSettingsPage={mounted && isCurrentUser}
+            showLinkToProfileSettingsPage={mounted && isCurrentUserProfile}
             displayName={displayName}
           />
         }
@@ -548,46 +555,15 @@ export const ProfilePageComponent = props => {
           userTypeRoles={userTypeRoles}
           params={pathParams}
           routes={routes}
-          {...rest}
+          listings={listings}
+          pagination={pagination}
+          reviews={reviews}
+          queryReviewsError={queryReviewsError}
+          queryListingsError={queryListingsError}
         />
       </LayoutSideNavigation>
     </Page>
   );
 };
-
-const mapStateToProps = state => {
-  const { currentUser } = state.user;
-  const {
-    userId,
-    userShowError,
-    queryListingsError,
-    userListingRefs,
-    pagination,
-    reviews = [],
-    queryReviewsError,
-  } = state.ProfilePage;
-  const userMatches = getMarketplaceEntities(state, [{ type: 'user', id: userId }]);
-  const user = userMatches.length === 1 ? userMatches[0] : null;
-
-  // Show currentUser's data if it's not approved yet
-  const isCurrentUser = userId?.uuid === currentUser?.id?.uuid;
-  const useCurrentUser =
-    isCurrentUser && !(isUserAuthorized(currentUser) && hasPermissionToViewData(currentUser));
-
-  return {
-    scrollingDisabled: isScrollingDisabled(state),
-    currentUser,
-    useCurrentUser,
-    user,
-    userShowError,
-    queryListingsError,
-    listings: getMarketplaceEntities(state, userListingRefs),
-    pagination,
-    reviews,
-    queryReviewsError,
-  };
-};
-
-const ProfilePage = compose(connect(mapStateToProps))(ProfilePageComponent);
 
 export default ProfilePage;
