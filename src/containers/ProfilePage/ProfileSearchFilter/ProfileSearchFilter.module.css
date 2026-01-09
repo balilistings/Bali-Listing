@@ -1,0 +1,240 @@
+@import '../../../styles/customMediaQueries.css';
+
+.filterField {
+  display: grid;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+
+  padding-bottom: 0px;
+  padding-top: 0px;
+  font-size: 16px;
+
+  @media (--viewportLarge) {
+    padding-bottom: 0;
+    min-height: 40px;
+    padding: 0;
+    color: var(--colorGrey300);
+  }
+}
+
+.align {
+  justify-self: start;
+
+  @media (--viewportMedium) {
+    justify-self: center;
+  }
+}
+
+.searchBarContainer {
+  composes: align;
+  background-color: #fff;
+  border: 1px solid var(--colorGrey200);
+  color: var(--colorGrey500);
+  border-radius: 10px;
+  box-shadow: var(--boxShadowPopup);
+  width: calc(100vw - 40px);
+  padding: 10px;
+  margin-top: 40px;
+
+  @media (--viewportMedium) {
+    width: 100%;
+    max-width: 900px;
+    background-color: #fff;
+  }
+
+  @media (--viewportLarge) {
+    width: 100%;
+    max-width: 1000px;
+    border-radius: 100px;
+    padding: 8px 10px 8px 30px;
+    min-height: 80px;
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    &.gridCol1 {
+      width: 576px;
+    }
+
+    &.gridCol2 {
+      width: 768px;
+    }
+
+    &.gridCol3 {
+      width: 100%;
+    }
+
+    &.gridCol4 {
+      max-width: 1000px;
+    }
+  }
+}
+
+.gridContainer {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: auto;
+
+  @media (--viewportMedium) {
+    gap: 15px;
+    height: auto;
+  }
+
+  @media (--viewportLarge) {
+    height: 100%;
+    padding-top: 0;
+    gap: 0;
+
+    & > * {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    &.gridCol1 {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    &.gridCol2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    }
+
+    &.gridCol3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    }
+
+    &.gridCol4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+    }
+
+    & > *:not(:last-child):not(:nth-last-child(2)) {
+      border-right: 1px solid var(--colorGrey200) !important;
+      padding-right: 20px;
+      margin-right: 20px;
+    }
+
+    > *:last-child {
+      justify-self: end;
+      margin-left: auto;
+    }
+  }
+}
+
+.gridCol1,
+.gridCol2,
+.gridCol3,
+.gridCol4 {
+  grid-template-columns: 1fr;
+}
+
+.submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ff5ce7;
+  color: #fff;
+  font-family: Mulish, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+
+  border: none;
+  border-radius: 100px;
+  padding: 0 25px;
+  height: 44px;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  min-width: 120px;
+  white-space: nowrap;
+
+  &:hover {
+    background: #e14ed0;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (--viewportLarge) {
+    height: 48px;
+    font-size: 14px;
+  }
+}
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  & svg {
+    width: 16px;
+    height: 16px;
+    fill: #fff;
+  }
+}
+
+.tabsWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.heroTabs {
+  display: inline-flex;
+  background: #f2f2f2;
+  border-radius: 15px 15px 0 0;
+  overflow: hidden;
+  margin-bottom: -40px;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 767px) {
+    width: 86%;
+  }
+}
+
+.heroTab {
+  position: relative;
+  padding: 12px 30px;
+  font-family: Mulish, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1;
+  color: #222;
+  background: #f2f2f2;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+
+  @media (max-width: 767px) {
+    padding: 10px 15px;
+    font-size: 13px;
+    flex: 1;
+  }
+}
+
+.heroTab:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background: #ccc;
+}
+
+.heroTab.active {
+  background: #ff5ce7;
+  color: #fff;
+}
+
+.heroTab.active::after {
+  display: none;
+}

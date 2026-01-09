@@ -59,6 +59,7 @@ import SectionDetailsMaybe from './SectionDetailsMaybe';
 import SectionTextMaybe from './SectionTextMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
 import SectionYoutubeVideoMaybe from './SectionYoutubeVideoMaybe';
+import ProfileSearchFilter from './ProfileSearchFilter/ProfileSearchFilter';
 import ListingCard from '../../components/ListingCard/ListingCard';
 import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 
@@ -66,25 +67,106 @@ const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
 export const AsideContent = props => {
-  const { user, displayName, showLinkToProfileSettingsPage } = props;
+  const {
+    user,
+    displayName,
+    showLinkToProfileSettingsPage,
+    bio,
+    publicData,
+    userFieldConfig,
+    intl,
+    userTypeRoles,
+    pagination,
+  } = props;
+
+  const isProvider = userTypeRoles.provider;
+  const userTypeTranslation = isProvider
+    ? intl.formatMessage({ id: 'FieldSelectUserType.providerLabel' })
+    : intl.formatMessage({ id: 'FieldSelectUserType.customerLabel' });
+
+  const bioWithLinks = richText(bio, {
+    linkify: true,
+    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+    longWordClass: css.longWord,
+  });
+
+  const listingsCount = pagination?.totalItems || 0;
+
   return (
     <div className={css.asideContent}>
-      <AvatarLarge className={css.avatar} user={user} disableProfileLink />
-      <H2 as="h1" className={css.mobileHeading}>
-        {displayName ? (
-          <FormattedMessage id="ProfilePage.mobileHeading" values={{ name: displayName }} />
+      <div className={css.asideHeader} />
+      <div className={css.asideMain}>
+        <div className={css.avatarContainer}>
+          <AvatarLarge className={css.avatar} user={user} disableProfileLink />
+          <div className={css.badge}>
+            <IconCollection name="icon_profile_badge" />
+          </div>
+        </div>
+
+        <div className={css.userInfo}>
+          <p className={css.helloText}>
+            <FormattedMessage id="ProfilePage.hello" />
+          </p>
+          <H2 as="h1" className={css.displayName}>
+            {displayName}
+          </H2>
+          <p className={css.userType}>{userTypeTranslation}</p>
+        </div>
+
+        {bio ? (
+          <div className={css.section}>
+            <h3 className={css.sectionTitle}>
+              <FormattedMessage id="ProfilePage.aboutUser" />
+            </h3>
+            <p className={css.bioText}>{bioWithLinks}</p>
+          </div>
         ) : null}
-      </H2>
-      {showLinkToProfileSettingsPage ? (
-        <>
-          <NamedLink className={css.editLinkMobile} name="ProfileSettingsPage">
-            <FormattedMessage id="ProfilePage.editProfileLinkMobile" />
-          </NamedLink>
-          <NamedLink className={css.editLinkDesktop} name="ProfileSettingsPage">
-            <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
-          </NamedLink>
-        </>
-      ) : null}
+
+        {publicData?.companyname ? (
+          <div className={css.section}>
+            <h3 className={css.sectionTitle}>
+              <FormattedMessage id="ProfilePage.companyName" />
+            </h3>
+            <p className={css.sectionValue}>{publicData.companyname}</p>
+          </div>
+        ) : null}
+
+        {publicData?.role ? (
+          <div className={css.section}>
+            <h3 className={css.sectionTitle}>
+              <FormattedMessage id="ProfilePage.role" />
+            </h3>
+            <p className={css.sectionValue}>
+              {publicData.role === 'company' ? (
+                <FormattedMessage id="SignupForm.role.company" />
+              ) : (
+                publicData.role
+              )}
+            </p>
+          </div>
+        ) : null}
+
+        <div className={css.listingsCard}>
+          <div className={css.listingsIconContainer}>
+            <IconCollection name="typeIcon" />
+          </div>
+          <span className={css.listingsCount}>{listingsCount}</span>
+          <span className={css.listingsLabel}>
+            <FormattedMessage id="ProfilePage.listings" />
+          </span>
+        </div>
+
+        {showLinkToProfileSettingsPage ? (
+          <>
+            <NamedLink className={css.editLinkMobile} name="ProfileSettingsPage">
+              <FormattedMessage id="ProfilePage.editProfileLinkMobile" />
+            </NamedLink>
+            <NamedLink className={css.editLinkDesktop} name="ProfileSettingsPage">
+              <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
+            </NamedLink>
+          </>
+        ) : null}
+      </div>
     </div>
   );
 };
@@ -214,73 +296,20 @@ export const CustomUserFields = props => {
   );
 };
 
-const categoryIconMapping = {
-  rentalvillas: 'rentals_icon',
-  villaforsale: 'sale_icon',
-  landforsale: 'icon_Land',
-};
-
-const CategoryFilter = props => {
-  const { onCategoryChange, initialValue } = props;
-  const intl = useIntl();
-
-  const categories = [
-    {
-      id: 'rentalvillas',
-      name: 'PageBuilder.SearchCTA.rentals',
-      icon: <IconCollection name="rentals_icon" />,
-    },
-    {
-      id: 'villaforsale',
-      name: 'PageBuilder.SearchCTA.forSale',
-      icon: <IconCollection name="sale_icon" />,
-    },
-    {
-      id: 'landforsale',
-      name: 'PageBuilder.SearchCTA.land',
-      icon: <IconCollection name="icon_Land" />,
-    },
-  ];
-
-  return (
-    <div className={css.categoryGrid}>
-      {categories.map(category => (
-        <div
-          key={category.id}
-          className={classNames(css.categoryCard, {
-            [css.selected]: initialValue === category.id,
-          })}
-          onClick={() => onCategoryChange(category.id)}
-        >
-          <div className={css.iconContainer}>
-            <IconCollection name={categoryIconMapping[category.id]} />
-          </div>
-          <span className={css.categoryName}>{intl.formatMessage({ id: category.name })}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 export const MainContent = props => {
   const [mounted, setMounted] = useState(false);
-  const config = useConfiguration();
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const {
     userShowError,
-    bio,
     displayName,
     listings,
     pagination,
     queryListingsError,
     reviews = [],
     queryReviewsError,
-    publicData,
-    metadata,
-    userFieldConfig,
     intl,
     hideReviews,
     userTypeRoles,
@@ -291,20 +320,7 @@ export const MainContent = props => {
   const history = useHistory();
   const location = useLocation();
 
-  const handleCategoryChange = category => {
-    const { search } = location;
-    const oldQueryParams = new URLSearchParams(search);
-    const newQueryParams = {};
-    oldQueryParams.forEach((value, key) => {
-      if (key !== 'pub_categoryLevel1') {
-        newQueryParams[key] = value;
-      }
-    });
-
-    if (category) {
-      newQueryParams.pub_categoryLevel1 = category;
-    }
-
+  const handleFilterChange = newQueryParams => {
     history.push(createResourceLocatorString('ProfilePage', routes, params, newQueryParams));
   };
 
@@ -314,17 +330,6 @@ export const MainContent = props => {
     mounted && hasMatchMedia
       ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
       : true;
-
-  const hasBio = !!bio;
-  const bioWithLinks = richText(bio, {
-    linkify: true,
-    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
-    longWordClass: css.longWord,
-  });
-
-  const listingsContainerClasses = classNames(css.listingsContainer, {
-    [css.withBioMissingAbove]: !hasBio,
-  });
 
   const paginationLinks =
     pagination && pagination.totalPages > 1 ? (
@@ -346,29 +351,13 @@ export const MainContent = props => {
   }
   return (
     <div>
-      <H2 as="h1" className={css.desktopHeading}>
-        <FormattedMessage id="ProfilePage.desktopHeading" values={{ name: displayName }} />
-      </H2>
-      {hasBio ? <p className={css.bio}>{bioWithLinks}</p> : null}
-
-      {displayName ? (
-        <CustomUserFields
-          publicData={publicData}
-          metadata={metadata}
-          userFieldConfig={userFieldConfig}
-          intl={intl}
-        />
-      ) : null}
+      <ProfileSearchFilter onFilterChange={handleFilterChange} />
 
       {hasListings ? (
-        <div className={listingsContainerClasses}>
+        <div className={css.listingsContainer}>
           <H4 as="h2" className={css.listingsTitle}>
             <FormattedMessage id="ProfilePage.listingsTitle" values={{ count: listings.length }} />
           </H4>
-          <CategoryFilter
-            onCategoryChange={handleCategoryChange}
-            initialValue={new URLSearchParams(location.search).get('pub_categoryLevel1') || ''}
-          />
           <ul className={css.listings}>
             {listings.map(l => (
               <li className={css.listing} key={l.id.uuid}>
@@ -539,17 +528,19 @@ const ProfilePage = props => {
             user={profileUser}
             showLinkToProfileSettingsPage={mounted && isCurrentUserProfile}
             displayName={displayName}
+            bio={bio}
+            publicData={publicData}
+            userFieldConfig={userFields}
+            intl={intl}
+            userTypeRoles={userTypeRoles}
+            pagination={pagination}
           />
         }
         footer={<FooterContainer />}
       >
         <MainContent
-          bio={bio}
           displayName={displayName}
           userShowError={userShowError}
-          publicData={publicData}
-          metadata={metadata}
-          userFieldConfig={userFields}
           hideReviews={hasNoViewingRightsOnPrivateMarketplace}
           intl={intl}
           userTypeRoles={userTypeRoles}

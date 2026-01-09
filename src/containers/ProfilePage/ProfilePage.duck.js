@@ -7,10 +7,73 @@ import { storableError } from '../../util/errors';
 import { hasPermissionToViewData, isUserAuthorized } from '../../util/userHelpers';
 import { validate as uuidValidate } from 'uuid';
 import { apiBaseUrl, get } from '../../util/api';
+import { convertUnitToSubUnit, unitDivisor } from '../../util/currency';
+import { constructQueryParamName, isOriginInUse } from '../../util/search';
 
 const { UUID } = sdkTypes;
 
 const RESULT_PAGE_SIZE = 24;
+
+// ================ Helper functions ================ //
+
+const priceSearchParams = (priceParam, config) => {
+  const inSubunits = value => convertUnitToSubUnit(value, unitDivisor(config.currency));
+  const values = priceParam ? priceParam.split(',') : [];
+  return priceParam && values.length === 2
+    ? {
+        price: [inSubunits(values[0]), inSubunits(values[1]) + 1].join(','),
+      }
+    : {};
+};
+
+const rentPriceSearchParams = (weeklyPriceParam, monthlyPriceParam, yearlyPriceParam) => {
+  const formatPriceRange = priceParam => {
+    if (!priceParam) {
+      return null;
+    }
+    const splitted = priceParam.split(',');
+    const min = parseInt(splitted[0]);
+    const max = parseInt(splitted[1]) + 1;
+    return [min, max].join(',');
+  };
+
+  return {
+    pub_weekprice: formatPriceRange(weeklyPriceParam),
+    pub_monthprice: formatPriceRange(monthlyPriceParam),
+    pub_yearprice: formatPriceRange(yearlyPriceParam),
+  };
+};
+
+const omitInvalidCategoryParams = (params, config) => {
+  const categoryConfig = config.search.defaultFilters?.find(f => f.schemaType === 'category');
+  const categories = config.categoryConfiguration.categories;
+  const { key: prefix, scope } = categoryConfig || {};
+  const categoryParamPrefix = constructQueryParamName(prefix, scope);
+
+  const validURLParamForCategoryData = (prefix, categories, level, params) => {
+    const levelKey = `${categoryParamPrefix}${level}`;
+    const levelValue =
+      typeof params?.[levelKey] !== 'undefined' ? `${params?.[levelKey]}` : undefined;
+    const foundCategory = categories.find(cat => cat.id === levelValue);
+    const subcategories = foundCategory?.subcategories || [];
+    return foundCategory && subcategories.length > 0
+      ? {
+          [levelKey]: levelValue,
+          ...validURLParamForCategoryData(prefix, subcategories, level + 1, params),
+        }
+      : foundCategory
+      ? { [levelKey]: levelValue }
+      : {};
+  };
+
+  const categoryKeys = validURLParamForCategoryData(prefix, categories, 1, params);
+  const nonCategoryKeys = Object.entries(params).reduce(
+    (picked, [k, v]) => (k.startsWith(categoryParamPrefix) ? picked : { ...picked, [k]: v }),
+    {}
+  );
+
+  return { ...nonCategoryKeys, ...categoryKeys };
+};
 
 // ================ Action types ================ //
 
@@ -134,14 +197,11 @@ export const queryReviewsError = e => ({
 
 // ================ Thunks ================ //
 
-export const queryUserListings = (
-  userId,
-  config,
-  ownProfileOnly = false,
-  perPage,
-  page,
-  category
-) => (dispatch, getState, sdk) => {
+export const queryUserListings = (userId, config, ownProfileOnly = false, searchParams) => (
+  dispatch,
+  getState,
+  sdk
+) => {
   dispatch(queryListingsRequest(userId));
 
   const {
@@ -150,6 +210,19 @@ export const queryUserListings = (
     variantPrefix = 'listing-card',
   } = config.layout.listingImage;
   const aspectRatio = aspectHeight / aspectWidth;
+
+  const {
+    perPage,
+    page,
+    price,
+    pub_weekprice,
+    pub_monthprice,
+    pub_yearprice,
+    ...restOfParams
+  } = searchParams;
+
+  const priceMaybe = priceSearchParams(price, config);
+  const rentPriceMaybe = rentPriceSearchParams(pub_weekprice, pub_monthprice, pub_yearprice);
 
   const queryParams = {
     include: ['author', 'images'],
@@ -163,7 +236,9 @@ export const queryUserListings = (
     ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
     perPage,
     page,
-    pub_categoryLevel1: category,
+    ...omitInvalidCategoryParams(restOfParams, config),
+    ...priceMaybe,
+    ...rentPriceMaybe,
   };
 
   const listingsPromise = ownProfileOnly
@@ -238,7 +313,15 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     latlngBounds: ['bounds'],
   });
 
-  const { page = 1, pub_categoryLevel1 } = queryParams;
+  const { page = 1, address, origin, ...rest } = queryParams;
+  const originMaybe = isOriginInUse(config) && origin ? { origin } : {};
+
+  const searchParams = {
+    ...rest,
+    ...originMaybe,
+    page,
+    perPage: RESULT_PAGE_SIZE,
+  };
 
   const loadProfileData = userId => {
     if (isPreviewForCurrentUser) {
@@ -247,9 +330,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
           // Scenario: 'active' user somehow tries to open a link for "variant" profile
           return Promise.all([
             dispatch(showUser(userId, config)),
-            dispatch(
-              queryUserListings(userId, config, false, RESULT_PAGE_SIZE, page, pub_categoryLevel1)
-            ),
+            dispatch(queryUserListings(userId, config, false, searchParams)),
             dispatch(queryUserReviews(userId)),
           ]);
         } else if (isCurrentUser(userId, currentUser)) {
@@ -283,16 +364,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     } else if (canFetchOwnProfileOnly) {
       return Promise.all([
         dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
-        dispatch(
-          queryUserListings(
-            userId,
-            config,
-            canFetchOwnProfileOnly,
-            RESULT_PAGE_SIZE,
-            page,
-            pub_categoryLevel1
-          )
-        ),
+        dispatch(queryUserListings(userId, config, canFetchOwnProfileOnly, searchParams)),
         dispatch(showUserRequest(userId)),
       ]);
     }
@@ -300,9 +372,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     return Promise.all([
       dispatch(fetchCurrentUser(fetchCurrentUserOptions)),
       dispatch(showUser(userId, config)),
-      dispatch(
-        queryUserListings(userId, config, false, RESULT_PAGE_SIZE, page, pub_categoryLevel1)
-      ),
+      dispatch(queryUserListings(userId, config, false, searchParams)),
       dispatch(queryUserReviews(userId)),
     ]);
   };
