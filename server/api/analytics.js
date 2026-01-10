@@ -26,17 +26,46 @@ const propertyId = process.env.GOOGLE_ANALYTICS_PROPERTY_ID;
 
 /**
  * GET /api/analytics/events
+ *
+ * Retrieves event counts for a specific listing or author from Google Analytics.
+ *
+ * Query parameters:
+ * - listingId (string, optional): The UUID of the listing to fetch analytics for.
+ * - authorId (string, optional): The UUID of the author to fetch analytics for.
+ * - eventNames (string, optional): Comma-separated list of event names (default: 'click_contact_owner').
+ *
+ * Response:
+ * - listingId (string, optional): The ID of the listing.
+ * - authorId (string, optional): The ID of the author.
+ * - startDate (string): The start date of the reporting period.
+ * - endDate (string): The end date of the reporting period.
+ * - eventCounts (object): A map of event names to their respective total counts.
+ * - timeSeries (array): An array of objects containing daily counts for the requested events.
+ *
+ * Example Response:
+ * {
+ *   "listingId": "550e8400-e29b-41d4-a716-446655440000",
+ *   "startDate": "30daysAgo",
+ *   "endDate": "today",
+ *   "eventCounts": {
+ *     "click_contact_owner": 15
+ *   },
+ *   "timeSeries": [
+ *     { "date": "20231001", "click_contact_owner": 2 },
+ *     { "date": "20231002", "click_contact_owner": 0 },
+ *     { "date": "20231003", "click_contact_owner": 5 }
+ *   ]
+ * }
  */
- 
 router.get('/events', async (req, res) => {
-  const { listingId } = req.query;
+  const { listingId, authorId, eventNames: eventNamesQuery } = req.query;
 
   const startDate = '30daysAgo';
   const endDate = 'today';
 
-  if (!listingId) {
+  if (!listingId && !authorId) {
     return res.status(400).send({
-      error: 'Missing required query parameters: listingId',
+      error: 'Missing required query parameters: listingId or authorId must be provided.',
     });
   }
 
@@ -48,24 +77,53 @@ router.get('/events', async (req, res) => {
     return res.status(500).send({ error: 'Google Analytics property ID is not configured.' });
   }
 
-  const eventNames = ['click_contact_owner'];
+  const eventNames = eventNamesQuery
+    ? eventNamesQuery.split(',').map(name => name.trim())
+    : ['click_contact_owner'];
 
   try {
+    const expressions = [];
+
+    if (listingId) {
+      expressions.push({
+        filter: {
+          fieldName: 'customEvent:listing_id',
+          stringFilter: { value: String(listingId) },
+        },
+      });
+    }
+
+    if (authorId) {
+      expressions.push({
+        filter: {
+          fieldName: 'customEvent:author_id',
+          stringFilter: { value: String(authorId) },
+        },
+      });
+    }
+
+    if (eventNames.length > 0) {
+      expressions.push({
+        filter: {
+          fieldName: 'eventName',
+          inListFilter: { values: eventNames },
+        },
+      });
+    }
+
     const [response] = await analyticsDataClient.runReport({
       property: `properties/${propertyId}`,
       dateRanges: [{ startDate: startDate, endDate: endDate }],
-      dimensions: [{ name: 'eventName' }, { name: 'customEvent:listing_id' }],
+      dimensions: [
+        { name: 'date' },
+        { name: 'eventName' },
+        // { name: 'customEvent:listing_id' },
+        { name: 'customEvent:author_id' },
+      ],
       metrics: [{ name: 'eventCount' }],
       dimensionFilter: {
         andGroup: {
-          expressions: [
-            {
-              filter: {
-                fieldName: 'customEvent:listing_id',
-                stringFilter: { value: String(listingId) },
-              },
-            },
-          ],
+          expressions,
         },
       },
     });
@@ -75,21 +133,38 @@ router.get('/events', async (req, res) => {
       return acc;
     }, {});
 
+    const dailyData = {};
+
     if (response.rows && response.rows.length > 0) {
       response.rows.forEach(row => {
-        const eventName = row.dimensionValues[0].value;
+        const date = row.dimensionValues[0].value;
+        const eventName = row.dimensionValues[1].value;
         const count = parseInt(row.metricValues[0].value, 10);
+
         if (eventCounts.hasOwnProperty(eventName)) {
           eventCounts[eventName] += count;
+
+          if (!dailyData[date]) {
+            dailyData[date] = { date };
+            eventNames.forEach(name => (dailyData[date][name] = 0));
+          }
+          dailyData[date][eventName] += count;
         }
       });
     }
 
+    // Convert dailyData object to a sorted array
+    const timeSeries = Object.keys(dailyData)
+      .sort()
+      .map(date => dailyData[date]);
+
     res.status(200).send({
       listingId,
+      authorId,
       startDate,
       endDate,
       eventCounts,
+      timeSeries,
     });
   } catch (error) {
     console.error(error);

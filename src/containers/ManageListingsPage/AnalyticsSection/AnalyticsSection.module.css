@@ -1,0 +1,200 @@
+@import '../../../styles/customMediaQueries.css';
+
+.analyticsContainer {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  margin: 0 24px 48px 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  width: 100%;
+
+  @media (--viewportLarge) {
+    margin: 0 auto 72px auto;
+    padding: 40px;
+    max-width: 1244px;
+  }
+}
+
+.analyticsHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 32px;
+
+  @media (--viewportLarge) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+}
+
+.analyticsTitleSection {
+  max-width: 454px;
+}
+
+.analyticsIconWrapper {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid #f74df4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  color: #f74df4;
+}
+
+.analyticsTitle {
+  font-family: 'Istok Web', sans-serif;
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1.3;
+  color: #231f20;
+  margin: 0 0 8px 0;
+}
+
+.analyticsSubtitle {
+  font-family: 'Mulish', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.3;
+  color: #5e5e5e;
+  margin: 0;
+}
+
+.analyticsTopRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.timeRangeSelector {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 14px;
+  color: #231f20;
+}
+
+.selectInput {
+  appearance: none;
+  background: #ffffff;
+  border: 0.5px solid #c4c4c4;
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-family: 'Mulish', sans-serif;
+  font-size: 14px;
+  color: #5e5e5e;
+  cursor: pointer;
+  min-width: 112px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18'%3E%3Cpath fill='%235E5E5E' d='M9 12.5l-5-5h10l-5 5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+
+  @media (--viewportMedium) {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+}
+
+.summaryCard {
+  border: 1px solid #fba6f9;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 117px;
+  position: relative;
+}
+
+.summaryValue {
+  font-family: 'Istok Web', sans-serif;
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 1.3;
+  color: #231f20;
+  margin-top: auto;
+}
+
+.summaryLabel {
+  font-family: 'Mulish', sans-serif;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #5e5e5e;
+}
+
+.cardIconBox {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(
+    138.94deg,
+    #ff3ffc 9.92%,
+    #ff98fd 45.44%,
+    #ff61fc 80.96%,
+    #d103cd 102.92%
+  );
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.chartSection {
+  background: #fafafa;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 24px;
+  height: 400px;
+  width: 100%;
+}
+
+.chartTitle {
+  font-family: 'Mulish', sans-serif;
+  font-size: 14px;
+  color: #5e5e5e;
+  margin-bottom: 20px;
+}
+
+.toggleButtonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.showLessLink {
+  color: #f74df4;
+  font-family: 'Mulish', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.loadingOverlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  color: #5e5e5e;
+}

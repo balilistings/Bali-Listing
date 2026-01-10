@@ -315,7 +315,6 @@
 
 .listingsContainer {
   composes: clearfix from global;
-  border-top: 1px solid var(--colorGrey100);
   padding-bottom: 23px;
 
   @media (--viewportMedium) {
@@ -342,34 +341,62 @@
 
 .toggleContainer {
   display: flex;
-  background-color: #f2f2f2;
-  border-radius: 8px;
-  padding: 4px;
+  align-items: center;
 }
 
 .toggleButton {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 20px;
+  gap: 4px;
+  width: 102px;
+  height: 46px;
+  border: 1px solid #f74df4;
+  border-radius: 50px;
+  background-color: var(--colorWhite);
   cursor: pointer;
-  font-family: 'Mulish', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  background-color: transparent;
-  color: #5e5e5e;
   transition: all 0.2s ease;
+
+  /* Button Text Style */
+  font-family: 'Mulish', sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 130%;
+  color: #231f20;
+
+  &:hover,
+  &.toggleButtonActive {
+    background-color: #fba6f933;
+  }
 }
 
-.toggleButtonActive {
-  background-color: var(--colorWhite);
-  color: #231f20;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.toggleIcon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+
+  & svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.toggleIconClose {
+  color: #f74df4;
+  line-height: 24px;
+  width: 24px;
 }
 
 .mapContainer {
   width: 100%;
   height: 500px;
-  border-radius: 12px;
+  border-radius: 20px;
   overflow: hidden;
   margin-bottom: 24px;
   border: 1px solid #f2f2f2;

@@ -48,6 +48,7 @@ import {
   ButtonTabNavHorizontal,
   NamedRedirect,
   ModalInMobile,
+  IconClose,
 } from '../../components';
 import Reviews from '../../components/Reviews/Reviews';
 import IconCollection from '../../components/IconCollection/IconCollection';
@@ -433,16 +434,33 @@ export const MainContent = props => {
         </H4>
         <div className={css.toggleContainer}>
           <button
-            className={classNames(css.toggleButton, { [css.toggleButtonActive]: !isMapView })}
-            onClick={() => handleFilterChange({ view: 'list' })}
+            className={css.toggleButton}
+            onClick={() => handleFilterChange({ view: isMapView ? 'list' : 'map' })}
           >
-            <FormattedMessage id="ProfilePage.mapView" />
-          </button>
-          <button
-            className={classNames(css.toggleButton, { [css.toggleButtonActive]: isMapView })}
-            onClick={() => handleFilterChange({ view: 'map' })}
-          >
-            <FormattedMessage id="ProfilePage.mapView" />
+            {isMapView ? (
+              <div className={css.toggleIcon}>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6.02344 4.06605V10.2535M10.5234 5.75355V11.941M10.9007 14.5645L14.5569 12.7368C14.8427 12.5943 15.0234 12.3018 15.0234 11.9823V2.61855C15.0234 1.99155 14.3634 1.58355 13.8024 1.86405L10.9007 3.31455C10.6629 3.4338 10.3832 3.4338 10.1462 3.31455L6.40069 1.44255C6.28355 1.384 6.15439 1.35352 6.02344 1.35352C5.89248 1.35352 5.76332 1.384 5.64619 1.44255L1.98994 3.2703C1.70344 3.41355 1.52344 3.70605 1.52344 4.0248V13.3886C1.52344 14.0156 2.18344 14.4236 2.74444 14.1431L5.64619 12.6925C5.88394 12.5733 6.16369 12.5733 6.40069 12.6925L10.1462 14.5653C10.3839 14.6838 10.6637 14.6838 10.9007 14.5653V14.5645Z"
+                    stroke="#F74DF4"
+                    strokeWidth="1"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            ) : (
+              <div className={css.toggleIconClose}>X</div>
+            )}
+            <span>
+              <FormattedMessage id="ProfilePage.mapView" />
+            </span>
           </button>
         </div>
       </div>
@@ -671,7 +689,8 @@ const ProfilePage = props => {
             <MainContent
               displayName={displayName}
               userShowError={userShowError}
-              hideReviews={hasNoViewingRightsOnPrivateMarketplace}
+              // hideReviews={hasNoViewingRightsOnPrivateMarketplace}
+              hideReviews={true}
               intl={intl}
               userTypeRoles={userTypeRoles}
               params={pathParams}

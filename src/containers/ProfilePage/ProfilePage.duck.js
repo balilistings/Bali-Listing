@@ -335,7 +335,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     ...rest,
     ...originMaybe,
     page,
-    perPage: RESULT_PAGE_SIZE,
+    // perPage: RESULT_PAGE_SIZE,
   };
 
   const loadProfileData = userId => {

@@ -17,6 +17,8 @@ export class GoogleAnalyticsHandler {
     //         and location change event happens before initial rendering.
     if (previousPath && window.gtag) {
       window.setTimeout(() => {
+        console.log('Analytics page view:', canonicalPath);
+
         window.gtag('event', 'page_view', {
           page_path: canonicalPath,
         });
