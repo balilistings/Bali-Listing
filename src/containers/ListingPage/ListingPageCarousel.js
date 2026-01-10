@@ -103,16 +103,8 @@ export const ListingPageComponent = props => {
     props.inquiryModalOpenForListingId === props.params.id
   );
   const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
     setMounted(true);
-
-    if (window.fbq) {
-      fbq('track', 'ViewContent', {
-        content_name: 'Property Listing',
-        content_category: 'Real Estate',
-      });
-    }
   }, []);
 
   const {
@@ -172,6 +164,16 @@ export const ListingPageComponent = props => {
     publicData = {},
     metadata = {},
   } = currentListing.attributes;
+
+  useEffect(() => {
+    if (window.gtag && currentListing.author?.id.uuid) {
+      window.gtag('event', 'visit_listing_page', {
+        category: 'engagement',
+        author_id: currentListing.author.id.uuid,
+        clicker: currentUser.attributes.email,
+      });
+    }
+  }, [currentListing.author?.id.uuid]);
 
   const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
   const isRentals = categoryLevel1 === 'rentalvillas';
