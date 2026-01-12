@@ -52,12 +52,14 @@ import {
 } from '../../components';
 import Reviews from '../../components/Reviews/Reviews';
 import IconCollection from '../../components/IconCollection/IconCollection';
+import IconLink from '../../components/IconLink/IconLink';
 import { createResourceLocatorString } from '../../util/routes';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
 import SearchMap from '../../containers/SearchPage/SearchMap/SearchMap';
+import { SocialMediaLink } from '../../containers/PageBuilder/Primitives/Link';
 
 import layoutCss from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation.module.css';
 import css from './ProfilePage.module.css';
@@ -94,6 +96,62 @@ const getBounds = (listings, urlBounds) => {
   return new LatLngBounds(
     new LatLng(Math.max(...lats), Math.max(...lngs)),
     new LatLng(Math.min(...lats), Math.min(...lngs))
+  );
+};
+
+const ShareProfile = () => {
+  const [copyStatus, setCopyStatus] = useState('idle');
+
+  if (typeof window === 'undefined') return null;
+
+  const currentUrl = window.location.href;
+
+  const copyLink = async () => {
+    if (copyStatus !== 'idle') return;
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      setCopyStatus('success');
+    } catch (error) {
+      setCopyStatus('error');
+    } finally {
+      setTimeout(() => setCopyStatus('idle'), 2000);
+    }
+  };
+
+  const getTooltipMessage = () => {
+    if (copyStatus === 'success') return 'Link copied!';
+    if (copyStatus === 'error') return 'Failed to copy';
+    return null;
+  };
+
+  return (
+    <div className={css.shareProfile}>
+      <h3 className={css.shareProfileTitle}>
+        <FormattedMessage id="ProfilePage.shareProfileTitle" />
+      </h3>
+      <div className={css.shareIcons}>
+        <SocialMediaLink
+          platform="facebook"
+          className={css.shareIconLink}
+          rootClassName={css.shareIconLink}
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+        />
+        <SocialMediaLink
+          platform="twitter"
+          className={css.shareIconLink}
+          rootClassName={css.shareIconLink}
+          href={`https://x.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`}
+        />
+        <button className={css.copyButton} onClick={copyLink}>
+          {copyStatus !== 'idle' && (
+            <div className={copyStatus === 'success' ? css.successTooltip : css.errorTooltip}>
+              {getTooltipMessage()}
+            </div>
+          )}
+          <IconLink />
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -196,6 +254,8 @@ export const AsideContent = props => {
             </NamedLink>
           </>
         ) : null}
+
+        <ShareProfile />
       </div>
     </div>
   );

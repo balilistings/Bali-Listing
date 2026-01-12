@@ -693,6 +693,7 @@
   "ProductOrderForm.selectQuantityOption": "Выбрать...",
   "ProductOrderForm.shippingOption": "Доставка",
   "ProfilePage.desktopHeading": "Здравствуйте, я {name}.",
+  "ProfilePage.shareProfileTitle": "Поделиться профилем",
   "ProfilePage.hello": "Привет, я",
   "ProfilePage.aboutUser": "О пользователе",
   "ProfilePage.companyName": "Название компании",
