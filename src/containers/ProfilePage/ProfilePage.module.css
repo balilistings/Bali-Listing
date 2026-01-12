@@ -400,6 +400,11 @@
   overflow: hidden;
   margin-bottom: 24px;
   border: 1px solid #f2f2f2;
+  margin-top: 24px;
+
+  & > div {
+    height: 100%;
+  }
 }
 
 .mapWrapper {

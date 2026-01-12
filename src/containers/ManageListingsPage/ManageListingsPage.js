@@ -109,7 +109,6 @@ export const ManageListingsPageComponent = props => {
   const [listingMenuOpen, setListingMenuOpen] = useState(null);
   const [discardDraftModalOpen, setDiscardDraftModalOpen] = useState(null);
   const [discardDraftModalId, setDiscardDraftModalId] = useState(null);
-  const [showAnalytics, setShowAnalytics] = useState(true);
   const history = useHistory();
   const routeConfiguration = useRouteConfiguration();
   const config = useConfiguration();
@@ -228,7 +227,9 @@ export const ManageListingsPageComponent = props => {
         {queryInProgress ? loadingResults : null}
         {queryListingsError ? queryError : null}
 
-        <AnalyticsSection currentUser={currentUser} />
+        {config.analytics.profilePageAnalyticsEnabled ? (
+          <AnalyticsSection currentUser={currentUser} />
+        ) : null}
 
         <div className={css.listingPanel}>
           <Heading listingsAreLoaded={listingsAreLoaded} pagination={pagination} />

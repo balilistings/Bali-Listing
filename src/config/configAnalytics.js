@@ -20,3 +20,5 @@ export const plausibleDomains = process.env.REACT_APP_PLAUSIBLE_DOMAINS;
 
 export const facebookPixelId = process.env.REACT_APP_FACEBOOK_PIXEL_ID;
 
+export const profilePageAnalyticsEnabled = process.env.REACT_APP_PROFILE_PAGE_ANALYTICS === 'true';
+

@@ -58,8 +58,13 @@ const propertyId = process.env.GOOGLE_ANALYTICS_PROPERTY_ID;
  * }
  */
 router.get('/events', async (req, res) => {
-  const { listingId, authorId, eventNames: eventNamesQuery } = req.query;
-
+  const { listingId, eventNames: eventNamesQuery } = req.query;
+  const authorId = req.locals.currentUser.id;
+  if (!authorId) {
+    return res.status(400).send({
+      error: 'Missing required query parameters: authorId must be provided.',
+    });
+  }
   const startDate = '30daysAgo';
   const endDate = 'today';
 
@@ -79,19 +84,10 @@ router.get('/events', async (req, res) => {
 
   const eventNames = eventNamesQuery
     ? eventNamesQuery.split(',').map(name => name.trim())
-    : ['click_contact_owner'];
+    : ['click_contact_owner', 'visit_listing_page'];
 
   try {
     const expressions = [];
-
-    if (listingId) {
-      expressions.push({
-        filter: {
-          fieldName: 'customEvent:listing_id',
-          stringFilter: { value: String(listingId) },
-        },
-      });
-    }
 
     if (authorId) {
       expressions.push({
@@ -114,12 +110,7 @@ router.get('/events', async (req, res) => {
     const [response] = await analyticsDataClient.runReport({
       property: `properties/${propertyId}`,
       dateRanges: [{ startDate: startDate, endDate: endDate }],
-      dimensions: [
-        { name: 'date' },
-        { name: 'eventName' },
-        // { name: 'customEvent:listing_id' },
-        { name: 'customEvent:author_id' },
-      ],
+      dimensions: [{ name: 'date' }, { name: 'eventName' }, { name: 'customEvent:author_id' }],
       metrics: [{ name: 'eventCount' }],
       dimensionFilter: {
         andGroup: {
@@ -158,11 +149,11 @@ router.get('/events', async (req, res) => {
       .sort()
       .map(date => dailyData[date]);
 
+    res.set('Cache-Control', 'private, max-age=3600');
+    res.set('Vary', 'Cookie');
     res.status(200).send({
-      listingId,
+      // listingId,
       authorId,
-      startDate,
-      endDate,
       eventCounts,
       timeSeries,
     });

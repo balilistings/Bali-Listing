@@ -437,7 +437,7 @@ export const MainContent = props => {
             className={css.toggleButton}
             onClick={() => handleFilterChange({ view: isMapView ? 'list' : 'map' })}
           >
-            {isMapView ? (
+            {!isMapView ? (
               <div className={css.toggleIcon}>
                 <svg
                   width="16"

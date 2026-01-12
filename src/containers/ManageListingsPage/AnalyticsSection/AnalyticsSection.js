@@ -14,36 +14,15 @@ import queryString from 'query-string';
 import { FormattedMessage, useIntl } from '../../../util/reactIntl';
 import { get } from '../../../util/api';
 import {
-  IconAnalyticsFire,
   IconAnalyticsClick,
   IconAnalyticsChart,
   IconAnalyticsTitle,
 } from '../../../components/IconAnalytics/IconAnalytics';
 import css from './AnalyticsSection.module.css';
 
-const generateDummyTimeSeries = days => {
-  const dummy = [];
-  const now = new Date();
-  for (let i = days - 1; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(now.getDate() - i);
-    // Format as YYYYMMDD for consistency with backend
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    dummy.push({
-      date: `${yyyy}${mm}${dd}`,
-      click_contact_owner: Math.floor(Math.random() * 5) + 2,
-      page_view: Math.floor(Math.random() * 20) + 10,
-    });
-  }
-  return dummy;
-};
-
 const AnalyticsSection = ({ currentUser }) => {
   const [data, setData] = useState([]);
   const [summary, setSummary] = useState({
-    totalListings: 1000, // Dummy as requested
     totalContactClicks: 0,
     totalListingViews: 0,
   });
@@ -61,8 +40,7 @@ const AnalyticsSection = ({ currentUser }) => {
         setLoading(true);
 
         const queryParams = {
-          authorId: currentUser.id.uuid,
-          eventNames: 'click_contact_owner,page_view',
+          eventNames: 'click_contact_owner,visit_listing_page',
           // Note: Backend currently defaults to 30 days.
           // If the backend was updated to support custom ranges, we would pass it here.
         };
@@ -72,17 +50,11 @@ const AnalyticsSection = ({ currentUser }) => {
 
         let { eventCounts, timeSeries } = response;
 
-        // Use dummy data if timeSeries is empty
-        if (!timeSeries || timeSeries.length === 0) {
-          timeSeries = generateDummyTimeSeries(30);
-          eventCounts = {
-            click_contact_owner: timeSeries.reduce((sum, d) => sum + d.click_contact_owner, 0),
-            page_view: timeSeries.reduce((sum, d) => sum + d.page_view, 0),
-          };
-        }
+        // If no timeSeries, default to empty array
+        const safeTimeSeries = timeSeries || [];
 
         // Filter data based on selected range (7 or 30 days)
-        const filteredTimeSeries = timeSeries.slice(-range);
+        const filteredTimeSeries = safeTimeSeries.slice(-range);
 
         // Process timeSeries into daily data points
         const chartData = filteredTimeSeries.map(item => {
@@ -94,8 +66,7 @@ const AnalyticsSection = ({ currentUser }) => {
           return {
             date: intl.formatDate(dateObj, { day: 'numeric', month: 'short' }),
             contactClicks: item.click_contact_owner || 0,
-            listingViews: item.page_view || 0,
-            totalListings: 10,
+            listingViews: item.visit_listing_page || 0,
           };
         });
 
@@ -107,7 +78,10 @@ const AnalyticsSection = ({ currentUser }) => {
             (sum, d) => sum + (d.click_contact_owner || 0),
             0
           ),
-          totalListingViews: filteredTimeSeries.reduce((sum, d) => sum + (d.page_view || 0), 0),
+          totalListingViews: filteredTimeSeries.reduce(
+            (sum, d) => sum + (d.visit_listing_page || 0),
+            0
+          ),
         };
 
         setSummary(prev => ({
@@ -170,14 +144,6 @@ const AnalyticsSection = ({ currentUser }) => {
           <div className={css.summaryCards}>
             <div className={css.summaryCard}>
               <div className={css.cardIconBox}>
-                <IconAnalyticsFire />
-              </div>
-              <div className={css.summaryValue}>{summary.totalListings}</div>
-              <div className={css.summaryLabel}>Total Listings</div>
-            </div>
-
-            <div className={css.summaryCard}>
-              <div className={css.cardIconBox}>
                 <IconAnalyticsClick />
               </div>
               <div className={css.summaryValue}>{summary.totalContactClicks}</div>
@@ -223,15 +189,6 @@ const AnalyticsSection = ({ currentUser }) => {
                   height={36}
                   iconType="circle"
                   wrapperStyle={{ paddingTop: '20px' }}
-                />
-                <Line
-                  name="Total Listings"
-                  type="monotone"
-                  dataKey="totalListings"
-                  stroke="#FF3FFC"
-                  strokeWidth={2}
-                  dot={false}
-                  activeDot={{ r: 8 }}
                 />
                 <Line
                   name="Total contact clicks"
