@@ -68,6 +68,8 @@ import SectionTextMaybe from './SectionTextMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
 import SectionYoutubeVideoMaybe from './SectionYoutubeVideoMaybe';
 import ProfileSearchFilter from './ProfileSearchFilter/ProfileSearchFilter';
+import ProfileSearchFilterMobile from './ProfileSearchFilterMobile/ProfileSearchFilterMobile';
+import ProfileCustomFilters from './ProfileSearchFilterMobile/ProfileCustomFilters';
 import ListingCard from '../../components/ListingCard/ListingCard';
 import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 
@@ -388,6 +390,7 @@ export const CustomUserFields = props => {
 
 export const MainContent = props => {
   const [mounted, setMounted] = useState(false);
+  const [openCustomFilters, setOpenCustomFilters] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -415,6 +418,12 @@ export const MainContent = props => {
   const queryParams = parse(location.search, {
     latlngBounds: ['bounds'],
   });
+
+  const [currentQueryParams, setCurrentQueryParams] = useState(queryParams);
+
+  useEffect(() => {
+    setCurrentQueryParams(queryParams);
+  }, [location.search]);
 
   const handleFilterChange = useCallback(
     newQueryParams => {
@@ -488,44 +497,75 @@ export const MainContent = props => {
 
   return (
     <div>
-      <div className={css.mainContentHeader}>
-        <H4 as="h2" className={css.listingsTitle}>
-          <FormattedMessage id="ProfilePage.listingsTitleNoCount" />
-        </H4>
-        <div className={css.toggleContainer}>
-          <button
-            className={css.toggleButton}
-            onClick={() => handleFilterChange({ view: isMapView ? 'list' : 'map' })}
-          >
-            {!isMapView ? (
-              <div className={css.toggleIcon}>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M6.02344 4.06605V10.2535M10.5234 5.75355V11.941M10.9007 14.5645L14.5569 12.7368C14.8427 12.5943 15.0234 12.3018 15.0234 11.9823V2.61855C15.0234 1.99155 14.3634 1.58355 13.8024 1.86405L10.9007 3.31455C10.6629 3.4338 10.3832 3.4338 10.1462 3.31455L6.40069 1.44255C6.28355 1.384 6.15439 1.35352 6.02344 1.35352C5.89248 1.35352 5.76332 1.384 5.64619 1.44255L1.98994 3.2703C1.70344 3.41355 1.52344 3.70605 1.52344 4.0248V13.3886C1.52344 14.0156 2.18344 14.4236 2.74444 14.1431L5.64619 12.6925C5.88394 12.5733 6.16369 12.5733 6.40069 12.6925L10.1462 14.5653C10.3839 14.6838 10.6637 14.6838 10.9007 14.5653V14.5645Z"
-                    stroke="#F74DF4"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            ) : (
-              <div className={css.toggleIconClose}>X</div>
-            )}
-            <span>
-              <FormattedMessage id="ProfilePage.mapView" />
-            </span>
-          </button>
-        </div>
-      </div>
+      {isMobileLayout ? (
+        <>
+          <ProfileSearchFilterMobile
+            resultsCount={pagination?.totalItems}
+            isMapView={isMapView}
+            onToggleMapView={() => handleFilterChange({ view: isMapView ? 'list' : 'map' })}
+            onOpenCustomFilters={() => setOpenCustomFilters(true)}
+          />
+          {openCustomFilters && (
+            <ProfileCustomFilters
+              onClose={() => setOpenCustomFilters(false)}
+              currentQueryParams={currentQueryParams}
+              onlyUpdateCurrentQueryParams={params => {
+                setCurrentQueryParams(prev => ({ ...prev, ...params }));
+              }}
+              onUpdateCurrentQueryParams={params => {
+                const newParams = { ...currentQueryParams, ...params };
+                setCurrentQueryParams(newParams);
+                handleFilterChange(newParams);
+              }}
+              onReset={() => {
+                handleFilterChange({ pub_categoryLevel1: 'rentalvillas' });
+              }}
+              resultsCount={pagination?.totalItems}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <div className={css.mainContentHeader}>
+            <H4 as="h2" className={css.listingsTitle}>
+              <FormattedMessage id="ProfilePage.listingsTitleNoCount" />
+            </H4>
+            <div className={css.toggleContainer}>
+              <button
+                className={css.toggleButton}
+                onClick={() => handleFilterChange({ view: isMapView ? 'list' : 'map' })}
+              >
+                {!isMapView ? (
+                  <div className={css.toggleIcon}>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6.02344 4.06605V10.2535M10.5234 5.75355V11.941M10.9007 14.5645L14.5569 12.7368C14.8427 12.5943 15.0234 12.3018 15.0234 11.9823V2.61855C15.0234 1.99155 14.3634 1.58355 13.8024 1.86405L10.9007 3.31455C10.6629 3.4338 10.3832 3.4338 10.1462 3.31455L6.40069 1.44255C6.28355 1.384 6.15439 1.35352 6.02344 1.35352C5.89248 1.35352 5.76332 1.384 5.64619 1.44255L1.98994 3.2703C1.70344 3.41355 1.52344 3.70605 1.52344 4.0248V13.3886C1.52344 14.0156 2.18344 14.4236 2.74444 14.1431L5.64619 12.6925C5.88394 12.5733 6.16369 12.5733 6.40069 12.6925L10.1462 14.5653C10.3839 14.6838 10.6637 14.6838 10.9007 14.5653V14.5645Z"
+                        stroke="#F74DF4"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className={css.toggleIconClose}>X</div>
+                )}
+                <span>
+                  <FormattedMessage id="ProfilePage.mapView" />
+                </span>
+              </button>
+            </div>
+          </div>
 
-      <ProfileSearchFilter onFilterChange={handleFilterChange} />
+          <ProfileSearchFilter onFilterChange={handleFilterChange} />
+        </>
+      )}
 
       {isMapView ? (
         <ModalInMobile
