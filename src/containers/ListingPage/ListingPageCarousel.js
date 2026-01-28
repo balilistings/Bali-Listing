@@ -170,7 +170,7 @@ export const ListingPageComponent = props => {
       window.gtag('event', 'visit_listing_page', {
         category: 'engagement',
         author_id: currentListing.author.id.uuid,
-        clicker: currentUser.attributes.email,
+        clicker: currentUser?.attributes.email || 'anonymous',
       });
     }
   }, [currentListing.author?.id.uuid]);
