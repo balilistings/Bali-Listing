@@ -102,7 +102,9 @@ const ShareModal = ({ isOpen, onClose }) => {
             <div className={css.shareOptionIcon}>
               <IconLink />
             </div>
-            <span className={css.shareOptionLabel}>Copy Link</span>
+            <span className={css.shareOptionLabel}>
+              <FormattedMessage id="ListingPage.share.copyLink" />
+            </span>
           </button>
         </div>
       </div>

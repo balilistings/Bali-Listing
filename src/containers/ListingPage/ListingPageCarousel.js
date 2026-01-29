@@ -170,7 +170,7 @@ export const ListingPageComponent = props => {
       window.gtag('event', 'visit_listing_page', {
         category: 'engagement',
         author_id: currentListing.author.id.uuid,
-        clicker: currentUser.attributes.email,
+        clicker: currentUser?.attributes.email || 'anonymous',
       });
     }
   }, [currentListing.author?.id.uuid]);
@@ -178,7 +178,6 @@ export const ListingPageComponent = props => {
   const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
   const isRentals = categoryLevel1 === 'rentalvillas';
   const isVillaSale = categoryLevel1 === 'villaforsale';
-
 
   // If a /pending-approval URL is shared, the UI requires
   // authentication and attempts to fetch the listing from own
@@ -376,7 +375,16 @@ export const ListingPageComponent = props => {
                 }}
                 className={css.breadCrumbLink}
               >
-                {isRentals ? 'Rentals' : isVillaSale ? 'For Sale' : 'Land'}
+                <FormattedMessage
+                  id={
+                    isRentals
+                      ? 'PageBuilder.SearchCTA.rentals'
+                      : isVillaSale
+                      ? 'PageBuilder.SearchCTA.forSale'
+                      : 'PageBuilder.SearchCTA.land'
+                  }
+                />
+                {/* {isRentals ? 'Rentals' : isVillaSale ? 'For Sale' : 'Land'} */}
               </NamedLink>
               <span className={css.breadCrumbSeparator}>
                 <svg
@@ -394,7 +402,9 @@ export const ListingPageComponent = props => {
                   />
                 </svg>
               </span>
-              <span className={css.breadCrumbLinkActive}>Details Page</span>
+              <span className={css.breadCrumbLinkActive}>
+                <FormattedMessage id="Breadcrumb.detailPage" />
+              </span>
             </div>
             {mounted && currentListing.id && noPayoutDetailsSetWithOwnListing ? (
               <ActionBarMaybe
@@ -452,7 +462,9 @@ export const ListingPageComponent = props => {
             </div>
             <div className={css.descriptionContainer}>
               <div id="description">
-                <h4 className={css.descriptionHeading}>{intl.formatMessage({ id: 'ListingPage.description' })}</h4>
+                <h4 className={css.descriptionHeading}>
+                  {intl.formatMessage({ id: 'ListingPage.description' })}
+                </h4>
                 <div id="bottomDescription" />
                 <SectionTextMaybe text={description} showAsIngress />
               </div>
@@ -482,7 +494,7 @@ export const ListingPageComponent = props => {
             )}
 
             <div id="rentalTerms">
-              <SectionTerms publicData={publicData} intl={intl}/>
+              <SectionTerms publicData={publicData} intl={intl} />
             </div>
 
             <SectionAuthorMaybe
@@ -699,11 +711,6 @@ const mapDispatchToProps = dispatch => ({
 // lifecycle hook.
 //
 // See: https://github.com/ReactTraining/react-router/issues/4671
-const ListingPage = compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(EnhancedListingPage);
+const ListingPage = compose(connect(mapStateToProps, mapDispatchToProps))(EnhancedListingPage);
 
 export default ListingPage;

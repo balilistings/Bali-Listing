@@ -19,27 +19,70 @@ import { updateProfile } from '../../../ProfileSettingsPage/ProfileSettingsPage.
 import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
 import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useLocale } from '../../../../context/localeContext';
 import ImageSlider from '../../../../components/ImageSlider/ImageSlider';
+import { get } from '../../../../util/api';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
-const formatPriceInMillions = actualPrice => {
+const formatPriceInMillions = (actualPrice, locale = 'en') => {
   if (!actualPrice) return null;
 
   // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
     const millions = actualPrice / 1000000;
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
     // If it's a whole number, show without decimal
     if (millions % 1 === 0) {
-      return `${millions}M`;
+      return `${millions}${suffix}`;
     } else {
       // Show with one decimal place for partial millions
-      return `${millions.toFixed(1)}M`;
+      return `${millions.toFixed(1)}${suffix}`;
     }
   }
 
   // For smaller amounts, show the actual price
   return `${actualPrice.toLocaleString()}`;
+};
+
+const ProviderInfo = ({ author, intl }) => {
+  const [mounted, setMounted] = useState(false);
+  const [authorSlug, setAuthorSlug] = useState(null);
+
+  useEffect(() => {
+    setMounted(true);
+    const fetchAuthorSlug = async () => {
+      const userId = author?.id?.uuid;
+      if (!userId) return;
+
+      try {
+        const response = await get(`/api/users/${userId}/slug`);
+        setAuthorSlug(response.slug);
+      } catch (err) {
+        console.error('Failed to fetch author slug:', err);
+      }
+    };
+
+    fetchAuthorSlug();
+  }, [author?.id?.uuid]);
+
+  if (!mounted) {
+    return null;
+  }
+
+  return (
+    <NamedLink
+      className={styles.listedBy}
+      name={authorSlug ? 'ProfilePageSlug' : 'ProfilePage'}
+      params={{ id: authorSlug ? authorSlug : author.id.uuid }}
+    >
+      <span className={styles.listedBy}>
+        {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
+        <span className={styles.listedByName}>{author.attributes.profile.displayName}</span>
+      </span>
+    </NamedLink>
+  );
 };
 
 export const Icon = ({ type }) => {
@@ -318,9 +361,16 @@ const PropertyCards = () => {
   const tabRefs = useRef([]);
   const dispatch = useDispatch();
   const intl = useIntl();
+  const { locale } = useLocale();
   const history = useHistory();
   const routeLocation = useLocation();
   const routes = useRouteConfiguration();
+
+  useEffect(() => {
+    if (!listings?.length) {
+      dispatch(fetchFeaturedListings());
+    }
+  }, [dispatch]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -474,18 +524,7 @@ const PropertyCards = () => {
                         {!!Freehold && (
                           <span className={styles.tag}>{capitaliseFirstLetter(Freehold)}</span>
                         )}
-                        <NamedLink
-                          className={styles.listedBy}
-                          name="ProfilePage"
-                          params={{ id: author.id.uuid }}
-                        >
-                          <span className={styles.listedBy}>
-                            {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
-                            <span className={styles.listedByName}>
-                              {author.attributes.profile.displayName}
-                            </span>
-                          </span>
-                        </NamedLink>
+                        <ProviderInfo author={author} intl={intl} />
                       </div>
                       <div className={styles.title}>{title}</div>
                     </div>
@@ -535,13 +574,17 @@ const PropertyCards = () => {
                           )}
                           {!!landzone && isLand && (
                             <span className={styles.iconItem}>
-                              <Icon type="zone" /> {landzone} Zone
+                              <Icon type="zone" />
+                              {intl.formatMessage({
+                                id: `ListingCard.${landzone.toLowerCase()}zone`,
+                              })}
                             </span>
                           )}
                         </div>
                         <div className={styles.price}>
                           <span className={styles.priceValue}>
-                            {formatPriceInMillions(price)} {needPriceConversion ? 'USD' : 'IDR'}
+                            {formatPriceInMillions(price, locale)}{' '}
+                            {needPriceConversion ? 'USD' : 'IDR'}
                           </span>
                           {isRentals && (
                             <span className={styles.priceUnit}>

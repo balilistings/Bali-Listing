@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -11,6 +11,7 @@ import { useIntl } from '../../util/reactIntl';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { checkIsProvider } from '../../util/userHelpers';
+import { get } from '../../util/api';
 
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
@@ -45,18 +46,20 @@ const getBestImageUrl = img => {
 };
 
 // Format price in millions if appropriate
-export const formatPriceInMillions = actualPrice => {
+export const formatPriceInMillions = (actualPrice, locale = 'en') => {
   if (!actualPrice) return null;
 
   // Check if the price is in millions (1,000,000 or more)
   if (actualPrice >= 1000000) {
     const millions = actualPrice / 1000000;
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
     // If it's a whole number, show without decimal
     if (millions % 1 === 0) {
-      return `${millions}M`;
+      return `${millions}${suffix}`;
     } else {
       // Show with one decimal place for partial millions
-      return `${millions.toFixed(1)}M`;
+      return `${millions.toFixed(1)}${suffix}`;
     }
   }
 
@@ -65,13 +68,15 @@ export const formatPriceInMillions = actualPrice => {
 };
 
 // Helper function to format price with currency, handling millions appropriately
-export const formatPriceWithCurrency = (actualPrice, currency = 'IDR') => {
+export const formatPriceWithCurrency = (actualPrice, currency = 'IDR', locale = 'en') => {
   if (actualPrice) {
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
     // Check if the price is greater than 1 million
     if (actualPrice > 1_000_000) {
       const millions = Number(actualPrice) / 1_000_000;
       const formattedMillions = millions % 1 === 0 ? Math.trunc(millions) : millions.toFixed(1);
-      return `${currency} ${formattedMillions}M`;
+      return `${currency} ${formattedMillions}${suffix}`;
     } else {
       // For smaller amounts, show the actual price with currency
       return `${currency} ${Number(actualPrice).toLocaleString()}`;
@@ -93,6 +98,8 @@ export const checkPriceParams = () => {
 
 const PriceMaybe = props => {
   const { price, publicData, config, isRentals, intl } = props;
+  const locale = props.intl.locale;
+
   const USDConversionRate = useSelector(state => state.currency.conversionRate?.USD);
   const selectedCurrency = useSelector(state => state.currency.selectedCurrency);
   const needPriceConversion = selectedCurrency === 'USD';
@@ -151,11 +158,14 @@ const PriceMaybe = props => {
       return `$${Math.round(priceValue).toLocaleString('en-US')}`;
     }
 
+    // Determine the suffix based on locale
+    const suffix = locale === 'id' ? 'Jt' : 'M';
+
     // IDR logic
     if (priceValue >= 1000000) {
       const millions = priceValue / 1000000;
       const value = millions % 1 === 0 ? millions : millions.toFixed(1);
-      return `${value}M IDR`;
+      return `${value}${suffix} IDR`;
     }
     return `${priceValue.toLocaleString()} IDR`;
   };
@@ -179,6 +189,8 @@ const PriceMaybe = props => {
 export const ListingCard = props => {
   const config = useConfiguration();
   const intl = props.intl || useIntl();
+  const [authorSlug, setAuthorSlug] = useState(null);
+
   const {
     className,
     rootClassName,
@@ -197,6 +209,23 @@ export const ListingCard = props => {
   const { title = '', price: p, publicData, metadata } = currentListing.attributes;
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
+
+  useEffect(() => {
+    const fetchAuthorSlug = async () => {
+      const userId = author?.id?.uuid;
+      if (!userId) return;
+
+      try {
+        const response = await get(`/api/users/${userId}/slug`);
+        setAuthorSlug(response.slug);
+      } catch (err) {
+        console.error('Failed to fetch author slug:', err);
+      }
+    };
+
+    fetchAuthorSlug();
+  }, [author?.id?.uuid]);
+
   const {
     pricee,
     location,
@@ -274,7 +303,11 @@ export const ListingCard = props => {
           ))}
           {!!Freehold && <span className={css.tag}>{capitaliseFirstLetter(Freehold)}</span>}
           {author?.id?.uuid && (
-            <NamedLink className={css.listedBy} name="ProfilePage" params={{ id: author.id.uuid }}>
+            <NamedLink
+              className={css.listedBy}
+              name={authorSlug ? 'ProfilePageSlug' : 'ProfilePage'}
+              params={{ id: authorSlug ? authorSlug : author.id.uuid }}
+            >
               <span className={css.listedBy}>
                 {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
                 <span className={css.listedByName}>{author.attributes.profile.displayName}</span>
@@ -329,7 +362,8 @@ export const ListingCard = props => {
                 )}
                 {!!landzone && isLand && (
                   <span className={css.iconItem}>
-                    <Icon type="zone" /> {landzone} Zone
+                    <Icon type="zone" />
+                    {intl.formatMessage({ id: `ListingCard.${landzone.toLowerCase()}zone` })}
                   </span>
                 )}
               </div>

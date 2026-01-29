@@ -1,5 +1,6 @@
 import React from 'react';
 import css from './CounterSelector.module.css';
+import { FormattedMessage } from 'react-intl';
 
 function CounterSelector({
   title,
@@ -30,7 +31,7 @@ function CounterSelector({
       <div className={css.header}>
         <h3 className={css.title}>{title}</h3>
         <button onClick={onReset} className={css.resetButton}>
-          Reset
+          <FormattedMessage id="CustomFilters.reset" />
         </button>
       </div>
 

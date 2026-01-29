@@ -165,6 +165,8 @@ const TopbarComponent = props => {
     config,
     routeConfiguration,
     openCustomFilters,
+    isMobileMenuOpen,
+    onManageMobileMenuOpen,
   } = props;
 
   const { SUPPORTED_LOCALES } = useLocale();
@@ -239,7 +241,7 @@ const TopbarComponent = props => {
     ? 'sales'
     : 'orders';
 
-  const { mobilemenu, mobilesearch, keywords, address, origin, bounds } = parse(location.search, {
+  const { mobilesearch, keywords, address, origin, bounds } = parse(location.search, {
     latlng: ['origin'],
     latlngBounds: ['bounds'],
   });
@@ -256,7 +258,7 @@ const TopbarComponent = props => {
   const isMobileLayout = hasMatchMedia
     ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
     : true;
-  const isMobileMenuOpen = isMobileLayout && mobilemenu === 'open';
+  const isMobileMenuOpenCheck = isMobileLayout && isMobileMenuOpen;
   const isMobileSearchOpen = isMobileLayout && mobilesearch === 'open';
 
   const mobileMenu = (
@@ -269,6 +271,7 @@ const TopbarComponent = props => {
       customLinks={customLinks}
       showCreateListingsLink={showCreateListingsLink}
       inboxTab={topbarInboxTab}
+      config={config}
     />
   );
 
@@ -320,6 +323,16 @@ const TopbarComponent = props => {
     <div className={css.searchMenu} />
   );
 
+  const modalContainerClasses = classNames(
+    css.modalContainer,
+    isMobileMenuOpenCheck && css.modalContainerOpen
+  );
+
+  const scrollLayerClasses = classNames(
+    css.modalScrollLayer,
+    isMobileMenuOpenCheck && css.modalScrollLayerOpen
+  );
+
   return (
     <div className={classes}>
       <LimitedAccessBanner
@@ -349,7 +362,10 @@ const TopbarComponent = props => {
           )} */}
           <Button
             rootClassName={css.menu}
-            onClick={() => redirectToURLWithModalState(history, location, 'mobilemenu')}
+            onClick={isMobileMenuOpenCheck
+              ? () => onManageMobileMenuOpen(false)
+              : () => onManageMobileMenuOpen(true)
+            }
             title={intl.formatMessage({ id: 'Topbar.menuIcon' })}
           >
             <MenuIcon className={css.menuIcon} />
@@ -383,11 +399,14 @@ const TopbarComponent = props => {
       </div>
       <Modal
         id="TopbarMobileMenu"
-        containerClassName={css.modalContainer}
-        isOpen={isMobileMenuOpen}
-        onClose={() => redirectToURLWithoutModalState(history, location, 'mobilemenu')}
-        usePortal
+        className={css.modal}
+        containerClassName={modalContainerClasses}
+        scrollLayerClassName={scrollLayerClasses}
+        isOpen={isMobileMenuOpenCheck}
+        onClose={() => onManageMobileMenuOpen(false)}
         onManageDisableScrolling={onManageDisableScrolling}
+        isClosedClassName={css.isClosed}
+        showCloseButton={false}
       >
         {authInProgress ? null : mobileMenu}
       </Modal>

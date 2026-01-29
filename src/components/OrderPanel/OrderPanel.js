@@ -793,7 +793,9 @@ const OrderPanel = props => {
 
             <div className={css.priceContainerWrapper}>
               <div>
-                <h4 className={css.priceHeading}>Price</h4>
+                <h4 className={css.priceHeading}>
+                  {intl.formatMessage({ id: 'OrderPanel.priceTitle' })}
+                </h4>
                 <PriceMaybe
                   price={hideTabs ? price : selectedTab?.price}
                   publicData={publicData}

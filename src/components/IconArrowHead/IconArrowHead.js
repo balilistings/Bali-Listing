@@ -23,14 +23,34 @@ const SIZE_SMALL = 'small';
  */
 const IconArrowHead = props => {
   const { className, rootClassName, direction, size = SIZE_SMALL } = props;
-  const classes = classNames(rootClassName || css.root, className);
-
   const isRight = direction === DIRECTION_RIGHT;
   const isLeft = direction === DIRECTION_LEFT;
   const isDown = direction === DIRECTION_DOWN;
   const isUp = direction === DIRECTION_UP;
   const isBig = size === SIZE_BIG;
   const isSmall = size === SIZE_SMALL;
+
+  if ((isDown || isUp) && isSmall) {
+    const arrowClasses = classNames(rootClassName || css.root, className, css.arrow, {
+      [css.up]: isUp,
+    });
+    return (
+      <svg
+        className={arrowClasses}
+        width="13"
+        height="9"
+        viewBox="0 0 13 9"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M6.03 6.805c.26.26.68.26.94 0l5.335-5.333a.668.668 0 0 0-.943-.943L6.5 5.39 1.638.53a.666.666 0 1 0-.943.942L6.03 6.805z"
+          fillRule="evenodd"
+        />
+      </svg>
+    );
+  }
+
+  const classes = classNames(rootClassName || css.root, className);
 
   if (isRight && isSmall) {
     return (
@@ -58,36 +78,6 @@ const IconArrowHead = props => {
       >
         <path
           d="M1.195 6.03c-.26.26-.26.68 0 .94l5.333 5.335c.262.26.683.26.943 0 .262-.26.262-.683 0-.943L2.61 6.5l4.86-4.862c.262-.26.262-.683 0-.943-.26-.26-.68-.26-.942 0L1.195 6.03z"
-          fillRule="evenodd"
-        />
-      </svg>
-    );
-  } else if (isDown && isSmall) {
-    return (
-      <svg
-        className={classes}
-        width="13"
-        height="9"
-        viewBox="0 0 13 9"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M6.03 6.805c.26.26.68.26.94 0l5.335-5.333a.668.668 0 0 0-.943-.943L6.5 5.39 1.638.53a.666.666 0 1 0-.943.942L6.03 6.805z"
-          fillRule="evenodd"
-        />
-      </svg>
-    );
-  } else if (isUp && isSmall) {
-    return (
-      <svg
-        className={classes}
-        width="13"
-        height="9"
-        viewBox="0 0 13 9"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M6.97.195a.664.664 0 0 0-.94 0L.695 5.528a.668.668 0 0 0 .943.943L6.5 1.61l4.862 4.86a.666.666 0 1 0 .943-.942L6.97.195z"
           fillRule="evenodd"
         />
       </svg>

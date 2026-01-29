@@ -86,6 +86,7 @@ const AboutUsPage = props => {
 
   useEffect(() => {
     if (loaded.current === locale || inProgress || pageAssetsData?.[pageId]?.data) {
+      loaded.current = '';
       return;
     }
 
@@ -93,9 +94,6 @@ const AboutUsPage = props => {
     loaded.current = locale;
   }, [dispatch, locale, params, pageId, inProgress, pageAssetsData]);
 
-  if (inProgress) {
-    return <div className={css.root} />;
-  }
 
   if (error?.status === 404) {
     return <NotFoundPage staticContext={props.staticContext} />;
@@ -295,7 +293,7 @@ const AboutUsPage = props => {
           </h1>
         </div>
         <div className={css.content}>
-          {blocks.map((block, i) => {
+          {blocks?.map((block, i) => {
             if (i > 2 && i <= 5) {
               return null;
             }

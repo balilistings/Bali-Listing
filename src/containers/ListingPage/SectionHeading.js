@@ -181,13 +181,11 @@ const SectionHeading = props => {
               </li>
             ) : detail.key === 'landsize' || detail.key === 'landzone' ? (
               <li key={detail.key} className={css.detailsTypeRow}>
-                {detail.key === 'landsize' ? (
-                  <IconCollection name="landzone_icon" />
-                ) : (
-                  <IconCollection name="zone_icon" />
-                )}
+                <IconCollection name={detail.key === 'landsize' ? 'landzone_icon' : 'zone_icon'} />
                 <span className={css.detailTypeValue}>
-                  {detail.value} {detail.key === 'landsize' ? 'm2' : 'zone'}
+                  {detail.key === 'landsize'
+                    ? `${detail.value}m2`
+                    : intl.formatMessage({ id: `ListingCard.${detail.value.toLowerCase()}zone` })}
                 </span>
               </li>
             ) : null

@@ -101,6 +101,14 @@
   }
 }
 
+.defaultWidget.onListingPage {
+  bottom: 160px;
+
+  @media (--viewportMedium) {
+    bottom: 36px;
+  }
+}
+
 .defaultWidgetIcon {
   width: 18px;
   height: 18px;
