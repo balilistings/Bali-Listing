@@ -35,7 +35,8 @@ export const CMSPageComponent = props => {
   const pageId = params.pageId || props.pageId;
 
   const useNewPages = process.env.REACT_APP_USE_NEW_PAGES === 'true';
-  const PageComponent = (useNewPages || pageId === 'about') ? componentMap[pageId] : null;
+  const useNewBlogPage = process.env.REACT_APP_USE_NEW_BLOG_PAGE === 'true';
+  const PageComponent = (useNewPages || pageId === 'about' || (pageId === 'blog' && useNewBlogPage)) ? componentMap[pageId] : null;
 
   if (PageComponent) {
     return <PageComponent {...props} />;
