@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { shallowEqual, useSelector, useDispatch } from 'react-redux';
 import classNames from 'classnames';
+import { useLocation, useHistory } from 'react-router-dom';
+import debounce from 'lodash/debounce';
 
 import { useConfiguration } from '../../context/configurationContext';
+import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import {
   REVIEW_TYPE_OF_PROVIDER,
@@ -31,8 +33,10 @@ import {
   isUserAuthorized,
 } from '../../util/userHelpers';
 import { richText } from '../../util/richText';
+import { types as sdkTypes } from '../../util/sdkLoader';
+import { parse } from '../../util/urlHelpers';
 
-import { isScrollingDisabled } from '../../ducks/ui.duck';
+import { isScrollingDisabled, manageDisableScrolling } from '../../ducks/ui.duck';
 import { getMarketplaceEntities } from '../../ducks/marketplaceData.duck';
 import {
   Heading,
@@ -43,44 +47,218 @@ import {
   NamedLink,
   ButtonTabNavHorizontal,
   NamedRedirect,
+  ModalInMobile,
+  IconClose,
 } from '../../components';
 import Reviews from '../../components/Reviews/Reviews';
-import LayoutSideNavigation from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation';
+import IconCollection from '../../components/IconCollection/IconCollection';
+import IconLink from '../../components/IconLink/IconLink';
+import { createResourceLocatorString } from '../../util/routes';
 
 import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+import SearchMap from '../../containers/SearchPage/SearchMap/SearchMap';
+import { SocialMediaLink } from '../../containers/PageBuilder/Primitives/Link';
 
+import layoutCss from '../../components/LayoutComposer/LayoutSideNavigation/LayoutSideNavigation.module.css';
 import css from './ProfilePage.module.css';
 import SectionDetailsMaybe from './SectionDetailsMaybe';
 import SectionTextMaybe from './SectionTextMaybe';
 import SectionMultiEnumMaybe from './SectionMultiEnumMaybe';
 import SectionYoutubeVideoMaybe from './SectionYoutubeVideoMaybe';
+import ProfileSearchFilter from './ProfileSearchFilter/ProfileSearchFilter';
+import ProfileSearchFilterMobile from './ProfileSearchFilterMobile/ProfileSearchFilterMobile';
+import ProfileCustomFilters from './ProfileSearchFilterMobile/ProfileCustomFilters';
 import ListingCard from '../../components/ListingCard/ListingCard';
+import PaginationLinks from '../../components/PaginationLinks/PaginationLinks';
 
 const MAX_MOBILE_SCREEN_WIDTH = 768;
 const MIN_LENGTH_FOR_LONG_WORDS = 20;
 
+const getBounds = (listings, urlBounds) => {
+  if (urlBounds) {
+    return urlBounds;
+  }
+  if (!listings || listings.length === 0) {
+    return null;
+  }
+
+  const geolocations = listings.map(l => l.attributes.geolocation).filter(g => !!g);
+
+  if (geolocations.length === 0) {
+    return null;
+  }
+
+  const { LatLng, LatLngBounds } = sdkTypes;
+
+  const lats = geolocations.map(g => g.lat);
+  const lngs = geolocations.map(g => g.lng);
+
+  return new LatLngBounds(
+    new LatLng(Math.max(...lats), Math.max(...lngs)),
+    new LatLng(Math.min(...lats), Math.min(...lngs))
+  );
+};
+
+const ShareProfile = () => {
+  const [copyStatus, setCopyStatus] = useState('idle');
+
+  if (typeof window === 'undefined') return null;
+
+  const currentUrl = window.location.href;
+
+  const copyLink = async () => {
+    if (copyStatus !== 'idle') return;
+    try {
+      await navigator.clipboard.writeText(currentUrl);
+      setCopyStatus('success');
+    } catch (error) {
+      setCopyStatus('error');
+    } finally {
+      setTimeout(() => setCopyStatus('idle'), 2000);
+    }
+  };
+
+  const getTooltipMessage = () => {
+    if (copyStatus === 'success') return 'Link copied!';
+    if (copyStatus === 'error') return 'Failed to copy';
+    return null;
+  };
+
+  return (
+    <div className={css.shareProfile}>
+      <h3 className={css.shareProfileTitle}>
+        <FormattedMessage id="ProfilePage.shareProfileTitle" />
+      </h3>
+      <div className={css.shareIcons}>
+        <SocialMediaLink
+          platform="facebook"
+          className={css.shareIconLink}
+          rootClassName={css.shareIconLink}
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
+        />
+        <SocialMediaLink
+          platform="twitter"
+          className={css.shareIconLink}
+          rootClassName={css.shareIconLink}
+          href={`https://x.com/intent/tweet?url=${encodeURIComponent(currentUrl)}`}
+        />
+        <button className={css.copyButton} onClick={copyLink}>
+          {copyStatus !== 'idle' && (
+            <div className={copyStatus === 'success' ? css.successTooltip : css.errorTooltip}>
+              {getTooltipMessage()}
+            </div>
+          )}
+          <IconLink />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 export const AsideContent = props => {
-  const { user, displayName, showLinkToProfileSettingsPage } = props;
+  const {
+    user,
+    displayName,
+    showLinkToProfileSettingsPage,
+    bio,
+    publicData,
+    intl,
+    userTypeRoles,
+    pagination,
+  } = props;
+
+  const isProvider = userTypeRoles.provider;
+  const userTypeTranslation = isProvider
+    ? intl.formatMessage({ id: 'FieldSelectUserType.providerLabel' })
+    : intl.formatMessage({ id: 'FieldSelectUserType.customerLabel' });
+
+  const bioWithLinks = richText(bio, {
+    linkify: true,
+    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
+    longWordClass: css.longWord,
+  });
+
+  const listingsCount = pagination?.totalItems || 0;
+
   return (
     <div className={css.asideContent}>
-      <AvatarLarge className={css.avatar} user={user} disableProfileLink />
-      <H2 as="h1" className={css.mobileHeading}>
-        {displayName ? (
-          <FormattedMessage id="ProfilePage.mobileHeading" values={{ name: displayName }} />
+      <div className={css.asideHeader} />
+      <div className={css.asideMain}>
+        <div className={css.avatarContainer}>
+          <AvatarLarge className={css.avatar} user={user} disableProfileLink />
+          <div className={css.badge}>
+            <IconCollection name="icon_profile_badge" />
+          </div>
+        </div>
+
+        <div className={css.userInfo}>
+          <p className={css.helloText}>
+            <FormattedMessage id="ProfilePage.hello" />
+          </p>
+          <H2 as="h1" className={css.displayName}>
+            {displayName}
+          </H2>
+          <p className={css.userType}>{userTypeTranslation}</p>
+        </div>
+
+        {bio ? (
+          <div className={css.section}>
+            <h3 className={css.sectionTitle}>
+              <FormattedMessage id="ProfilePage.aboutUser" />
+            </h3>
+            <p className={css.bioText}>{bioWithLinks}</p>
+          </div>
         ) : null}
-      </H2>
-      {showLinkToProfileSettingsPage ? (
-        <>
-          <NamedLink className={css.editLinkMobile} name="ProfileSettingsPage">
-            <FormattedMessage id="ProfilePage.editProfileLinkMobile" />
-          </NamedLink>
-          <NamedLink className={css.editLinkDesktop} name="ProfileSettingsPage">
-            <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
-          </NamedLink>
-        </>
-      ) : null}
+
+        {publicData?.companyname ? (
+          <div className={css.section}>
+            <h3 className={css.sectionTitle}>
+              <FormattedMessage id="ProfilePage.companyName" />
+            </h3>
+            <p className={css.sectionValue}>{publicData.companyname}</p>
+          </div>
+        ) : null}
+
+        {publicData?.role ? (
+          <div className={css.section}>
+            <h3 className={css.sectionTitle}>
+              <FormattedMessage id="ProfilePage.role" />
+            </h3>
+            <p className={css.sectionValue}>
+              {publicData.role === 'company' ? (
+                <FormattedMessage id="SignupForm.role.company" />
+              ) : (
+                publicData.role
+              )}
+            </p>
+          </div>
+        ) : null}
+
+        <div className={css.listingsCard}>
+          <div className={css.listingsIconContainer}>
+            <IconCollection name="typeIcon" />
+          </div>
+          <span className={css.listingsCount}>{listingsCount}</span>
+          <span className={css.listingsLabel}>
+            <FormattedMessage id="ProfilePage.listings" />
+          </span>
+        </div>
+
+        {showLinkToProfileSettingsPage ? (
+          <>
+            <NamedLink className={css.editLinkMobile} name="ProfileSettingsPage">
+              <FormattedMessage id="ProfilePage.editProfileLinkMobile" />
+            </NamedLink>
+            <NamedLink className={css.editLinkDesktop} name="ProfileSettingsPage">
+              <FormattedMessage id="ProfilePage.editProfileLinkDesktop" />
+            </NamedLink>
+          </>
+        ) : null}
+
+        <ShareProfile />
+      </div>
     </div>
   );
 };
@@ -212,25 +390,55 @@ export const CustomUserFields = props => {
 
 export const MainContent = props => {
   const [mounted, setMounted] = useState(false);
+  const [openCustomFilters, setOpenCustomFilters] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const {
     userShowError,
-    bio,
     displayName,
     listings,
+    pagination,
     queryListingsError,
     reviews = [],
     queryReviewsError,
-    publicData,
-    metadata,
-    userFieldConfig,
     intl,
     hideReviews,
     userTypeRoles,
+    params,
+    routes,
+    onManageDisableScrolling,
   } = props;
+
+  const history = useHistory();
+  const location = useLocation();
+
+  const queryParams = parse(location.search, {
+    latlngBounds: ['bounds'],
+  });
+
+  const [currentQueryParams, setCurrentQueryParams] = useState(queryParams);
+
+  useEffect(() => {
+    setCurrentQueryParams(queryParams);
+  }, [location.search]);
+
+  const handleFilterChange = useCallback(
+    newQueryParams => {
+      history.push(
+        createResourceLocatorString('ProfilePageSlug', routes, params, {
+          ...queryParams,
+          ...newQueryParams,
+        })
+      );
+    },
+    [history, routes, params, queryParams]
+  );
+
+  const view = queryParams.view || 'list';
+  const isMapView = view === 'map';
 
   const hasListings = listings.length > 0;
   const hasMatchMedia = typeof window !== 'undefined' && window?.matchMedia;
@@ -239,16 +447,30 @@ export const MainContent = props => {
       ? window.matchMedia(`(max-width: ${MAX_MOBILE_SCREEN_WIDTH}px)`)?.matches
       : true;
 
-  const hasBio = !!bio;
-  const bioWithLinks = richText(bio, {
-    linkify: true,
-    longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
-    longWordClass: css.longWord,
-  });
+  const { bounds: urlBounds } = queryParams;
+  const bounds = getBounds(listings, urlBounds);
 
-  const listingsContainerClasses = classNames(css.listingsContainer, {
-    [css.withBioMissingAbove]: !hasBio,
-  });
+  const onMapMoveEnd = useMemo(
+    () =>
+      debounce((viewportBoundsChanged, data) => {
+        const { viewportBounds } = data;
+        if (viewportBoundsChanged) {
+          handleFilterChange({ bounds: viewportBounds });
+        }
+      }, 300),
+    [handleFilterChange]
+  );
+
+  const paginationLinks =
+    pagination && pagination.totalPages > 1 ? (
+      <PaginationLinks
+        className={css.pagination}
+        pageName="ProfilePageSlug"
+        pagePathParams={params}
+        pageSearchParams={location.search}
+        pagination={pagination}
+      />
+    ) : null;
 
   if (userShowError || queryListingsError) {
     return (
@@ -257,27 +479,107 @@ export const MainContent = props => {
       </p>
     );
   }
+
+  const mapContent = (
+    <SearchMap
+      reusableContainerClassName={css.map}
+      rootClassName={css.mapRoot}
+      bounds={bounds}
+      location={location}
+      listings={listings || []}
+      onMapMoveEnd={onMapMoveEnd}
+      onCloseAsModal={() => {
+        onManageDisableScrolling('ProfilePage_map', false);
+      }}
+      messages={intl.messages}
+    />
+  );
+
   return (
     <div>
-      <H2 as="h1" className={css.desktopHeading}>
-        <FormattedMessage id="ProfilePage.desktopHeading" values={{ name: displayName }} />
-      </H2>
-      {hasBio ? <p className={css.bio}>{bioWithLinks}</p> : null}
+      {isMobileLayout ? (
+        <>
+          <ProfileSearchFilterMobile
+            resultsCount={pagination?.totalItems}
+            isMapView={isMapView}
+            onToggleMapView={() => handleFilterChange({ view: isMapView ? 'list' : 'map' })}
+            onOpenCustomFilters={() => setOpenCustomFilters(true)}
+          />
+          {openCustomFilters && (
+            <ProfileCustomFilters
+              onClose={() => setOpenCustomFilters(false)}
+              currentQueryParams={currentQueryParams}
+              onlyUpdateCurrentQueryParams={params => {
+                setCurrentQueryParams(prev => ({ ...prev, ...params }));
+              }}
+              onUpdateCurrentQueryParams={params => {
+                const newParams = { ...currentQueryParams, ...params };
+                setCurrentQueryParams(newParams);
+                handleFilterChange(newParams);
+              }}
+              onReset={() => {
+                handleFilterChange({ pub_categoryLevel1: 'rentalvillas' });
+              }}
+              resultsCount={pagination?.totalItems}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <div className={css.mainContentHeader}>
+            <H4 as="h2" className={css.listingsTitle}>
+              <FormattedMessage id="ProfilePage.listingsTitleNoCount" />
+            </H4>
+            <div className={css.toggleContainer}>
+              <button
+                className={css.toggleButton}
+                onClick={() => handleFilterChange({ view: isMapView ? 'list' : 'map' })}
+              >
+                {!isMapView ? (
+                  <div className={css.toggleIcon}>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M6.02344 4.06605V10.2535M10.5234 5.75355V11.941M10.9007 14.5645L14.5569 12.7368C14.8427 12.5943 15.0234 12.3018 15.0234 11.9823V2.61855C15.0234 1.99155 14.3634 1.58355 13.8024 1.86405L10.9007 3.31455C10.6629 3.4338 10.3832 3.4338 10.1462 3.31455L6.40069 1.44255C6.28355 1.384 6.15439 1.35352 6.02344 1.35352C5.89248 1.35352 5.76332 1.384 5.64619 1.44255L1.98994 3.2703C1.70344 3.41355 1.52344 3.70605 1.52344 4.0248V13.3886C1.52344 14.0156 2.18344 14.4236 2.74444 14.1431L5.64619 12.6925C5.88394 12.5733 6.16369 12.5733 6.40069 12.6925L10.1462 14.5653C10.3839 14.6838 10.6637 14.6838 10.9007 14.5653V14.5645Z"
+                        stroke="#F74DF4"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                ) : (
+                  <div className={css.toggleIconClose}>X</div>
+                )}
+                <span>
+                  <FormattedMessage id="ProfilePage.mapView" />
+                </span>
+              </button>
+            </div>
+          </div>
 
-      {displayName ? (
-        <CustomUserFields
-          publicData={publicData}
-          metadata={metadata}
-          userFieldConfig={userFieldConfig}
-          intl={intl}
-        />
-      ) : null}
+          <ProfileSearchFilter onFilterChange={handleFilterChange} />
+        </>
+      )}
 
-      {hasListings ? (
-        <div className={listingsContainerClasses}>
-          <H4 as="h2" className={css.listingsTitle}>
-            <FormattedMessage id="ProfilePage.listingsTitle" values={{ count: listings.length }} />
-          </H4>
+      {isMapView ? (
+        <ModalInMobile
+          className={css.mapContainer}
+          id="ProfilePage_map"
+          isModalOpenOnMobile={isMapView}
+          onClose={() => handleFilterChange({ view: 'list' })}
+          showAsModalMaxWidth={MAX_MOBILE_SCREEN_WIDTH}
+          onManageDisableScrolling={onManageDisableScrolling}
+        >
+          <div className={css.mapWrapper}>{mapContent}</div>
+        </ModalInMobile>
+      ) : hasListings ? (
+        <div className={css.listingsContainer}>
           <ul className={css.listings}>
             {listings.map(l => (
               <li className={css.listing} key={l.id.uuid}>
@@ -285,6 +587,7 @@ export const MainContent = props => {
               </li>
             ))}
           </ul>
+          {paginationLinks}
         </div>
       ) : null}
       {hideReviews ? null : isMobileLayout ? (
@@ -305,39 +608,56 @@ export const MainContent = props => {
 };
 
 /**
- * ProfilePageComponent
+ * ProfilePage
  *
  * @component
  * @param {Object} props
- * @param {boolean} props.scrollingDisabled - Whether the scrolling is disabled
- * @param {propTypes.currentUser} props.currentUser - The current user
- * @param {boolean} props.useCurrentUser - Whether to use the current user
- * @param {propTypes.user|propTypes.currentUser} props.user - The user
- * @param {propTypes.error} props.userShowError - The user show error
- * @param {propTypes.error} props.queryListingsError - The query listings error
- * @param {Array<propTypes.listing|propTypes.ownListing>} props.listings - The listings
- * @param {Array<propTypes.review>} props.reviews - The reviews
- * @param {propTypes.error} props.queryReviewsError - The query reviews error
- * @returns {JSX.Element} ProfilePageComponent
+ * @returns {JSX.Element} ProfilePage
  */
-export const ProfilePageComponent = props => {
+const ProfilePage = props => {
   const config = useConfiguration();
   const intl = useIntl();
   const [mounted, setMounted] = useState(false);
+  const routes = useRouteConfiguration();
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const {
-    scrollingDisabled,
-    params: pathParams,
-    currentUser,
-    useCurrentUser,
-    userShowError,
-    user,
-    ...rest
-  } = props;
+  const { params: pathParams, staticContext, location } = props;
+
+  const dispatch = useDispatch();
+
+  const scrollingDisabled = useSelector(state =>
+    state.ui.disableScrollRequests.some(r => r.disableScrolling)
+  );
+  const currentUser = useSelector(state => state.user.currentUser, shallowEqual);
+  const userId = useSelector(state => state.ProfilePage.userId, shallowEqual);
+  const userShowError = useSelector(state => state.ProfilePage.userShowError);
+  const queryListingsError = useSelector(state => state.ProfilePage.queryListingsError);
+  const userListingRefs = useSelector(state => state.ProfilePage.userListingRefs);
+  const pagination = useSelector(state => state.ProfilePage.pagination, shallowEqual);
+  const reviews = useSelector(state => state.ProfilePage.reviews, shallowEqual);
+  const queryReviewsError = useSelector(state => state.ProfilePage.queryReviewsError);
+
+  const onManageDisableScrolling = (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling));
+
+  const user = useSelector(state => {
+    const userMatches = getMarketplaceEntities(state, [{ type: 'user', id: userId }]);
+    return userMatches.length === 1 ? userMatches[0] : null;
+  }, shallowEqual);
+
+  const listings = useSelector(
+    state => getMarketplaceEntities(state, userListingRefs),
+    shallowEqual
+  );
+
+  // Show currentUser's data if it's not approved yet
+  const isCurrentUser = userId?.uuid === currentUser?.id?.uuid;
+  const useCurrentUser =
+    isCurrentUser && !(isUserAuthorized(currentUser) && hasPermissionToViewData(currentUser));
+
   const isVariant = pathParams.variant?.length > 0;
   const isPreview = isVariant && pathParams.variant === PROFILE_PAGE_PENDING_APPROVAL_VARIANT;
 
@@ -345,7 +665,7 @@ export const ProfilePageComponent = props => {
   // too empty for the provider at the time they are creating their first listing.
   // To remedy the situation, we redirect Stripe's crawler to the landing page of the marketplace.
   // TODO: When there's more content on the profile page, we should consider by-passing this redirection.
-  const searchParams = rest?.location?.search;
+  const searchParams = location?.search;
   const isStorefront = searchParams
     ? new URLSearchParams(searchParams)?.get('mode') === 'storefront'
     : false;
@@ -353,7 +673,7 @@ export const ProfilePageComponent = props => {
     return <NamedRedirect name="LandingPage" />;
   }
 
-  const isCurrentUser = currentUser?.id && currentUser?.id?.uuid === pathParams.id;
+  const isCurrentUserProfile = currentUser?.id && currentUser?.id?.uuid === pathParams.id;
   const profileUser = useCurrentUser ? currentUser : user;
   const { bio, displayName, publicData, metadata } = profileUser?.attributes?.profile || {};
   const { userFields } = config.user;
@@ -372,13 +692,33 @@ export const ProfilePageComponent = props => {
     ? currentUser != null || userShowError != null
     : user != null || userShowError != null;
 
+  const hasBeenLoadedRef = React.useRef(false);
+  if (isDataLoaded && !hasBeenLoadedRef.current) {
+    hasBeenLoadedRef.current = true;
+  }
   const schemaTitleVars = { name: displayName, marketplaceName: config.marketplaceName };
   const schemaTitle = intl.formatMessage({ id: 'ProfilePage.schemaTitle' }, schemaTitleVars);
 
-  if (!isDataLoaded) {
-    return null;
+  if (!isDataLoaded && !userShowError && !hasBeenLoadedRef.current) {
+    return (
+      <Page
+        scrollingDisabled={scrollingDisabled}
+        title={schemaTitle}
+        schema={{
+          '@context': 'http://schema.org',
+          '@type': 'ProfilePage',
+          name: schemaTitle,
+        }}
+      >
+        <div className={layoutCss.root}>
+          <header className={layoutCss.topbar}>
+            <TopbarContainer />
+          </header>
+        </div>
+      </Page>
+    );
   } else if (!isPreview && isNotFoundError(userShowError)) {
-    return <NotFoundPage staticContext={props.staticContext} />;
+    return <NotFoundPage staticContext={staticContext} />;
   } else if (!isPreview && (isUnauthorizedOnPrivateMarketplace || hasUserPendingApprovalError)) {
     return (
       <NamedRedirect
@@ -387,7 +727,7 @@ export const ProfilePageComponent = props => {
       />
     );
   } else if (
-    (!isPreview && hasNoViewingRightsOnPrivateMarketplace && !isCurrentUser) ||
+    (!isPreview && hasNoViewingRightsOnPrivateMarketplace && !isCurrentUserProfile) ||
     isErrorNoViewingPermission(userShowError)
   ) {
     // Someone without viewing rights on a private marketplace is trying to
@@ -406,9 +746,9 @@ export const ProfilePageComponent = props => {
         state={{ from: `${location.pathname}${location.search}${location.hash}` }}
       />
     );
-  } else if (isPreview && mounted && !isCurrentUser) {
+  } else if (isPreview && mounted && !isCurrentUserProfile) {
     // Someone is manipulating the URL, redirect to current user's profile page.
-    return isCurrentUser === false ? (
+    return isCurrentUserProfile === false ? (
       <NamedRedirect name="ProfilePage" params={{ id: currentUser?.id?.uuid }} />
     ) : null;
   } else if ((isPreview || isPrivateMarketplace) && !mounted) {
@@ -427,66 +767,47 @@ export const ProfilePageComponent = props => {
         name: schemaTitle,
       }}
     >
-      <LayoutSideNavigation
-        sideNavClassName={css.aside}
-        topbar={<TopbarContainer />}
-        sideNav={
-          <AsideContent
-            user={profileUser}
-            showLinkToProfileSettingsPage={mounted && isCurrentUser}
-            displayName={displayName}
-          />
-        }
-        footer={<FooterContainer />}
-      >
-        <MainContent
-          bio={bio}
-          displayName={displayName}
-          userShowError={userShowError}
-          publicData={publicData}
-          metadata={metadata}
-          userFieldConfig={userFields}
-          hideReviews={hasNoViewingRightsOnPrivateMarketplace}
-          intl={intl}
-          userTypeRoles={userTypeRoles}
-          {...rest}
-        />
-      </LayoutSideNavigation>
+      <div className={layoutCss.root}>
+        <header className={layoutCss.topbar}>
+          <TopbarContainer />
+        </header>
+        <div className={css.container}>
+          <aside className={css.aside}>
+            <AsideContent
+              user={profileUser}
+              showLinkToProfileSettingsPage={mounted && isCurrentUserProfile}
+              displayName={displayName}
+              bio={bio}
+              publicData={publicData}
+              userFieldConfig={userFields}
+              intl={intl}
+              userTypeRoles={userTypeRoles}
+              pagination={pagination}
+            />
+          </aside>
+          <main className={css.mainColumn}>
+            <MainContent
+              displayName={displayName}
+              userShowError={userShowError}
+              // hideReviews={hasNoViewingRightsOnPrivateMarketplace}
+              hideReviews={true}
+              intl={intl}
+              userTypeRoles={userTypeRoles}
+              params={pathParams}
+              routes={routes}
+              listings={listings}
+              pagination={pagination}
+              reviews={reviews}
+              queryReviewsError={queryReviewsError}
+              queryListingsError={queryListingsError}
+              onManageDisableScrolling={onManageDisableScrolling}
+            />
+          </main>
+        </div>
+        <FooterContainer />
+      </div>
     </Page>
   );
 };
-
-const mapStateToProps = state => {
-  const { currentUser } = state.user;
-  const {
-    userId,
-    userShowError,
-    queryListingsError,
-    userListingRefs,
-    reviews = [],
-    queryReviewsError,
-  } = state.ProfilePage;
-  const userMatches = getMarketplaceEntities(state, [{ type: 'user', id: userId }]);
-  const user = userMatches.length === 1 ? userMatches[0] : null;
-
-  // Show currentUser's data if it's not approved yet
-  const isCurrentUser = userId?.uuid === currentUser?.id?.uuid;
-  const useCurrentUser =
-    isCurrentUser && !(isUserAuthorized(currentUser) && hasPermissionToViewData(currentUser));
-
-  return {
-    scrollingDisabled: isScrollingDisabled(state),
-    currentUser,
-    useCurrentUser,
-    user,
-    userShowError,
-    queryListingsError,
-    listings: getMarketplaceEntities(state, userListingRefs),
-    reviews,
-    queryReviewsError,
-  };
-};
-
-const ProfilePage = compose(connect(mapStateToProps))(ProfilePageComponent);
 
 export default ProfilePage;

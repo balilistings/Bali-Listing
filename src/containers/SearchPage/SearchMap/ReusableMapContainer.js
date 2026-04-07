@@ -37,7 +37,7 @@ class ReusableMapContainer extends React.Component {
 
       this.el = window.reusableSearchMapElement;
       this.el.id = 'search-map';
-      this.el.classList.add(mapLayoutClassName);
+      this.el.className = mapLayoutClassName;
     }
 
     this.mountNode = null;

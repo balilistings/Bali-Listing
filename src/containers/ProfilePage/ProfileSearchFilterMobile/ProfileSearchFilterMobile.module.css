@@ -1,0 +1,200 @@
+@import '../../../styles/customMediaQueries.css';
+
+.root {
+  padding: 18px 20px;
+  background: #ffffff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: calc(var(--topbarHeight) - 4px);
+  z-index: 9;
+}
+
+.isMapViewOpen {
+  position: fixed;
+  top: calc(var(--topbarHeight) - 4px);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #ffffff;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.titleIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  & svg {
+    width: 20px;
+    height: 20px;
+    fill: #f74df4;
+  }
+}
+
+.title {
+  font-family: 'Mulish', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 1.3;
+  color: #231f20;
+  margin: 0;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+
+.button {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 20px;
+  gap: 8px;
+  height: 34px;
+  border: 1px solid #f2f2f2;
+  border-radius: 20px;
+  background-color: #ffffff;
+  cursor: pointer;
+  box-sizing: border-box;
+
+  font-family: 'Mulish', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.3;
+  color: #231f20;
+  transition: all 0.2s ease;
+
+  &:active {
+    background-color: #fba6f933;
+    border-color: #f74df4;
+  }
+}
+
+.buttonActive {
+  background-color: #fba6f933;
+  border-color: #f74df4;
+}
+
+.icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+
+  & svg {
+    width: 18px;
+    height: 18px;
+    stroke: #f74df4;
+  }
+}
+
+/* Modal specific styles */
+
+.modalContainer {
+  width: 100%;
+  height: 100%;
+  background-color: var(--colorWhite);
+}
+
+.modalHeadingWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background-color: var(--colorWhite);
+  z-index: 5;
+}
+
+.modalTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Istok Web', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  color: #231f20;
+}
+
+.modalIcon {
+  color: #f74df4;
+  display: flex;
+  align-items: center;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.resetAllButton {
+  background: none;
+  border: none;
+  color: #5e5e5e;
+  font-family: 'Mulish', sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: #231f20;
+  }
+}
+
+.filtersWrapper {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.showListingsContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 16px 20px;
+  background-color: var(--colorWhite);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.showListingsButton {
+  width: 100%;
+  height: 48px;
+  background-color: #f74df4;
+  color: var(--colorWhite);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Mulish', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+
+  &:active {
+    background-color: #eb2be8;
+  }
+}

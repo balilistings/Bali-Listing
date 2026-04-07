@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import classNames from 'classnames';
 import { Form as FinalForm } from 'react-final-form';
-import { useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 // Contexts
-import { useRouteConfiguration } from '../../../../context/routeConfigurationContext';
-import { useConfiguration } from '../../../../context/configurationContext';
+import { useConfiguration } from '../../../context/configurationContext';
 
 // Utility
-import { FormattedMessage } from '../../../../util/reactIntl';
-import { createResourceLocatorString } from '../../../../util/routes';
-import { isOriginInUse } from '../../../../util/search';
-import { stringifyDateToISO8601 } from '../../../../util/dates';
+import { FormattedMessage } from '../../../util/reactIntl';
+import { isOriginInUse } from '../../../util/search';
+import { stringifyDateToISO8601 } from '../../../util/dates';
+import { parse } from '../../../util/urlHelpers';
 
 // Shared components
-import { Form } from '../../../../components';
+import { Form } from '../../../components';
 
-import FilterCategories from './FilterCategories/FilterCategories';
-import FilterDateRange from './FilterDateRange/FilterDateRange';
-import FilterLocation from './FilterLocation/FilterLocation';
-import FilterKeyword from './FilterKeyword/FilterKeyword';
+import FilterCategories from '../../PageBuilder/Primitives/SearchCTA/FilterCategories/FilterCategories';
+import FilterDateRange from '../../PageBuilder/Primitives/SearchCTA/FilterDateRange/FilterDateRange';
+import FilterLocation from '../../PageBuilder/Primitives/SearchCTA/FilterLocation/FilterLocation';
+import FilterKeyword from '../../PageBuilder/Primitives/SearchCTA/FilterKeyword/FilterKeyword';
 
-import css from './SearchCTA.module.css';
-import FilterBedrooms from './FilterBedrooms';
-import FilterPrice from './FilterPrice';
-import FilterLandSize from './FilterLandSize';
-import IconCollection from '../../../../components/IconCollection/IconCollection';
+import css from './ProfileSearchFilter.module.css';
+import FilterBedrooms from '../../PageBuilder/Primitives/SearchCTA/FilterBedrooms';
+import FilterPrice from '../../PageBuilder/Primitives/SearchCTA/FilterPrice';
+import FilterLandSize from '../../PageBuilder/Primitives/SearchCTA/FilterLandSize';
+import IconCollection from '../../../components/IconCollection/IconCollection';
 
 const GRID_CONFIG = [
   { gridCss: css.gridCol1 },
@@ -59,17 +58,99 @@ const formatDateValue = (dateRange, queryParamName) => {
   return { [queryParamName]: value };
 };
 
-export const SearchCTA = React.forwardRef((props, ref) => {
-  const history = useHistory();
-  const routeConfiguration = useRouteConfiguration();
+export const ProfileSearchFilter = React.forwardRef((props, ref) => {
+  const location = useLocation();
   const config = useConfiguration();
-  const [activeTab, setActiveTab] = useState(0);
+
+  // Parse initial values from URL
+  const queryParams = parse(location.search, {
+    latlng: ['origin'],
+    latlngBounds: ['bounds'],
+  });
+
+  const initialCategory = queryParams.pub_categoryLevel1 || tabs[0].key;
+  const initialTabIndex = tabs.findIndex(tab => tab.key === initialCategory);
+
+  const [activeTab, setActiveTab] = useState(initialTabIndex !== -1 ? initialTabIndex : 0);
   const [isOpenBedrooms, setIsOpenBedrooms] = useState(false);
   const [isOpenPrice, setIsOpenPrice] = useState(false);
   const [isOpenLandSize, setIsOpenLandSize] = useState(false);
   const [isFormReady, setIsFormReady] = useState(false);
 
-  const { categories, dateRange, keywordSearch, locationSearch, price } = props.searchFields;
+  // Parse initial values for the form
+  const getInitialValues = (params, tabKey) => {
+    const values = {};
+    if (params.pub_bedrooms) values.pub_bedrooms = parseInt(params.pub_bedrooms, 10);
+    if (params.pub_keyword) values.pub_keyword = params.pub_keyword;
+
+    // Price reconstruction
+    if (tabKey === 'rentalvillas') {
+      if (params.pub_weekprice) {
+        const [min, max] = params.pub_weekprice.split(',');
+        values.pub_price = {
+          period: 'weekly',
+          minPrice: parseInt(min, 10),
+          maxPrice: parseInt(max, 10),
+        };
+      } else if (params.pub_monthprice) {
+        const [min, max] = params.pub_monthprice.split(',');
+        values.pub_price = {
+          period: 'monthly',
+          minPrice: parseInt(min, 10),
+          maxPrice: parseInt(max, 10),
+        };
+      } else if (params.pub_yearprice) {
+        const [min, max] = params.pub_yearprice.split(',');
+        values.pub_price = {
+          period: 'yearly',
+          minPrice: parseInt(min, 10),
+          maxPrice: parseInt(max, 10),
+        };
+      }
+    } else if (params.price) {
+      const [min, max] = params.price.split(',');
+      values.pub_price = {
+        period: 'monthly',
+        minPrice: parseInt(min, 10),
+        maxPrice: parseInt(max, 10),
+      };
+    }
+
+    if (params.pub_landsize) {
+      const [min, max] = params.pub_landsize.split(',');
+      values.pub_landSize = { minSize: parseInt(min, 10), maxSize: parseInt(max, 10) };
+    }
+
+    if (params.address && params.bounds) {
+      values.location = {
+        search: params.address,
+        selectedPlace: {
+          address: params.address,
+          bounds: params.bounds,
+          origin: params.origin
+            ? {
+                lat: parseFloat(params.origin.split(',')[0]),
+                lng: parseFloat(params.origin.split(',')[1]),
+              }
+            : null,
+        },
+      };
+    }
+
+    return values;
+  };
+
+  const initialValues = getInitialValues(queryParams, tabs[activeTab].key);
+
+  // For the profile page, we might want to show all relevant filters by default
+  const {
+    categories = false,
+    dateRange = false,
+    keywordSearch = false,
+    locationSearch = true,
+    price = true,
+  } = props.searchFields || {};
+
   const bedrooms = tabs[activeTab].key !== 'landforsale';
   const landSize = tabs[activeTab].key === 'landforsale';
 
@@ -78,6 +159,15 @@ export const SearchCTA = React.forwardRef((props, ref) => {
   useEffect(() => {
     setIsFormReady(true);
   }, []);
+
+  // Update active tab if URL changes
+  useEffect(() => {
+    const currentCategory = queryParams.pub_categoryLevel1 || tabs[0].key;
+    const currentTabIndex = tabs.findIndex(tab => tab.key === currentCategory);
+    if (currentTabIndex !== -1 && currentTabIndex !== activeTab) {
+      setActiveTab(currentTabIndex);
+    }
+  }, [queryParams.pub_categoryLevel1]);
 
   const categoryConfig = config.categoryConfiguration;
   const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
@@ -194,36 +284,39 @@ export const SearchCTA = React.forwardRef((props, ref) => {
 
   const onSubmit = values => {
     // Convert form values to query parameters
-    let queryParams = {
-      pub_categoryLevel1: tabs[activeTab].key,
+    const activeTabKey = tabs[activeTab].key;
+    let newQueryParams = {
+      pub_categoryLevel1: activeTabKey,
     };
+
+    const isLand = activeTabKey === 'landforsale';
 
     Object.entries(values).forEach(([key, value]) => {
       if (!isEmpty(value)) {
-        if (key == 'dateRange') {
+        if (key === 'dateRange') {
           const { dates } = formatDateValue(value, 'dates');
-          queryParams.dates = dates;
-        } else if (key == 'location') {
+          newQueryParams.dates = dates;
+        } else if (key === 'location') {
           if (value.selectedPlace) {
             const {
               search,
               selectedPlace: { origin, bounds },
             } = value;
-            queryParams.bounds = bounds;
-            queryParams.address = search;
+            newQueryParams.bounds = bounds;
+            newQueryParams.address = search;
 
             if (isOriginInUse(config) && origin) {
-              queryParams.origin = `${origin.lat},${origin.lng}`;
+              newQueryParams.origin = `${origin.lat},${origin.lng}`;
             }
           }
         } else if (key === 'pub_bedrooms') {
-          if (value === 0) {
+          if (value === 0 || isLand) {
             return;
           }
-          queryParams[key] = value;
+          newQueryParams[key] = value;
         } else if (key === 'pub_price') {
           let priceKey = '';
-          if (tabs[activeTab].key !== 'rentalvillas') {
+          if (activeTabKey !== 'rentalvillas') {
             priceKey = 'price';
           } else if (value.period === 'monthly') {
             priceKey = 'pub_monthprice';
@@ -232,39 +325,49 @@ export const SearchCTA = React.forwardRef((props, ref) => {
           } else {
             priceKey = 'pub_weekprice';
           }
-          queryParams[priceKey] = `${value.minPrice},${value.maxPrice}`;
+          newQueryParams[priceKey] = `${value.minPrice},${value.maxPrice}`;
         } else if (key === 'pub_landSize') {
-          queryParams['pub_landsize'] = `${value.minSize},${value.maxSize}`;
-          return;
+          if (!isLand) {
+            return;
+          }
+          newQueryParams['pub_landsize'] = `${value.minSize},${value.maxSize}`;
         } else {
-          queryParams[key] = value;
+          newQueryParams[key] = value;
         }
       }
     });
 
-    const to = createResourceLocatorString('SearchPage', routeConfiguration, {}, queryParams);
-    history.push(to);
+    if (props.onFilterChange) {
+      props.onFilterChange(newQueryParams);
+    }
+  };
+
+  const handleTabChange = idx => {
+    setActiveTab(idx);
   };
 
   return (
-    <>
-      <div className={css.heroTabs}>
-        {tabs.map((tab, idx) => (
-          <button
-            key={tab.label}
-            className={idx === activeTab ? `${css.heroTab} ${css.active}` : css.heroTab}
-            onClick={() => setActiveTab(idx)}
-            type="button"
-          >
-            <FormattedMessage id={tab.label} />
-          </button>
-        ))}
+    <div className={css.filterContainer}>
+      <div className={css.tabsWrapper}>
+        <div className={css.heroTabs}>
+          {tabs.map((tab, idx) => (
+            <button
+              key={tab.label}
+              className={idx === activeTab ? `${css.heroTab} ${css.active}` : css.heroTab}
+              onClick={() => handleTabChange(idx)}
+              type="button"
+            >
+              <FormattedMessage id={tab.label} />
+            </button>
+          ))}
+        </div>
       </div>
       <div className={classNames(css.searchBarContainer, getGridCount(fieldCountForGrid))}>
         <FinalForm
           onSubmit={onSubmit}
+          initialValues={initialValues}
           {...props}
-          render={({ fieldRenderProps, handleSubmit }) => {
+          render={({ fieldRenderProps, handleSubmit, form }) => {
             return (
               <Form
                 role="search"
@@ -289,15 +392,17 @@ export const SearchCTA = React.forwardRef((props, ref) => {
                   <span className={css.searchIcon}>
                     <IconCollection name="search_icon" />
                   </span>
-                  <FormattedMessage id="PageBuilder.SearchCTA.buttonLabel" />
+                  {/* <FormattedMessage id="PageBuilder.SearchCTA.buttonLabel" /> */}
                 </button>
               </Form>
             );
           }}
         />
       </div>
-    </>
+    </div>
   );
 });
 
-SearchCTA.displayName = 'SearchCTA';
+ProfileSearchFilter.displayName = 'ProfileSearchFilter';
+
+export default ProfileSearchFilter;

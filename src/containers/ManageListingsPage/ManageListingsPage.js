@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { useConfiguration } from '../../context/configurationContext';
@@ -29,6 +29,7 @@ import TopbarContainer from '../../containers/TopbarContainer/TopbarContainer';
 import FooterContainer from '../../containers/FooterContainer/FooterContainer';
 
 import ManageListingCard from './ManageListingCard/ManageListingCard';
+import AnalyticsSection from './AnalyticsSection/AnalyticsSection';
 
 import {
   closeListing,
@@ -112,6 +113,7 @@ export const ManageListingsPageComponent = props => {
   const routeConfiguration = useRouteConfiguration();
   const config = useConfiguration();
   const intl = useIntl();
+  const dispatch = useDispatch();
 
   const {
     currentUser,
@@ -120,9 +122,6 @@ export const ManageListingsPageComponent = props => {
     discardingDraft,
     discardingDraftError,
     listings = [],
-    onCloseListing,
-    onDiscardDraft,
-    onOpenListing,
     openingListing,
     openingListingError,
     pagination,
@@ -130,8 +129,13 @@ export const ManageListingsPageComponent = props => {
     queryListingsError,
     queryParams,
     scrollingDisabled,
-    onManageDisableScrolling,
   } = props;
+
+  const onOpenListing = listingId => dispatch(openListing(listingId));
+  const onCloseListing = listingId => dispatch(closeListing(listingId));
+  const onDiscardDraft = listingId => dispatch(discardDraft(listingId));
+  const onManageDisableScrolling = (componentId, disableScrolling) =>
+    dispatch(manageDisableScrolling(componentId, disableScrolling));
 
   useEffect(() => {
     if (isErrorNoPermissionToPostListings(openingListingError?.error)) {
@@ -223,6 +227,10 @@ export const ManageListingsPageComponent = props => {
         {queryInProgress ? loadingResults : null}
         {queryListingsError ? queryError : null}
 
+        {config.analytics.profilePageAnalyticsEnabled ? (
+          <AnalyticsSection currentUser={currentUser} />
+        ) : null}
+
         <div className={css.listingPanel}>
           <Heading listingsAreLoaded={listingsAreLoaded} pagination={pagination} />
 
@@ -300,19 +308,6 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => ({
-  onCloseListing: listingId => dispatch(closeListing(listingId)),
-  onOpenListing: listingId => dispatch(openListing(listingId)),
-  onDiscardDraft: listingId => dispatch(discardDraft(listingId)),
-  onManageDisableScrolling: (componentId, disableScrolling) =>
-    dispatch(manageDisableScrolling(componentId, disableScrolling)),
-});
-
-const ManageListingsPage = compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(ManageListingsPageComponent);
+const ManageListingsPage = compose(connect(mapStateToProps))(ManageListingsPageComponent);
 
 export default ManageListingsPage;

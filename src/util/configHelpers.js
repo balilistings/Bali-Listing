@@ -183,8 +183,9 @@ const mergeAnalyticsConfig = (hostedAnalyticsConfig, defaultAnalyticsConfig) => 
   const plausibleDomainsMaybe = plausibleDomains ? { plausibleDomains } : {};
 
   const facebookPixelId = defaultAnalyticsConfig.facebookPixelId;
+  const profilePageAnalyticsEnabled = defaultAnalyticsConfig.profilePageAnalyticsEnabled;
 
-  return { googleAnalyticsId, facebookPixelId, ...plausibleDomainsMaybe };
+  return { googleAnalyticsId, facebookPixelId, profilePageAnalyticsEnabled, ...plausibleDomainsMaybe };
 };
 
 ////////////////////
