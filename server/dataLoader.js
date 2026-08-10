@@ -27,7 +27,7 @@ const isDisabledCommercialSearch = (pathname, search) => {
 
   const searchParams = new URLSearchParams(search);
   return [...searchParams.entries()].some(([key, value]) => {
-    const isCategoryParam = /^pub_categoryLevel\\d+$/i.test(key);
+    const isCategoryParam = /^pub_categoryLevel\d+$/i.test(key);
     const hasDisabledCategory = value
       .split(',')
       .some(category => DISABLED_COMMERCIAL_VALUES.has(category.trim().toLowerCase()));
