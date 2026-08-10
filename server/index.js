@@ -240,13 +240,17 @@ const noCacheHeaders = {
   'Cache-control': 'no-cache, no-store, must-revalidate',
 };
 
+const notFoundCacheHeaders = {
+  'Cache-Control': 'public, max-age=60, s-maxage=60',
+};
+
 app.get('*', async (req, res) => {
   if (req.url.startsWith('/static/')) {
     // The express.static middleware only handles static resources
     // that it finds, otherwise passes them through. However, we don't
     // want to render the app for missing static resources and can
     // just return 404 right away.
-    return res.status(404).send('Static asset not found.');
+    return res.set(notFoundCacheHeaders).status(404).send('Static asset not found.');
   }
 
   if (req.url === '/_status.json') {
@@ -278,6 +282,12 @@ app.get('*', async (req, res) => {
   dataLoader
     .loadData(req.url, sdk, appInfo)
     .then(data => {
+      if (data.unmatchedRoute) {
+        res.set(notFoundCacheHeaders);
+        res.status(404).send(errorPage404);
+        return null;
+      }
+
       const { preloadedState, hostedConfig } = data;
       const locale = req.locale;
       let translations;
@@ -305,6 +315,10 @@ app.get('*', async (req, res) => {
       return renderer.render(req.url, context, updatedData, renderApp, webExtractor, cspNonce);
     })
     .then(html => {
+      if (html == null) {
+        return;
+      }
+
       if (dev) {
         const debugData = {
           url: req.url,
@@ -340,7 +354,7 @@ app.get('*', async (req, res) => {
       } else if (context.notfound) {
         // NotFoundPage component injects the context.notfound when a
         // 404 should be returned
-        res.set(noCacheHeaders);
+        res.set(notFoundCacheHeaders);
         res.status(404).send(html);
       } else {
         if (isLandingPage && PAGE_CACHE_DURATION > 0) {

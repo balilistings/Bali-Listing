@@ -43,6 +43,13 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
 
   const store = configureStore({}, sdk);
 
+  const pathnameWithoutLocale =
+    locale !== 'en' ? pathname.replace(`/${locale}`, '') || '/' : pathname;
+  const matchedDefaultRoutes = matchPathname(
+    pathnameWithoutLocale,
+    routeConfiguration(defaultConfig.layout)
+  );
+
   if (PREVENT_DATA_LOADING_IN_SSR) {
     return Promise.resolve({
       preloadedState: store.getState(),
@@ -51,10 +58,17 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
     });
   }
 
+  if (matchedDefaultRoutes.length === 0) {
+    return Promise.resolve({
+      preloadedState: store.getState(),
+      translations,
+      hostedConfig: {},
+      unmatchedRoute: true,
+    });
+  }
+
   const dataLoadingCalls = hostedConfigAsset => {
     const config = mergeConfig(hostedConfigAsset, defaultConfig);
-    const pathnameWithoutLocale =
-      locale !== 'en' ? pathname.replace(`/${locale}`, '') || '/' : pathname;
     const matchedRoutes = matchPathname(pathnameWithoutLocale, routeConfiguration(config.layout));
     const calls = [store.dispatch(fetchConversionRate())];
     return matchedRoutes.reduce((calls, match) => {
