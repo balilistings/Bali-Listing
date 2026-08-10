@@ -9,6 +9,32 @@ const { getSupportedLocales } = require('../src/util/translation');
 
 const PREVENT_DATA_LOADING_IN_SSR = process.env.PREVENT_DATA_LOADING_IN_SSR === 'true';
 
+const DISABLED_COMMERCIAL_VALUES = new Set(['commercial', 'commerical']);
+
+const isDisabledCommercialSearch = (pathname, search) => {
+  const pathSegments = pathname.split('/').filter(Boolean);
+  const isSearchRoute =
+    pathSegments[0]?.toLowerCase() === 's' && pathSegments.length <= 2;
+
+  if (!isSearchRoute) {
+    return false;
+  }
+
+  const listingTypePath = pathSegments.length === 2 ? pathSegments[1] : null;
+  if (listingTypePath && DISABLED_COMMERCIAL_VALUES.has(listingTypePath.toLowerCase())) {
+    return true;
+  }
+
+  const searchParams = new URLSearchParams(search);
+  return [...searchParams.entries()].some(([key, value]) => {
+    const isCategoryParam = /^pub_categoryLevel\d+$/i.test(key);
+    const hasDisabledCategory = value
+      .split(',')
+      .some(category => DISABLED_COMMERCIAL_VALUES.has(category.trim().toLowerCase()));
+    return isCategoryParam && hasDisabledCategory;
+  });
+};
+
 const extractHostedConfig = configAssets => {
   const configEntries = Object.entries(configAssets);
   return configEntries.reduce((collectedData, [name, content]) => {
@@ -49,6 +75,15 @@ exports.loadData = function(requestUrl, sdk, appInfo) {
     pathnameWithoutLocale,
     routeConfiguration(defaultConfig.layout)
   );
+
+  if (isDisabledCommercialSearch(pathnameWithoutLocale, search)) {
+    return Promise.resolve({
+      preloadedState: store.getState(),
+      translations,
+      hostedConfig: {},
+      unmatchedRoute: true,
+    });
+  }
 
   if (PREVENT_DATA_LOADING_IN_SSR) {
     return Promise.resolve({
