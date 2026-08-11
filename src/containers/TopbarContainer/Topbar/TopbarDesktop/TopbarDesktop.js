@@ -59,7 +59,7 @@ const InboxLink = ({ notificationCount, inboxTab }) => {
 };
  const useFavPage = process.env.REACT_APP_FAV_PAGE_ENABLED === 'true';
 
-const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink }) => {
+const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLink, intl }) => {
   const currentPageClass = page => {
     const isAccountSettingsPage =
       page === 'AccountSettingsPage' && ACCOUNT_SETTINGS_PAGES.includes(currentPage);
@@ -68,7 +68,11 @@ const ProfileMenu = ({ currentPage, currentUser, onLogout, showManageListingsLin
 
   return (
     <Menu>
-      <MenuLabel className={css.profileMenuLabel} isOpenClassName={css.profileMenuIsOpen}>
+      <MenuLabel
+        className={css.profileMenuLabel}
+        isOpenClassName={css.profileMenuIsOpen}
+        aria-label={intl.formatMessage({ id: 'TopbarDesktop.accountSettingsLink' })}
+      >
         <Avatar className={css.avatar} user={currentUser} disableProfileLink />
       </MenuLabel>
       <MenuContent className={css.profileMenuContent}>
@@ -138,7 +142,11 @@ const NotSignedInProfileMenu = ({
 }) => {
   return (
     <Menu>
-      <MenuLabel className={css.profileMenuLabel} isOpenClassName={css.profileMenuIsOpen}>
+      <MenuLabel
+        className={css.profileMenuLabel}
+        isOpenClassName={css.profileMenuIsOpen}
+        aria-label={intl.formatMessage({ id: 'TopbarDesktop.login' })}
+      >
         <div className={css.profileMenuIcon}>
          {currentPage == "search" ? <svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect width="44" height="44" rx="22" fill="#F74DF4"/>
@@ -332,6 +340,7 @@ const TopbarDesktop = props => {
       currentUser={currentUser}
       onLogout={onLogout}
       showManageListingsLink={showCreateListingsLink}
+      intl={intl}
     />
   ) : (
     <NotSignedInProfileMenu

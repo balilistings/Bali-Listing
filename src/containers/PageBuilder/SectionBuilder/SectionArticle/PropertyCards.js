@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocale } from '../../../../context/localeContext';
 import ImageSlider from '../../../../components/ImageSlider/ImageSlider';
-import { get } from '../../../../util/api';
+import useUserSlug from '../../../../util/useUserSlug';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -48,24 +48,11 @@ const formatPriceInMillions = (actualPrice, locale = 'en') => {
 
 const ProviderInfo = ({ author, intl }) => {
   const [mounted, setMounted] = useState(false);
-  const [authorSlug, setAuthorSlug] = useState(null);
+  const authorSlug = useUserSlug(author?.id?.uuid);
 
   useEffect(() => {
     setMounted(true);
-    const fetchAuthorSlug = async () => {
-      const userId = author?.id?.uuid;
-      if (!userId) return;
-
-      try {
-        const response = await get(`/api/users/${userId}/slug`);
-        setAuthorSlug(response.slug);
-      } catch (err) {
-        console.error('Failed to fetch author slug:', err);
-      }
-    };
-
-    fetchAuthorSlug();
-  }, [author?.id?.uuid]);
+  }, []);
 
   if (!mounted) {
     return null;
@@ -503,6 +490,12 @@ const PropertyCards = () => {
                     />
                     {!checkIsProvider(currentUser) && (
                       <button
+                        type="button"
+                        aria-label={intl.formatMessage({
+                          id: isFavorite
+                            ? 'ListingCard.removeFromFavorites'
+                            : 'ListingCard.addToFavorites',
+                        })}
                         className={classNames(
                           styles.wishlistButton,
                           isFavorite ? styles.active : ''

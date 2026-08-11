@@ -363,6 +363,8 @@
   "ListingCard.perUnit": "{unitType, select, day {per hari} night {per malam} hour {per jam} other {}}",
   "ListingCard.price": "{priceValue} {pricePerUnit}",
   "ListingCard.priceStartingFrom": "Mulai dari {priceValue} {pricePerUnit}",
+  "ListingCard.addToFavorites": "Tambahkan ke favorit",
+  "ListingCard.removeFromFavorites": "Hapus dari favorit",
   "ListingCard.unsupportedPrice": "({currency})",
   "ListingCard.unsupportedPriceTitle": "Mata uang tidak didukung ({currency})",
   "ListingCard.weekly": "minggu",

@@ -491,18 +491,18 @@ export const createSearchResultSchema = (
     });
     return {
       '@type': 'ListItem',
-      position: i,
+      position: i + 1,
       url: `${config.marketplaceRootURL}${pathToItem}`,
       name: title,
     };
   });
 
-  const schemaMainEntity = JSON.stringify({
+  const schemaMainEntity = {
     '@type': 'ItemList',
     name: searchTitle,
     itemListOrder: 'http://schema.org/ItemListOrderAscending',
     itemListElement: schemaListings,
-  });
+  };
   return {
     title: schemaTitle,
     description: schemaDescription,
@@ -511,7 +511,7 @@ export const createSearchResultSchema = (
       '@type': 'SearchResultsPage',
       description: schemaDescription,
       name: schemaTitle,
-      mainEntity: [schemaMainEntity],
+      mainEntity: schemaMainEntity,
     },
   };
 };

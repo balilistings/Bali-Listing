@@ -36,7 +36,7 @@ const mapStateToProps = state => {
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
   } = state.user;
-  const hasGenericError = !!(logoutError || hasCurrentUserErrors(state));
+  const hasGenericError = !!(logoutError || (isAuthenticated && hasCurrentUserErrors(state)));
   const { isMobileMenuOpen } = state.ui;
 
   return {

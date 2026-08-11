@@ -364,6 +364,8 @@
   "ListingCard.perUnit": "{unitType, select, day {за день} night {за ночь} hour {за час} other {}}",
   "ListingCard.price": "{priceValue} {pricePerUnit}",
   "ListingCard.priceStartingFrom": "От {priceValue} {pricePerUnit}",
+  "ListingCard.addToFavorites": "Добавить в избранное",
+  "ListingCard.removeFromFavorites": "Удалить из избранного",
   "ListingCard.unsupportedPrice": "({currency})",
   "ListingCard.unsupportedPriceTitle": "Неподдерживаемая валюта ({currency})",
   "ListingCard.weekly": "нед.",

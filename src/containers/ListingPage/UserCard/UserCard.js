@@ -12,7 +12,7 @@ import IconCollection from '../../../components/IconCollection/IconCollection';
 import { IoMdStar } from 'react-icons/io';
 import css from './UserCard.module.css';
 import { useSelector } from 'react-redux';
-import { get } from '../../../util/api';
+import useUserSlug from '../../../util/useUserSlug';
 
 // Approximated collapsed size so that there are ~three lines of text
 // in the desktop layout in the author section of the ListingPage.
@@ -80,7 +80,6 @@ const ExpandableBio = props => {
  */
 const UserCard = props => {
   const [mounted, setMounted] = useState(false);
-  const [authorSlug, setAuthorSlug] = useState(null);
 
   const {
     rootClassName,
@@ -96,23 +95,11 @@ const UserCard = props => {
   const ensuredUser = userIsCurrentUser ? ensureCurrentUser(user) : ensureUser(user);
 
   const ensuredCurrentUser = ensureCurrentUser(currentUser);
+  const authorSlug = useUserSlug(ensuredUser?.id?.uuid);
 
   useEffect(() => {
     setMounted(true);
-    const fetchAuthorSlug = async () => {
-      const userId = ensuredUser?.id?.uuid;
-      if (!userId) return;
-
-      try {
-        const response = await get(`/api/users/${userId}/slug`);
-        setAuthorSlug(response.slug);
-      } catch (err) {
-        console.error('Failed to fetch author slug:', err);
-      }
-    };
-
-    fetchAuthorSlug();
-  }, [ensuredUser?.id?.uuid]);
+  }, []);
 
   const isCurrentUser =
     ensuredUser.id && ensuredCurrentUser.id && ensuredUser.id.uuid === ensuredCurrentUser.id.uuid;

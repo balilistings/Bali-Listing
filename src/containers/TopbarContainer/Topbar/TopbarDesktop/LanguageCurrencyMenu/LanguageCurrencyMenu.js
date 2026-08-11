@@ -8,9 +8,10 @@ import topbarCss from '../TopbarDesktop.module.css';
 import css from './LanguageCurrencyMenu.module.css';
 import IconLanguage from '../../../../../components/IconLanguage/IconLanguage.js';
 import IconCurrency from '../../../../../components/IconCurrency/IconCurrency.js';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const LanguageCurrencyMenu = ({ config, currentPage, scrollToBottom }) => {
+  const intl = useIntl();
   const {
     locale,
     SUPPORTED_LOCALES,
@@ -32,6 +33,9 @@ const LanguageCurrencyMenu = ({ config, currentPage, scrollToBottom }) => {
       <MenuLabel
         className={topbarCss.profileMenuLabel}
         isOpenClassName={topbarCss.profileMenuIsOpen}
+        aria-label={`${intl.formatMessage({ id: 'TopbarDesktop.language' })} / ${intl.formatMessage({
+          id: 'TopbarDesktop.currency',
+        })}`}
       >
         <div className={classNames(css.menuIcon, scrollToBottom ? css.menuIconBottom : null)}>
           <MenuIcon />
@@ -50,6 +54,7 @@ const LanguageCurrencyMenu = ({ config, currentPage, scrollToBottom }) => {
               <div className={css.optionsContainer}>
                 {SUPPORTED_LOCALES.map(l => (
                   <button
+                    type="button"
                     key={l}
                     className={classNames(css.optionButton, {
                       [css.selected]: locale === l,
@@ -75,6 +80,7 @@ const LanguageCurrencyMenu = ({ config, currentPage, scrollToBottom }) => {
               <div className={css.optionsContainer}>
                 {currencies.map(c => (
                   <button
+                    type="button"
                     key={c.code}
                     className={classNames(css.optionButton, css.currencyOption, {
                       [css.selected]: selectedCurrency === c.code,

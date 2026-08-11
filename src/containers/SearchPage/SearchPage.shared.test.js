@@ -8,6 +8,7 @@ import {
   pickSearchParamsOnly,
   searchParamsPicker,
   groupListingFieldConfigs,
+  createSearchResultSchema,
 } from './SearchPage.shared.js';
 
 const urlParams = {
@@ -631,6 +632,44 @@ describe('SearchPage.helpers', () => {
         listingFieldsConfig[3],
         listingFieldsConfig[4],
       ]);
+    });
+  });
+
+  describe('createSearchResultSchema', () => {
+    it('returns an ItemList object with one-based listing positions', () => {
+      const listings = [
+        { id: { uuid: 'listing-1' }, attributes: { title: 'First villa' } },
+        { id: { uuid: 'listing-2' }, attributes: { title: 'Second villa' } },
+      ];
+      const intl = {
+        formatMessage: ({ id }) => id,
+      };
+      const routeConfiguration = [
+        { name: 'ListingPage', path: '/l/:slug/:id', component: null },
+      ];
+      const config = {
+        marketplaceName: 'Bali Listings',
+        marketplaceRootURL: 'https://balilistings.com',
+      };
+
+      const result = createSearchResultSchema(
+        listings,
+        { address: 'Bali' },
+        intl,
+        routeConfiguration,
+        config
+      );
+
+      expect(result.schema.mainEntity).toEqual(
+        expect.objectContaining({
+          '@type': 'ItemList',
+          itemListElement: [
+            expect.objectContaining({ position: 1, name: 'First villa' }),
+            expect.objectContaining({ position: 2, name: 'Second villa' }),
+          ],
+        })
+      );
+      expect(typeof result.schema.mainEntity).toBe('object');
     });
   });
 });

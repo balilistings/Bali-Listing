@@ -577,6 +577,8 @@
   "ListingCard.perUnit": "{unitType, select, day {per day} night {per night} hour {per hour} other {}}",
   "ListingCard.price": "{priceValue} {pricePerUnit}",
   "ListingCard.priceStartingFrom": "From {priceValue} {pricePerUnit}",
+  "ListingCard.addToFavorites": "Add to favorites",
+  "ListingCard.removeFromFavorites": "Remove from favorites",
   "ListingCard.unsupportedPrice": "({currency})",
   "ListingCard.unsupportedPriceTitle": "Unsupported currency ({currency})",
   "ListingCard.weekly": "weekly",

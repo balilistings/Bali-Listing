@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -11,7 +11,7 @@ import { useIntl } from '../../util/reactIntl';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { checkIsProvider } from '../../util/userHelpers';
-import { get } from '../../util/api';
+import useUserSlug from '../../util/useUserSlug';
 
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
@@ -189,7 +189,6 @@ const PriceMaybe = props => {
 export const ListingCard = props => {
   const config = useConfiguration();
   const intl = props.intl || useIntl();
-  const [authorSlug, setAuthorSlug] = useState(null);
 
   const {
     className,
@@ -210,21 +209,7 @@ export const ListingCard = props => {
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
 
-  useEffect(() => {
-    const fetchAuthorSlug = async () => {
-      const userId = author?.id?.uuid;
-      if (!userId) return;
-
-      try {
-        const response = await get(`/api/users/${userId}/slug`);
-        setAuthorSlug(response.slug);
-      } catch (err) {
-        console.error('Failed to fetch author slug:', err);
-      }
-    };
-
-    fetchAuthorSlug();
-  }, [author?.id?.uuid]);
+  const authorSlug = useUserSlug(author?.id?.uuid);
 
   const {
     pricee,
@@ -279,6 +264,10 @@ export const ListingCard = props => {
     <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
       {showWishlistButton && !checkIsProvider(currentUser) && (
         <button
+          type="button"
+          aria-label={intl.formatMessage({
+            id: isFavorite ? 'ListingCard.removeFromFavorites' : 'ListingCard.addToFavorites',
+          })}
           className={classNames(css.wishlistButton, isFavorite ? css.active : '')}
           onClick={onToggleFavorites}
         >

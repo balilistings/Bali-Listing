@@ -37,6 +37,9 @@
 }
 
 .resultsFound {
+  display: flex;
+  align-items: center;
+  margin: 0;
   white-space: nowrap;
   font-family: Mulish;
   font-weight: 700;

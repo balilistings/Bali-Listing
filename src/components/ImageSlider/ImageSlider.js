@@ -30,16 +30,29 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState([]);
+  const [loadedImageIndexes, setLoadedImageIndexes] = useState(() => new Set([0, 1]));
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi && emblaApi.scrollNext(), [emblaApi]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
-    setSelectedIndex(emblaApi.selectedScrollSnap());
+    const nextIndex = emblaApi.selectedScrollSnap();
+    setSelectedIndex(nextIndex);
+    setLoadedImageIndexes(currentIndexes => {
+      const nextIndexes = new Set(currentIndexes);
+      nextIndexes.add(nextIndex);
+      nextIndexes.add(nextIndex + 1);
+      nextIndexes.add(nextIndex - 1);
+      if (loop && images?.length > 1) {
+        nextIndexes.add((nextIndex + 1) % images.length);
+        nextIndexes.add((nextIndex - 1 + images.length) % images.length);
+      }
+      return nextIndexes;
+    });
     setPrevBtnEnabled(emblaApi.canScrollPrev());
     setNextBtnEnabled(emblaApi.canScrollNext());
-  }, [emblaApi]);
+  }, [emblaApi, images?.length, loop]);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -67,16 +80,14 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
       ))
     : images.map((img, imgIdx) => (
         <div className={styles.embla__slide} key={imgIdx}>
-          <img
-            src={img}
-            alt={title}
-            className={styles.image + ' ' + styles.imageFade}
-            loading={
-              Math.abs(imgIdx - selectedIndex) <= eagerLimit
-                ? 'eager'
-                : 'lazy'
-            }
-          />
+          {loadedImageIndexes.has(imgIdx) ? (
+            <img
+              src={img}
+              alt={title}
+              className={styles.image + ' ' + styles.imageFade}
+              loading={Math.abs(imgIdx - selectedIndex) <= eagerLimit ? 'eager' : 'lazy'}
+            />
+          ) : null}
         </div>
       ));
 
