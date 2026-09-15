@@ -1,7 +1,8 @@
 const { isIP } = require('net');
 
 // Diagnostic only: never use a claimed user agent or forwarded address as an
-// authentication decision. Render documents the first X-Forwarded-For address.
+// authentication decision. The first X-Forwarded-For value was spoofable in a
+// live Render probe. Prefer the edge's client header; mark fallback unverified.
 const clean = (value, limit) => String(value || '').replace(/[\x00-\x1f\x7f]/g, '').slice(0, limit);
 const safePath = url => {
   const pathname = String(url || '/').split(/[?#]/, 1)[0];
@@ -16,12 +17,13 @@ module.exports = function requestTraffic({ render = process.env.RENDER === 'true
   return (req, res, next) => {
     const start = process.hrtime.bigint();
     const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+    const edge = String(req.headers['cf-connecting-ip'] || '').trim();
     const peer = req.socket.remoteAddress;
-    const ip = render && isIP(forwarded) ? forwarded : isIP(peer || '') ? peer : null;
+    const ip = render && isIP(edge) ? edge : render && isIP(forwarded) ? forwarded : isIP(peer || '') ? peer : null;
     const entry = {
       event: 'request_traffic', version: 1, time: new Date().toISOString(),
       method: clean(req.method, 16), path: safePath(req.originalUrl || req.url),
-      ip, ipSource: render && isIP(forwarded) ? 'render-x-forwarded-for' : 'socket',
+      ip, ipSource: render && isIP(edge) ? 'render-cf-connecting-ip' : render && isIP(forwarded) ? 'forwarded-unverified' : 'socket',
       userAgent: clean(req.headers['user-agent'], 256),
     };
     let bytes = 0;
