@@ -5,7 +5,7 @@ const express = require('express');
 const block = require('./blockAmazonbot');
 const tracking = require('./requestTraffic');
 
-test('Amazonbot and PetalBot stop before routes, remain logged, and do not affect other clients', async () => {
+test('Blocked crawlers stop before routes, remain logged, and do not affect other clients', async () => {
   const logs=[];
   let routed=0;
   const app=express();
@@ -20,14 +20,14 @@ test('Amazonbot and PetalBot stop before routes, remain logged, and do not affec
     }).on('error',reject);
   });
   try {
-    for(const ua of ['Amazonbot/0.1','Mozilla/5.0 (compatible; Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot)','amazonbot','PetalBot','petalbot/1.0','Mozilla/5.0 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)']) {
+    for(const ua of ['GPTBot/1.4','gptbot','Mozilla/5.0 (compatible; GPTBot/1.4; +https://openai.com/gptbot)','Amazonbot/0.1','Mozilla/5.0 (compatible; Amazonbot/0.1; +https://developer.amazon.com/support/amazonbot)','amazonbot','PetalBot','petalbot/1.0','Mozilla/5.0 (compatible; PetalBot;+https://webmaster.petalsearch.com/site/petalbot)']) {
       const r=await request(ua);assert.equal(r.status,403);assert.equal(r.body,'Forbidden\n');
       assert.equal(r.headers['cache-control'],'private, no-store');assert.equal(r.headers.vary,'User-Agent');
       assert.equal(logs.at(-1).bodyBytes,10);
     }
     assert.equal(routed,0);
     assert.equal((await request('Amazonbot/0.1','HEAD')).body,'');
-    for(const ua of ['Mozilla/5.0','Googlebot/2.1','bingbot/2.0','NotPetalBot','NotAmazonbot','']) assert.equal((await request(ua)).status,200);
-    assert.equal(routed,6);assert.equal(logs.length,13);
+    for(const ua of ['OAI-SearchBot/1.4','ChatGPT-User/1.0','NotGPTBot','Mozilla/5.0','Googlebot/2.1','bingbot/2.0','NotPetalBot','NotAmazonbot','']) assert.equal((await request(ua)).status,200);
+    assert.equal(routed,9);assert.equal(logs.length,19);
   } finally {server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
 });
