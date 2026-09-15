@@ -140,8 +140,11 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor, no
       link: head.link.toString(),
       meta: head.meta.toString(),
       script: head.script.toString(),
-      preloadedStateScript,
-      translationsScript,
+      // The HTML template places translations before state. Reuse must run after state.
+      preloadedStateScript: translationsInState
+        ? `${preloadedStateScript}${translationsScript}`
+        : preloadedStateScript,
+      translationsScript: translationsInState ? '' : translationsScript,
       ssrStyles: webExtractor.getStyleTags(),
       ssrLinks: webExtractor.getLinkTags(),
       ssrScripts: webExtractor.getScriptTags(nonceParamMaybe),
