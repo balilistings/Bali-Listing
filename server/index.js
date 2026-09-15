@@ -83,6 +83,12 @@ checkEnvVariables(MANDATORY_ENV_VARIABLES);
 
 const app = express();
 
+// Observe origin traffic, including early 404s and static responses.
+// Set REQUEST_TRAFFIC_LOGGING=false to disable without changing application behavior.
+if (process.env.REQUEST_TRAFFIC_LOGGING !== 'false') {
+  app.use(require('./middleware/requestTraffic')());
+}
+
 const errorPage500 = fs.readFileSync(path.join(buildPath, '500.html'), 'utf-8');
 const errorPage404 = fs.readFileSync(path.join(buildPath, '404.html'), 'utf-8');
 
