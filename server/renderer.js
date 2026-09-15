@@ -124,9 +124,14 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor, no
     // Add nonce to server-side rendered script tags
     const nonceParamMaybe = nonce ? { nonce } : {};
 
-    const serializedTranslations = JSON.stringify(translations).replace(/</g, '\\u003c');
+    // Production already includes these messages in the serialized locale state.
+    // Preserve the legacy JSON-string global without sending the dictionary twice.
+    const translationsInState = preloadedState.locale?.messages === translations;
+    const translationValue = translationsInState
+      ? 'JSON.stringify(JSON.parse(window.__PRELOADED_STATE__).locale.messages)'
+      : JSON.stringify(JSON.stringify(translations).replace(/</g, '\\u003c'));
     const translationsScript = `
-      <script ${nonceMaybe}>window.__TRANSLATIONS__ = ${JSON.stringify(serializedTranslations)};</script>
+      <script ${nonceMaybe}>window.__TRANSLATIONS__ = ${translationValue};</script>
     `;
 
     return template({
