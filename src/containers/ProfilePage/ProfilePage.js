@@ -345,7 +345,8 @@ export const ProfilePageComponent = props => {
   // too empty for the provider at the time they are creating their first listing.
   // To remedy the situation, we redirect Stripe's crawler to the landing page of the marketplace.
   // TODO: When there's more content on the profile page, we should consider by-passing this redirection.
-  const searchParams = rest?.location?.search;
+  const location = rest.location;
+  const searchParams = location?.search;
   const isStorefront = searchParams
     ? new URLSearchParams(searchParams)?.get('mode') === 'storefront'
     : false;
