@@ -267,6 +267,7 @@ class LocationAutocompleteInputImplementation extends Component {
     this.unsubscribe2 = null;
 
     this.state = {
+      isMobile: false,
       inputHasFocus: false,
       selectionInProgress: false,
       touchStartedFrom: null,
@@ -304,6 +305,9 @@ class LocationAutocompleteInputImplementation extends Component {
 
   componentDidMount() {
     this._isMounted = true;
+    this.updateViewport = () => this.setState({ isMobile: window.innerWidth <= 768 });
+    this.updateViewport();
+    window.addEventListener('resize', this.updateViewport);
     document.addEventListener('mousedown', this.handleClickOutside);
     document.addEventListener('touchstart', this.handleClickOutside);
 
@@ -312,6 +316,7 @@ class LocationAutocompleteInputImplementation extends Component {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.updateViewport);
     window.clearTimeout(this.shortQueryTimeout);
     this._isMounted = false;
     document.removeEventListener('mousedown', this.handleClickOutside);
@@ -673,8 +678,8 @@ class LocationAutocompleteInputImplementation extends Component {
     const isValid = valid && touched;
     const predictions = this.currentPredictions();
 
-    // Detect mobile view (simple check, can be improved)
-    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    // Start with the same input markup as SSR; adapt only after hydration.
+    const { isMobile } = this.state;
 
     const handleOnFocus = e => {
       this.setState({ inputHasFocus: true, dropdownOpen: true });
