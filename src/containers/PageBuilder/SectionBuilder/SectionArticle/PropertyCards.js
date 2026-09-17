@@ -21,7 +21,7 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocale } from '../../../../context/localeContext';
 import ImageSlider from '../../../../components/ImageSlider/ImageSlider';
-import { get } from '../../../../util/api';
+import CardContainer from '../../../../components/ListingCard/CardContainer';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
 
@@ -47,35 +47,15 @@ const formatPriceInMillions = (actualPrice, locale = 'en') => {
 };
 
 const ProviderInfo = ({ author, intl }) => {
-  const [mounted, setMounted] = useState(false);
-  const [authorSlug, setAuthorSlug] = useState(null);
-
-  useEffect(() => {
-    setMounted(true);
-    const fetchAuthorSlug = async () => {
-      const userId = author?.id?.uuid;
-      if (!userId) return;
-
-      try {
-        const response = await get(`/api/users/${userId}/slug`);
-        setAuthorSlug(response.slug);
-      } catch (err) {
-        console.error('Failed to fetch author slug:', err);
-      }
-    };
-
-    fetchAuthorSlug();
-  }, [author?.id?.uuid]);
-
-  if (!mounted) {
+  if (!author?.id?.uuid) {
     return null;
   }
 
   return (
     <NamedLink
       className={styles.listedBy}
-      name={authorSlug ? 'ProfilePageSlug' : 'ProfilePage'}
-      params={{ id: authorSlug ? authorSlug : author.id.uuid }}
+      name="ProfilePage"
+      params={{ id: author.id.uuid }}
     >
       <span className={styles.listedBy}>
         {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
@@ -485,13 +465,10 @@ const PropertyCards = () => {
               };
 
               return (
-                <NamedLink
+                <CardContainer
                   className={styles.card}
-                  name="ListingPage"
-                  params={{
-                    id: card.id.uuid,
-                    slug: createSlug(title),
-                  }}
+                  id={card.id.uuid}
+                  slug={createSlug(title)}
                   key={card.id.uuid}
                 >
                   <div className={styles.imageWrapper}>
@@ -526,7 +503,9 @@ const PropertyCards = () => {
                         )}
                         <ProviderInfo author={author} intl={intl} />
                       </div>
-                      <div className={styles.title}>{title}</div>
+                      <div className={styles.title}>
+                        <NamedLink name="ListingPage" params={{ id: card.id.uuid, slug: createSlug(title) }}>{title}</NamedLink>
+                      </div>
                     </div>
                     <div className={styles.cardDetailsBottom}>
                       <div className={styles.location}>
@@ -599,7 +578,7 @@ const PropertyCards = () => {
                       </div>
                     </div>
                   </div>
-                </NamedLink>
+                </CardContainer>
               );
             })}
           </>

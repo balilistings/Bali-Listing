@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
 import { useConfiguration } from '../../context/configurationContext';
 
@@ -11,7 +11,6 @@ import { useIntl } from '../../util/reactIntl';
 import { richText } from '../../util/richText';
 import { createSlug } from '../../util/urlHelpers';
 import { checkIsProvider } from '../../util/userHelpers';
-import { get } from '../../util/api';
 
 import { Icon } from '../../containers/PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { capitaliseFirstLetter, sortTags } from '../../util/helper';
@@ -22,6 +21,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ImageSlider from '../ImageSlider/ImageSlider';
 import PromotedBadge from './PromotedBadge';
+import CardContainer from './CardContainer';
 
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
@@ -85,18 +85,17 @@ export const formatPriceWithCurrency = (actualPrice, currency = 'IDR', locale = 
   return null;
 };
 
-export const checkPriceParams = () => {
-  if (typeof window !== 'undefined') {
-    const urlParams = new URLSearchParams(window.location.search);
+export const checkPriceParams = (search = '') => {
+    const urlParams = new URLSearchParams(search);
     const weekprice = urlParams.get('pub_weekprice') || null;
     const monthprice = urlParams.get('pub_monthprice') || null;
     const yearprice = urlParams.get('pub_yearprice') || null;
 
     return { weekprice, monthprice, yearprice };
-  }
 };
 
 const PriceMaybe = props => {
+  const { search } = useLocation();
   const { price, publicData, config, isRentals, intl } = props;
   const locale = props.intl.locale;
 
@@ -117,7 +116,7 @@ const PriceMaybe = props => {
   let suffix = null;
 
   if (isRentals) {
-    const priceParams = checkPriceParams();
+    const priceParams = checkPriceParams(search);
     const periodPriority = ['yearprice', 'monthprice', 'weekprice'];
     let activePeriodKey = '';
 
@@ -189,7 +188,6 @@ const PriceMaybe = props => {
 export const ListingCard = props => {
   const config = useConfiguration();
   const intl = props.intl || useIntl();
-  const [authorSlug, setAuthorSlug] = useState(null);
 
   const {
     className,
@@ -210,21 +208,6 @@ export const ListingCard = props => {
   const slug = createSlug(title);
   const author = ensureUser(listing.author);
 
-  useEffect(() => {
-    const fetchAuthorSlug = async () => {
-      const userId = author?.id?.uuid;
-      if (!userId) return;
-
-      try {
-        const response = await get(`/api/users/${userId}/slug`);
-        setAuthorSlug(response.slug);
-      } catch (err) {
-        console.error('Failed to fetch author slug:', err);
-      }
-    };
-
-    fetchAuthorSlug();
-  }, [author?.id?.uuid]);
 
   const {
     pricee,
@@ -276,7 +259,7 @@ export const ListingCard = props => {
   };
 
   return (
-    <NamedLink name="ListingPage" params={{ id, slug }} className={classes}>
+    <CardContainer id={id} slug={slug} className={classes} {...setActivePropsMaybe}>
       {showWishlistButton && !checkIsProvider(currentUser) && (
         <button
           className={classNames(css.wishlistButton, isFavorite ? css.active : '')}
@@ -305,8 +288,8 @@ export const ListingCard = props => {
           {author?.id?.uuid && (
             <NamedLink
               className={css.listedBy}
-              name={authorSlug ? 'ProfilePageSlug' : 'ProfilePage'}
-              params={{ id: authorSlug ? authorSlug : author.id.uuid }}
+              name="ProfilePage"
+              params={{ id: author.id.uuid }}
             >
               <span className={css.listedBy}>
                 {intl.formatMessage({ id: 'ListingPage.aboutProviderTitle' })}:{' '}
@@ -318,10 +301,12 @@ export const ListingCard = props => {
 
         <div className={css.mainInfo}>
           <div className={css.title}>
+            <NamedLink name="ListingPage" params={{ id, slug }}>
             {richText(title, {
               longWordMinLength: MIN_LENGTH_FOR_LONG_WORDS,
               longWordClass: css.longWord,
             })}
+            </NamedLink>
           </div>
           <div className={css.cardDetailsBottom}>
             <div className={css.location}>
@@ -378,7 +363,7 @@ export const ListingCard = props => {
           </div>
         </div>
       </div>
-    </NamedLink>
+    </CardContainer>
   );
 };
 

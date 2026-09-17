@@ -122,13 +122,14 @@ const getResolvedCurrentPage = (location, routeConfiguration, SUPPORTED_LOCALES)
   }
 };
 
-const GenericError = props => {
+export const GenericError = props => {
   const { show } = props;
+  if (!show) return null;
   const classes = classNames(css.genericError, {
     [css.genericErrorVisible]: show,
   });
   return (
-    <div className={classes}>
+    <div className={classes} role="alert">
       <div className={css.genericErrorContent}>
         <p className={css.genericErrorText}>
           <FormattedMessage id="Topbar.genericError" />
@@ -162,6 +163,7 @@ const TopbarComponent = props => {
     sendVerificationEmailInProgress,
     sendVerificationEmailError,
     showGenericError,
+    hasGenericError,
     config,
     routeConfiguration,
     openCustomFilters,
@@ -443,7 +445,7 @@ const TopbarComponent = props => {
         sendVerificationEmailError={sendVerificationEmailError}
       />
 
-      <GenericError show={showGenericError} />
+      <GenericError show={showGenericError ?? hasGenericError} />
     </div>
   );
 };

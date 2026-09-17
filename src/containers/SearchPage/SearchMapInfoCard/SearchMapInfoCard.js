@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import ImageSlider from '../../../components/ImageSlider/ImageSlider';
 import IconCollection from '../../../components/IconCollection/IconCollection';
 import {
@@ -19,6 +19,7 @@ import css from './SearchMapInfoCard.module.css';
 const MIN_LENGTH_FOR_LONG_WORDS = 10;
 
 const PriceMaybe = props => {
+  const { search } = useLocation();
   const { intl, price, publicData, config, isRentals, currencyConversion, locale } = props;
   const { listingType } = publicData || {};
   const validListingTypes = config.listing.listingTypes;
@@ -35,7 +36,7 @@ const PriceMaybe = props => {
 
   const formattedPrice = convertedPrice ? formatPriceInMillions(convertedPrice, locale) : null;
 
-  const priceParams = checkPriceParams();
+  const priceParams = checkPriceParams(search);
 
   let suffix;
   if (priceParams?.weekprice || priceParams?.monthprice || priceParams?.yearprice) {
@@ -69,6 +70,7 @@ const PriceMaybe = props => {
 // ListingCard is the listing info without overlayview or carousel controls
 const ListingCard = props => {
   const history = useHistory();
+  const { search } = useLocation();
   const {
     className,
     clickHandler,
@@ -136,7 +138,7 @@ const ListingCard = props => {
   let price;
 
   if (isRentals) {
-    const priceParams = checkPriceParams();
+    const priceParams = checkPriceParams(search);
 
     if (priceParams?.weekprice) {
       price = weekprice;

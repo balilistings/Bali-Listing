@@ -303,6 +303,11 @@ app.get('*', async (req, res) => {
       } catch (e) {
         translations = require('../src/translations/en.json');
       }
+      // Match the browser's English hosted overrides on the first render.
+      // Other locales use their own dictionary in LocaleAwareIntlProvider.
+      if (locale === 'en') {
+        translations = { ...translations, ...(hostedConfig.translations || {}) };
+      }
 
       const updatedPreloadedState = {
         ...preloadedState,

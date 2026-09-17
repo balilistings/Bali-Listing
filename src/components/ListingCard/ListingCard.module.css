@@ -1,6 +1,7 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
+  cursor: pointer;
   /* Layout */
   display: flex;
   flex-direction: column;
@@ -134,6 +135,7 @@
 }
 
 .title {
+  & a { color: inherit; font: inherit; }
   font-family: Istok Web;
   font-weight: 700;
   font-style: Bold;

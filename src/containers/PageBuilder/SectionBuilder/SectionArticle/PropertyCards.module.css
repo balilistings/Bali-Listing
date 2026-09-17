@@ -523,3 +523,5 @@
   fill: #FF3737;
   stroke: #FF3737;
 }
+.title a { color: inherit; font: inherit; }
+.card { cursor: pointer; }
