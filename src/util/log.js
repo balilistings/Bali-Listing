@@ -100,6 +100,9 @@ export const error = (e, code, data) => {
   } else {
     console.error(e);
     console.error('Error code:', code, 'data:', data);
+    if (data?.componentStack) {
+      console.error('React component stack:', data.componentStack);
+    }
     printAPIErrorsAsConsoleTable(apiErrors);
   }
 };
