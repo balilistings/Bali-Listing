@@ -240,8 +240,8 @@ app.use('/sh', shortUrlRouter);
 // Middleware for locale detection
 app.use(localeMiddleware);
 
-// Middleware to rewrite user URLs from /user/{slug} to /u/{id}
-app.use('/user', rewriteMiddleware);
+// Keep the complete path for localized profiles and legacy blog redirects.
+app.use(rewriteMiddleware);
 
 const noCacheHeaders = {
   'Cache-control': 'no-cache, no-store, must-revalidate',

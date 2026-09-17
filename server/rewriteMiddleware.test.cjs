@@ -14,6 +14,26 @@ const setup = result => {
   const res = { status(code) { this.code = code; return this; }, set() { return this; }, send(body) { this.body = body; return this; }, redirect(code, url) { this.code = code; this.url = url; } };
   return { middleware: module.exports, calls, res };
 };
+test('production mount preserves complete paths for profiles and blog redirects', async t => {
+  const express = require('express');
+  const app = express();
+  const { middleware } = setup({ data: { user_id: 'resolved-user' } });
+  const index = fs.readFileSync(require.resolve('./index'), 'utf8');
+  const registration = index.match(/app\.use\([^;]*rewriteMiddleware\);/)[0];
+  vm.runInNewContext(registration, { app, rewriteMiddleware: middleware });
+  app.use((req, res) => res.send(req.url));
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise(resolve => server.once('listening', resolve));
+  t.after(() => new Promise(resolve => server.close(resolve)));
+  const root = `http://127.0.0.1:${server.address().port}`;
+  for (const locale of ['', '/ru', '/id']) {
+    const r = await fetch(`${root}${locale}/user/vira?source=test`);
+    assert.equal(await r.text(), `${locale}/u/resolved-user?source=test`);
+  }
+  const r = await fetch(`${root}/p/a-guide-to-booking-your-dream-villa-in-bali`, { redirect: 'manual' });
+  assert.equal(r.status, 301);
+  assert.equal(r.headers.get('location'), '/blog/a-guide-to-booking-your-dream-villa-in-bali');
+});
 test('SSR resolves localized profile slugs using the same table as the API', async () => {
   const { middleware, calls, res } = setup({ data: { user_id: 'user-id' } });
   const req = { path: '/ru/user/vira', url: '/ru/user/vira?utm_source=test' };
