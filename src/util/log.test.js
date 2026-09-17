@@ -9,6 +9,7 @@ test('React recovery reports the original error without throwing another error',
     expect(() => onRecoverableError(original, { componentStack: 'at TestComponent' })).not.toThrow();
     expect(spy).toHaveBeenCalledWith(original);
     expect(original.cause.stack).toBe('at TestComponent');
+    expect(spy).toHaveBeenCalledWith('React component stack:', 'at TestComponent');
     expect(spy).toHaveBeenCalledWith('Error code:', 'recoverable-error', 'data:', { componentStack: 'at TestComponent' });
   } finally {
     spy.mockRestore();
