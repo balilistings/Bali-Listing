@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { initializeGoogleAnalytics } from '../analytics/googleAnalytics';
 import { Helmet } from 'react-helmet-async';
 import Cookies from 'js-cookie';
 import { DeferredScriptLoader } from './deferredScriptLoader';
@@ -10,18 +12,6 @@ const GOOGLE_MAPS_SCRIPT_ID = 'GoogleMapsApi';
 const hasUserAcceptedCookies = () => {
   if (typeof window === 'undefined') {
     return false;
-  }
-
-  try {
-    const storedUser = window.localStorage.getItem('sharetribeSdkUser');
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      if (user?.attributes?.profile?.protectedData?.cookieConsent?.accepted !== undefined) {
-        return user.attributes.profile.protectedData.cookieConsent.accepted;
-      }
-    }
-  } catch (e) {
-    // If we can't parse the user data, continue to cookie check
   }
 
   const cookieConsent = Cookies.get('cookieConsent');
@@ -53,11 +43,26 @@ export const IncludeScripts = props => {
   // Check if user has accepted cookies before loading analytics
   const config = useConfiguration();
   const { cookieConsent } = config;
-  const userHasAcceptedCookies = hasUserAcceptedCookies();
+  const currentUser = useSelector(state => state.user?.currentUser);
+  const [consentVersion, setConsentVersion] = useState(0);
+  useEffect(() => {
+    const refresh = () => setConsentVersion(value => value + 1);
+    window.addEventListener('cookie-consent-changed', refresh);
+    return () => window.removeEventListener('cookie-consent-changed', refresh);
+  }, []);
+  const profileConsent = currentUser?.attributes?.profile?.protectedData?.cookieConsent?.accepted;
+  const userHasAcceptedCookies =
+    typeof profileConsent === 'boolean' ? profileConsent : hasUserAcceptedCookies();
+  const analyticsAllowed = !cookieConsent?.enabled || userHasAcceptedCookies;
 
   // Add Google Analytics script if correct id exists (it should start with 'G-' prefix)
   // See: https://developers.google.com/analytics/devguides/collection/gtagjs
   const hasGoogleAnalyticsv4Id = googleAnalyticsId?.indexOf('G-') === 0;
+  useEffect(() => {
+    if (analyticsAllowed && hasGoogleAnalyticsv4Id) {
+      initializeGoogleAnalytics(googleAnalyticsId);
+    }
+  }, [analyticsAllowed, googleAnalyticsId, hasGoogleAnalyticsv4Id, consentVersion]);
 
   // Collect relevant map libraries
   let mapLibraries = [];
@@ -122,18 +127,6 @@ export const IncludeScripts = props => {
           crossOrigin
         ></script>
       );
-
-      if (typeof window !== 'undefined') {
-        window.dataLayer = window.dataLayer || [];
-        // Ensure that gtag function is found from window scope
-        window.gtag = function gtag() {
-          dataLayer.push(arguments);
-        };
-        gtag('js', new Date());
-        gtag('config', googleAnalyticsId, {
-          cookie_flags: 'SameSite=None;Secure',
-        });
-      }
     }
 
     if (plausibleDomains) {

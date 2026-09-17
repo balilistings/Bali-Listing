@@ -11,6 +11,7 @@ import { getCustomCSSPropertiesFromConfig } from '../../util/style';
 import { useIntl } from '../../util/reactIntl';
 import { metaTagProps, generateHreflangs } from '../../util/seo';
 import { canonicalRoutePath } from '../../util/routes';
+import { seoRootURL } from '../../util/seoUrls';
 import { apiBaseUrl } from '../../util/api';
 import { getSupportedLocales } from '../../util/translation';
 
@@ -127,9 +128,9 @@ class PageComponent extends Component {
 
     this.scrollingDisabledChanged(scrollingDisabled);
 
-    const marketplaceRootURL = config.marketplaceRootURL;
-    const shouldReturnPathOnly = referrer && referrer !== 'unsafe-url';
-    const canonicalPath = canonicalRoutePath(routeConfiguration, location, shouldReturnPathOnly);
+    const marketplaceRootURL = seoRootURL(config.marketplaceRootURL);
+    const canonicalPath =
+      this.props.canonicalPath || canonicalRoutePath(routeConfiguration, location, true);
     const canonicalUrl = `${marketplaceRootURL}${canonicalPath}`;
 
     const marketplaceName = config.marketplaceName;
@@ -360,7 +361,12 @@ const Page = props => {
   }
 
   // Generate hreflang links
-  const hreflangLinks = generateHreflangs(pathWithoutLocale, locale, supportedLocales, config.marketplaceRootURL);
+  const hreflangLinks = generateHreflangs(
+    pathWithoutLocale,
+    locale,
+    supportedLocales,
+    seoRootURL(config.marketplaceRootURL)
+  );
 
   return (
     <PageComponent

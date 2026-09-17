@@ -15,10 +15,12 @@ export class GoogleAnalyticsHandler {
     //         Only in-app navigation needs to be sent manually from SPA.
     // Note 3: Timeout is needed because gtag script picks up <title>,
     //         and location change event happens before initial rendering.
-    if (previousPath && window.gtag) {
+    if (previousPath && canonicalPath !== previousPath && window.gtag) {
       window.setTimeout(() => {
         window.gtag('event', 'page_view', {
           page_path: canonicalPath,
+          page_location: new URL(canonicalPath, window.location.origin).href,
+          page_referrer: new URL(previousPath, window.location.origin).href,
         });
       }, 300);
     }

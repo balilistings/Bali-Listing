@@ -10,7 +10,7 @@ const getUserIdBySlug = async (req, res) => {
       .from(supabaseTableName)
       .select('user_id')
       .eq('slug', slug)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error fetching from Supabase:', error);
@@ -21,7 +21,7 @@ const getUserIdBySlug = async (req, res) => {
       res.set('Cache-Control', 'public, max-age=3600');
       return res.status(200).send({ userId: data.user_id });
     } else {
-      return res.status(404).send({ error: 'User not found' });
+      return res.status(404).send({ status: 404, error: 'User not found' });
     }
   } catch (err) {
     console.error('Supabase query failed:', err);

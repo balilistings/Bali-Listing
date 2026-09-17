@@ -47,6 +47,7 @@ const CookieConsent = () => {
       dispatch(saveCookieConsent(consentData));
     } else {
       Cookies.set(COOKIE_CONSENT_KEY, 'accepted', { expires: COOKIE_CONSENT_DURATION_DAYS });
+      window.dispatchEvent(new Event('cookie-consent-changed'));
     }
 
     setShowConsent(false);
@@ -62,6 +63,7 @@ const CookieConsent = () => {
       dispatch(saveCookieConsent(consentData));
     } else {
       Cookies.set(COOKIE_CONSENT_KEY, 'rejected', { expires: COOKIE_CONSENT_DURATION_DAYS });
+      window.dispatchEvent(new Event('cookie-consent-changed'));
     }
 
     setShowConsent(false);

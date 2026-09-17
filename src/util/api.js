@@ -81,7 +81,7 @@ const request = async (path, options = {}) => {
     if (res.status >= 400) {
       return res.json().then(data => {
         let e = new Error();
-        e = Object.assign(e, data);
+        e = Object.assign(e, data, { status: res.status });
 
         throw e;
       });

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import loadable from '@loadable/component';
 import classNames from 'classnames';
@@ -535,8 +535,9 @@ const OrderPanel = props => {
   const classes = classNames(rootClassName || css.root, className);
   const titleClasses = classNames(titleClassName || css.orderTitle);
 
+  const contactInProgress = useRef(false);
   const handleWhatsappClick = async () => {
-    if (contacting) {
+    if (contactInProgress.current) {
       return;
     }
 
@@ -551,9 +552,10 @@ const OrderPanel = props => {
 
     const listingId = listing.id.uuid;
     const isFav = isFavorite(currentUser, listingId);
+    contactInProgress.current = true;
+    setContacting(true);
 
     if (!isFav) {
-      setContacting(true);
       handleToggleFavorites({
         currentUser,
         history,
@@ -579,31 +581,36 @@ const OrderPanel = props => {
             // console.error('Error generating short URL:', error);
           })
           .finally(() => {
-            const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${shortUrl}. Can we discuss details?`;
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
-            window.open(whatsappUrl, '_blank');
+            try {
+              const message = `Hi, I'm contacting you about a listing I found on ${hostUrl}. I'm interested in this property: ${shortUrl}. Can we discuss details?`;
+              const encodedMessage = encodeURIComponent(message);
+              const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodedMessage}`;
+              window.open(whatsappUrl, '_blank');
 
-            if (window.gtag) {
-              window.gtag('event', 'click_contact_owner', {
-                category: 'engagement',
-                listing_id: listing.id.uuid,
-                author_id: author.id.uuid,
-                clicker: currentUser.attributes.email,
-                contact_value: 1,
-              });
-            }
+              if (window.gtag) {
+                window.gtag('event', 'click_contact_owner', {
+                  category: 'engagement',
+                  listing_id: listing.id.uuid,
+                  author_id: author.id.uuid,
+                  contact_method: 'whatsapp',
+                  contact_value: 1,
+                });
+              }
 
-            if (window.fbq) {
-              fbq('track', 'Click Contact Owner', {
-                listing_id: listing.id.uuid,
-                listing_name: listing.attributes.title,
-              });
+              if (window.fbq) {
+                fbq('track', 'Click Contact Owner', {
+                  listing_id: listing.id.uuid,
+                  listing_name: listing.attributes.title,
+                });
+              }
+            } finally {
+              setContacting(false);
+              contactInProgress.current = false;
             }
-            setContacting(false);
           });
       } else {
         setContacting(false);
+        contactInProgress.current = false;
       }
     };
 

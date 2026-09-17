@@ -1,27 +1,44 @@
-
 const supabase = require('./api-util/supabase');
-const { v4: uuidV4, validate: uuidValidate } = require('uuid');
+const { getSupportedLocales } = require('../src/util/translation');
+const { isBlogPage } = require('../src/util/seoUrls');
 
 // Middleware to rewrite user URLs from /user/{slug} to /u/{id}
 const rewriteMiddleware = async (req, res, next) => {
-  const pathParts = req.path.split('/');
-  const slugOrId = pathParts[2];
+  const parts = req.path.split('/').filter(Boolean);
+  const locale = getSupportedLocales().includes(parts[0]) ? parts.shift() : null;
+  const prefix = locale ? `/${locale}` : '';
+  const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  if (parts.length === 2 && parts[0] === 'p' && isBlogPage(parts[1])) {
+    return res.redirect(301, `${prefix}/blog/${parts[1]}${query}`);
+  }
+  if (parts.length !== 2 || parts[0] !== 'user') return next();
+  const slugOrId = parts[1];
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slugOrId)) return next();
 
-  if (slugOrId && !uuidValidate(slugOrId)) {
+  if (slugOrId) {
     try {
       const { data, error } = await supabase
-        .from('provider_users')
-        .select('id')
-        .eq('slug', slugOrId)
-        .single();
+        .from('sharetribe_users')
+        .select('user_id')
+        .eq('slug', decodeURIComponent(slugOrId))
+        .maybeSingle();
 
       if (error) {
-        console.error('Error fetching from Supabase:', error);
+        throw error;
       } else if (data) {
-        req.url = req.url.replace(`/user/${slugOrId}`, `/u/${data.id}`);
+        req.url = `${prefix}/u/${data.user_id}${query}`;
+      } else {
+        return res
+          .status(404)
+          .set('Cache-Control', 'public, max-age=60')
+          .send('Profile not found.');
       }
     } catch (err) {
-      console.error('Supabase query failed:', err);
+      console.error('Profile slug lookup failed:', err.message);
+      return res
+        .status(503)
+        .set('Cache-Control', 'no-store')
+        .send('Profile temporarily unavailable.');
     }
   }
   next();

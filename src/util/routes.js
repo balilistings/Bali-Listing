@@ -3,6 +3,7 @@ import { matchPath } from 'react-router-dom';
 import { compile } from 'path-to-regexp';
 // NOTE: This file imports urlHelpers.js, which may lead to circular dependency
 import { stringify } from './urlHelpers';
+import { getSupportedLocales } from './translation';
 
 const findRouteByName = (nameToFind, routes) => find(routes, route => route.name === nameToFind);
 
@@ -106,20 +107,23 @@ export const findRouteByRouteName = (nameToFind, routes) => {
 export const canonicalRoutePath = (routes, location, pathOnly = false) => {
   const { pathname, search, hash } = location;
 
-  const matches = matchPathname(pathname, routes);
+  const firstSegment = pathname.split('/')[1];
+  const localePrefix = getSupportedLocales().includes(firstSegment) ? `/${firstSegment}` : '';
+  const routePath = localePrefix ? pathname.slice(localePrefix.length) || '/' : pathname;
+  const matches = matchPathname(routePath, routes);
   const isListingRoute = matches.length === 1 && matches[0].route.name === 'ListingPage';
 
   if (isListingRoute) {
     // Remove the dynamic slug from the listing page canonical URL
 
     // Remove possible trailing slash
-    const cleanedPathName = pathname.replace(/\/$/, '');
+    const cleanedPathName = routePath.replace(/\/$/, '');
     const parts = cleanedPathName.split('/');
 
     if (parts.length !== 4) {
       throw new Error('Expected ListingPage route to have 4 parts');
     }
-    const canonicalListingPathname = `/${parts[1]}/${parts[3]}`;
+    const canonicalListingPathname = `${localePrefix}/${parts[1]}/${parts[3]}`;
     return pathOnly ? canonicalListingPathname : `${canonicalListingPathname}${search}${hash}`;
   }
 

@@ -170,10 +170,10 @@ export const ListingPageComponent = props => {
       window.gtag('event', 'visit_listing_page', {
         category: 'engagement',
         author_id: currentListing.author.id.uuid,
-        clicker: currentUser?.attributes.email || 'anonymous',
+        listing_id: currentListing.id?.uuid,
       });
     }
-  }, [currentListing.author?.id.uuid]);
+  }, [currentListing.id?.uuid, currentListing.author?.id.uuid]);
 
   const { listingType, transactionProcessAlias, unitType, categoryLevel1 } = publicData;
   const isRentals = categoryLevel1 === 'rentalvillas';

@@ -3,6 +3,7 @@ const { SitemapIndexStream, SitemapStream, streamToPromise } = require('sitemap'
 const log = require('../log.js');
 const { getRootURL } = require('../api-util/rootURL.js');
 const sdkUtils = require('../api-util/sdk.js');
+const { seoRootURL, seoPagePath } = require('../../src/util/seoUrls');
 
 const isSitemapDisabled = process.env.SITEMAP_DISABLED === 'true';
 const dev = process.env.REACT_APP_ENV === 'development';
@@ -47,8 +48,6 @@ const defaultPublicPaths = {
   landingPage: { url: '/' },
   termsOfService: { url: '/terms-of-service' },
   privacyPolicy: { url: '/privacy-policy' },
-  signup: { url: '/signup' },
-  login: { url: '/login' },
   search: { url: '/s' },
 };
 
@@ -292,7 +291,9 @@ const sitemapPages = (req, res, rootUrl, sdk) => {
         const assetFileName = asset.attributes?.assetPath?.slice(pathPrefix.length);
         const assetName = assetFileName.split('.')[0];
         const permanentPaths = ['landing-page', 'terms-of-service', 'privacy-policy'];
-        return permanentPaths.includes(assetName) ? picked : [...picked, `p/${assetName}`];
+        return permanentPaths.includes(assetName) || /-backup$/.test(assetName)
+          ? picked
+          : [...picked, seoPagePath(assetName)];
       }, []);
 
       const smStream = new SitemapStream({ hostname: rootUrl });
@@ -326,10 +327,15 @@ const handleSitemaps = (req, res, next, sdk, isPrivateMarketplace) => {
   const parts = resource.split('.');
   const sitemapResource = parts[0];
   // Resolve hostname inside the request
-  const rootUrl = getRootURL();
+  const rootUrl = seoRootURL(getRootURL());
 
   if (sitemapResource === 'index') {
-    sitemapIndex(req, res, getRootURL({ useDevApiServerPort: true }), isPrivateMarketplace);
+    sitemapIndex(
+      req,
+      res,
+      seoRootURL(getRootURL({ useDevApiServerPort: true })),
+      isPrivateMarketplace
+    );
   } else if (sitemapResource === 'default') {
     sitemapDefault(req, res, rootUrl, isPrivateMarketplace);
   } else if (sitemapResource === 'recent-listings' && !isPrivateMarketplace) {

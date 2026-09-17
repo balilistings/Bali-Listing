@@ -421,10 +421,20 @@ export const ProfilePageComponent = props => {
     <Page
       scrollingDisabled={scrollingDisabled}
       title={schemaTitle}
+      canonicalPath={
+        profileUser?.id?.uuid
+          ? `${location.pathname.split(/\/(?:user|u)\//)[0]}/u/${profileUser.id.uuid}`
+          : undefined
+      }
       schema={{
         '@context': 'http://schema.org',
         '@type': 'ProfilePage',
         name: schemaTitle,
+        mainEntity: {
+          '@type': 'Person',
+          name: displayName,
+          identifier: profileUser?.id?.uuid,
+        },
       }}
     >
       <LayoutSideNavigation
