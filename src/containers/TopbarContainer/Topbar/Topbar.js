@@ -268,6 +268,7 @@ const TopbarComponent = props => {
       isAuthenticated={isAuthenticated}
       currentUser={currentUser}
       onLogout={handleLogout}
+      onClose={() => onManageMobileMenuOpen(false)}
       notificationCount={notificationCount}
       currentPage={resolvedCurrentPage}
       customLinks={customLinks}

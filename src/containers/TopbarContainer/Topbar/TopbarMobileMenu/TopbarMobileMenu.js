@@ -81,13 +81,14 @@ const TopbarMobileMenu = props => {
     notificationCount = 0,
     customLinks,
     onLogout,
+    onClose,
     showCreateListingsLink,
     config,
   } = props;
 
   const user = ensureCurrentUser(currentUser);
 
-  const servicesLink = <NamedLink key="services" name="CMSPage" params={{ pageId: 'services' }} className={css.navigationLink}><FormattedMessage id="Services.nav" /></NamedLink>;
+  const servicesLink = <NamedLink key="services" name="CMSPage" params={{ pageId: 'services' }} className={css.navigationLink} onClick={onClose}><FormattedMessage id="Services.nav" /></NamedLink>;
   const extraLinks = [servicesLink, ...(customLinks || []).map((linkConfig, index) => {
     return (
       <CustomLinkComponent
