@@ -23,6 +23,7 @@
 .cardContent > .primaryButton { width: 100%; }
 .placeholder { border: 1px dashed #d6c5d6; box-shadow: none; }
 .placeholderMedia { background: #faf5fa; color: #a887a8; }
+.placeholderMedia svg, .placeholderMedia path { fill: none; }
 .placeholderLabel { margin: 0 0 10px; color: #862183; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 .placeholder .secondaryButton { width: 100%; }
 .details { margin-top: 18px; border-top: 1px solid #e9e6e9; padding-top: 14px; font-size: 14px; overflow-wrap: anywhere; }
