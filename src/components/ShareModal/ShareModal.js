@@ -9,6 +9,11 @@ import { FormattedMessage } from 'react-intl';
 
 const ShareModal = ({ isOpen, onClose }) => {
   const [copyStatus, setCopyStatus] = useState('idle');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -19,7 +24,8 @@ const ShareModal = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  if (typeof window === 'undefined') return null;
+  // Keep the first browser render identical to SSR before accessing the page URL.
+  if (!mounted) return null;
 
   const currentUrl = window.location.href;
 
