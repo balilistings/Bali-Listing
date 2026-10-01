@@ -18,6 +18,7 @@ const TranslatedLink = linkProps => {
     Blog: 'TranslatedLink.blog',
     'Contact us': 'TranslatedLink.contactUs',
     FAQ: 'TranslatedLink.faq',
+    Services: 'Services.nav',
   };
 
   // Check if the child is text that needs translation

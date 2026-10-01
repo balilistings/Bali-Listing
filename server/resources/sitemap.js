@@ -297,7 +297,7 @@ const sitemapPages = (req, res, rootUrl, sdk) => {
       }, []);
 
       const smStream = new SitemapStream({ hostname: rootUrl });
-      Readable.from(cmsPagePaths).pipe(smStream);
+      Readable.from([...new Set(cmsPagePaths)]).pipe(smStream);
 
       // Save to in-memory cache
       streamToPromise(smStream).then(sm => (cache.sitemapRecentPages = sm));

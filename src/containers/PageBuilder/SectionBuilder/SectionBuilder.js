@@ -8,6 +8,7 @@ import SectionCarousel from './SectionCarousel';
 import SectionColumns from './SectionColumns';
 import SectionFeatures from './SectionFeatures';
 import SectionHero from './SectionHero';
+import ServicesPromotion from '../../../components/ServicesPromotion/ServicesPromotion';
 
 // Styles
 // Note: these contain
@@ -39,6 +40,7 @@ const defaultSectionComponents = {
   features: { component: SectionFeatures },
   footer: { component: SectionFooter },
   hero: { component: SectionHero },
+  servicesPromotion: { component: ServicesPromotion },
 };
 
 //////////////////////

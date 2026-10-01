@@ -11,16 +11,23 @@ export const LandingPage = () => {
     state => state.hostedAssets || {},
     shallowEqual
   );
-  const useNewPages = process.env.REACT_APP_USE_NEW_PAGES === 'true';
   const data = pageAssetsData?.[camelize(ASSET_NAME)]?.data;
-
-  if (!useNewPages && data) {
-    data.sections = data.sections.filter(section => section.sectionId !== 'our_services');
-  }
+  const sections = (data?.sections || []).filter(
+    section => section.sectionId !== 'services-promotion' && section.sectionId !== 'our_services'
+  );
+  const featuredIndex = sections.findIndex(
+    section => section.sectionId === 'select_your_properties'
+  );
+  if (featuredIndex !== -1)
+    sections.splice(featuredIndex + 1, 0, {
+      sectionType: 'servicesPromotion',
+      sectionId: 'services-promotion',
+    });
+  const pageData = data ? { ...data, sections } : data;
 
   return (
     <PageBuilder
-      pageAssetsData={data}
+      pageAssetsData={pageData}
       inProgress={inProgress}
       error={error}
       fallbackPage={<FallbackPage error={error} />}

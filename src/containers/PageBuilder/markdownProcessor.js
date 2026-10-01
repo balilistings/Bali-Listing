@@ -8,11 +8,11 @@ import remark2rehype from 'remark-rehype';
 import rehypeSanitize from 'rehype-sanitize';
 import rehypeReact from 'rehype-react';
 
-const processor = (components = {}) => {
+const processor = (components = {}, sanitizeSchema) => {
   return unified()
     .use(remarkParse)
     .use(remark2rehype)
-    .use(rehypeSanitize)
+    .use(rehypeSanitize, sanitizeSchema)
     .use(rehypeReact, {
       createElement,
       Fragment,
@@ -20,7 +20,7 @@ const processor = (components = {}) => {
     });
 };
 
-const renderMarkdown = (markdownText, components) => {
-  return processor(components).processSync(markdownText).result;
+const renderMarkdown = (markdownText, components, sanitizeSchema) => {
+  return processor(components, sanitizeSchema).processSync(markdownText).result;
 };
 export default renderMarkdown;

@@ -8,6 +8,11 @@ const rewriteMiddleware = async (req, res, next) => {
   const locale = getSupportedLocales().includes(parts[0]) ? parts.shift() : null;
   const prefix = locale ? `/${locale}` : '';
   const query = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  if (parts.length === 2 && parts[0] === 'p' && /^(solution-hub(?:-(?:id|ru))?|services-(?:id|ru))$/.test(parts[1])) {
+    const legacyLocale = parts[1].match(/-(id|ru)$/)?.[1];
+    const servicesPrefix = locale ? prefix : legacyLocale ? `/${legacyLocale}` : '';
+    return res.redirect(301, `${servicesPrefix}/p/services${query}`);
+  }
   if (parts.length === 2 && parts[0] === 'p' && isBlogPage(parts[1])) {
     return res.redirect(301, `${prefix}/blog/${parts[1]}${query}`);
   }

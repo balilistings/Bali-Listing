@@ -87,7 +87,8 @@ const TopbarMobileMenu = props => {
 
   const user = ensureCurrentUser(currentUser);
 
-  const extraLinks = customLinks.map((linkConfig, index) => {
+  const servicesLink = <NamedLink key="services" name="CMSPage" params={{ pageId: 'services' }} className={css.navigationLink}><FormattedMessage id="Services.nav" /></NamedLink>;
+  const extraLinks = [servicesLink, ...(customLinks || []).map((linkConfig, index) => {
     return (
       <CustomLinkComponent
         key={`${linkConfig.text}_${index}`}
@@ -95,7 +96,7 @@ const TopbarMobileMenu = props => {
         currentPage={currentPage}
       />
     );
-  });
+  })];
 
   const currentPageClass = page => {
     const isAccountSettingsPage =

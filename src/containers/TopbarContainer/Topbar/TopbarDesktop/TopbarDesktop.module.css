@@ -603,3 +603,15 @@ color: #C4C4C4;
   padding: 10px 0;
   width: 100%;
 }
+.servicesLink {
+  color: #231f20;
+  font-family: Mulish, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}

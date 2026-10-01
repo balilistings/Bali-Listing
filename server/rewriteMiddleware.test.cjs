@@ -67,3 +67,21 @@ test('SEO host uses the real destination and preserves development hosts', () =>
   assert.equal(seo.seoRootURL('https://www.balilistings.com/'), 'https://balilistings.com');
   assert.equal(seo.seoRootURL('http://localhost:3000'), 'http://localhost:3000');
 });
+
+test('legacy services links preserve language and tracking while redirecting permanently', async () => {
+  for (const [oldPath, newPath] of [
+    ['/p/solution-hub', '/p/services'],
+    ['/id/p/solution-hub', '/id/p/services'],
+    ['/p/solution-hub-id', '/id/p/services'],
+    ['/ru/p/solution-hub-ru', '/ru/p/services'],
+    ['/p/services-id', '/id/p/services'],
+  ]) {
+    const { middleware, res, calls } = setup({});
+    await middleware({ path: oldPath, url: `${oldPath}?utm_source=partner` }, res, () => assert.fail());
+    assert.equal(res.code, 301);
+    assert.equal(res.url, `${newPath}?utm_source=partner`);
+    assert.deepEqual(calls, []);
+  }
+  assert.equal(seo.seoPagePath('solution-hub'), 'p/services');
+  assert.equal(seo.seoPagePath('solution-hub-id'), 'id/p/services');
+});

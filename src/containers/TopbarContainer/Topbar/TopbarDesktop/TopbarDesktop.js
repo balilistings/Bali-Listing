@@ -402,6 +402,9 @@ const TopbarDesktop = props => {
         </div>}
         
         <div className={classNames(css.rightMenus, { [css.searchPageTopbarMenu]: currentPage === 'search' })}>
+          <NamedLink name="CMSPage" params={{ pageId: 'services' }} className={css.servicesLink}>
+            <FormattedMessage id="Services.nav" />
+          </NamedLink>
           <CustomLinksMenu
             currentPage={currentPage}
             customLinks={customLinks}

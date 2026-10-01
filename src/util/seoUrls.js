@@ -9,5 +9,9 @@ const blogSlugs = [
   'a-guide-to-booking-your-dream-villa-in-bali',
 ];
 const isBlogPage = slug => blogSlugs.includes(slug.replace(/-(ru|id)$/, ''));
-const seoPagePath = slug => `${isBlogPage(slug) ? 'blog' : 'p'}/${slug}`;
+const seoPagePath = slug => {
+  const servicesMatch = slug.match(/^(?:services|solution-hub)(?:-(id|ru))?$/);
+  if (servicesMatch) return `${servicesMatch[1] ? `${servicesMatch[1]}/` : ''}p/services`;
+  return `${isBlogPage(slug) ? 'blog' : 'p'}/${slug}`;
+};
 module.exports = { seoRootURL, isBlogPage, seoPagePath };

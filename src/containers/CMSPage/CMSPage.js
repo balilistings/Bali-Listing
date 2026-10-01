@@ -7,6 +7,9 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import NotFoundPage from '../../containers/NotFoundPage/NotFoundPage';
+import { isServicesPage } from '../../util/services';
+
+const ServicesPage = loadable(() => import('../ServicesPage/ServicesPage'));
 
 const PageBuilder = loadable(() =>
   import(/* webpackChunkName: "PageBuilder" */ '../PageBuilder/PageBuilder')
@@ -33,6 +36,10 @@ const componentMap = {
 export const CMSPageComponent = props => {
   const { params, pageAssetsData, inProgress, error } = props;
   const pageId = params.pageId || props.pageId;
+
+  if (isServicesPage(pageId)) {
+    return <ServicesPage {...props} params={{ ...params, pageId }} />;
+  }
 
   const useNewPages = process.env.REACT_APP_USE_NEW_PAGES === 'true';
   const useNewBlogPage = process.env.REACT_APP_USE_NEW_BLOG_PAGE === 'true';
