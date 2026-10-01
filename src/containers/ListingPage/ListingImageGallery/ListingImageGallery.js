@@ -61,9 +61,10 @@ const getFirstImageAspectRatio = (firstImage, scaledVariant) => {
  * @param {Array<string>} props.thumbnailVariants - The thumbnail variants
  * @returns {JSX.Element} listing image gallery component
  */
-const ListingImageGallery = props => {
+const ListingImageGalleryContent = props => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [requestedIndices, setRequestedIndices] = useState([0]);
   const [isMobile, setIsMobile] = useState(false);
   const intl = useIntl();
   const { rootClassName, className, images, imageVariants, thumbnailVariants } = props;
@@ -87,6 +88,7 @@ const ListingImageGallery = props => {
       // We will only use the image resource, but react-image-gallery
       // requires the `original` key from each item.
       original: '',
+      index: i,
       alt: intl.formatMessage(
         { id: 'ListingImageGallery.imageAltText' },
         { index: i + 1, count: images.length }
@@ -166,13 +168,13 @@ const ListingImageGallery = props => {
         className={isFullscreen ? css.itemWrapperFullscreen : css.itemWrapper}
       >
         <div className={css.itemCentering}>
-          <ResponsiveImage
+          {requestedIndices.includes(item.index) && <ResponsiveImage
             rootClassName={css.item}
             image={item.image}
             alt={item.alt}
             variants={imageVariants}
             {...imageSizesMaybe}
-          />
+          />}
         </div>
       </AspectRatioWrapper>
     );
@@ -181,13 +183,13 @@ const ListingImageGallery = props => {
   const renderThumbInner = item => {
     return (
       <div>
-        <ResponsiveImage
+        {requestedIndices.includes(item.index) ? <ResponsiveImage
           rootClassName={css.thumb}
           image={item.image}
           alt={item.thumbAlt}
           variants={thumbVariants}
           sizes="88px"
-        />
+        /> : <span className={css.deferredThumbnail} aria-label={item.thumbAlt}>{item.index + 1}</span>}
       </div>
     );
   };
@@ -198,6 +200,9 @@ const ListingImageGallery = props => {
 
   const onSlide = index => {
     setCurrentIndex(index);
+  };
+  const onBeforeSlide = index => {
+    setRequestedIndices(previous => previous.includes(index) ? previous : [...previous, index]);
   };
 
   const renderLeftNav = (onClick, disabled) => {
@@ -266,8 +271,15 @@ const ListingImageGallery = props => {
       renderFullscreenButton={renderFullscreenButton}
       {...IMAGE_GALLERY_OPTIONS}
       onSlide={onSlide}
+      onBeforeSlide={onBeforeSlide}
     />
   );
+};
+
+// A different listing starts with its cover, without loading photos selected on the previous one.
+const ListingImageGallery = props => {
+  const key = props.images.map(image => image.id?.uuid || image.attributes?.variants?.[props.imageVariants[0]]?.url).join(',');
+  return <ListingImageGalleryContent key={key} {...props} />;
 };
 
 export default ListingImageGallery;

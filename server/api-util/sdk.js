@@ -7,6 +7,10 @@ const sharetribeIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { fetchRate } = require('./currencyLogic');
 const NodeCache = require('node-cache');
+const publicReadCache = require('./publicReadCache');
+const cachedPublicRead = publicReadCache();
+let anonymousSdk;
+let integrationSdk;
 
 // Cache TTL in seconds.
 // If set to 0, caching is disabled.
@@ -113,12 +117,14 @@ exports.handleError = (res, error) => {
 // The access token is read from cookie (request) and potentially saved into the cookie (response).
 // This keeps session updated between server and browser even if the token is re-issued.
 exports.getSdk = (req, res) => {
+  const hasSession = !!getUserToken(req);
+  if (!hasSession && anonymousSdk) return anonymousSdk;
   const sdk = sharetribeSdk.createInstance({
     transitVerbose: TRANSIT_VERBOSE,
     clientId: CLIENT_ID,
     httpAgent,
     httpsAgent,
-    tokenStore: sharetribeSdk.tokenStore.expressCookieStore({
+    tokenStore: !hasSession ? sharetribeSdk.tokenStore.memoryStore() : sharetribeSdk.tokenStore.expressCookieStore({
       clientId: CLIENT_ID,
       req,
       res,
@@ -130,7 +136,7 @@ exports.getSdk = (req, res) => {
   });
 
   const originalListingsQuery = sdk.listings.query;
-  if (CACHE_TTL > 0) {
+  if (!hasSession && CACHE_TTL > 0) {
     sdk.listings.query = params => {
       if (params.pub_isFeatured) {
         const cacheKey = 'featured_listings:' + JSON.stringify(params);
@@ -149,7 +155,7 @@ exports.getSdk = (req, res) => {
 
   const wrapWithCache = (sdk, methodName, prefix) => {
     const originalMethod = sdk[methodName];
-    if (CACHE_TTL > 0 && originalMethod) {
+    if (!hasSession && CACHE_TTL > 0 && originalMethod) {
       sdk[methodName] = params => {
         const cacheKey = prefix + JSON.stringify(params);
         const cached = cache.get(cacheKey);
@@ -175,6 +181,23 @@ exports.getSdk = (req, res) => {
     },
   };
 
+  if (!hasSession) {
+    const wrapPublicRead = (owner, method, prefix) => {
+      const original = owner?.[method];
+      if (!original) return;
+      owner[method] = (...args) => cachedPublicRead(
+        prefix + JSON.stringify(args), () => original.apply(owner, args)
+      );
+    };
+    wrapPublicRead(sdk.listings, 'query', 'listings.query:');
+    wrapPublicRead(sdk.listings, 'show', 'listings.show:');
+    wrapPublicRead(sdk.reviews, 'query', 'reviews.query:');
+    ['assetByVersion', 'assetByAlias', 'assetsByVersion', 'assetsByAlias'].forEach(method =>
+      wrapPublicRead(sdk, method, method + ':')
+    );
+    anonymousSdk = { ...sdk, currency };
+    return anonymousSdk;
+  }
   return { ...sdk, currency };
 };
 
@@ -220,7 +243,8 @@ exports.getTrustedSdk = req => {
 // Integration SDK is used for server-to-server communication.
 // It needs CLIENT_ID and CLIENT_SECRET.
 exports.getIntegrationSdk = () => {
-  return sharetribeIntegrationSdk.createInstance({
+  if (integrationSdk) return integrationSdk;
+  integrationSdk = sharetribeIntegrationSdk.createInstance({
     // transitVerbose: TRANSIT_VERBOSE,
     clientId: INTEGRATION_CLIENT_ID,
     clientSecret: INTEGRATION_CLIENT_SECRET,
@@ -230,6 +254,7 @@ exports.getIntegrationSdk = () => {
     // typeHandlers,
     // ...baseUrlMaybe,
   });
+  return integrationSdk;
 };
 
 // Fetch commission asset with 'latest' alias.

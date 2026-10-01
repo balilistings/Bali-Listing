@@ -1,4 +1,7 @@
 import omit from 'lodash/omit';
+import { optimizeListingPhoto } from '../../util/optimizeListingPhoto';
+
+const pendingImageUploads = new WeakMap();
 
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import { denormalisedResponseEntities } from '../../util/data';
@@ -711,6 +714,9 @@ export const requestPublishListingDraft = listingId => (dispatch, getState, sdk)
 // Images return imageId which we need to map with previously generated temporary id
 export function requestImageUpload(actionPayload, listingImageConfig) {
   return (dispatch, getState, sdk) => {
+    // A repeated dispatch for the same selected file must not create another image.
+    const existingUpload = pendingImageUploads.get(actionPayload.file);
+    if (existingUpload) return existingUpload;
     const id = actionPayload.id;
     const imageVariantInfo = getImageVariantInfo(listingImageConfig);
     const queryParams = {
@@ -720,8 +726,8 @@ export function requestImageUpload(actionPayload, listingImageConfig) {
     };
 
     dispatch(uploadImageRequest(actionPayload));
-    return sdk.images
-      .upload({ image: actionPayload.file }, queryParams)
+    const upload = optimizeListingPhoto(actionPayload.file)
+      .then(image => sdk.images.upload({ image }, queryParams))
       .then(resp => {
         const img = resp.data.data;
         // Uploaded image has an existing id that refers to file
@@ -730,7 +736,10 @@ export function requestImageUpload(actionPayload, listingImageConfig) {
           uploadImageSuccess({ data: { ...img, id, imageId: img.id, file: actionPayload.file } })
         );
       })
-      .catch(e => dispatch(uploadImageError({ id, error: storableError(e) })));
+      .catch(e => dispatch(uploadImageError({ id, error: storableError(e) })))
+      .finally(() => pendingImageUploads.delete(actionPayload.file));
+    pendingImageUploads.set(actionPayload.file, upload);
+    return upload;
   };
 }
 

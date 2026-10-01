@@ -6,13 +6,7 @@ import useDisableBodyScrollOnSwipe from '../../util/useDisableBodyScrollOnSwipe'
 import styles from './ImageSlider.module.css';
 import classNames from 'classnames';
 
-const EAGERLOADED_IMAGES = 1;
-
 const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'medium' }) => {
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop });
   const setSliderNode = useDisableBodyScrollOnSwipe();
 
@@ -57,8 +51,6 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
 
   const showArrows = loop || prevBtnEnabled || nextBtnEnabled;
 
-  const eagerLimit = isClient ? EAGERLOADED_IMAGES : 0;
-
   const slides = children
     ? React.Children.map(children, (child, index) => (
         <div className={styles.embla__slide} key={index}>
@@ -68,14 +60,10 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
     : images.map((img, imgIdx) => (
         <div className={styles.embla__slide} key={imgIdx}>
           <img
-            src={img}
+            src={imgIdx === selectedIndex ? img : undefined}
             alt={title}
             className={styles.image + ' ' + styles.imageFade}
-            loading={
-              Math.abs(imgIdx - selectedIndex) <= eagerLimit
-                ? 'eager'
-                : 'lazy'
-            }
+            loading="lazy"
           />
         </div>
       ));

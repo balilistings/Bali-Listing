@@ -74,6 +74,7 @@ const initialState = {
   id: null,
   showListingError: null,
   reviews: [],
+  reviewsFetchedAt: null,
   fetchReviewsError: null,
   monthlyTimeSlots: {
     // '2022-03': {
@@ -114,7 +115,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case FETCH_REVIEWS_REQUEST:
       return { ...state, fetchReviewsError: null };
     case FETCH_REVIEWS_SUCCESS:
-      return { ...state, reviews: payload };
+      return { ...state, reviews: payload, reviewsFetchedAt: Date.now() };
     case FETCH_REVIEWS_ERROR:
       return { ...state, fetchReviewsError: payload };
 
@@ -345,6 +346,10 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
 };
 
 export const fetchReviews = listingId => (dispatch, getState, sdk) => {
+  const page = getState().ListingPage;
+  if (page.id?.uuid === listingId.uuid && page.reviewsFetchedAt > Date.now() - MINUTE_IN_MS) {
+    return Promise.resolve();
+  }
   dispatch(fetchReviewsRequest());
   return sdk.reviews
     .query({
@@ -545,7 +550,17 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
       : null;
 
   // Clear old line-items
-  dispatch(setInitialValues({ lineItems: null, inquiryModalOpenForListingId }));
+  const canReusePublicReviews = config.accessControl.marketplace.private !== true &&
+    state.ListingPage.id?.uuid === listingId.uuid &&
+    state.ListingPage.reviewsFetchedAt > Date.now() - MINUTE_IN_MS;
+  dispatch(setInitialValues({
+    lineItems: null,
+    inquiryModalOpenForListingId,
+    ...(canReusePublicReviews ? {
+      reviews: state.ListingPage.reviews,
+      reviewsFetchedAt: state.ListingPage.reviewsFetchedAt,
+    } : {}),
+  }));
 
   const ownListingVariants = [LISTING_PAGE_DRAFT_VARIANT, LISTING_PAGE_PENDING_APPROVAL_VARIANT];
   if (ownListingVariants.includes(params.variant)) {
