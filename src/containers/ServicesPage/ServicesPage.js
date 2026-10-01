@@ -13,6 +13,9 @@ import markdownSchema from 'hast-util-sanitize/lib/github.json';
 import { contactMethod, serviceBlocks, serviceHref } from '../../util/services';
 import css from './ServicesPage.module.css';
 import eagleProtectLogo from '../../components/IconSolution/solution-eagle.svg';
+import clarityHomesLogo from '../../assets/clarity-homes-bali-logo.svg';
+
+const partnerLogos = { 'eagle-protect': eagleProtectLogo, 'clarity-homes-bali': clarityHomesLogo };
 
 const contactSchema = { ...markdownSchema, protocols: { ...markdownSchema.protocols, href: [...markdownSchema.protocols.href, 'tel'] } };
 
@@ -24,8 +27,8 @@ export const ServiceCard = ({ block, index, track, labels }) => {
   const primary = serviceHref(block.callToAction?.href);
   const image = block.media?.image;
   const variants = Object.keys(image?.attributes?.variants || {});
-  // Preserve the existing partner logo while editors can upload a replacement.
-  const legacyLogo = block.blockId === 'eagle-protect' ? eagleProtectLogo : null;
+  // Uploaded company images take precedence over bundled partner logos.
+  const legacyLogo = partnerLogos[block.blockId];
   const id = `company-${block.blockId}`;
   const ContactLink = ({ href, children }) => {
     const safe = serviceHref(href);
