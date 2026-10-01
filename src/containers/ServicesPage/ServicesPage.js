@@ -91,12 +91,11 @@ const ServicesPage = ({ pageAssetsData, params }) => {
           <a className={css.primaryButton} href="#submit-company">{msg('addCompany')} ↗</a></div>
       </div></section>
       <div className={css.wrap}>
-        {blocks.length ? <><p className={css.count}>{intl.formatMessage({ id: 'Services.companyCount' }, { count: blocks.length })}</p>
-          <div className={css.grid}>{blocks.map((block, index) => <ServiceCard key={block.blockId} {...{ block, index, track }} labels={{ contact: msg('contact'), details: msg('details') }} />)}</div></>
+        {blocks.length ? <div className={css.grid}>{blocks.map((block, index) => <ServiceCard key={block.blockId} {...{ block, index, track }} labels={{ contact: msg('contact'), details: msg('details') }} />)}</div>
           : <div className={css.empty}><h2>{msg('emptyTitle')}</h2><p>{msg('emptyDescription')}</p></div>}
         <section id="submit-company" className={css.submission}>
           <h2>{msg('submitTitle')}</h2><p>{msg('submitIntro')}</p>
-          <ul><li>{msg('submitName')}</li><li>{msg('submitImage')}</li><li>{msg('submitDescription')}</li><li>{msg('submitContacts')}</li></ul>
+          <ul className={css.requirements}><li>{msg('submitName')}</li><li>{msg('submitImage')}</li><li>{msg('submitDescription')}</li><li>{msg('submitContacts')}</li></ul>
           <p>{msg('submitReview')}</p><div className={css.actions}>
             <a className={css.primaryButton} href={email} onClick={() => track('click_service_submission', { contact_method: 'email' })}>{msg('submitEmail')} ↗</a>
             <a className={css.secondaryButton} href={whatsapp} target="_blank" rel="noopener noreferrer" onClick={() => track('click_service_submission', { contact_method: 'whatsapp' })}>{msg('submitWhatsapp')} ↗</a>
