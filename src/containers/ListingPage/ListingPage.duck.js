@@ -115,6 +115,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
     case FETCH_REVIEWS_REQUEST:
       return { ...state, fetchReviewsError: null };
     case FETCH_REVIEWS_SUCCESS:
+      if (action.listingId && state.id?.uuid !== action.listingId.uuid) return state;
       return { ...state, reviews: payload, reviewsFetchedAt: Date.now() };
     case FETCH_REVIEWS_ERROR:
       return { ...state, fetchReviewsError: payload };
@@ -233,7 +234,7 @@ export const showListingError = e => ({
 });
 
 export const fetchReviewsRequest = () => ({ type: FETCH_REVIEWS_REQUEST });
-export const fetchReviewsSuccess = reviews => ({ type: FETCH_REVIEWS_SUCCESS, payload: reviews });
+export const fetchReviewsSuccess = (reviews, listingId) => ({ type: FETCH_REVIEWS_SUCCESS, payload: reviews, listingId });
 export const fetchReviewsError = error => ({
   type: FETCH_REVIEWS_ERROR,
   error: true,
@@ -360,7 +361,7 @@ export const fetchReviews = listingId => (dispatch, getState, sdk) => {
     })
     .then(response => {
       const reviews = denormalisedResponseEntities(response);
-      dispatch(fetchReviewsSuccess(reviews));
+      dispatch(fetchReviewsSuccess(reviews, listingId));
     })
     .catch(e => {
       dispatch(fetchReviewsError(storableError(e)));

@@ -284,7 +284,7 @@ app.get('*', async (req, res) => {
   const nodeEntrypoint = nodeExtractor.requireEntrypoint();
   const { default: renderApp, ...appInfo } = nodeEntrypoint;
 
-  const sdk = sdkUtils.getSdk(req, res);
+  const sdk = sdkUtils.getReadSdk(req, res);
 
   dataLoader
     .loadData(req.url, sdk, appInfo)

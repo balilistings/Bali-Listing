@@ -133,7 +133,7 @@ module.exports = (req, res) => {
     return;
   }
 
-  const sdk = sdkUtils.getSdk(req, res);
+  const sdk = sdkUtils.getReadSdk(req, res);
   sdkUtils
     .fetchAccessControlAsset(sdk)
     .then(response => {

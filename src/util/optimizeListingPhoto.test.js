@@ -1,5 +1,11 @@
 import { optimizeListingPhoto } from './optimizeListingPhoto';
 
+test('object URL failure still uploads the original JPEG', async () => {
+  URL.createObjectURL = jest.fn(() => { throw new Error('unavailable'); });
+  const file = new File(['photo'], 'photo.jpg', { type: 'image/jpeg' });
+  expect(await optimizeListingPhoto(file)).toBe(file);
+});
+
 test('preserves transparency and animated image uploads', async () => {
   for (const type of ['image/png', 'image/gif', 'image/webp']) {
     const file = new File(['photo'], 'photo', { type });

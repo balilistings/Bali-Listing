@@ -6,16 +6,11 @@ const sharetribeSdk = require('sharetribe-flex-sdk');
 const sharetribeIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { fetchRate } = require('./currencyLogic');
-const NodeCache = require('node-cache');
 const publicReadCache = require('./publicReadCache');
 const cachedPublicRead = publicReadCache();
 let anonymousSdk;
 let integrationSdk;
 
-// Cache TTL in seconds.
-// If set to 0, caching is disabled.
-const CACHE_TTL = process.env.REACT_APP_LANDING_PAGE_CACHE_TTL || 0;
-const cache = new NodeCache({ stdTTL: CACHE_TTL });
 
 const CLIENT_ID = process.env.REACT_APP_SHARETRIBE_SDK_CLIENT_ID;
 const INTEGRATION_CLIENT_ID = process.env.REACT_APP_SHARETRIBE_INTEGRATION_SDK_CLIENT_ID;
@@ -116,15 +111,16 @@ exports.handleError = (res, error) => {
 
 // The access token is read from cookie (request) and potentially saved into the cookie (response).
 // This keeps session updated between server and browser even if the token is re-issued.
-exports.getSdk = (req, res) => {
+const getSdk = (req, res, shareAnonymous = false) => {
   const hasSession = !!getUserToken(req);
-  if (!hasSession && anonymousSdk) return anonymousSdk;
+  const usePublicCache = shareAnonymous && !hasSession;
+  if (usePublicCache && anonymousSdk) return anonymousSdk;
   const sdk = sharetribeSdk.createInstance({
     transitVerbose: TRANSIT_VERBOSE,
     clientId: CLIENT_ID,
     httpAgent,
     httpsAgent,
-    tokenStore: !hasSession ? sharetribeSdk.tokenStore.memoryStore() : sharetribeSdk.tokenStore.expressCookieStore({
+    tokenStore: usePublicCache ? sharetribeSdk.tokenStore.memoryStore() : sharetribeSdk.tokenStore.expressCookieStore({
       clientId: CLIENT_ID,
       req,
       res,
@@ -135,53 +131,13 @@ exports.getSdk = (req, res) => {
     ...assetCdnBaseUrlMaybe,
   });
 
-  const originalListingsQuery = sdk.listings.query;
-  if (!hasSession && CACHE_TTL > 0) {
-    sdk.listings.query = params => {
-      if (params.pub_isFeatured) {
-        const cacheKey = 'featured_listings:' + JSON.stringify(params);
-        const cached = cache.get(cacheKey);
-        if (cached) {
-          return Promise.resolve(cached);
-        }
-        return originalListingsQuery.call(sdk.listings, params).then(res => {
-          cache.set(cacheKey, res);
-          return res;
-        });
-      }
-      return originalListingsQuery.call(sdk.listings, params);
-    };
-  }
-
-  const wrapWithCache = (sdk, methodName, prefix) => {
-    const originalMethod = sdk[methodName];
-    if (!hasSession && CACHE_TTL > 0 && originalMethod) {
-      sdk[methodName] = params => {
-        const cacheKey = prefix + JSON.stringify(params);
-        const cached = cache.get(cacheKey);
-        if (cached) {
-          return Promise.resolve(cached);
-        }
-        return originalMethod.call(sdk, params).then(res => {
-          cache.set(cacheKey, res);
-          return res;
-        });
-      };
-    }
-  };
-
-  wrapWithCache(sdk, 'assetByVersion', 'asset_by_version:');
-  wrapWithCache(sdk, 'assetByAlias', 'asset_by_alias:');
-  wrapWithCache(sdk, 'assetsByVersion', 'assets_by_version:');
-  wrapWithCache(sdk, 'assetsByAlias', 'assets_by_alias:');
-
   const currency = {
     getConversionRate: () => {
       return fetchRate().then(data => ({ data }));
     },
   };
 
-  if (!hasSession) {
+  if (usePublicCache) {
     const wrapPublicRead = (owner, method, prefix) => {
       const original = owner?.[method];
       if (!original) return;
@@ -200,6 +156,11 @@ exports.getSdk = (req, res) => {
   }
   return { ...sdk, currency };
 };
+
+// Authentication and API operations always keep their token store on this request.
+exports.getSdk = (req, res) => getSdk(req, res);
+// Only server read paths opt into the anonymous token/read cache. User sessions stay isolated.
+exports.getReadSdk = (req, res) => getSdk(req, res, true);
 
 // Trusted token is powerful, it should not be passed away from the server.
 exports.getTrustedSdk = req => {

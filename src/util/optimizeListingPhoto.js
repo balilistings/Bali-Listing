@@ -1,8 +1,9 @@
 // Keep original uploads if decoding/encoding fails, or if re-encoding saves no bytes.
 export const optimizeListingPhoto = async file => {
   if (!file || file.type !== 'image/jpeg' || typeof document === 'undefined') return file;
-  const url = URL.createObjectURL(file);
+  let url;
   try {
+    url = URL.createObjectURL(file);
     const image = await new Promise((resolve, reject) => {
       const img = new Image();
       img.onload = () => resolve(img);
@@ -21,6 +22,6 @@ export const optimizeListingPhoto = async file => {
   } catch (e) {
     return file;
   } finally {
-    URL.revokeObjectURL(url);
+    if (url) URL.revokeObjectURL(url);
   }
 };

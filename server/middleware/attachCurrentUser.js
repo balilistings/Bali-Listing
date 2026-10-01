@@ -10,7 +10,7 @@ const attachCurrentUser = (req, res, next) => {
     next();
   } else {
     // Cookie not found, let's see if the user is actually logged in.
-    const sdk = sdkUtils.getSdk(req, res);
+    const sdk = sdkUtils.getReadSdk(req, res);
     sdk.authInfo()
       .then(authInfo => {
         if (authInfo && authInfo.isAnonymous === false) {

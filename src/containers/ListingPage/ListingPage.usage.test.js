@@ -1,5 +1,11 @@
 import reducer, { fetchReviews, fetchReviewsSuccess } from './ListingPage.duck';
 
+test('a late review response cannot replace the next listing reviews or mark them fresh', () => {
+  const page = { id: { uuid: 'listing2' }, reviews: [], reviewsFetchedAt: null };
+  const result = reducer(page, fetchReviewsSuccess(['old listing review'], { uuid: 'listing1' }));
+  expect(result).toBe(page);
+});
+
 test('reuses fresh reviews hydrated from SSR but fetches another listing', async () => {
   const id = { uuid: 'listing1' };
   const page = reducer({ id }, fetchReviewsSuccess([]));

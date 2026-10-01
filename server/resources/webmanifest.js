@@ -24,7 +24,7 @@ const generateIcons = variants => {
 // Middleware to generate web app manifest for /site.webmanifest call
 // https://developer.mozilla.org/en-US/docs/Web/Manifest
 module.exports = (req, res) => {
-  const sdk = sdkUtils.getSdk(req, res);
+  const sdk = sdkUtils.getReadSdk(req, res);
 
   // Note: marketplace.show endpoint is only called to fetch the name of the marketplace.
   // In your custom app, you might just hard-code this and remove the extra XHR call.
