@@ -5,7 +5,9 @@ import { renderWithProviders as render, testingLibrary } from '../../util/testHe
 
 import NamedLink from './NamedLink';
 
-const { screen } = testingLibrary;
+jest.mock('uuid', () => ({ validate: () => false, v4: () => 'test-id' }));
+
+const { screen, fireEvent } = testingLibrary;
 
 describe('NamedLink', () => {
   // This is quite small component what comes to rendered HTML
@@ -43,5 +45,14 @@ describe('NamedLink', () => {
     );
     const link = screen.getByRole('link', { name: 'to ListingPage' });
     expect(link.getAttribute('href')).toEqual(`/l/${id}`);
+  });
+
+  it('runs the menu close callback even when linking to the current page', () => {
+    const onClick = jest.fn();
+    render(<NamedLink name="LandingPage" onClick={onClick}>Current page</NamedLink>);
+    const link = screen.getByRole('link', { name: 'Current page' });
+    fireEvent.click(link);
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(link.getAttribute('href')).toBe('/');
   });
 });
