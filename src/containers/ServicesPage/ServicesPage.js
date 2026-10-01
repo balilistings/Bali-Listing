@@ -58,6 +58,22 @@ export const ServiceCard = ({ block, index, track, labels }) => {
   );
 };
 
+const ServicePlaceholder = ({ msg }) => (
+  <article className={`${css.card} ${css.placeholder}`}>
+    <div className={`${css.media} ${css.placeholderMedia}`} aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M14 56V16h36v40M8 56h48M24 56V42h16v14M24 26h4m8 0h4m-16 8h4m8 0h4" />
+      </svg>
+    </div>
+    <div className={css.cardContent}>
+      <p className={css.placeholderLabel}>{msg('placeholderLabel')}</p>
+      <h2>{msg('placeholderTitle')}</h2>
+      <p className={css.description}>{msg('placeholderDescription')}</p>
+      <a className={css.secondaryButton} href="#submit-company">{msg('addCompany')} ↗</a>
+    </div>
+  </article>
+);
+
 const ServicesPage = ({ pageAssetsData, params }) => {
   const intl = useIntl();
   const config = useConfiguration();
@@ -65,6 +81,7 @@ const ServicesPage = ({ pageAssetsData, params }) => {
   const currentUser = useSelector(state => state.user.currentUser);
   const pageData = pageAssetsData?.[params.pageId]?.data;
   const blocks = serviceBlocks(pageData);
+  const placeholderCount = Math.max(0, 6 - blocks.length);
   const msg = key => intl.formatMessage({ id: `Services.${key}` });
   const track = (event, properties = {}) => {
     const profileConsent = currentUser?.attributes?.profile?.protectedData?.cookieConsent?.accepted;
@@ -91,8 +108,10 @@ const ServicesPage = ({ pageAssetsData, params }) => {
           <a className={css.primaryButton} href="#submit-company">{msg('addCompany')} ↗</a></div>
       </div></section>
       <div className={css.wrap}>
-        {blocks.length ? <div className={css.grid}>{blocks.map((block, index) => <ServiceCard key={block.blockId} {...{ block, index, track }} labels={{ contact: msg('contact'), details: msg('details') }} />)}</div>
-          : <div className={css.empty}><h2>{msg('emptyTitle')}</h2><p>{msg('emptyDescription')}</p></div>}
+        <div className={css.grid}>
+          {blocks.map((block, index) => <ServiceCard key={block.blockId} {...{ block, index, track }} labels={{ contact: msg('contact'), details: msg('details') }} />)}
+          {Array.from({ length: placeholderCount }, (_, index) => <ServicePlaceholder key={`placeholder-${index}`} msg={msg} />)}
+        </div>
         <section id="submit-company" className={css.submission}>
           <h2>{msg('submitTitle')}</h2><p>{msg('submitIntro')}</p>
           <ul className={css.requirements}><li>{msg('submitName')}</li><li>{msg('submitImage')}</li><li>{msg('submitDescription')}</li><li>{msg('submitContacts')}</li></ul>
