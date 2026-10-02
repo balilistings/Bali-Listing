@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import Cookies from 'js-cookie';
 import { useLocation } from 'react-router-dom';
@@ -10,7 +10,7 @@ import FooterContainer from '../FooterContainer/FooterContainer';
 import LayoutSingleColumn from '../../components/LayoutComposer/LayoutSingleColumn/LayoutSingleColumn';
 import renderMarkdown from '../PageBuilder/markdownProcessor';
 import markdownSchema from 'hast-util-sanitize/lib/github.json';
-import { contactMethod, serviceBlocks, serviceHref } from '../../util/services';
+import { contactMethod, serviceBlocks, serviceHref, serviceWhatsapp, serviceWhatsappContact } from '../../util/services';
 import css from './ServicesPage.module.css';
 import eagleProtectLogo from '../../components/IconSolution/solution-eagle.svg';
 import clarityHomesLogo from '../../assets/clarity-homes-bali-logo.svg';
@@ -24,37 +24,53 @@ export const ServiceCard = ({ block, index, track, labels }) => {
   const paragraphs = (block.text?.content || '').trim().split(/\n\s*\n/);
   const intro = paragraphs[0] || '';
   const details = paragraphs.slice(1).join('\n\n');
-  const primary = serviceHref(block.callToAction?.href);
+  const primaryHref = serviceHref(block.callToAction?.href);
+  const primary = contactMethod(primaryHref) === 'whatsapp' ? serviceWhatsapp(primaryHref)?.href || primaryHref : primaryHref;
+  const whatsapp = serviceWhatsappContact(block);
+  const detailsRef = useRef(null);
+  const trackContact = href => track('click_service_contact', {
+    service_id: block.blockId, service_name: title, contact_method: contactMethod(href),
+  });
+  const trackProfile = () => track('click_service_profile', { service_id: block.blockId, service_name: title });
+  const openProfile = () => {
+    trackProfile();
+    if (detailsRef.current) {
+      detailsRef.current.open = true;
+      detailsRef.current.querySelector('summary').focus();
+    }
+  };
   const image = block.media?.image;
   const variants = Object.keys(image?.attributes?.variants || {});
   // Uploaded company images take precedence over bundled partner logos.
   const legacyLogo = partnerLogos[block.blockId];
   const id = `company-${block.blockId}`;
   const ContactLink = ({ href, children }) => {
-    const safe = serviceHref(href);
+    const safe = contactMethod(href) === 'whatsapp' ? serviceWhatsapp(href)?.href || serviceHref(href) : serviceHref(href);
     if (!safe) return <span>{children}</span>;
     const external = /^https?:/.test(safe);
     return <a href={safe} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}
-      onClick={() => track('click_service_contact', { service_id: block.blockId, contact_method: contactMethod(safe) })}>{children}</a>;
+      onClick={() => trackContact(safe)}>{children}</a>;
   };
   const markdownComponents = { a: ContactLink, h1: 'h3', h2: 'h3', img: () => null };
   return (
     <article id={id} className={css.card} aria-labelledby={`${id}-title`}>
-      <div className={css.media}>
+      <button type="button" className={`${css.media} ${css.profileMedia}`} aria-label={`${labels.details}: ${title}`} onClick={openProfile}>
         {variants.length ? <ResponsiveImage image={image} variants={variants} alt={block.media.alt || title}
           sizes="(max-width: 650px) 100vw, (max-width: 1000px) 50vw, 400px" loading={index < 3 ? 'eager' : 'lazy'} />
           : legacyLogo ? <img src={legacyLogo} alt={`${title} logo`} width="160" height="125" />
           : <span className={css.fallbackImage}>{title}</span>}
-      </div>
+      </button>
       <div className={css.cardContent}>
-        <h2 id={`${id}-title`}>{title}</h2>
+        <h2 id={`${id}-title`}><button type="button" className={css.profileTitle} onClick={openProfile}>{title}</button></h2>
         <div className={css.description}>{renderMarkdown(intro, markdownComponents, contactSchema)}</div>
         {primary ? <a className={css.primaryButton} href={primary}
           target={/^https?:/.test(primary) ? '_blank' : undefined}
           rel={/^https?:/.test(primary) ? 'noopener noreferrer' : undefined}
-          onClick={() => track('click_service_contact', { service_id: block.blockId, contact_method: contactMethod(primary) })}>
+          onClick={() => trackContact(primary)}>
           {block.callToAction.content || labels.contact} ↗</a> : null}
-        {details ? <details className={css.details}><summary>{labels.details}</summary>
+        {whatsapp && contactMethod(primary) !== 'whatsapp' ? <a className={`${css.secondaryButton} ${css.whatsappButton}`} href={whatsapp.href}
+          target="_blank" rel="noopener noreferrer" onClick={() => trackContact(whatsapp.href)}>WhatsApp: +{whatsapp.number} ↗</a> : null}
+        {details ? <details ref={detailsRef} className={css.details}><summary onClick={() => { if (!detailsRef.current.open) trackProfile(); }}>{labels.details}</summary>
           <div>{renderMarkdown(details, markdownComponents, contactSchema)}</div></details> : null}
       </div>
     </article>

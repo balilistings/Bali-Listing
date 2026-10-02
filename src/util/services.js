@@ -26,6 +26,24 @@ export const contactMethod = href => {
     : 'website';
 };
 
+export const serviceWhatsapp = href => {
+  const safe = serviceHref(href);
+  if (!safe) return null;
+  const url = new URL(safe);
+  const method = contactMethod(safe);
+  const number = method === 'phone' ? url.pathname.replace(/[+ ()-]/g, '')
+    : method === 'whatsapp' ? (url.hostname === 'wa.me' ? url.pathname.slice(1) : url.searchParams.get('phone')) : null;
+  if (!/^[1-9]\d{6,14}$/.test(number || '')) return null;
+  return { number, href: `https://wa.me/${number}?text=${encodeURIComponent('I found your profile on balilistings.')}` };
+};
+
+export const serviceWhatsappContact = block => {
+  const links = [block.callToAction?.href, ...Array.from((block.text?.content || '').matchAll(/\]\(([^\s)]+)\)/g), match => match[1])].filter(Boolean);
+  // Prefer the company's explicit WhatsApp destination when its call number differs.
+  return links.filter(href => contactMethod(href) === 'whatsapp').map(serviceWhatsapp).find(Boolean)
+    || links.filter(href => contactMethod(href) === 'phone').map(serviceWhatsapp).find(Boolean) || null;
+};
+
 export const serviceBlocks = pageData => {
   const seen = new Set();
   return (pageData?.sections || [])

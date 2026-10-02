@@ -1,4 +1,16 @@
-import { contactMethod, isServicesPage, serviceBlocks, serviceHref } from './services';
+import { contactMethod, isServicesPage, serviceBlocks, serviceHref, serviceWhatsapp, serviceWhatsappContact } from './services';
+
+test('creates company WhatsApp links with the referral message and prefers explicit WhatsApp numbers', () => {
+  const phone = serviceWhatsapp('tel:+62 858-8660-8888');
+  expect(phone.number).toBe('6285886608888');
+  expect(new URL(phone.href).searchParams.get('text')).toBe('I found your profile on balilistings.');
+  expect(serviceWhatsapp('https://api.whatsapp.com/send?phone=6282382382382&text=Old').number).toBe('6282382382382');
+  expect(serviceWhatsapp('tel:08123456789')).toBeNull();
+  expect(serviceWhatsapp('https://wa.me.evil.example/628123456789')).toBeNull();
+  const block = { text: { content: '[Call](tel:+6285886608888)\n\n[WhatsApp](https://wa.me/6282382382382)' } };
+  expect(serviceWhatsappContact(block).number).toBe('6282382382382');
+  expect(serviceWhatsappContact({})).toBeNull();
+});
 
 test('accepts public contact destinations but rejects executable and credential URLs', () => {
   expect(serviceHref('https://company.example/services')).toBe('https://company.example/services');
