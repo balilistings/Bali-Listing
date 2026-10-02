@@ -605,9 +605,10 @@ color: #C4C4C4;
 }
 .servicesLink {
   color: #231f20;
-  font-family: Mulish, sans-serif;
-  font-size: 14px;
+  font-family: Mulish;
+  font-size: 16px;
   font-weight: 700;
+  line-height: 130%;
   min-height: 44px;
   display: inline-flex;
   align-items: center;
