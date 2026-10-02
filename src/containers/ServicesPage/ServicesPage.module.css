@@ -11,8 +11,12 @@
 .primaryButton { background: #f74df4; color: #231f20; }
 .secondaryButton { background: #fff; color: #231f20; border: 1px solid #dcd7dc; }
 .primaryButton:hover, .secondaryButton:hover { color: #231f20; text-decoration: underline; }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: start; padding: 32px 0 40px; }
-.card { background: white; border-radius: 20px; overflow: hidden; border: 1px solid #eee9ee; box-shadow: 0 3px 16px #231f200b; scroll-margin-top: 100px; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; padding: 32px 0 40px; }
+.card { display: grid; grid-template-rows: 180px 1fr auto; background: white; border-radius: 20px; overflow: hidden; border: 1px solid #eee9ee; box-shadow: 0 3px 16px #231f200b; scroll-margin-top: 100px; }
+/* Share the introduction height across a row without coupling it to expanded details. */
+@supports (grid-template-rows: subgrid) {
+  .card { grid-row: span 3; grid-template-rows: subgrid; row-gap: 0; }
+}
 .media { height: 180px; padding: 20px; background: #f4f2f4; display: flex; justify-content: center; align-items: center; }
 .media img { width: 100%; height: 140px; object-fit: contain; }
 .profileMedia { border: 0; width: 100%; cursor: pointer; color: inherit; font: inherit; }
@@ -21,11 +25,12 @@
 .profileMedia:focus-visible, .profileTitle:focus-visible { outline: 2px solid #862183; outline-offset: -3px; }
 .whatsappButton { width: 100%; margin-top: 12px; }
 .fallbackImage { font-family: 'Istok Web', sans-serif; font-size: 28px; text-align: center; overflow-wrap: anywhere; }
-.cardContent { padding: 24px; }
+.cardContent { padding: 24px 24px 0; }
+.cardFooter { padding: 0 24px 24px; }
 .cardContent h2 { font-family: 'Istok Web', sans-serif; font-size: 24px; line-height: 1.3; margin: 0 0 14px; overflow-wrap: anywhere; }
 .description { font-size: 15px; line-height: 1.65; margin-bottom: 20px; overflow-wrap: anywhere; }
 .description p { margin: 0; }
-.cardContent > .primaryButton { width: 100%; }
+.cardFooter > .primaryButton { width: 100%; }
 .placeholder { border: 1px dashed #d6c5d6; box-shadow: none; }
 .placeholderMedia { background: #faf5fa; color: #a887a8; }
 .placeholderMedia svg, .placeholderMedia path { fill: none; }
@@ -51,6 +56,7 @@
   .hero h1 { font-size: 32px; }
   .heroRow > a { margin-top: 24px; }
   .grid { grid-template-columns: 1fr; }
+  .card { grid-row: auto; grid-template-rows: 180px auto auto; }
   .submission { padding: 24px; }
   .empty { padding: 24px; }
 }

@@ -63,6 +63,8 @@ export const ServiceCard = ({ block, index, track, labels }) => {
       <div className={css.cardContent}>
         <h2 id={`${id}-title`}><button type="button" className={css.profileTitle} onClick={openProfile}>{title}</button></h2>
         <div className={css.description}>{renderMarkdown(intro, markdownComponents, contactSchema)}</div>
+      </div>
+      <div className={css.cardFooter}>
         {primary ? <a className={css.primaryButton} href={primary}
           target={/^https?:/.test(primary) ? '_blank' : undefined}
           rel={/^https?:/.test(primary) ? 'noopener noreferrer' : undefined}
@@ -88,6 +90,8 @@ const ServicePlaceholder = ({ msg }) => (
       <p className={css.placeholderLabel}>{msg('placeholderLabel')}</p>
       <h2>{msg('placeholderTitle')}</h2>
       <p className={css.description}>{msg('placeholderDescription')}</p>
+    </div>
+    <div className={css.cardFooter}>
       <a className={css.secondaryButton} href="#submit-company">{msg('addCompany')} ↗</a>
     </div>
   </article>
