@@ -14,6 +14,7 @@ import { contactMethod, serviceBlocks, serviceHref, serviceWhatsapp, serviceWhat
 import css from './ServicesPage.module.css';
 import eagleProtectLogo from '../../components/IconSolution/solution-eagle.svg';
 import clarityHomesLogo from '../../assets/clarity-homes-bali-logo.svg';
+import ContactIcon from './ContactIcon';
 
 const partnerLogos = { 'eagle-protect': eagleProtectLogo, 'clarity-homes-bali': clarityHomesLogo };
 
@@ -48,8 +49,8 @@ export const ServiceCard = ({ block, index, track, labels }) => {
     const safe = contactMethod(href) === 'whatsapp' ? serviceWhatsapp(href)?.href || serviceHref(href) : serviceHref(href);
     if (!safe) return <span>{children}</span>;
     const external = /^https?:/.test(safe);
-    return <a href={safe} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}
-      onClick={() => trackContact(safe)}>{children}</a>;
+    return <a className={css.contactLink} href={safe} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}
+      onClick={() => trackContact(safe)}><ContactIcon method={contactMethod(safe)} /><span>{children}</span><span className={css.contactArrow} aria-hidden="true">↗</span></a>;
   };
   const markdownComponents = { a: ContactLink, h1: 'h3', h2: 'h3', img: () => null };
   return (
@@ -69,9 +70,9 @@ export const ServiceCard = ({ block, index, track, labels }) => {
           target={/^https?:/.test(primary) ? '_blank' : undefined}
           rel={/^https?:/.test(primary) ? 'noopener noreferrer' : undefined}
           onClick={() => trackContact(primary)}>
-          {block.callToAction.content || labels.contact} ↗</a> : null}
+          <ContactIcon method={contactMethod(primary)} />{block.callToAction.content || labels.contact} ↗</a> : null}
         {whatsapp && contactMethod(primary) !== 'whatsapp' ? <a className={`${css.secondaryButton} ${css.whatsappButton}`} href={whatsapp.href}
-          target="_blank" rel="noopener noreferrer" onClick={() => trackContact(whatsapp.href)}>WhatsApp: +{whatsapp.number} ↗</a> : null}
+          target="_blank" rel="noopener noreferrer" onClick={() => trackContact(whatsapp.href)}><ContactIcon method="whatsapp" />WhatsApp: +{whatsapp.number} ↗</a> : null}
         {details ? <details ref={detailsRef} className={css.details}><summary onClick={() => { if (!detailsRef.current.open) trackProfile(); }}>{labels.details}</summary>
           <div>{renderMarkdown(details, markdownComponents, contactSchema)}</div></details> : null}
       </div>

@@ -58,3 +58,16 @@ test('opens the company profile and separates website and WhatsApp clicks withou
   fireEvent.click(getByText('WhatsApp: +6285886608888 ↗'));
   expect(track).toHaveBeenLastCalledWith('click_service_contact', { service_id: 'eagle-protect', service_name: 'Eagle Protect', contact_method: 'whatsapp' });
 });
+
+test('renders accessible Instagram contacts and attributes clicks to their company', () => {
+  const track = jest.fn();
+  const block = { blockId: 'new-company', title: { content: 'New Company' }, text: { content: 'Introduction.\n\n[Instagram: @company](https://www.instagram.com/company/)' } };
+  const { getByRole } = render(<ServiceCard {...{ block, track }} index={0} labels={{ details: 'Services & contact details', contact: 'Contact' }} />);
+  fireEvent.click(getByRole('button', { name: 'New Company', exact: true }));
+  const link = getByRole('link', { name: 'Instagram: @company' });
+  expect(link.getAttribute('href')).toBe('https://www.instagram.com/company/');
+  expect(link.querySelector('svg').getAttribute('aria-hidden')).toBe('true');
+  expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+  fireEvent.click(link);
+  expect(track).toHaveBeenLastCalledWith('click_service_contact', { service_id: 'new-company', service_name: 'New Company', contact_method: 'instagram' });
+});

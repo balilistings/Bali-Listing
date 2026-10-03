@@ -21,6 +21,7 @@ export const contactMethod = href => {
   const url = new URL(safe);
   if (url.protocol === 'mailto:') return 'email';
   if (url.protocol === 'tel:') return 'phone';
+  if (['instagram.com', 'www.instagram.com'].includes(url.hostname)) return 'instagram';
   return ['wa.me', 'api.whatsapp.com', 'www.whatsapp.com'].includes(url.hostname)
     ? 'whatsapp'
     : 'website';

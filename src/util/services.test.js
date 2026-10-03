@@ -17,6 +17,8 @@ test('accepts public contact destinations but rejects executable and credential 
   expect(contactMethod('https://wa.me/628123456789')).toBe('whatsapp');
   expect(contactMethod('mailto:hello@company.example')).toBe('email');
   expect(contactMethod('tel:+628123456789')).toBe('phone');
+  expect(contactMethod('https://www.instagram.com/clarityhomesbali/')).toBe('instagram');
+  expect(contactMethod('https://instagram.com.evil.example/account')).toBe('website');
   [
     'javascript:alert(1)',
     'data:text/html,test',
