@@ -23,7 +23,13 @@
 .profileTitle { border: 0; padding: 0; background: transparent; color: inherit; font: inherit; text-align: left; cursor: pointer; }
 .profileTitle:hover { text-decoration: underline; }
 .profileMedia:focus-visible, .profileTitle:focus-visible { outline: 2px solid #862183; outline-offset: -3px; }
-.whatsappButton { width: 100%; margin-top: 12px; }
+.socialLinks { display: flex; justify-content: center; gap: 16px; margin-top: 14px; }
+.socialButton { display: inline-flex; justify-content: center; align-items: center; width: 48px; height: 48px; border-radius: 50%; }
+.socialButton .contactIcon { width: 28px; height: 28px; flex-basis: 28px; }
+.whatsappIcon { color: #167a40; background: #edf9f1; }
+.instagramIcon { color: #92278f; background: #fff2ff; }
+.socialButton:hover { color: #231f20; background: #f1e7f1; }
+.socialButton:focus-visible { outline: 2px solid #862183; outline-offset: 3px; }
 .fallbackImage { font-family: 'Istok Web', sans-serif; font-size: 28px; text-align: center; overflow-wrap: anywhere; }
 .cardContent { padding: 24px 24px 0; }
 .cardFooter { padding: 0 24px 24px; }
@@ -41,7 +47,7 @@
 .details a, .description a { color: #862183; text-decoration: underline; }
 .contactIcon { flex: 0 0 20px; width: 20px; height: 20px; }
 .contactIcon, .contactIcon * { fill: none; stroke: currentColor; }
-.primaryButton, .whatsappButton { gap: 8px; }
+.primaryButton { gap: 8px; }
 .details .contactLink { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 10px 12px; border: 1px solid #e9e6e9; border-radius: 12px; color: #231f20; background: #faf8fa; text-decoration: none; font-weight: 600; }
 .contactLink > span { min-width: 0; overflow-wrap: anywhere; }
 .details .contactLink:hover { background: #fff2ff; border-color: #b477b2; }

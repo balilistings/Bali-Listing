@@ -23,7 +23,7 @@ test('sends company events to GA only after analytics consent, including consent
   Cookies.set('cookieConsent', 'accepted');
   fireEvent.click(getByRole('button', { name: 'Clarity Homes Bali', exact: true }));
   expect(window.gtag).toHaveBeenLastCalledWith('event', 'click_service_profile', { service_id: 'clarity-homes-bali', service_name: 'Clarity Homes Bali' });
-  fireEvent.click(getByText('WhatsApp: +6282382382382 ↗'));
+  fireEvent.click(getByRole('link', { name: 'WhatsApp: Clarity Homes Bali' }));
   expect(window.gtag).toHaveBeenLastCalledWith('event', 'click_service_contact', { service_id: 'clarity-homes-bali', service_name: 'Clarity Homes Bali', contact_method: 'whatsapp' });
   Cookies.remove('cookieConsent');
   delete window.gtag;
@@ -32,13 +32,13 @@ test('sends company events to GA only after analytics consent, including consent
 test('renders every public contact without nested links and tracks the selected method', () => {
   const track = jest.fn();
   const block = { blockId: 'company-one', title: { content: 'Company One' }, text: { content: 'Introduction.\n\n[Email](mailto:hello@company.example)\n\n[Call](tel:+628123456789)\n\n[Unsafe](javascript:alert)' }, callToAction: { href: 'https://wa.me/628123456789', content: 'WhatsApp' } };
-  const { container, getByText } = render(<ServiceCard {...{ block, track }} index={0} labels={{ details: 'Services & contact details', contact: 'Contact' }} />);
+  const { container, getByText, getByRole } = render(<ServiceCard {...{ block, track }} index={0} labels={{ details: 'Services & contact details', contact: 'Contact' }} />);
   expect(container.querySelector('a a')).toBeNull();
   expect(container.querySelector('a[href="tel:+628123456789"]')).not.toBeNull();
   expect(container.querySelector('a[href^="javascript:"]')).toBeNull();
-  fireEvent.click(getByText('WhatsApp ↗'));
+  fireEvent.click(getByRole('link', { name: 'WhatsApp: Company One' }));
   expect(track).toHaveBeenCalledWith('click_service_contact', { service_id: 'company-one', service_name: 'Company One', contact_method: 'whatsapp' });
-  const whatsapp = new URL(getByText('WhatsApp ↗').href);
+  const whatsapp = new URL(getByRole('link', { name: 'WhatsApp: Company One' }).href);
   expect(whatsapp.searchParams.get('text')).toBe('I found your profile on balilistings.');
   expect(container.querySelector('article').id).toBe('company-company-one');
 });
@@ -55,7 +55,7 @@ test('opens the company profile and separates website and WhatsApp clicks withou
   expect(track).not.toHaveBeenCalled();
   fireEvent.click(getByText('Visit website ↗'));
   expect(track).toHaveBeenLastCalledWith('click_service_contact', { service_id: 'eagle-protect', service_name: 'Eagle Protect', contact_method: 'website' });
-  fireEvent.click(getByText('WhatsApp: +6285886608888 ↗'));
+  fireEvent.click(getByRole('link', { name: 'WhatsApp: Eagle Protect' }));
   expect(track).toHaveBeenLastCalledWith('click_service_contact', { service_id: 'eagle-protect', service_name: 'Eagle Protect', contact_method: 'whatsapp' });
 });
 
@@ -64,7 +64,7 @@ test('renders accessible Instagram contacts and attributes clicks to their compa
   const block = { blockId: 'new-company', title: { content: 'New Company' }, text: { content: 'Introduction.\n\n[Instagram: @company](https://www.instagram.com/company/)' } };
   const { getByRole } = render(<ServiceCard {...{ block, track }} index={0} labels={{ details: 'Services & contact details', contact: 'Contact' }} />);
   fireEvent.click(getByRole('button', { name: 'New Company', exact: true }));
-  const link = getByRole('link', { name: 'Instagram: @company' });
+  const link = getByRole('link', { name: 'Instagram: New Company' });
   expect(link.getAttribute('href')).toBe('https://www.instagram.com/company/');
   expect(link.querySelector('svg').getAttribute('aria-hidden')).toBe('true');
   expect(link.getAttribute('rel')).toBe('noopener noreferrer');

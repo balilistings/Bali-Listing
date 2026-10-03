@@ -24,7 +24,14 @@ export const ServiceCard = ({ block, index, track, labels }) => {
   const title = block.title.content;
   const paragraphs = (block.text?.content || '').trim().split(/\n\s*\n/);
   const intro = paragraphs[0] || '';
-  const details = paragraphs.slice(1).join('\n\n');
+  const socialMethods = ['whatsapp', 'instagram'];
+  const instagram = Array.from((block.text?.content || '').matchAll(/\]\(([^\s)]+)\)/g), match => match[1])
+    .find(href => contactMethod(href) === 'instagram');
+  // Standalone social links are shown once as accessible icon buttons below the website.
+  const details = paragraphs.slice(1).filter(paragraph => {
+    const link = paragraph.trim().match(/^\[([^\]]+)\]\(([^\s)]+)\)$/);
+    return !link || !socialMethods.includes(contactMethod(link[2]));
+  }).join('\n\n');
   const primaryHref = serviceHref(block.callToAction?.href);
   const primary = contactMethod(primaryHref) === 'whatsapp' ? serviceWhatsapp(primaryHref)?.href || primaryHref : primaryHref;
   const whatsapp = serviceWhatsappContact(block);
@@ -66,13 +73,19 @@ export const ServiceCard = ({ block, index, track, labels }) => {
         <div className={css.description}>{renderMarkdown(intro, markdownComponents, contactSchema)}</div>
       </div>
       <div className={css.cardFooter}>
-        {primary ? <a className={css.primaryButton} href={primary}
+        {primary && !socialMethods.includes(contactMethod(primary)) ? <a className={css.primaryButton} href={primary}
           target={/^https?:/.test(primary) ? '_blank' : undefined}
           rel={/^https?:/.test(primary) ? 'noopener noreferrer' : undefined}
           onClick={() => trackContact(primary)}>
           <ContactIcon method={contactMethod(primary)} />{block.callToAction.content || labels.contact} ↗</a> : null}
-        {whatsapp && contactMethod(primary) !== 'whatsapp' ? <a className={`${css.secondaryButton} ${css.whatsappButton}`} href={whatsapp.href}
-          target="_blank" rel="noopener noreferrer" onClick={() => trackContact(whatsapp.href)}><ContactIcon method="whatsapp" />WhatsApp: +{whatsapp.number} ↗</a> : null}
+        {whatsapp || instagram || contactMethod(primary) === 'instagram' ? <div className={css.socialLinks}>
+          {whatsapp ? <a className={`${css.socialButton} ${css.whatsappIcon}`} href={whatsapp.href}
+            aria-label={`WhatsApp: ${title}`} title={`WhatsApp: +${whatsapp.number}`}
+            target="_blank" rel="noopener noreferrer" onClick={() => trackContact(whatsapp.href)}><ContactIcon method="whatsapp" /></a> : null}
+          {instagram || contactMethod(primary) === 'instagram' ? <a className={`${css.socialButton} ${css.instagramIcon}`} href={instagram || primary}
+            aria-label={`Instagram: ${title}`} title={`Instagram: ${title}`}
+            target="_blank" rel="noopener noreferrer" onClick={() => trackContact(instagram || primary)}><ContactIcon method="instagram" /></a> : null}
+        </div> : null}
         {details ? <details ref={detailsRef} className={css.details}><summary onClick={() => { if (!detailsRef.current.open) trackProfile(); }}>{labels.details}</summary>
           <div>{renderMarkdown(details, markdownComponents, contactSchema)}</div></details> : null}
       </div>
