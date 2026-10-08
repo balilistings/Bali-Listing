@@ -22,7 +22,9 @@ import css from './ListingImageGallery.module.css';
 
 const IMAGE_GALLERY_OPTIONS = {
   showPlayButton: false,
-  disableThumbnailScroll: true,
+  showThumbnails: false,
+  showBullets: false,
+  disableSwipe: false,
 };
 const MAX_LANDSCAPE_ASPECT_RATIO = 2; // 2:1
 const MAX_PORTRAIT_ASPECT_RATIO = 4 / 3;
@@ -65,24 +67,11 @@ const ListingImageGalleryContent = props => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [requestedIndices, setRequestedIndices] = useState([0]);
-  const [isMobile, setIsMobile] = useState(false);
   const intl = useIntl();
-  const { rootClassName, className, images, imageVariants, thumbnailVariants } = props;
-  const thumbVariants = thumbnailVariants || imageVariants;
+  const { rootClassName, className, images, imageVariants } = props;
   // imageVariants are scaled variants.
   const { aspectWidth, aspectHeight } = getFirstImageAspectRatio(images?.[0], imageVariants[0]);
   
-  // Check if mobile on mount and resize
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
   const items = images.map((img, i) => {
     return {
       // We will only use the image resource, but react-image-gallery
@@ -93,70 +82,10 @@ const ListingImageGalleryContent = props => {
         { id: 'ListingImageGallery.imageAltText' },
         { index: i + 1, count: images.length }
       ),
-      thumbAlt: intl.formatMessage(
-        { id: 'ListingImageGallery.imageThumbnailAltText' },
-        { index: i + 1, count: images.length }
-      ),
-      thumbnail: img.attributes?.variants?.[thumbVariants[0]],
       image: img,
     };
   });
 
-  // Handle mobile thumbnail visibility
-  React.useEffect(() => {
-    // Add a small delay to ensure DOM elements are available
-    const timeoutId = setTimeout(() => {
-      if (isMobile && !isFullscreen && items.length > 3) {
-        const thumbnails = document.querySelectorAll('.image-gallery-thumbnail');
-        
-        if (thumbnails.length > 0) {
-          thumbnails.forEach((thumb, index) => {
-            let shouldShow = false;
-            
-            // For first slide, show first, second, third
-            if (currentIndex === 0) {
-              shouldShow = index <= 2;
-            }
-            // For last slide, show third-to-last, second-to-last, last
-            else if (currentIndex === items.length - 1) {
-              shouldShow = index >= items.length - 3;
-            }
-            // For middle slides, show previous, current, next
-            else {
-              shouldShow = 
-                index === currentIndex - 1 || // previous
-                index === currentIndex ||     // current
-                index === currentIndex + 1;   // next
-            }
-            
-            if (shouldShow) {
-              thumb.style.display = 'inline-block';
-            } else {
-              thumb.style.display = 'none';
-            }
-          });
-        }
-      } else if (isMobile && !isFullscreen && items.length <= 3) {
-        // Show all thumbnails if 3 or fewer
-        const thumbnails = document.querySelectorAll('.image-gallery-thumbnail');
-        if (thumbnails.length > 0) {
-          thumbnails.forEach(thumb => {
-            thumb.style.display = 'inline-block';
-          });
-        }
-      } else if (!isMobile || isFullscreen) {
-        // Show all thumbnails in desktop or fullscreen
-        const thumbnails = document.querySelectorAll('.image-gallery-thumbnail');
-        if (thumbnails.length > 0) {
-          thumbnails.forEach(thumb => {
-            thumb.style.display = 'inline-block';
-          });
-        }
-      }
-    }, 100); // Small delay to ensure DOM is ready
-
-    return () => clearTimeout(timeoutId);
-  }, [currentIndex, isMobile, isFullscreen, items.length]);
   const imageSizesMaybe = isFullscreen
     ? {}
     : { sizes: `(max-width: 1024px) 100vw, (max-width: 1200px) calc(100vw - 192px), 708px` };
@@ -180,20 +109,6 @@ const ListingImageGalleryContent = props => {
     );
   };
   
-  const renderThumbInner = item => {
-    return (
-      <div>
-        {requestedIndices.includes(item.index) ? <ResponsiveImage
-          rootClassName={css.thumb}
-          image={item.image}
-          alt={item.thumbAlt}
-          variants={thumbVariants}
-          sizes="88px"
-        /> : <span className={css.deferredThumbnail} aria-label={item.thumbAlt}>{item.index + 1}</span>}
-      </div>
-    );
-  };
-
   const onScreenChange = isFull => {
     setIsFullscreen(isFull);
   };
@@ -207,7 +122,8 @@ const ListingImageGalleryContent = props => {
 
   const renderLeftNav = (onClick, disabled) => {
     return (
-      <button className={css.navLeft} disabled={disabled} onClick={onClick}>
+      <button type="button" className={css.navLeft} disabled={disabled} onClick={onClick}
+        aria-label={intl.formatMessage({ id: 'ListingImageGallery.previousPhoto', defaultMessage: 'Previous photo' })}>
         <div className={css.navArrowWrapper}>
           <IconArrowHead direction="left" size="big" />
         </div>
@@ -216,7 +132,8 @@ const ListingImageGalleryContent = props => {
   };
   const renderRightNav = (onClick, disabled) => {
     return (
-      <button className={css.navRight} disabled={disabled} onClick={onClick}>
+      <button type="button" className={css.navRight} disabled={disabled} onClick={onClick}
+        aria-label={intl.formatMessage({ id: 'ListingImageGallery.nextPhoto', defaultMessage: 'Next photo' })}>
         <div className={css.navArrowWrapper}>
           <IconArrowHead direction="right" size="big" />
         </div>
@@ -236,14 +153,7 @@ const ListingImageGalleryContent = props => {
         <IconClose rootClassName={css.closeIcon} />
       </Button>
     ) : (
-      <div
-        className={css.openFullscreenWrapper}
-        style={{
-          backgroundImage: images?.[0]?.attributes?.variants?.[thumbVariants[0]]?.url
-            ? `url(${images[0].attributes.variants[thumbVariants[0]].url})`
-            : 'none',
-        }}
-      >
+      <div className={css.openFullscreenWrapper}>
         <button className={css.openFullscreen} onClick={onClick}>
           <FormattedMessage
             id="ListingImageGallery.viewImagesButton"
@@ -264,7 +174,11 @@ const ListingImageGalleryContent = props => {
       additionalClass={classes}
       items={items}
       renderItem={renderItem}
-      renderThumbInner={renderThumbInner}
+      renderCustomControls={() => (
+        <span className={css.photoCounter} role="status" aria-live="polite" aria-atomic="true">
+          {currentIndex + 1} / {items.length}
+        </span>
+      )}
       onScreenChange={onScreenChange}
       renderLeftNav={renderLeftNav}
       renderRightNav={renderRightNav}
