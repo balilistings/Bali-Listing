@@ -74,7 +74,7 @@ export const categoryLabel = (categories, value) => {
 };
 
 /**
- * Filter listing images with correct custom image variant name.
+ * Select the cover image variant for metadata without advertising the full gallery.
  * Used for facebook, twitter and page schema images.
  *
  * @param {Listing} listing
@@ -83,6 +83,7 @@ export const categoryLabel = (categories, value) => {
  */
 export const listingImages = (listing, variantName) =>
   (listing.images || [])
+    .slice(0, 1)
     .map(image => {
       const variants = image.attributes.variants;
       const variant = variants ? variants[variantName] : null;

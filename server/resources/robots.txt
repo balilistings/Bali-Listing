@@ -28,4 +28,5 @@ User-agent: GPTBot
 User-agent: meta-externalagent
 User-agent: SemrushBot
 User-agent: Reflectionbot
+User-agent: ClaudeBot
 Disallow: /
