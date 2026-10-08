@@ -58,3 +58,11 @@ test('deferred gallery requests only a selected image and retries a failed read'
   await waitFor(() => expect(container.querySelector('img[srcset="second.jpg"]')).toBeTruthy());
   expect(get.mock.calls.map(call => call[0])).toEqual(['/api/listings/listing/photos/second', '/api/listings/listing/photos/second']);
 });
+
+test('full owner photo data overrides a retained deferred flag', () => {
+ const { get } = require('../../../util/api'); get.mockClear();
+ const images = [{id:{uuid:'owner-photo'},attributes:{deferred:true,variants:{scaled:{url:'owner.jpg'}}}}];
+ const {container} = render(<ListingImageGallery listingId={{uuid:'draft'}} images={images} imageVariants={['scaled']} />);
+ expect(container.querySelector('img[srcset="owner.jpg"]')).toBeTruthy();
+ expect(get).not.toHaveBeenCalled();
+});

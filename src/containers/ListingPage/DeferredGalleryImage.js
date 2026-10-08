@@ -7,7 +7,8 @@ const DeferredGalleryImage = ({ image, listingId, ...props }) => {
   const [loaded, setLoaded] = useState(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
-  const deferred = image?.attributes?.deferred;
+  const hasPhoto = props.variants?.some(variant => image?.attributes?.variants?.[variant]?.url);
+  const deferred = image?.attributes?.deferred && !hasPhoto;
   const id = image?.id?.uuid;
   const listing = listingId?.uuid;
   useEffect(() => {
