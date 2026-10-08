@@ -1,5 +1,5 @@
 const { getReadSdk, serialize, handleError } = require('../api-util/sdk');
-const deferListingImages = require('../../src/util/deferListingImages');
+const deferListingImages = require('../api-util/deferListingImages');
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const send = (res, data) => res.set('Cache-Control', 'private, no-store').type('application/transit+json').send(serialize(data));
 

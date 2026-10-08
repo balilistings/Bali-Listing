@@ -8,7 +8,7 @@ test.each(['Amazonbot/0.1', 'PetalBot/1', 'GPTBot/1', 'meta-externalagent/1', 'S
   expect(res.status).toHaveBeenCalledWith(403);
   expect(res.set).toHaveBeenCalledWith('Cache-Control', 'private, no-store');
 });
-test.each(['Mozilla/5.0', 'Googlebot/2', 'bingbot/2', 'OAI-SearchBot/1', 'ChatGPT-User/1', 'facebookexternalhit/1', 'NotGPTBot/1', 'Claude-SearchBot/1.0', 'Claude-User/1.0', 'NotClaudeBot/1'])('preserves %s', agent => {
+test.each(['Mozilla/5.0', 'Googlebot/2', 'bingbot/2', 'OAI-SearchBot/1', 'ChatGPT-User/1', 'facebookexternalhit/1', 'NotGPTBot/1', 'Claude-SearchBot/1.0', 'Claude-User/1.0', 'NotClaudeBot/1', 'Mozilla/5.0 Sogou Browser/1', 'SogouMobileBrowser/5'])('preserves %s', agent => {
   const next = jest.fn();
   middleware({ headers: { 'user-agent': agent } }, {}, next);
   expect(next).toHaveBeenCalledTimes(1);

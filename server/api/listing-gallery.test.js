@@ -1,7 +1,7 @@
 jest.mock('../api-util/sdk', () => ({ getReadSdk: jest.fn(), serialize: x => x, handleError: jest.fn() }));
 const { getReadSdk, handleError } = require('../api-util/sdk');
 const { show, photo } = require('./listing-gallery');
-const defer = require('../../src/util/deferListingImages');
+const defer = require('../api-util/deferListingImages');
 const listingId = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
 const imageId = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb';
 const coverId = 'cccccccc-cccc-cccc-cccc-cccccccccccc';

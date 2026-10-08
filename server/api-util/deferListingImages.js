@@ -1,5 +1,5 @@
 // Shared by server rendering and the browser listing endpoint. Never mutate a cached response.
-export default response => {
+module.exports = response => {
   const data = response?.data;
   const images = data?.data?.relationships?.images?.data || [];
   const deferredIds = new Set(images.slice(1).map(image => image.id.uuid));
