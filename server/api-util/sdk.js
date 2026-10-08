@@ -8,6 +8,9 @@ const { S3Client } = require('@aws-sdk/client-s3');
 const { fetchRate } = require('./currencyLogic');
 const publicReadCache = require('./publicReadCache');
 const cachedPublicRead = publicReadCache();
+const cachedReviews = publicReadCache({ ttlMs: 5 * 60 * 1000 });
+const cachedStableAssets = publicReadCache({ ttlMs: 5 * 60 * 1000 });
+const cachedVersionedAssets = publicReadCache({ ttlMs: 24 * 60 * 60 * 1000 });
 let anonymousSdk;
 let integrationSdk;
 
@@ -138,18 +141,24 @@ const getSdk = (req, res, shareAnonymous = false) => {
   };
 
   if (usePublicCache) {
-    const wrapPublicRead = (owner, method, prefix) => {
+    const wrapPublicRead = (owner, method, prefix, chooseCache = () => cachedPublicRead) => {
       const original = owner?.[method];
       if (!original) return;
-      owner[method] = (...args) => cachedPublicRead(
+      owner[method] = (...args) => chooseCache(args)(
         prefix + JSON.stringify(args), () => original.apply(owner, args)
       );
     };
     wrapPublicRead(sdk.listings, 'query', 'listings.query:');
     wrapPublicRead(sdk.listings, 'show', 'listings.show:');
-    wrapPublicRead(sdk.reviews, 'query', 'reviews.query:');
+    wrapPublicRead(sdk.reviews, 'query', 'reviews.query:', () => cachedReviews);
     ['assetByVersion', 'assetByAlias', 'assetsByVersion', 'assetsByAlias'].forEach(method =>
-      wrapPublicRead(sdk, method, method + ':')
+      wrapPublicRead(sdk, method, method + ':', args => {
+        if (method.endsWith('Version')) return cachedVersionedAssets;
+        const paths = args[0]?.paths || [args[0]?.path];
+        // Only presentation assets may be stale for five minutes. Permissions and prices stay short.
+        const stable = paths.length > 0 && paths.every(path => typeof path === 'string' && /^\/?(?:design|content|translations)\//.test(path));
+        return stable ? cachedStableAssets : cachedPublicRead;
+      })
     );
     anonymousSdk = { ...sdk, currency };
     return anonymousSdk;

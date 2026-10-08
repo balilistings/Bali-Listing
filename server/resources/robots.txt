@@ -30,3 +30,9 @@ User-agent: SemrushBot
 User-agent: Reflectionbot
 User-agent: ClaudeBot
 Disallow: /
+
+# No recorded Sogou referrals in GA4, 10 September–7 October 2026.
+User-agent: Sogou web spider
+User-agent: Sogou inst spider
+User-agent: Sogou spider
+Disallow: /

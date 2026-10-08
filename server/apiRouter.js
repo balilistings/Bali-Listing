@@ -103,6 +103,9 @@ router.get('/currency/conversion-rate', getConversionRate);
 
 // Listing endpoints
 router.post('/listings/update-state', updateListingState);
+const listingGallery = require('./api/listing-gallery');
+router.post('/listings/show-gallery-cover', listingGallery.show);
+router.get('/listings/:listingId/photos/:imageId', listingGallery.photo);
 
 // User endpoints
 router.get('/users/by-slug/:slug', getUserIdBySlug);

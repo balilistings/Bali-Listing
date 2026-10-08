@@ -19,6 +19,7 @@ import {
 import './image-gallery.css';
 
 import css from './ListingImageGallery.module.css';
+import DeferredGalleryImage from '../DeferredGalleryImage';
 
 const IMAGE_GALLERY_OPTIONS = {
   showPlayButton: false,
@@ -97,7 +98,9 @@ const ListingImageGalleryContent = props => {
         className={isFullscreen ? css.itemWrapperFullscreen : css.itemWrapper}
       >
         <div className={css.itemCentering}>
-          {requestedIndices.includes(item.index) && <ResponsiveImage
+          {requestedIndices.includes(item.index) && <DeferredGalleryImage
+            key={item.image.id?.uuid}
+            listingId={props.listingId}
             rootClassName={css.item}
             image={item.image}
             alt={item.alt}

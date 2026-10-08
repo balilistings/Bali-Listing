@@ -6,13 +6,16 @@ jest.mock('sharetribe-flex-sdk', () => ({
   },
   createInstance: jest.fn(({ tokenStore }) => {
     const show = jest.fn().mockResolvedValue('listing');
+    const reviews = jest.fn().mockResolvedValue('reviews');
+    const alias = jest.fn().mockResolvedValue('assets');
+    const version = jest.fn().mockResolvedValue('version');
     return {
-    originalShow: show,
+    originalShow: show, originalReviews: reviews, originalAlias: alias, originalVersion: version,
     authInfo: () => Promise.resolve({ isAnonymous: !tokenStore.getToken()?.access_token }),
     loginAs: jest.fn(() => { tokenStore.setToken({ access_token: 'authenticated-user' }); return Promise.resolve(); }),
     listings: { query: jest.fn().mockResolvedValue('public listings'), show },
-    reviews: { query: jest.fn().mockResolvedValue('reviews') },
-    assetsByAlias: jest.fn().mockResolvedValue('assets'),
+    reviews: { query: reviews },
+    assetsByAlias: alias, assetsByVersion: version,
   }; }),
 }));
 jest.mock('sharetribe-flex-integration-sdk', () => ({ createInstance: jest.fn(() => ({})) }));
@@ -68,4 +71,21 @@ test('cached public reads preserve all arguments including the response options'
 test('integration SDK retains its server-only token store between calls', () => {
   expect(getIntegrationSdk()).toBe(getIntegrationSdk());
   expect(require('sharetribe-flex-integration-sdk').createInstance).toHaveBeenCalledTimes(1);
+});
+
+test('public cache lifetimes keep mutable data short and immutable versions longer', async () => {
+  const sdk = getReadSdk({}, {});
+  let now = 1000000;
+  const clock = jest.spyOn(Date, 'now').mockImplementation(() => now);
+  const read = () => Promise.all([sdk.listings.show({ id: 'ttl' }), sdk.reviews.query({ listing_id: 'ttl' }), sdk.assetsByAlias({ paths: ['design/branding.json'], alias: 'ttl' }), sdk.assetsByAlias({ paths: ['general/access-control.json'], alias: 'ttl' }), sdk.assetsByVersion({ paths: ['design/branding.json'], version: 'ttl' })]);
+  const originals = [sdk.originalShow, sdk.originalReviews, sdk.originalAlias, sdk.originalVersion];
+  originals.forEach(mock => mock.mockClear());
+  try {
+    await read(); now += 61000; await read();
+    expect(originals.map(m => m.mock.calls.length)).toEqual([2, 1, 3, 1]);
+    now += 300000; await read();
+    expect(originals.map(m => m.mock.calls.length)).toEqual([3, 2, 5, 1]);
+    now += 86400000; await read();
+    expect(originals.map(m => m.mock.calls.length)).toEqual([4, 3, 7, 2]);
+  } finally { clock.mockRestore(); }
 });

@@ -86,6 +86,8 @@ const SectionHero = props => {
         onManageDisableScrolling={onManageDisableScrolling}
       >
         <ImageCarousel
+          key={listing.id?.uuid}
+          listingId={listing.id}
           images={listing.images}
           imageVariants={['scaled-small', 'scaled-medium', 'scaled-large', 'scaled-xlarge']}
         />

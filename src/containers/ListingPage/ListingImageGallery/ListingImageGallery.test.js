@@ -2,6 +2,9 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import ListingImageGallery from './ListingImageGallery';
 
+jest.mock('../../../components/ResponsiveImage/ResponsiveImage', () => ({ image, alt, variants }) => <img alt={alt} srcSet={image?.attributes?.variants?.[variants[0]]?.url} />);
+jest.mock('../../../util/api', () => ({ get: jest.fn() }));
+
 jest.mock('../../../util/reactIntl', () => ({
   useIntl: () => ({ formatMessage: (message, values) => message.defaultMessage || `Photo ${values?.index || ''}` }),
   FormattedMessage: () => <span>View images</span>,
@@ -39,4 +42,19 @@ test('swiping loads the destination photo without loading the remaining gallery'
   await waitFor(() => expect(getByRole('status').textContent).toBe('2 / 3'));
   const sources = [...container.querySelectorAll('img[srcset]')].map(img => img.getAttribute('srcset'));
   expect(sources).toEqual(['swipe-0.jpg', 'swipe-1.jpg']);
+});
+
+test('deferred gallery requests only a selected image and retries a failed read', async () => {
+  const { get } = require('../../../util/api');
+  const cover = { id: { uuid: 'cover' }, attributes: { variants: { scaled: { url: 'cover.jpg' } } } };
+  const second = { id: { uuid: 'second' }, attributes: { deferred: true, variants: {} } };
+  const third = { id: { uuid: 'third' }, attributes: { deferred: true, variants: {} } };
+  get.mockRejectedValueOnce(new Error('network')).mockResolvedValueOnce({ ...second, attributes: { variants: { scaled: { url: 'second.jpg' } } } });
+  const { container, getByRole } = render(<ListingImageGallery listingId={{ uuid: 'listing' }} images={[cover, second, third]} imageVariants={['scaled']} />);
+  expect(get).not.toHaveBeenCalled();
+  fireEvent.click(getByRole('button', { name: 'Next photo' }));
+  await waitFor(() => expect(getByRole('button', { name: /Retry/ })).toBeTruthy());
+  fireEvent.click(getByRole('button', { name: /Retry/ }));
+  await waitFor(() => expect(container.querySelector('img[srcset="second.jpg"]')).toBeTruthy());
+  expect(get.mock.calls.map(call => call[0])).toEqual(['/api/listings/listing/photos/second', '/api/listings/listing/photos/second']);
 });

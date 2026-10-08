@@ -13,6 +13,7 @@ import { IconArrowHead, ResponsiveImage } from '../../../components';
 import './image-gallery.css';
 
 import css from './ImageCarousel.module.css';
+import DeferredGalleryImage from '../DeferredGalleryImage';
 
 const IMAGE_GALLERY_OPTIONS = {
   showPlayButton: false,
@@ -35,6 +36,7 @@ const IMAGE_GALLERY_OPTIONS = {
  */
 const ImageCarousel = props => {
   const [currentIndex, setIndex] = useState(0);
+  const [requestedIndices, setRequestedIndices] = useState([0]);
   const intl = useIntl();
   const { rootClassName, className, images, imageVariants } = props;
 
@@ -43,6 +45,7 @@ const ImageCarousel = props => {
       // We will only use the image resource, but react-image-gallery
       // requires the `original` key from each item.
       original: '',
+      index: i,
       alt: intl.formatMessage(
         { id: 'ImageCarousel.imageAltText' },
         { index: i + 1, count: images.length }
@@ -54,13 +57,15 @@ const ImageCarousel = props => {
     return (
       <div className={css.imageWrapper}>
         <div className={css.itemCentering}>
-          <ResponsiveImage
+          {requestedIndices.includes(item.index) && <DeferredGalleryImage
+            key={item.image.id?.uuid}
+            listingId={props.listingId}
             rootClassName={css.item}
             image={item.image}
             alt={item.alt}
             variants={imageVariants}
             sizes="(max-width: 767px) 100vw, 80vw"
-          />
+          />}
         </div>
       </div>
     );
@@ -117,6 +122,7 @@ const ImageCarousel = props => {
         renderLeftNav={renderLeftNav}
         renderRightNav={renderRightNav}
         onSlide={handleSlide}
+        onBeforeSlide={index => setRequestedIndices(indices => indices.includes(index) ? indices : [...indices, index])}
         {...IMAGE_GALLERY_OPTIONS}
       />
       {imageIndex}

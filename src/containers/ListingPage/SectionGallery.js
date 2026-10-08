@@ -43,6 +43,7 @@ const SectionGallery = props => {
         </div>
       </div>
       <ListingImageGallery
+          listingId={listing.id}
         images={images}
         imageVariants={imageVariants}
         thumbnailVariants={thumbnailVariants}

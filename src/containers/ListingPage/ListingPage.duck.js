@@ -3,7 +3,8 @@ import pick from 'lodash/pick';
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
 import { addMarketplaceEntities } from '../../ducks/marketplaceData.duck';
-import { transactionLineItems } from '../../util/api';
+import deferListingImages from '../../util/deferListingImages';
+import { transactionLineItems, post } from '../../util/api';
 import * as log from '../../util/log';
 import { denormalisedResponseEntities } from '../../util/data';
 import {
@@ -332,10 +333,13 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
     ...createImageVariantConfig(`${variantPrefix}-6x`, 2400, aspectRatio),
   };
 
-  const show = isOwn ? sdk.ownListings.show(params) : sdk.listings.show(params);
+  const show = isOwn ? sdk.ownListings.show(params)
+    : typeof window === 'undefined' ? sdk.listings.show(params)
+    : post('/api/listings/show-gallery-cover', { params }).then(data => ({ data }));
 
   return show
-    .then(data => {
+    .then(response => {
+      const data = isOwn ? response : deferListingImages(response);
       const listingFields = config?.listing?.listingFields;
       const sanitizeConfig = { listingFields };
       dispatch(addMarketplaceEntities(data, sanitizeConfig));
