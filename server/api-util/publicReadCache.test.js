@@ -9,6 +9,7 @@ test('coalesces concurrent reads, reuses results and expires them', async () => 
   expect(load).toHaveBeenCalledTimes(1);
   await cache('listing:1', load);
   expect(load).toHaveBeenCalledTimes(1);
+  expect(cache.stats()).toEqual({ miss: 1, coalesced: 1, hit: 1 });
   jest.advanceTimersByTime(1001);
   await cache('listing:1', load);
   expect(load).toHaveBeenCalledTimes(2);

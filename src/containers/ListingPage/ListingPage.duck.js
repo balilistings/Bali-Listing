@@ -1,4 +1,5 @@
 import pick from 'lodash/pick';
+import { reusePublicRead, publicReadKey, responseFromEntities, canReusePublicRead } from '../../util/publicReadReuse';
 
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
@@ -46,6 +47,7 @@ export const SET_INITIAL_VALUES = 'app/ListingPage/SET_INITIAL_VALUES';
 
 export const SHOW_LISTING_REQUEST = 'app/ListingPage/SHOW_LISTING_REQUEST';
 export const SHOW_LISTING_ERROR = 'app/ListingPage/SHOW_LISTING_ERROR';
+export const SHOW_LISTING_READ = 'app/ListingPage/SHOW_LISTING_READ';
 
 export const FETCH_REVIEWS_REQUEST = 'app/ListingPage/FETCH_REVIEWS_REQUEST';
 export const FETCH_REVIEWS_SUCCESS = 'app/ListingPage/FETCH_REVIEWS_SUCCESS';
@@ -76,6 +78,8 @@ const initialState = {
   showListingError: null,
   reviews: [],
   reviewsFetchedAt: null,
+  publicListingRead: null,
+  publicReviewRead: null,
   fetchReviewsError: null,
   monthlyTimeSlots: {
     // '2022-03': {
@@ -110,6 +114,8 @@ const listingPageReducer = (state = initialState, action = {}) => {
 
     case SHOW_LISTING_REQUEST:
       return { ...state, id: payload.id, showListingError: null };
+    case SHOW_LISTING_READ:
+      return { ...state, publicListingRead: payload };
     case SHOW_LISTING_ERROR:
       return { ...state, showListingError: payload };
 
@@ -117,7 +123,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
       return { ...state, fetchReviewsError: null };
     case FETCH_REVIEWS_SUCCESS:
       if (action.listingId && state.id?.uuid !== action.listingId.uuid) return state;
-      return { ...state, reviews: payload, reviewsFetchedAt: Date.now() };
+      return { ...state, reviews: payload, reviewsFetchedAt: action.fetchedAt || Date.now(), publicReviewRead: action.publicRead || null };
     case FETCH_REVIEWS_ERROR:
       return { ...state, fetchReviewsError: payload };
 
@@ -235,7 +241,7 @@ export const showListingError = e => ({
 });
 
 export const fetchReviewsRequest = () => ({ type: FETCH_REVIEWS_REQUEST });
-export const fetchReviewsSuccess = (reviews, listingId) => ({ type: FETCH_REVIEWS_SUCCESS, payload: reviews, listingId });
+export const fetchReviewsSuccess = (reviews, listingId, fetchedAt, publicRead) => ({ type: FETCH_REVIEWS_SUCCESS, payload: reviews, listingId, fetchedAt, publicRead });
 export const fetchReviewsError = error => ({
   type: FETCH_REVIEWS_ERROR,
   error: true,
@@ -333,9 +339,17 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
     ...createImageVariantConfig(`${variantPrefix}-6x`, 2400, aspectRatio),
   };
 
-  const show = isOwn ? sdk.ownListings.show(params)
-    : typeof window === 'undefined' ? sdk.listings.show(params)
-    : post('/api/listings/show-gallery-cover', { params }).then(data => ({ data }));
+  const state = getState();
+  const allowed = !isOwn && canReusePublicRead(state, config);
+  const key = publicReadKey('listing', params, state);
+  const previous = state.ListingPage.publicListingRead;
+  const seed = previous?.key === key
+    ? responseFromEntities(state, [listingId], {}, previous.fetchedAt, true) : null;
+  const show = reusePublicRead(sdk, key, MINUTE_IN_MS, allowed, seed, () =>
+    isOwn ? sdk.ownListings.show(params)
+      : typeof window === 'undefined' ? sdk.listings.show(params)
+      : post('/api/listings/show-gallery-cover', { params }).then(data => ({ data }))
+  );
 
   return show
     .then(response => {
@@ -343,6 +357,7 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
       const listingFields = config?.listing?.listingFields;
       const sanitizeConfig = { listingFields };
       dispatch(addMarketplaceEntities(data, sanitizeConfig));
+      dispatch({ type: SHOW_LISTING_READ, payload: allowed ? { key, fetchedAt: data.data.meta.publicReadFetchedAt } : null });
       return data;
     })
     .catch(e => {
@@ -350,22 +365,26 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
     });
 };
 
-export const fetchReviews = listingId => (dispatch, getState, sdk) => {
+export const fetchReviews = (listingId, config) => (dispatch, getState, sdk) => {
   const page = getState().ListingPage;
-  if (page.id?.uuid === listingId.uuid && page.reviewsFetchedAt > Date.now() - MINUTE_IN_MS) {
+  if (!canReusePublicRead(getState(), config) && page.id?.uuid === listingId.uuid && page.reviewsFetchedAt > Date.now() - MINUTE_IN_MS) {
     return Promise.resolve();
   }
   dispatch(fetchReviewsRequest());
-  return sdk.reviews
-    .query({
-      listing_id: listingId,
-      state: 'public',
-      include: ['author', 'author.profileImage'],
-      'fields.image': ['variants.square-small', 'variants.square-small2x'],
-    })
+  const params = { listing_id: listingId, state: 'public', include: ['author', 'author.profileImage'],
+    'fields.image': ['variants.square-small', 'variants.square-small2x'] };
+  const state = getState();
+  const allowed = canReusePublicRead(state, config);
+  const key = publicReadKey('reviews', params, state);
+  const previous = page.publicReviewRead;
+  const seed = previous?.key === key ? previous.response : null;
+  return reusePublicRead(sdk, key, 5 * MINUTE_IN_MS, allowed, seed, () =>
+    typeof window === 'undefined' ? sdk.reviews.query(params)
+      : post('/api/public-read/reviews', { params }).then(data => ({ data }))
+  )
     .then(response => {
       const reviews = denormalisedResponseEntities(response);
-      dispatch(fetchReviewsSuccess(reviews, listingId));
+      dispatch(fetchReviewsSuccess(reviews, listingId, response.data.meta?.publicReadFetchedAt, allowed ? { key, response } : null));
     })
     .catch(e => {
       dispatch(fetchReviewsError(storableError(e)));
@@ -560,6 +579,8 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     state.ListingPage.reviewsFetchedAt > Date.now() - MINUTE_IN_MS;
   dispatch(setInitialValues({
     lineItems: null,
+    publicListingRead: state.ListingPage.publicListingRead,
+    publicReviewRead: state.ListingPage.publicReviewRead,
     inquiryModalOpenForListingId,
     ...(canReusePublicReviews ? {
       reviews: state.ListingPage.reviews,
@@ -585,7 +606,7 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
     ? // If user has no viewing rights, only allow fetching their own listing without reviews
       [dispatch(showListing(listingId, config, true))]
     : // For users with viewing rights, fetch the listing and the associated reviews
-      [dispatch(showListing(listingId, config)), dispatch(fetchReviews(listingId))];
+      [dispatch(showListing(listingId, config)), dispatch(fetchReviews(listingId, config))];
 
   return Promise.all(promises).then(response => {
     const listingResponse = response[0];

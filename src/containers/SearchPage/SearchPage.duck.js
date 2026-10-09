@@ -1,3 +1,5 @@
+import { post } from '../../util/api';
+import { reusePublicRead, publicReadKey, responseFromEntities, canReusePublicRead } from '../../util/publicReadReuse';
 import { createImageVariantConfig } from '../../util/sdkLoader';
 import { isErrorUserPendingApproval, isForbiddenError, storableError } from '../../util/errors';
 import { convertUnitToSubUnit, unitDivisor } from '../../util/currency';
@@ -36,6 +38,7 @@ export const SEARCH_MAP_SET_ACTIVE_LISTING = 'app/SearchPage/SEARCH_MAP_SET_ACTI
 
 const initialState = {
   pagination: null,
+  publicRead: null,
   searchParams: null,
   searchInProgress: false,
   searchListingsError: null,
@@ -65,6 +68,7 @@ const listingPageReducer = (state = initialState, action = {}) => {
         ...state,
         currentPageResultIds: resultIds(payload.data),
         pagination: payload.data.meta,
+        publicRead: payload.publicRead || null,
         searchInProgress: false,
       };
     case SEARCH_LISTINGS_ERROR:
@@ -91,9 +95,9 @@ export const searchListingsRequest = searchParams => ({
   payload: { searchParams },
 });
 
-export const searchListingsSuccess = response => ({
+export const searchListingsSuccess = (response, publicRead) => ({
   type: SEARCH_LISTINGS_SUCCESS,
-  payload: { data: response.data },
+  payload: { data: response.data, publicRead },
 });
 
 export const searchListingsError = e => ({
@@ -103,6 +107,7 @@ export const searchListingsError = e => ({
 });
 
 export const searchListings = (searchParams, config) => (dispatch, getState, sdk) => {
+  const before = getState();
   dispatch(searchListingsRequest(searchParams));
 
   // SearchPage can enforce listing query to only those listings with valid listingType
@@ -317,14 +322,22 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     perPage,
   };
 
-  return sdk.listings
-    .query(params)
+  const key = publicReadKey('search', params, before);
+  const allowed = canReusePublicRead(before, config);
+  const previous = before.SearchPage;
+  const seed = previous?.publicRead?.key === key
+    ? responseFromEntities(before, previous.currentPageResultIds, previous.pagination, previous.publicRead.fetchedAt)
+    : null;
+  return reusePublicRead(sdk, key, 60000, allowed, seed, () =>
+    typeof window === 'undefined' ? sdk.listings.query(params)
+      : post('/api/public-read/listings', { params }).then(data => ({ data }))
+  )
     .then(response => {
       const listingFields = config?.listing?.listingFields;
       const sanitizeConfig = { listingFields };
 
       dispatch(addMarketplaceEntities(response, sanitizeConfig));
-      dispatch(searchListingsSuccess(response));
+      dispatch(searchListingsSuccess(response, allowed ? { key, fetchedAt: response.data.meta.publicReadFetchedAt } : null));
       return response;
     })
     .catch(e => {

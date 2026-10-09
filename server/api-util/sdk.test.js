@@ -23,6 +23,31 @@ jest.mock('@aws-sdk/client-s3', () => ({ S3Client: jest.fn() }));
 jest.mock('../log', () => ({ error: jest.fn() }));
 const { getSdk, getReadSdk, getIntegrationSdk } = require('./sdk');
 
+test('returning anonymous cookies share public reads but unknown and user scopes stay isolated', async () => {
+  const first = getReadSdk({ token: { scope: 'public-read' } }, {});
+  const second = getReadSdk({ token: { scope: 'public-read' } }, {});
+  expect(first).toBe(second);
+  first.originalShow.mockClear();
+  await first.listings.show({ id: 'returning-guest' });
+  await second.listings.show({ id: 'returning-guest' });
+  expect(first.originalShow).toHaveBeenCalledTimes(1);
+  for (const token of [{ scope: 'user' }, {}, { scope: 'user:limited' }, { scope: 'public-read', refresh_token: 'test' }, { scope: 'public-read', isLoggedInAs: true }]) {
+    expect(getReadSdk({ token }, {})).not.toBe(first);
+  }
+});
+
+test('cache hit reports preserve origin age without mutating stored results', async () => {
+  const sdk = getReadSdk({}, {});
+  const raw = { data: { data: [], meta: { totalItems: 0 } } };
+  sdk.originalShow.mockResolvedValueOnce(raw);
+  const first = await sdk.listings.show({ id: 'age-proof' });
+  const second = await sdk.listings.show({ id: 'age-proof' });
+  expect(first.data.meta.publicReadCache).toBe('miss');
+  expect(second.data.meta.publicReadCache).toBe('hit');
+  expect(second.data.meta.publicReadFetchedAt).toBe(first.data.meta.publicReadFetchedAt);
+  expect(raw.data.meta).toEqual({ totalItems: 0 });
+});
+
 test('reuses anonymous SDK reads but isolates every user session', async () => {
   const publicSdk = getReadSdk({ headers: {} }, {});
   expect(getReadSdk({ headers: {} }, {})).toBe(publicSdk);

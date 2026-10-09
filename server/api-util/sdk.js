@@ -11,6 +11,10 @@ const cachedPublicRead = publicReadCache();
 const cachedReviews = publicReadCache({ ttlMs: 5 * 60 * 1000 });
 const cachedStableAssets = publicReadCache({ ttlMs: 5 * 60 * 1000 });
 const cachedVersionedAssets = publicReadCache({ ttlMs: 24 * 60 * 60 * 1000 });
+exports.getPublicReadCacheStats = () => ({
+  listingsAndShortAssets: cachedPublicRead.stats(), reviews: cachedReviews.stats(),
+  stableAssets: cachedStableAssets.stats(), versionedAssets: cachedVersionedAssets.stats(),
+});
 let anonymousSdk;
 let integrationSdk;
 
@@ -115,7 +119,9 @@ exports.handleError = (res, error) => {
 // The access token is read from cookie (request) and potentially saved into the cookie (response).
 // This keeps session updated between server and browser even if the token is re-issued.
 const getSdk = (req, res, shareAnonymous = false) => {
-  const hasSession = !!getUserToken(req);
+  const token = getUserToken(req);
+  // Only an explicitly anonymous scope may share public reads. Unknown scopes stay isolated.
+  const hasSession = !!token && (token.scope !== 'public-read' || !!token.refresh_token || !!token.isLoggedInAs);
   const usePublicCache = shareAnonymous && !hasSession;
   if (usePublicCache && anonymousSdk) return anonymousSdk;
   const sdk = sharetribeSdk.createInstance({
@@ -144,9 +150,19 @@ const getSdk = (req, res, shareAnonymous = false) => {
     const wrapPublicRead = (owner, method, prefix, chooseCache = () => cachedPublicRead) => {
       const original = owner?.[method];
       if (!original) return;
-      owner[method] = (...args) => chooseCache(args)(
-        prefix + JSON.stringify(args), () => original.apply(owner, args)
-      );
+      owner[method] = (...args) => {
+        let cacheStatus;
+        return chooseCache(args)(prefix + JSON.stringify(args), () => {
+          const fetchedAt = Date.now();
+          return Promise.resolve(original.apply(owner, args)).then(response =>
+            response?.data ? { ...response, publicReadFetchedAt: fetchedAt } : response
+          );
+        }, status => { cacheStatus = status; }).then(response => response?.data ? {
+          ...response,
+          data: { ...response.data, meta: { ...response.data.meta,
+            publicReadFetchedAt: response.publicReadFetchedAt, publicReadCache: cacheStatus } },
+        } : response);
+      };
     };
     wrapPublicRead(sdk.listings, 'query', 'listings.query:');
     wrapPublicRead(sdk.listings, 'show', 'listings.show:');
