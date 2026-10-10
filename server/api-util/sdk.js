@@ -12,8 +12,10 @@ const cachedReviews = publicReadCache({ ttlMs: 5 * 60 * 1000 });
 const cachedStableAssets = publicReadCache({ ttlMs: 5 * 60 * 1000 });
 const cachedVersionedAssets = publicReadCache({ ttlMs: 24 * 60 * 60 * 1000 });
 exports.getPublicReadCacheStats = () => ({
-  listingsAndShortAssets: cachedPublicRead.stats(), reviews: cachedReviews.stats(),
-  stableAssets: cachedStableAssets.stats(), versionedAssets: cachedVersionedAssets.stats(),
+  listingsAndShortAssets: { ...cachedPublicRead.stats(), ...cachedPublicRead.usage() },
+  reviews: { ...cachedReviews.stats(), ...cachedReviews.usage() },
+  stableAssets: { ...cachedStableAssets.stats(), ...cachedStableAssets.usage() },
+  versionedAssets: { ...cachedVersionedAssets.stats(), ...cachedVersionedAssets.usage() },
 });
 let anonymousSdk;
 let integrationSdk;
