@@ -36,3 +36,11 @@ User-agent: Sogou web spider
 User-agent: Sogou inst spider
 User-agent: Sogou spider
 Disallow: /
+
+# Bandwidth controls; preserve search and social preview crawlers not listed here.
+User-agent: CCBot
+User-agent: AhrefsBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: Amzn-SearchBot
+Disallow: /
