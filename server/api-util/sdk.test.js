@@ -109,8 +109,10 @@ test('public cache lifetimes keep mutable data short and immutable versions long
     await read(); now += 61000; await read();
     expect(originals.map(m => m.mock.calls.length)).toEqual([2, 1, 3, 1]);
     now += 300000; await read();
-    expect(originals.map(m => m.mock.calls.length)).toEqual([3, 2, 5, 1]);
+    expect(originals.map(m => m.mock.calls.length)).toEqual([3, 1, 5, 1]);
+    now += 24 * 60 * 1000; await read();
+    expect(originals.map(m => m.mock.calls.length)).toEqual([4, 2, 7, 1]);
     now += 86400000; await read();
-    expect(originals.map(m => m.mock.calls.length)).toEqual([4, 3, 7, 2]);
+    expect(originals.map(m => m.mock.calls.length)).toEqual([5, 3, 9, 2]);
   } finally { clock.mockRestore(); }
 });
