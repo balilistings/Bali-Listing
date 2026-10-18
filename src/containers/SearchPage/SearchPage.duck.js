@@ -414,7 +414,8 @@ export const loadData = (params, search, config) => (dispatch, getState, sdk) =>
       ],
       ...createImageVariantConfig(`${variantPrefix}`, 640, aspectRatio),
       // ...createImageVariantConfig(`${variantPrefix}-2x`, 800, aspectRatio),
-      // 'limit.images': 1,
+      // Result cards need only the cover; the listing page loads the full gallery on demand.
+      'limit.images': 1,
     },
     config
   );
