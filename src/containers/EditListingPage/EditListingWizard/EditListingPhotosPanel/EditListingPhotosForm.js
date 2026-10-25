@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { ARRAY_ERROR } from 'final-form';
 import { Form as FinalForm, Field } from 'react-final-form';
 import arrayMutators from 'final-form-arrays';
@@ -21,6 +21,7 @@ import ListingImage from './ListingImage';
 import css from './EditListingPhotosForm.module.css';
 
 const ACCEPT_IMAGES = 'image/*';
+const MAX_LISTING_PHOTOS = 20;
 
 const ImageUploadError = props => {
   return props.uploadOverLimit ? (
@@ -143,18 +144,31 @@ export const EditListingPhotosForm = props => {
   const [state, setState] = useState({ imageUploadRequested: false });
   const [submittedImages, setSubmittedImages] = useState([]);
 
-  const onImageUploadHandler = file => {
-    const { listingImageConfig, onImageUpload } = props;
-    if (file) {
-      setState({ imageUploadRequested: true });
+  const pendingUploads = useRef(new Set());
+  const uploadSequence = useRef(0);
+  const [photoLimitReached, setPhotoLimitReached] = useState(false);
 
-      onImageUpload({ id: `${file.name}_${Date.now()}`, file }, listingImageConfig)
-        .then(() => {
-          setState({ imageUploadRequested: false });
-        })
-        .catch(() => {
-          setState({ imageUploadRequested: false });
-        });
+  const onImageUploadHandler = async (file, form) => {
+    if (!file) return;
+    const images = form.getState().values.images || [];
+    // Count pending files that have not yet appeared in the form. Reserve slots
+    // synchronously so a multi-file drop cannot exceed the limit between renders.
+    const visibleIds = new Set(images.map(image => image.id));
+    const reserved = [...pendingUploads.current].filter(id => !visibleIds.has(id)).length;
+    if (images.length + reserved >= MAX_LISTING_PHOTOS) {
+      setPhotoLimitReached(true);
+      return;
+    }
+    const id = `${file.name}_${Date.now()}_${uploadSequence.current++}`;
+    pendingUploads.current.add(id);
+    setState({ imageUploadRequested: true });
+    try {
+      await props.onImageUpload({ id, file }, props.listingImageConfig);
+    } catch (error) {
+      // The upload action exposes its error through fetchErrors.
+    } finally {
+      pendingUploads.current.delete(id);
+      setState({ imageUploadRequested: pendingUploads.current.size > 0 });
     }
   };
   const intl = useIntl();
@@ -257,6 +271,7 @@ export const EditListingPhotosForm = props => {
                       index={index}
                       isCoverPhoto={index === 0}
                       onRemoveImage={imageId => {
+                        setPhotoLimitReached(false);
                         fields.remove(index);
                         onRemoveImage(imageId);
                       }}
@@ -271,10 +286,19 @@ export const EditListingPhotosForm = props => {
               </FieldArray>
 
               <FieldAddImageMultiple
-                onImageUploadHandler={onImageUploadHandler}
-                disabled={state.imageUploadRequested}
+                onImageUploadHandler={file => onImageUploadHandler(file, form)}
+                disabled={disabled || ready || updateInProgress || state.imageUploadRequested || images.length >= MAX_LISTING_PHOTOS}
               />
             </div>
+
+            <p className={css.tip} role="status">
+              {images.length} photos. Maximum {MAX_LISTING_PHOTOS} photos per listing.
+              {images.length > MAX_LISTING_PHOTOS
+                ? ' Your existing photos are kept. Remove photos until fewer than 20 remain before adding new ones.'
+                : photoLimitReached
+                ? ' Extra selected photos were not uploaded.'
+                : ''}
+            </p>
 
             {imagesError ? <div className={css.arrayError}>{imagesError}</div> : null}
 
