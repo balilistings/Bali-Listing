@@ -8,7 +8,7 @@ export default function AvailabilityConfirmation({ listing }) {
   const [error, setError] = useState('');
   const value = savedAt || listing.attributes.privateData?.blAvailabilityConfirmedAt;
   const date = value && new Date(value);
-  const valid = date && Number.isFinite(date.getTime()) && date.getTime() <= Date.now();
+  const valid = date && Number.isFinite(date.getTime());
   const overdue = valid && Date.now() - date.getTime() >= 60 * 86400000;
   const confirm = async event => {
     event.preventDefault();

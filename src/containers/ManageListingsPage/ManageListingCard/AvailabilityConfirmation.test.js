@@ -21,3 +21,10 @@ test('a save failure leaves the listing unconfirmed and allows retry',async()=>{
  expect(screen.getByRole('button',{name:'Confirm still available'})).toBeEnabled();
 });
 test('closed listings have no confirmation action',()=>{render(<AvailabilityConfirmation listing={{...listing,attributes:{state:'closed'}}}/>);expect(screen.queryByRole('button')).toBeNull();});
+
+test('a successful server timestamp displays even when the browser clock is slightly behind',async()=>{
+ post.mockResolvedValue({confirmedAvailableAt:new Date(Date.now()+5000).toISOString()});render(<AvailabilityConfirmation listing={listing}/>);
+ fireEvent.click(screen.getByRole('button',{name:'Confirm still available'}));
+ await screen.findByRole('button',{name:'Confirmed available'});
+ expect(screen.getByRole('status')).toHaveTextContent('Availability confirmed:');
+});
