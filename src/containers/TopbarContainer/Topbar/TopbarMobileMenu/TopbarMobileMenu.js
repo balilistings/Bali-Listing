@@ -89,7 +89,7 @@ const TopbarMobileMenu = props => {
   const user = ensureCurrentUser(currentUser);
 
   const servicesLink = <NamedLink key="services" name="CMSPage" params={{ pageId: 'services' }} className={css.navigationLink} onClick={onClose}><FormattedMessage id="Services.nav" /></NamedLink>;
-  const extraLinks = [servicesLink, ...(customLinks || []).map((linkConfig, index) => {
+  const extraLinks = (customLinks || []).map((linkConfig, index) => {
     return (
       <CustomLinkComponent
         key={`${linkConfig.text}_${index}`}
@@ -97,7 +97,7 @@ const TopbarMobileMenu = props => {
         currentPage={currentPage}
       />
     );
-  })];
+  });
 
   const currentPageClass = page => {
     const isAccountSettingsPage =
@@ -129,6 +129,7 @@ const TopbarMobileMenu = props => {
           </div> */}
 
           <div className={css.accountLinksWrapper}>
+            {servicesLink}
             {/* <NamedLink
             className={classNames(css.inbox, currentPageClass(`InboxPage:${inboxTab}`))}
             name="InboxPage"
@@ -204,6 +205,7 @@ const TopbarMobileMenu = props => {
         </InlineTextButton>
 
         <div className={css.accountLinksWrapper}>
+            {servicesLink}
           {manageListingsLinkMaybe}
           <NamedLink
             className={classNames(css.navigationLink, currentPageClass('ProfileSettingsPage'))}

@@ -338,3 +338,6 @@
     margin: 0;
   }
 }
+.mobileServicesLink { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; color: #231f20; font-family: Mulish, sans-serif; font-size: 14px; font-weight: 700; }
+.mobileServicesLink:hover { color: #862183; }
+.mobileServicesLink:focus-visible { outline: 2px solid #862183; outline-offset: -2px; }

@@ -355,6 +355,9 @@ const TopbarComponent = props => {
           linkToExternalSite={config?.topbar?.logoLink}
         />
         <div className={css.mobileContent}>
+          <NamedLink name="CMSPage" params={{ pageId: 'services' }} className={css.mobileServicesLink}>
+            <FormattedMessage id="Services.nav" />
+          </NamedLink>
           {checkIsProvider(currentUser) && (
             <NamedLink name="NewListingPage" className={css.addListing}>
               <FormattedMessage id="TopbarDesktop.addListing" />
