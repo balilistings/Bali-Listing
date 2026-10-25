@@ -2,6 +2,12 @@
 // Each area has one Balibound listing followed by two Clarity listings.
 // Keep explicit IDs so visiting the homepage still needs just one listings query.
 export const featuredListingIdsByArea = {
+  // Ubud uses the newest listing from each of three different providers.
+  "ubud": [
+    "6ad9a483-e87f-41f5-9bfb-79cf6c031b44",
+    "6ad1cf0c-671b-48a7-8564-d13274204f42",
+    "6acdf631-d372-400c-8ae5-4413a6906486"
+  ],
   "canggu": [
     "6ad0d5fa-0454-48e7-abfd-a362784b6039",
     "6ad5d53e-8552-4a9a-b28c-41b557496888",
