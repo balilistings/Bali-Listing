@@ -284,6 +284,15 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     isListingTypeVariant,
     ...restOfParams
   } = searchParams;
+  // The UI's final counter value means six or more, not exactly six.
+  // Expand from configured enum values so future larger options are included too.
+  if (String(restOfParams.pub_bedrooms) === '6') {
+    const options = config.listing.listingFields?.find(f => f.key === 'bedrooms')?.enumOptions || [];
+    restOfParams.pub_bedrooms = Array.from(new Set([
+      '6',
+      ...options.filter(({ option }) => Number(option) >= 6).map(({ option }) => String(option)),
+    ])).join(',');
+  }
   const priceMaybe = priceSearchParams(price);
   const rentPriceMaybe = rentPriceSearchParams(pub_weekprice, pub_monthprice, pub_yearprice);
   const datesMaybe = datesSearchParams(dates);

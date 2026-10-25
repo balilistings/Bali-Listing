@@ -1,6 +1,7 @@
 @import '../../styles/customMediaQueries.css';
 
 .root {
+  min-width: 0;
   cursor: pointer;
   /* Layout */
   display: flex;
@@ -231,6 +232,7 @@
 }
 
 .bottomContent {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -348,6 +350,7 @@ margin-right: 10px;
 }
 
 .locationWrapper{
+  min-width: 0;
   font-family: Mulish;
   font-weight: 600;
   font-style: SemiBold;
