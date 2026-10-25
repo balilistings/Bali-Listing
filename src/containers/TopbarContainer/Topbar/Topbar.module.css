@@ -242,8 +242,13 @@
 
 .modal {
   z-index: -1;
-  top: auto;
-  bottom: auto;
+  /* Anchor to the viewport even when Page locks scrolling for the open menu. */
+  top: 56px;
+  bottom: 0;
+
+  @media (--viewportMedium) {
+    top: var(--topbarHeightDesktop);
+  }
 }
 
 .missingInformationModal {
