@@ -20,8 +20,8 @@ export const featuredListingIdsByArea = {
   ],
   "pererenan": [
     "6ada2b45-f973-4c45-bd7d-f7b35c29e1fb",
-    "6adc86c5-1792-4953-97c5-753a02803540",
-    "6adc84f5-dc88-4b8a-9886-93744363323f"
+    "6acc8d33-5b2d-433f-9579-baf59e4e9e36",
+    "6ad5d40b-4e83-4c20-a023-e636a10968d0"
   ],
   "jimbaran": [
     "6a829507-f61c-42ff-aeef-16c810c3632b",
