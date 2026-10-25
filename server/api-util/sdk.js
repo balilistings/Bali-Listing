@@ -85,6 +85,8 @@ const getUserToken = req => {
   return cookieTokenStore.getToken();
 };
 
+exports.isLoginAsSession = req => !!getUserToken(req)?.isLoggedInAs;
+
 exports.serialize = data => {
   return sharetribeSdk.transit.write(data, { typeHandlers, verbose: TRANSIT_VERBOSE });
 };

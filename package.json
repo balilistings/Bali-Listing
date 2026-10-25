@@ -98,6 +98,7 @@
     }
   },
   "scripts": {
+    "report:follow-up": "node scripts/provider-follow-up.cjs",
     "audit": "yarn audit --json | node scripts/audit.js",
     "clean": "rm -rf build/*",
     "config": "node scripts/config.js",

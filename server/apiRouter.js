@@ -63,6 +63,9 @@ router.use((req, res, next) => {
 // ================ API router endpoints: ================ //
 
 router.post('/clear-user', logout);
+const providerActivity = require('./api/provider-activity');
+router.post('/provider-activity', providerActivity.recordActivity);
+router.post('/listings/confirm-availability', providerActivity.confirmAvailability);
 
 router.get('/initiate-login-as', initiateLoginAs);
 router.get('/login-as', loginAs);

@@ -23,6 +23,7 @@ import { includeCSSProperties } from './util/style';
 import { IncludeScripts } from './util/includeScripts';
 
 import CookieConsent from './components/CookieConsent/CookieConsent';
+import ProviderActivity from './components/ProviderActivity/ProviderActivity';
 
 // routing
 import routeConfiguration from './routing/routeConfiguration';
@@ -186,6 +187,7 @@ export const ClientApp = props => {
         <LocaleAwareIntlProvider appConfig={appConfig} hostedTranslations={hostedTranslations}>
           <HelmetProvider>
             <AppInitializers />
+            <ProviderActivity />
             <IncludeScripts config={appConfig} />
             <LocaleBrowserRouter>
               {appConfig.chatbotEnabled && <HelpWidget />}

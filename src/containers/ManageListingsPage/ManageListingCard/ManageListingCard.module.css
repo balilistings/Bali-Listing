@@ -380,3 +380,17 @@
 .alternativeActionLink {
   composes: a textSmall from global;
 }
+
+.availabilityConfirmation {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid #e7dbe9;
+  border-radius: 8px;
+  background: #fbf6fc;
+  overflow-wrap: anywhere;
+  & p { margin: 0 0 8px; font-size: 14px; line-height: 1.5; }
+  & button { min-height: 44px; width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #9b219b; background: white; color: #702070; cursor: pointer; }
+  & button:disabled { opacity: .65; cursor: default; }
+  & button:focus-visible { outline: 2px solid #702070; outline-offset: 2px; }
+  & small { display: block; margin-top: 8px; font-size: 12px; line-height: 1.5; }
+}

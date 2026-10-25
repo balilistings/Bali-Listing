@@ -1,0 +1,13 @@
+import React from 'react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import ProviderActivity from './ProviderActivity';
+import { useSelector } from 'react-redux';
+import { post } from '../../util/api';
+jest.mock('react-redux',()=>({useSelector:jest.fn()}));
+jest.mock('../../util/api',()=>({post:jest.fn()}));
+let state;
+beforeEach(()=>{jest.clearAllMocks();localStorage.clear();state={user:{currentUserHasListings:true,currentUser:{id:{uuid:'provider'},attributes:{profile:{privateData:{}}}}}};useSelector.mockImplementation(fn=>fn(state));Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});post.mockResolvedValue({lastActiveAt:new Date().toISOString()});});
+test('signed-in provider visit records once and interactions within a day do not write again',async()=>{render(<ProviderActivity/>);await waitFor(()=>expect(post).toHaveBeenCalledTimes(1));fireEvent.pointerDown(document);fireEvent.keyDown(document);expect(post).toHaveBeenCalledTimes(1);});
+test('guest and nonprovider visits do not record activity',()=>{state.user.currentUserHasListings=false;render(<ProviderActivity/>);expect(post).not.toHaveBeenCalled();});
+test('hidden pages do not record until visible',async()=>{Object.defineProperty(document,'visibilityState',{configurable:true,value:'hidden'});render(<ProviderActivity/>);expect(post).not.toHaveBeenCalled();Object.defineProperty(document,'visibilityState',{configurable:true,value:'visible'});fireEvent(document,new Event('visibilitychange'));await waitFor(()=>expect(post).toHaveBeenCalledTimes(1));});
+test('a recent stored date avoids another server request',()=>{state.user.currentUser.attributes.profile.privateData.blLastActiveAt=new Date().toISOString();render(<ProviderActivity/>);expect(post).not.toHaveBeenCalled();});

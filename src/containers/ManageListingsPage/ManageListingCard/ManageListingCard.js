@@ -40,6 +40,7 @@ import {
 } from '../../../components';
 
 import MenuIcon from './MenuIcon';
+import AvailabilityConfirmation from './AvailabilityConfirmation';
 import Overlay from './Overlay';
 import css from './ManageListingCard.module.css';
 
@@ -651,6 +652,7 @@ export const ManageListingCard = props => {
           </div>
         </div>
 
+        <AvailabilityConfirmation key={id} listing={currentListing} />
         <div className={css.manageLinks}>
           <NamedLink
             className={css.manageLink}

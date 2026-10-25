@@ -1,0 +1,17 @@
+Provider and listing follow-up tracking
+
+The website records blLastActiveAt in the provider's profile.privateData after a visible signed-in visit or interaction. The browser and server throttle updates to one per 24 hours. Operator login-as sessions are excluded. Users with published listings are tracked.
+
+The owner can select Confirm still available on a published listing in My Listings. The server uses the authenticated ownListings API and stores its current time in listing.privateData.blAvailabilityConfirmedAt. Editing a listing or logging in never confirms its availability. Closed/draft listings cannot be confirmed.
+
+These are private operational timestamps, not public badges or an immutable audit log. They remain visible to the owner and operator through Sharetribe; account owners can edit their own private data via Sharetribe's API. No IP addresses or browsing histories are stored. No messages, closures, deletions or automatic cleanup are performed.
+
+Follow-up report
+1. In Sharetribe Console LIVE, download Users CSV and Listings CSV without filters.
+2. From the project folder, run:
+   npm run report:follow-up -- "output-folder" "path-to-users.csv" "path-to-listings.csv"
+3. Open output-folder/report.html. It includes a searchable status filter, provider contact emails, published listing counts, last activity, last confirmed availability, and follow-up dates. providers.csv and listings.csv are also generated.
+
+Alternatively run npm run report:follow-up -- "output-folder" in an authorized environment with existing Sharetribe Integration credentials configured. Never put secrets in commands or commit exports.
+
+The report is a dated snapshot; regenerate with fresh exports for a current follow-up list. At 60 full days or more since a recorded date the row is Follow up. Missing/invalid/future dates are Unknown and must not be inferred from account creation or listing age. All previously existing data begins Unknown. Only published listings and their providers are included.
