@@ -6,6 +6,7 @@ import * as log from '../../util/log';
 import { constructLocalizedPageAssets } from '../../util/localeAssetUtils';
 import { customLocationBounds } from '../PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { util as sdkUtil } from '../../util/sdkLoader';
+import { featuredListingIdsByArea } from '../../config/featuredListings';
 
 export const ASSET_NAME = 'landing-page';
 const SERVICES_LOADED = 'app/LandingPage/SERVICES_LOADED';
@@ -18,6 +19,7 @@ const SEARCH_FEATURED_LISTINGS_ERROR = 'app/LandingPage/SEARCH_FEATURED_LISTINGS
 
 const initialState = {
   servicesPageData: null,
+  featuredArea: 'canggu',
   featuredListingIds: [],
   featuredListingsInProgress: false,
   featuredListingsError: null,
@@ -33,10 +35,13 @@ export default function reducer(state = initialState, action = {}) {
     case SEARCH_FEATURED_LISTINGS_REQUEST:
       return {
         ...state,
+        featuredArea: payload.area,
         featuredListingsInProgress: true,
+        featuredListingsError: null,
       };
 
     case SEARCH_FEATURED_LISTINGS_SUCCESS:
+      if (payload.area !== state.featuredArea) return state;
       const currentSequence = resultIds(payload.data);
 
       return {
@@ -46,6 +51,7 @@ export default function reducer(state = initialState, action = {}) {
       };
 
     case SEARCH_FEATURED_LISTINGS_ERROR:
+      if (action.area !== state.featuredArea) return state;
       return { ...state, featuredListingsInProgress: false, featuredListingsError: payload };
 
     default:
@@ -55,16 +61,18 @@ export default function reducer(state = initialState, action = {}) {
 
 // ================ Action creators ================ //
 
-export const searchFeaturedListingsRequest = () => ({
+export const searchFeaturedListingsRequest = area => ({
+  payload: { area },
   type: SEARCH_FEATURED_LISTINGS_REQUEST,
 });
 
-export const searchFeaturedListingsSuccess = response => ({
+export const searchFeaturedListingsSuccess = (response, area) => ({
   type: SEARCH_FEATURED_LISTINGS_SUCCESS,
-  payload: { data: response.data },
+  payload: { data: response.data, area },
 });
 
-export const searchFeaturedListingsError = e => ({
+export const searchFeaturedListingsError = (e, area) => ({
+  area,
   type: SEARCH_FEATURED_LISTINGS_ERROR,
   error: true,
   payload: e,
@@ -73,12 +81,14 @@ export const searchFeaturedListingsError = e => ({
 // ================ Thunks ================ //
 
 export const fetchFeaturedListings = (
-  params = { bounds: customLocationBounds[0].bounds }
+  params = { area: 'canggu', bounds: customLocationBounds[0].bounds }
 ) => async (dispatch, getState, sdk) => {
+  const { area = 'canggu', ...queryParams } = params;
+  const selectedIds = featuredListingIdsByArea[area];
   try {
-    dispatch(searchFeaturedListingsRequest());
+    dispatch(searchFeaturedListingsRequest(area));
     const response = await sdk.listings.query({
-      ...params,
+      ...(selectedIds ? { ids: selectedIds.join(',') } : { ...queryParams, pub_featured: true }),
       perPage: 3,
       include: ['author', 'images'],
       'fields.listing': ['title', 'description', 'geolocation', 'price', 'publicData'],
@@ -89,14 +99,18 @@ export const fetchFeaturedListings = (
         h: 480,
         fit: 'scale'
       }),
-      pub_featured: true,
     });
 
-    dispatch(addMarketplaceEntities(response));
-    dispatch(searchFeaturedListingsSuccess(response));
-    return response;
+    // The API controls query order; restore the intentional provider order without mutating cached data.
+    const orderedResponse = selectedIds ? {
+      ...response,
+      data: { ...response.data, data: selectedIds.map(id => response.data.data.find(l => l.id.uuid === id)).filter(Boolean) },
+    } : response;
+    dispatch(addMarketplaceEntities(orderedResponse));
+    dispatch(searchFeaturedListingsSuccess(orderedResponse, area));
+    return orderedResponse;
   } catch (error) {
-    return dispatch(searchFeaturedListingsError(storableError(error)));
+    return dispatch(searchFeaturedListingsError(storableError(error), area));
   }
 };
 

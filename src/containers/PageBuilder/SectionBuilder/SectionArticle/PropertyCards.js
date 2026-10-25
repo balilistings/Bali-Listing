@@ -282,7 +282,7 @@ const tabList = [
   { id: 'canggu', label: 'Canggu' },
   { id: 'ubud', label: 'Ubud' },
   { id: 'seminyak', label: 'Seminyak' },
-  { id: 'sanur', label: 'Sanur' },
+  { id: 'pererenan', label: 'Pererenan' },
   { id: 'jimbaran', label: 'Jimbaran' },
 ];
 
@@ -302,10 +302,10 @@ export const customLocationBounds = [
     ),
   },
   {
-    id: 'sanur',
+    id: 'pererenan',
     bounds: new SDKLatLngBounds(
-      new SDKLatLng(-8.65920685, 115.26954166),
-      new SDKLatLng(-8.71088816, 115.22878674)
+      new SDKLatLng(-8.627116, 115.142385),
+      new SDKLatLng(-8.652869, 115.117988)
     ),
   },
   {
@@ -382,7 +382,7 @@ const PropertyCards = () => {
             onClick={e => {
               setActiveTab(tab.id);
               const location = customLocationBounds.find(elm => elm.id === tab.id);
-              dispatch(fetchFeaturedListings({ bounds: location.bounds }));
+              dispatch(fetchFeaturedListings({ area: tab.id, bounds: location.bounds }));
             }}
             type="button"
           >
