@@ -19,6 +19,19 @@ jest.mock('embla-carousel-react', () => {
   return () => [jest.fn(), api];
 });
 
+test('custom gallery photos mount only after selection and stay mounted when returning', () => {
+  const Photo = ({ name }) => <img src={name} alt="photo" />;
+  const { container, getByRole } = render(<ImageSlider
+    images={['cover.jpg', 'second.jpg', 'third.jpg']}
+    renderImage={name => <Photo name={name} />} title="Villa" />);
+  const sources = () => [...container.querySelectorAll('img[src]')].map(img => img.getAttribute('src'));
+  expect(sources()).toEqual(['cover.jpg']);
+  fireEvent.click(getByRole('button', { name: 'Next image' }));
+  expect(sources()).toEqual(['cover.jpg', 'second.jpg']);
+  fireEvent.click(getByRole('button', { name: 'Previous image' }));
+  expect(sources()).toEqual(['cover.jpg', 'second.jpg']);
+});
+
 test('loads only the selected photo and keeps arrow navigation working', () => {
   const { container, getByRole } = render(<ImageSlider images={['cover.jpg', 'second.jpg', 'third.jpg']} title="Villa" />);
   const sources = () => [...container.querySelectorAll('img[src]')].map(img => img.getAttribute('src'));

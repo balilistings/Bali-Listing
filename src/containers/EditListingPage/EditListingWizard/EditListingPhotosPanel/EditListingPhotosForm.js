@@ -11,6 +11,7 @@ import { FormattedMessage, useIntl } from '../../../../util/reactIntl';
 import { propTypes } from '../../../../util/types';
 import { nonEmptyArray, composeValidators } from '../../../../util/validators';
 import { isUploadImageOverLimitError } from '../../../../util/errors';
+import { photoFingerprint } from '../../../../util/photoFile';
 
 // Import shared components
 import { Button, Form, AspectRatioWrapper } from '../../../../components';
@@ -145,30 +146,55 @@ export const EditListingPhotosForm = props => {
   const [submittedImages, setSubmittedImages] = useState([]);
 
   const pendingUploads = useRef(new Set());
+  const checkingFiles = useRef(0);
+  const photoFingerprints = useRef(new Map());
+  const fingerprintQueue = useRef(Promise.resolve());
+  const [duplicateSkipped, setDuplicateSkipped] = useState(false);
   const uploadSequence = useRef(0);
   const [photoLimitReached, setPhotoLimitReached] = useState(false);
 
   const onImageUploadHandler = async (file, form) => {
     if (!file) return;
-    const images = form.getState().values.images || [];
-    // Count pending files that have not yet appeared in the form. Reserve slots
-    // synchronously so a multi-file drop cannot exceed the limit between renders.
-    const visibleIds = new Set(images.map(image => image.id));
-    const reserved = [...pendingUploads.current].filter(id => !visibleIds.has(id)).length;
-    if (images.length + reserved >= MAX_LISTING_PHOTOS) {
-      setPhotoLimitReached(true);
-      return;
-    }
-    const id = `${file.name}_${Date.now()}_${uploadSequence.current++}`;
-    pendingUploads.current.add(id);
+    checkingFiles.current += 1;
     setState({ imageUploadRequested: true });
+    let fingerprint;
+    let id;
+    let claimed = false;
     try {
-      await props.onImageUpload({ id, file }, props.listingImageConfig);
+      // Hash in selection order, keeping cover order and avoiding many large buffers at once.
+      const check = fingerprintQueue.current.then(() => photoFingerprint(file));
+      fingerprintQueue.current = check.catch(() => null);
+      fingerprint = await check;
+      if (fingerprint && photoFingerprints.current.has(fingerprint)) {
+        setDuplicateSkipped(true);
+        return;
+      }
+      const images = form.getState().values.images || [];
+      // Reserve a slot before starting the upload, including files not yet in the form.
+      const visibleIds = new Set(images.map(image => image.id));
+      const reserved = [...pendingUploads.current].filter(id => !visibleIds.has(id)).length;
+      if (images.length + reserved >= MAX_LISTING_PHOTOS) {
+        setPhotoLimitReached(true);
+        return;
+      }
+      id = `${file.name}_${Date.now()}_${uploadSequence.current++}`;
+      pendingUploads.current.add(id);
+      if (fingerprint) {
+        photoFingerprints.current.set(fingerprint, { id });
+        claimed = true;
+      }
+      const result = await props.onImageUpload({ id, file }, props.listingImageConfig);
+      if (fingerprint && result?.error) photoFingerprints.current.delete(fingerprint);
+      else if (fingerprint && photoFingerprints.current.has(fingerprint)) photoFingerprints.current.set(fingerprint, {
+        id, imageId: result?.payload?.data?.imageId?.uuid,
+      });
     } catch (error) {
+      if (claimed) photoFingerprints.current.delete(fingerprint);
       // The upload action exposes its error through fetchErrors.
     } finally {
       pendingUploads.current.delete(id);
-      setState({ imageUploadRequested: pendingUploads.current.size > 0 });
+      checkingFiles.current -= 1;
+      setState({ imageUploadRequested: checkingFiles.current > 0 });
     }
   };
   const intl = useIntl();
@@ -273,6 +299,12 @@ export const EditListingPhotosForm = props => {
                       onRemoveImage={imageId => {
                         setPhotoLimitReached(false);
                         fields.remove(index);
+                        // Removing a photo permits selecting that exact file again.
+                        for (const [hash, photo] of photoFingerprints.current) {
+                          if (photo.id === imageId || photo.imageId === (imageId?.uuid || imageId)) {
+                            photoFingerprints.current.delete(hash);
+                          }
+                        }
                         onRemoveImage(imageId);
                       }}
                       onSetCoverPhoto={handleSetCoverPhoto}
@@ -299,6 +331,8 @@ export const EditListingPhotosForm = props => {
                 ? ' Extra selected photos were not uploaded.'
                 : ''}
             </p>
+
+            {duplicateSkipped && <p className={css.tip} role="status">Duplicate photo skipped. It is already selected in this editing session.</p>}
 
             {imagesError ? <div className={css.arrayError}>{imagesError}</div> : null}
 

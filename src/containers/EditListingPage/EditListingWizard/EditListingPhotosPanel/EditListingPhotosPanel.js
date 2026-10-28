@@ -75,6 +75,7 @@ const EditListingPhotosPanel = props => {
         )}
       </H3>
       <EditListingPhotosForm
+        key={listing?.id?.uuid || 'new-listing'}
         className={css.form}
         disabled={disabled}
         ready={ready}

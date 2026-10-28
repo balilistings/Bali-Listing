@@ -7,6 +7,8 @@ import { constructLocalizedPageAssets } from '../../util/localeAssetUtils';
 import { customLocationBounds } from '../PageBuilder/SectionBuilder/SectionArticle/PropertyCards';
 import { util as sdkUtil } from '../../util/sdkLoader';
 import { featuredListingIdsByArea } from '../../config/featuredListings';
+import deferListingImages from '../../util/deferListingImages';
+import { post } from '../../util/api';
 
 export const ASSET_NAME = 'landing-page';
 const SERVICES_LOADED = 'app/LandingPage/SERVICES_LOADED';
@@ -87,7 +89,7 @@ export const fetchFeaturedListings = (
   const selectedIds = featuredListingIdsByArea[area];
   try {
     dispatch(searchFeaturedListingsRequest(area));
-    const response = await sdk.listings.query({
+    const query = {
       ...(selectedIds ? { ids: selectedIds.join(',') } : { ...queryParams, pub_featured: true }),
       perPage: 3,
       include: ['author', 'images'],
@@ -99,7 +101,11 @@ export const fetchFeaturedListings = (
         h: 480,
         fit: 'scale'
       }),
-    });
+    };
+    // Keep photo IDs for swipe navigation, but expose only covers until selected.
+    const response = typeof window === 'undefined'
+      ? deferListingImages(await sdk.listings.query(query))
+      : { data: await post('/api/public-read/listings', { params: query, deferImages: true }) };
 
     // The API controls query order; restore the intentional provider order without mutating cached data.
     const orderedResponse = selectedIds ? {

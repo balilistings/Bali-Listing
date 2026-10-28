@@ -21,6 +21,7 @@ import classNames from 'classnames';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useLocale } from '../../../../context/localeContext';
 import ImageSlider from '../../../../components/ImageSlider/ImageSlider';
+import DeferredGalleryImage from '../../../ListingPage/DeferredGalleryImage';
 import CardContainer from '../../../../components/ListingCard/CardContainer';
 
 const { LatLng: SDKLatLng, LatLngBounds: SDKLatLngBounds } = sdkTypes;
@@ -405,9 +406,6 @@ const PropertyCards = () => {
           <>
             {listings?.map((card, idx) => {
               const { attributes, images, author } = card;
-              const imagesUrls = images.map(
-                img => img.attributes.variants['featured-listing']?.url
-              );
               const {
                 title,
                 description,
@@ -474,7 +472,12 @@ const PropertyCards = () => {
                   <div className={styles.imageWrapper}>
                     <ImageSlider
                       loop={images.length > 1}
-                      images={imagesUrls}
+                      images={images}
+                      renderImage={(image, className) => <DeferredGalleryImage
+                        image={image} listingId={card.id} rootClassName={className}
+                        variants={['featured-listing', 'scaled-small', 'scaled-medium']}
+                        sizes="(max-width: 767px) 100vw, 400px" alt={title} loading="lazy"
+                      />}
                       title={title}
                       buttonSize="large"
                     />

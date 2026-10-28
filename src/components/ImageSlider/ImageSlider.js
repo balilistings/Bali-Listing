@@ -6,7 +6,7 @@ import useDisableBodyScrollOnSwipe from '../../util/useDisableBodyScrollOnSwipe'
 import styles from './ImageSlider.module.css';
 import classNames from 'classnames';
 
-const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'medium' }) => {
+const ImageSlider = ({ images, title, loop, className, children, renderImage, buttonSize = 'medium' }) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop });
   const setSliderNode = useDisableBodyScrollOnSwipe();
 
@@ -23,6 +23,7 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false);
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [visitedIndices, setVisitedIndices] = useState([0]);
   const [scrollSnaps, setScrollSnaps] = useState([]);
 
   const scrollPrev = useCallback(() => emblaApi && emblaApi.scrollPrev(), [emblaApi]);
@@ -31,6 +32,8 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
     setSelectedIndex(emblaApi.selectedScrollSnap());
+    setVisitedIndices(previous => previous.includes(emblaApi.selectedScrollSnap())
+      ? previous : [...previous, emblaApi.selectedScrollSnap()]);
     setPrevBtnEnabled(emblaApi.canScrollPrev());
     setNextBtnEnabled(emblaApi.canScrollNext());
   }, [emblaApi]);
@@ -59,12 +62,12 @@ const ImageSlider = ({ images, title, loop, className, children, buttonSize = 'm
       ))
     : images.map((img, imgIdx) => (
         <div className={styles.embla__slide} key={imgIdx}>
-          <img
+          {renderImage ? (visitedIndices.includes(imgIdx) && renderImage(img, styles.image)) : <img
             src={imgIdx === selectedIndex ? img : undefined}
             alt={title}
             className={styles.image + ' ' + styles.imageFade}
             loading="lazy"
-          />
+          />}
         </div>
       ));
 

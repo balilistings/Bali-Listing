@@ -23,7 +23,11 @@ const DeferredGalleryImage = ({ image, listingId, ...props }) => {
   }, [deferred, id, listing, attempt]);
   if (deferred && !loaded) {
     return error
-      ? <button type="button" onClick={() => setAttempt(n => n + 1)}>Photo could not load. Retry</button>
+      ? <button type="button" onClick={event => {
+          event.preventDefault();
+          event.stopPropagation();
+          setAttempt(n => n + 1);
+        }}>Photo could not load. Retry</button>
       : <span role="status" aria-live="polite">Loading photo…</span>;
   }
   return <ResponsiveImage image={loaded || image} {...props} />;

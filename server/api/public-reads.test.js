@@ -17,6 +17,18 @@ test('location and bedroom searches restore bounds after the real Transit round 
  expect(received.pub_categoryLevel1).toBe('rentalvillas');
  expect(params.bounds).not.toBeInstanceOf(LatLngBounds);
 });
+
+test('featured gallery requests remove non-cover URLs before sending them to the browser', async () => {
+ const images = ['cover', 'extra'].map(uuid => ({ id: { uuid }, type: 'image', attributes: { variants: { scaled: { url: uuid + '.jpg' } } } }));
+ const original = { data: { meta: {}, data: [{ relationships: { images: { data: images.map(({ id, type }) => ({ id, type })) } } }], included: images } };
+ const query = jest.fn().mockResolvedValue(original);
+ getReadSdk.mockReturnValue({ listings: { query } });
+ const r = res();
+ await routes.listings({ body: { params: { perPage: 3 }, deferImages: true } }, r);
+ expect(query).toHaveBeenCalledWith({ perPage: 3 });
+ expect(r.send.mock.calls[0][0].included[1].attributes).toEqual({ variants: {}, deferred: true });
+ expect(original.data.included[1].attributes.variants.scaled.url).toBe('extra.jpg');
+});
 test('malformed location bounds are rejected before querying listings',async()=>{
  const query=jest.fn();getReadSdk.mockReturnValue({listings:{query}});
  const r=res();await routes.listings({body:{params:{bounds:{_sdkType:'LatLngBounds',ne:{lat:NaN,lng:115},sw:{lat:-8,lng:115}}}}},r);

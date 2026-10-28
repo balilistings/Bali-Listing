@@ -1,5 +1,6 @@
 const { getReadSdk, serialize, handleError, getPublicReadCacheStats } = require('../api-util/sdk');
 const { types: { LatLng, LatLngBounds } } = require('sharetribe-flex-sdk');
+const deferListingImages = require('../api-util/deferListingImages');
 let lastReport = 0;
 const read = resource => async (req, res) => {
   const params = req.body?.params;
@@ -27,7 +28,9 @@ const read = resource => async (req, res) => {
       lastReport = Date.now();
       console.info(JSON.stringify({ event: 'sharetribe_read_cache', counts: getPublicReadCacheStats() }));
     }
-    return res.type('application/transit+json').send(serialize(response.data));
+    const safeResponse = resource === 'listings' && req.body.deferImages === true
+      ? deferListingImages(response) : response;
+    return res.type('application/transit+json').send(serialize(safeResponse.data));
   } catch (error) { return handleError(res, error); }
 };
 exports.listings = read('listings');

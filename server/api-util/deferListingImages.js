@@ -1,8 +1,15 @@
 // Shared by server rendering and the browser listing endpoint. Never mutate a cached response.
 module.exports = response => {
   const data = response?.data;
-  const images = data?.data?.relationships?.images?.data || [];
-  const deferredIds = new Set(images.slice(1).map(image => image.id.uuid));
+  const listings = Array.isArray(data?.data) ? data.data : [data?.data];
+  const covers = new Set();
+  const deferredIds = new Set();
+  listings.forEach(listing => {
+    const images = listing?.relationships?.images?.data || [];
+    if (images[0]) covers.add(images[0].id.uuid);
+    images.slice(1).forEach(image => deferredIds.add(image.id.uuid));
+  });
+  covers.forEach(id => deferredIds.delete(id));
   return {
     ...response,
     data: {
