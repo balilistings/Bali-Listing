@@ -54,7 +54,7 @@ const ServiceCard = ({ block, index, track, labels }) => {
   const legacyLogo = partnerLogos[block.blockId];
   const id = `company-${block.blockId}`;
   const ContactLink = ({ href, children }) => {
-    const safe = contactMethod(href) === 'whatsapp' ? serviceWhatsapp(href)?.href || serviceHref(href) : serviceHref(href);
+    const safe = ['whatsapp', 'phone'].includes(contactMethod(href)) ? serviceWhatsapp(href)?.href || serviceHref(href) : serviceHref(href);
     if (!safe) return <span>{children}</span>;
     const method = contactMethod(safe);
     const label = method === 'website' && contactMethod(primary) === 'website'
