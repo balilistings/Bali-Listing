@@ -20,10 +20,19 @@ const ServiceCard = ({ block, index, track, labels }) => {
   const instagram = Array.from((block.text?.content || '').matchAll(/\]\(([^\s)]+)\)/g), match => match[1])
     .find(href => contactMethod(href) === 'instagram');
   // Standalone social links are shown once as accessible icon buttons below the website.
-  const details = paragraphs.slice(1).filter(paragraph => {
+  const detailParagraphs = paragraphs.slice(1).filter(paragraph => {
     const link = paragraph.trim().match(/^\[([^\]]+)\]\(([^\s)]+)\)$/);
     return !link || !socialMethods.includes(contactMethod(link[2]));
-  }).join('\n\n');
+  });
+  // CMS authors may enter contacts in any order; render the same order on every card.
+  const standaloneLink = paragraph => paragraph.trim().match(/^\[([^\]]+)\]\(([^\s)]+)\)$/);
+  const contactOrder = { website: 0, email: 1, phone: 2 };
+  const isContact = paragraph => contactMethod(standaloneLink(paragraph)?.[2]) in contactOrder;
+  const contacts = detailParagraphs.filter(isContact).sort((a, b) =>
+    contactOrder[contactMethod(standaloneLink(a)[2])] - contactOrder[contactMethod(standaloneLink(b)[2])]
+  );
+  let contactIndex = 0;
+  const details = detailParagraphs.map(paragraph => isContact(paragraph) ? contacts[contactIndex++] : paragraph).join('\n\n');
   const primaryHref = serviceHref(block.callToAction?.href);
   const primary = contactMethod(primaryHref) === 'whatsapp' ? serviceWhatsapp(primaryHref)?.href || primaryHref : primaryHref;
   const whatsapp = serviceWhatsappContact(block);
@@ -47,9 +56,13 @@ const ServiceCard = ({ block, index, track, labels }) => {
   const ContactLink = ({ href, children }) => {
     const safe = contactMethod(href) === 'whatsapp' ? serviceWhatsapp(href)?.href || serviceHref(href) : serviceHref(href);
     if (!safe) return <span>{children}</span>;
+    const method = contactMethod(safe);
+    const label = method === 'website' && contactMethod(primary) === 'website'
+      ? block.callToAction.content || children
+      : method === 'email' ? `Email: ${new URL(safe).pathname}` : children;
     const external = /^https?:/.test(safe);
     return <a className={css.contactLink} href={safe} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}
-      onClick={() => trackContact(safe)}><ContactIcon method={contactMethod(safe)} /><span>{children}</span><span className={css.contactArrow} aria-hidden="true">↗</span></a>;
+      onClick={() => trackContact(safe)}><ContactIcon method={contactMethod(safe)} /><span>{label}</span><span className={css.contactArrow} aria-hidden="true">↗</span></a>;
   };
   const markdownComponents = { a: ContactLink, h1: 'h3', h2: 'h3', img: () => null };
   return (
