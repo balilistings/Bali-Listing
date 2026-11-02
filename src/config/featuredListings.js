@@ -11,7 +11,7 @@ export const featuredListingIdsByArea = {
   "canggu": [
     "6ad0d5fa-0454-48e7-abfd-a362784b6039",
     "6ad5d53e-8552-4a9a-b28c-41b557496888",
-    "6ad5d315-9c43-4a1a-b4d7-da0c3e3b9466"
+    "6ae01e5c-b7e3-4f94-b5ee-29d7224e3e6e"
   ],
   "seminyak": [
     "6ad03472-989d-4f76-8c16-1a9e83bd99f7",
