@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import classNames from 'classnames';
 import ReactImageGallery from 'react-image-gallery';
 
@@ -65,6 +65,7 @@ const getFirstImageAspectRatio = (firstImage, scaledVariant) => {
  * @returns {JSX.Element} listing image gallery component
  */
 const ListingImageGalleryContent = props => {
+  const photoRequests = useRef(new Map());
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [requestedIndices, setRequestedIndices] = useState([0]);
@@ -87,9 +88,7 @@ const ListingImageGalleryContent = props => {
     };
   });
 
-  const imageSizesMaybe = isFullscreen
-    ? {}
-    : { sizes: `(max-width: 1024px) 100vw, (max-width: 1200px) calc(100vw - 192px), 708px` };
+  const normalImageSizes = `(max-width: 1024px) 100vw, (max-width: 1200px) calc(100vw - 192px), 708px`;
   const renderItem = item => {
     return (
       <AspectRatioWrapper
@@ -101,11 +100,12 @@ const ListingImageGalleryContent = props => {
           {requestedIndices.includes(item.index) && <DeferredGalleryImage
             key={item.image.id?.uuid}
             listingId={props.listingId}
+            photoRequests={photoRequests.current}
             rootClassName={css.item}
             image={item.image}
             alt={item.alt}
             variants={imageVariants}
-            {...imageSizesMaybe}
+            sizes={isFullscreen && item.index === currentIndex ? '100vw' : normalImageSizes}
           />}
         </div>
       </AspectRatioWrapper>
@@ -195,7 +195,7 @@ const ListingImageGalleryContent = props => {
 
 // A different listing starts with its cover, without loading photos selected on the previous one.
 const ListingImageGallery = props => {
-  const key = props.images.map(image => image.id?.uuid || image.attributes?.variants?.[props.imageVariants[0]]?.url).join(',');
+  const key = (props.listingId?.uuid || '') + ':' + props.images.map(image => image.id?.uuid || image.attributes?.variants?.[props.imageVariants[0]]?.url).join(',');
   return <ListingImageGalleryContent key={key} {...props} />;
 };
 

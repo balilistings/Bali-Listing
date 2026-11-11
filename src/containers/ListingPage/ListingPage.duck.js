@@ -1,5 +1,5 @@
 import pick from 'lodash/pick';
-import { reusePublicRead, publicReadKey, responseFromEntities, canReusePublicRead } from '../../util/publicReadReuse';
+import { PUBLIC_LISTING_TTL, reusePublicRead, publicReadKey, responseFromEntities, canReusePublicRead } from '../../util/publicReadReuse';
 
 import { types as sdkTypes, createImageVariantConfig } from '../../util/sdkLoader';
 import { storableError } from '../../util/errors';
@@ -345,7 +345,7 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
   const previous = state.ListingPage.publicListingRead;
   const seed = previous?.key === key
     ? responseFromEntities(state, [listingId], {}, previous.fetchedAt, true) : null;
-  const show = reusePublicRead(sdk, key, MINUTE_IN_MS, allowed, seed, () =>
+  const show = reusePublicRead(sdk, key, PUBLIC_LISTING_TTL, allowed, seed, () =>
     isOwn ? sdk.ownListings.show(params)
       : typeof window === 'undefined' ? sdk.listings.show(params)
       : post('/api/listings/show-gallery-cover', { params }).then(data => ({ data }))
