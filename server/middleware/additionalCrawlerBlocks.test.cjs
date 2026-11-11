@@ -19,7 +19,7 @@ function request(userAgent, route = '/l/example') {
 
 test('approved crawlers get small private rejections and can read robots.txt', () => {
   const robots = fs.readFileSync(path.join(__dirname, '../resources/robots.txt'), 'utf8');
-  for (const token of ['CCBot', 'AhrefsBot', 'MJ12bot', 'DotBot', 'Amzn-SearchBot']) {
+  for (const token of ['meta-webindexer', 'KeenableBot', 'ElevenlabsCrawler', 'CCBot', 'AhrefsBot', 'MJ12bot', 'DotBot', 'Amzn-SearchBot']) {
     for (const ua of [token.toLowerCase(), `Mozilla/5.0 (compatible; ${token}/2.0)`]) {
       const r = request(ua);
       assert.equal(r.next, false);
@@ -35,7 +35,7 @@ test('approved crawlers get small private rejections and can read robots.txt', (
 });
 
 test('discovery, user fetches and social previews remain available', () => {
-  for (const ua of ['meta-webindexer/1.1', 'facebookexternalhit/1.1', 'Facebot',
+  for (const ua of ['facebookexternalhit/1.1', 'Facebot',
     'meta-externalfetcher/1.1', 'Amzn-User/1.0', 'AhrefsSiteAudit/6.1', 'Googlebot/2.1',
     'bingbot/2.0', 'Applebot/0.1', 'OAI-SearchBot/1.4', 'ChatGPT-User/1.0',
     'PerplexityBot/1.0', 'Mozilla/5.0', '']) {

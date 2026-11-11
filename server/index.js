@@ -43,6 +43,7 @@ const robotsTxtRoute = require('./resources/robotsTxt');
 const sitemapResourceRoute = require('./resources/sitemap');
 const { getExtractors } = require('./importer');
 const renderer = require('./renderer');
+const { staticCacheControl, pageCacheControl } = require('./api-util/cachePolicy');
 const dataLoader = require('./dataLoader');
 const { generateCSPNonce, csp } = require('./csp');
 const sdkUtils = require('./api-util/sdk');
@@ -62,7 +63,7 @@ const cspEnabled = CSP === 'block' || CSP === 'report';
 const PAGE_CACHE_DURATION = process.env.PAGE_CACHE_DURATION
   ? parseInt(process.env.PAGE_CACHE_DURATION, 10)
   : 0;
-const ENABLE_STATIC_ASSET_CACHING = process.env.ENABLE_STATIC_ASSET_CACHING === 'true';
+const ENABLE_STATIC_ASSET_CACHING = process.env.ENABLE_STATIC_ASSET_CACHING !== 'false';
 
 // Without these, something will break for sure
 const MANDATORY_ENV_VARIABLES = [
@@ -168,15 +169,13 @@ if (TRUST_PROXY === 'true') {
 
 app.use(compression());
 
-if (ENABLE_STATIC_ASSET_CACHING) {
-  const staticOptions = {
-    maxAge: '1y',
-    immutable: true,
-  };
-  app.use('/static', express.static(path.join(buildPath, 'static'), staticOptions));
-} else {
-  app.use('/static', express.static(path.join(buildPath, 'static')));
-}
+app.use(
+  '/static',
+  express.static(path.join(buildPath, 'static'), {
+    setHeaders: (res, file) =>
+      res.setHeader('Cache-Control', staticCacheControl(file, ENABLE_STATIC_ASSET_CACHING)),
+  })
+);
 
 app.use(cookieParser());
 
@@ -369,11 +368,10 @@ app.get('*', async (req, res) => {
         res.set(notFoundCacheHeaders);
         res.status(404).send(html);
       } else {
-        if (isLandingPage && PAGE_CACHE_DURATION > 0) {
-          res.set('Cache-Control', `public, max-age=${PAGE_CACHE_DURATION}`);
-        } else {
-          res.set(noCacheHeaders);
-        }
+        res.set(
+          'Cache-Control',
+          pageCacheControl(req, res, isLandingPage, PAGE_CACHE_DURATION, cspEnabled)
+        );
         res.send(html);
       }
     })

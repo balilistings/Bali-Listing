@@ -44,3 +44,9 @@ User-agent: MJ12bot
 User-agent: DotBot
 User-agent: Amzn-SearchBot
 Disallow: /
+
+# Reduce automated indexing traffic while preserving Facebook link previews.
+User-agent: meta-webindexer
+User-agent: KeenableBot
+User-agent: ElevenlabsCrawler
+Disallow: /
