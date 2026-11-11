@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
 const { types } = require('sharetribe-flex-sdk');
+const { prepareLocaleState } = require('./api-util/localeAssets');
 
 const buildPath = path.resolve(__dirname, '..', 'build');
 
@@ -109,7 +110,12 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor, no
     // For security reasons we ensure that preloaded state is considered as a string
     // by replacing '<' character with its unicode equivalent.
     // http://redux.js.org/docs/recipes/ServerRendering.html#security-considerations
-    const serializedState = JSON.stringify(preloadedState, replacer).replace(/</g, '\\u003c');
+    const localeAsset =
+      preloadedState.locale?.messages === translations ? prepareLocaleState(preloadedState) : null;
+    const serializedState = JSON.stringify(
+      localeAsset ? localeAsset.state : preloadedState,
+      replacer
+    ).replace(/</g, '\\u003c');
 
     // At this point the serializedState is a string, the second
     // JSON.stringify wraps it within double quotes and escapes the
@@ -141,7 +147,9 @@ exports.render = function(requestUrl, context, data, renderApp, webExtractor, no
       meta: head.meta.toString(),
       script: head.script.toString(),
       // The HTML template places translations before state. Reuse must run after state.
-      preloadedStateScript: translationsInState
+      preloadedStateScript: localeAsset
+        ? `<script ${nonceMaybe} src="${localeAsset.url}"></script>${preloadedStateScript}<script ${nonceMaybe}>${localeAsset.restore}</script>`
+        : translationsInState
         ? `${preloadedStateScript}${translationsScript}`
         : preloadedStateScript,
       translationsScript: translationsInState ? '' : translationsScript,
