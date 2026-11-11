@@ -48,3 +48,21 @@ test('SSR seed reconstructs related images and preserves one-item search arrays'
   expect(responseFromEntities(state,[id],{},100,true).data.data).toEqual(listing);
   expect(responseFromEntities(state,[id],{},100,true).data.included).toEqual([image]);
 });
+
+test('three-minute listing reuse expires from upstream time, not hydration time', async () => {
+  const { PUBLIC_LISTING_TTL } = require('./publicReadReuse');
+  const sdk = {};
+  let now = 200000;
+  const clock = jest.spyOn(Date, 'now').mockImplementation(() => now);
+  const seed = response(100000);
+  const load = jest.fn().mockImplementation(() => Promise.resolve(response(now)));
+  try {
+    await reusePublicRead(sdk, 'three-minutes', PUBLIC_LISTING_TTL, true, seed, load);
+    now = 279999;
+    await reusePublicRead(sdk, 'three-minutes', PUBLIC_LISTING_TTL, true, seed, load);
+    expect(load).not.toHaveBeenCalled();
+    now = 280000;
+    await reusePublicRead(sdk, 'three-minutes', PUBLIC_LISTING_TTL, true, seed, load);
+    expect(load).toHaveBeenCalledTimes(1);
+  } finally { clock.mockRestore(); }
+});

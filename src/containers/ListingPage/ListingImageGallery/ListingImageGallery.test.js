@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import ListingImageGallery from './ListingImageGallery';
 
-jest.mock('../../../components/ResponsiveImage/ResponsiveImage', () => ({ image, alt, variants }) => <img alt={alt} srcSet={image?.attributes?.variants?.[variants[0]]?.url} />);
+jest.mock('../../../components/ResponsiveImage/ResponsiveImage', () => ({ image, alt, variants, sizes }) => <img sizes={sizes} alt={alt} srcSet={image?.attributes?.variants?.[variants[0]]?.url} />);
 jest.mock('../../../util/api', () => ({ get: jest.fn() }));
 
 jest.mock('../../../util/reactIntl', () => ({
@@ -11,10 +11,10 @@ jest.mock('../../../util/reactIntl', () => ({
 }));
 jest.mock('../../../components', () => ({
   AspectRatioWrapper: ({ children }) => <div>{children}</div>,
-  Button: ({ children, ...props }) => <button {...props}>{children}</button>,
+  Button: ({ children, rootClassName, ...props }) => <button {...props}>{children}</button>,
   IconClose: () => null,
   IconArrowHead: () => null,
-  ResponsiveImage: ({ image, alt, variants }) => <img alt={alt} srcSet={image?.attributes?.variants?.[variants[0]]?.url} />,
+  ResponsiveImage: ({ image, alt, variants, sizes }) => <img sizes={sizes} alt={alt} srcSet={image?.attributes?.variants?.[variants[0]]?.url} />,
 }));
 
 test('initial gallery exposes only cover URLs and selection loads another photo', async () => {
@@ -65,4 +65,16 @@ test('full owner photo data overrides a retained deferred flag', () => {
  const {container} = render(<ListingImageGallery listingId={{uuid:'draft'}} images={images} imageVariants={['scaled']} />);
  expect(container.querySelector('img[srcset="owner.jpg"]')).toBeTruthy();
  expect(get).not.toHaveBeenCalled();
+});
+
+
+test('fullscreen requests a larger image only for the currently visible photo', async () => {
+  const images = [0, 1, 2].map(i => ({ attributes: { variants: { scaled: { url: `full-${i}.jpg`, width: 800, height: 600 } } } }));
+  const { container, getByRole } = render(<ListingImageGallery images={images} imageVariants={['scaled']} />);
+  fireEvent.click(getByRole('button', { name: 'Next photo' }));
+  await waitFor(() => expect(getByRole('status').textContent).toBe('2 / 3'));
+  fireEvent.click(getByRole('button', { name: 'View images' }));
+  await waitFor(() => expect(container.querySelector('img[srcset="full-1.jpg"]').getAttribute('sizes')).toBe('100vw'));
+  expect(container.querySelector('img[srcset="full-0.jpg"]').getAttribute('sizes')).not.toBe('100vw');
+  expect(container.querySelector('img[srcset="full-2.jpg"]')).toBeNull();
 });

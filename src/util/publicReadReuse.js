@@ -1,3 +1,5 @@
+// Measured from the upstream fetch time, so browser + server TTLs do not add up.
+export const PUBLIC_LISTING_TTL = 3 * 60 * 1000;
 // One bounded cache per browser SDK. Never retain responses across server requests or accounts.
 const caches = new WeakMap();
 export const canReusePublicRead = (state, config) => config?.accessControl?.marketplace?.private === false &&

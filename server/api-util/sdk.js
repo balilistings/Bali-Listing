@@ -7,11 +7,14 @@ const sharetribeIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { fetchRate } = require('./currencyLogic');
 const publicReadCache = require('./publicReadCache');
+// Keep permission/configuration assets short; only anonymous listing reads use three minutes.
 const cachedPublicRead = publicReadCache();
+const cachedListings = publicReadCache({ ttlMs: 3 * 60 * 1000 });
 const cachedReviews = publicReadCache({ ttlMs: 30 * 60 * 1000 });
 const cachedStableAssets = publicReadCache({ ttlMs: 5 * 60 * 1000 });
 const cachedVersionedAssets = publicReadCache({ ttlMs: 24 * 60 * 60 * 1000 });
 exports.getPublicReadCacheStats = () => ({
+  listings: { ...cachedListings.stats(), ...cachedListings.usage() },
   listingsAndShortAssets: { ...cachedPublicRead.stats(), ...cachedPublicRead.usage() },
   reviews: { ...cachedReviews.stats(), ...cachedReviews.usage() },
   stableAssets: { ...cachedStableAssets.stats(), ...cachedStableAssets.usage() },
@@ -168,8 +171,8 @@ const getSdk = (req, res, shareAnonymous = false) => {
         } : response);
       };
     };
-    wrapPublicRead(sdk.listings, 'query', 'listings.query:');
-    wrapPublicRead(sdk.listings, 'show', 'listings.show:');
+    wrapPublicRead(sdk.listings, 'query', 'listings.query:', () => cachedListings);
+    wrapPublicRead(sdk.listings, 'show', 'listings.show:', () => cachedListings);
     wrapPublicRead(sdk.reviews, 'query', 'reviews.query:', () => cachedReviews);
     ['assetByVersion', 'assetByAlias', 'assetsByVersion', 'assetsByAlias'].forEach(method =>
       wrapPublicRead(sdk, method, method + ':', args => {

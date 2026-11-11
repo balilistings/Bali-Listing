@@ -1,5 +1,5 @@
 import { post } from '../../util/api';
-import { reusePublicRead, publicReadKey, responseFromEntities, canReusePublicRead } from '../../util/publicReadReuse';
+import { PUBLIC_LISTING_TTL, reusePublicRead, publicReadKey, responseFromEntities, canReusePublicRead } from '../../util/publicReadReuse';
 import { createImageVariantConfig } from '../../util/sdkLoader';
 import { isErrorUserPendingApproval, isForbiddenError, storableError } from '../../util/errors';
 import { convertUnitToSubUnit, unitDivisor } from '../../util/currency';
@@ -337,7 +337,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
   const seed = previous?.publicRead?.key === key
     ? responseFromEntities(before, previous.currentPageResultIds, previous.pagination, previous.publicRead.fetchedAt)
     : null;
-  return reusePublicRead(sdk, key, 60000, allowed, seed, () =>
+  return reusePublicRead(sdk, key, PUBLIC_LISTING_TTL, allowed, seed, () =>
     typeof window === 'undefined' ? sdk.listings.query(params)
       : post('/api/public-read/listings', { params }).then(data => ({ data }))
   )
