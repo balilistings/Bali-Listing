@@ -18,6 +18,10 @@ Disallow: /account
 Disallow: /reset-password
 Disallow: /verify-email
 Disallow: /preview
+# Full galleries are for signed-in visitors; listing text and covers remain public.
+Disallow: /api/listings/*/photos/
+Disallow: /api/listings/show-gallery-cover
+Disallow: /api/public-read/
 Crawl-Delay: 5
 
 Sitemap: https://my.marketplace.com/sitemap-index.xml

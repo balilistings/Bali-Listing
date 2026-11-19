@@ -2,7 +2,7 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 
 // Import config and utils
-import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_TEXT, SCHEMA_TYPE_LONG, SCHEMA_TYPE_BOOLEAN, SCHEMA_TYPE_YOUTUBE, SCHEMA_TYPE_DATE } from '../../util/types';
+import { SCHEMA_TYPE_ENUM, SCHEMA_TYPE_MULTI_ENUM, SCHEMA_TYPE_TEXT, SCHEMA_TYPE_LONG, SCHEMA_TYPE_BOOLEAN, SCHEMA_TYPE_YOUTUBE } from '../../util/types';
 import {
   required,
   nonEmptyArray,

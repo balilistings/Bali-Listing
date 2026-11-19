@@ -63,8 +63,8 @@ test('reuses anonymous SDK reads but isolates every user session', async () => {
   expect(user1.listings).not.toBe(anonymousOriginal.listings);
   await user1.listings.show(query);
   await user1.listings.show(query);
-  expect(user1.listings.show).toHaveBeenCalledTimes(2);
-  expect(user2.listings.show).not.toHaveBeenCalled();
+  expect(user1.originalShow).toHaveBeenCalledTimes(2);
+  expect(user2.originalShow).not.toHaveBeenCalled();
 });
 
 test('a login-as callback without a cookie cannot authenticate the shared anonymous SDK', async () => {
@@ -115,4 +115,16 @@ test('public cache lifetimes keep mutable data short and immutable versions long
     now += 86400000; await read();
     expect(originals.map(m => m.mock.calls.length)).toEqual([4, 3, 9, 2]);
   } finally { clock.mockRestore(); }
+});
+
+test('signed-in visitors can read galleries but signed-in crawlers receive a cover only', async () => {
+  const response=()=>({data:{data:{type:'listing',id:{uuid:'listing'},attributes:{state:'published'},relationships:{images:{data:[{type:'image',id:{uuid:'cover'}},{type:'image',id:{uuid:'extra'}}]}}},included:['cover','extra'].map(uuid=>({type:'image',id:{uuid},attributes:{variants:{scaled:{url:uuid+'.jpg'}}}}))}});
+  const visitor=getReadSdk({token:{scope:'user',access_token:'test-only'},headers:{'user-agent':'Mozilla/5.0'}},{});
+  visitor.originalShow.mockResolvedValueOnce(response());
+  expect(JSON.stringify(await visitor.listings.show({id:'listing'}))).toContain('extra.jpg');
+  const crawler=getReadSdk({token:{scope:'user',access_token:'test-only'},headers:{'user-agent':'OAI-SearchBot/1.0'}},{});
+  crawler.originalShow.mockResolvedValueOnce(response());
+  const preview=await crawler.listings.show({id:'listing'});
+  expect(JSON.stringify(preview)).toContain('cover.jpg');
+  expect(JSON.stringify(preview)).not.toContain('extra.jpg');
 });

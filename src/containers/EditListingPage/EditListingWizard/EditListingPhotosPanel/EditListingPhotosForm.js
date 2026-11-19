@@ -22,7 +22,7 @@ import ListingImage from './ListingImage';
 import css from './EditListingPhotosForm.module.css';
 
 const ACCEPT_IMAGES = 'image/*';
-const MAX_LISTING_PHOTOS = 20;
+const MAX_LISTING_PHOTOS = 10;
 
 const ImageUploadError = props => {
   return props.uploadOverLimit ? (
@@ -326,7 +326,7 @@ export const EditListingPhotosForm = props => {
             <p className={css.tip} role="status">
               {images.length} photos. Maximum {MAX_LISTING_PHOTOS} photos per listing.
               {images.length > MAX_LISTING_PHOTOS
-                ? ' Your existing photos are kept. Remove photos until fewer than 20 remain before adding new ones.'
+                ? ' Your existing photos are kept. Remove photos until fewer than 10 remain before adding new ones.'
                 : photoLimitReached
                 ? ' Extra selected photos were not uploaded.'
                 : ''}
