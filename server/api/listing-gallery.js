@@ -26,6 +26,10 @@ exports.photo = async (req, res) => {
     const belongs = response.data.data.relationships?.images?.data?.some(image => image.id.uuid === imageId);
     const image = belongs && response.data.included?.find(image => image.type === 'image' && image.id.uuid === imageId);
     if (!image) return res.status(404).json({ error: 'Photo not found' });
+    if (image.attributes?.loginRequired) {
+      return res.set('Cache-Control', 'private, no-store').status(403)
+        .json({ error: 'Sign in to view all photos', code: 'gallery-login-required' });
+    }
     return send(res, image);
   } catch (error) { return handleError(res, error); }
 };

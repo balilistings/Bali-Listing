@@ -63,6 +63,7 @@ export const fetchListing = (listingId) => (dispatch, getState, sdk) => {
   const params = {
     id: new sdkTypes.UUID(listingId),
     include: ['author', 'author.profileImage', 'images'],
+    'limit.images': 1,
     'fields.listing': ['title', 'price', 'publicData'],
     'fields.image': ['variants.scaled-small'],
   };

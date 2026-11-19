@@ -12,7 +12,7 @@ beforeEach(() => jest.clearAllMocks());
 test('defers non-cover URLs without mutating cached data, cover, avatar or photo IDs', () => {
   const original=response(); const snapshot=JSON.stringify(original); const result=defer(original);
   expect(JSON.stringify(original)).toBe(snapshot);
-  expect(result.data.included[1].attributes).toEqual({variants:{},deferred:true});
+  expect(result.data.included[1].attributes).toEqual({variants:{},deferred:true,loginRequired:false});
   expect(result.data.included[0]).toBe(original.data.included[0]);
   expect(result.data.included[2]).toBe(original.data.included[2]);
   expect(result.data.data.relationships.images.data).toHaveLength(2);
@@ -41,4 +41,14 @@ test('denied listing reads remain denied', async () => {
   const error={status:403}; getReadSdk.mockReturnValue({listings:{show:jest.fn().mockRejectedValue(error)}});
   const r=res(); await photo({params:{listingId,imageId}},r);
   expect(handleError).toHaveBeenCalledWith(r,error); expect(r.send).not.toHaveBeenCalled();
+});
+
+test('a guest cannot bypass the preview through the photo endpoint', async () => {
+  const raw=response(); raw.data.included[1].attributes={variants:{},deferred:true,loginRequired:true};
+  getReadSdk.mockReturnValue({listings:{show:jest.fn().mockResolvedValue(raw)}});
+  const r=res(); await photo({params:{listingId,imageId}},r);
+  expect(r.status).toHaveBeenCalledWith(403);
+  expect(r.json).toHaveBeenCalledWith({error:'Sign in to view all photos',code:'gallery-login-required'});
+  expect(r.send).not.toHaveBeenCalled();
+  expect(r.set).toHaveBeenCalledWith('Cache-Control','private, no-store');
 });

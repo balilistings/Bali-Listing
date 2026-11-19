@@ -36,16 +36,16 @@ const setup = count => {
   return { onImageUpload, onSubmit, resolvers, updateImages: images => rerender(form(images)) };
 };
 
-it('reserves only 20 slots for a 25-file batch before any upload completes', async () => {
+it('reserves only 10 slots for a 25-file batch before any upload completes', async () => {
   const { onImageUpload } = setup(0);
   await act(async () => userEvent.click(screen.getByText('Select 25 photos')));
-  expect(onImageUpload).toHaveBeenCalledTimes(20);
+  expect(onImageUpload).toHaveBeenCalledTimes(10);
   expect(screen.getByRole('status')).toHaveTextContent('Extra selected photos were not uploaded');
   expect(screen.getByText('Save photos')).toBeDisabled();
 });
 
 it('allows only the remaining slot and keeps saving disabled until uploads finish', async () => {
-  const { onImageUpload, resolvers } = setup(19);
+  const { onImageUpload, resolvers } = setup(9);
   await act(async () => userEvent.click(screen.getByText('Select 25 photos')));
   expect(onImageUpload).toHaveBeenCalledTimes(1);
   await act(async () => resolvers[0]());
@@ -62,7 +62,7 @@ it('preserves an existing 30-photo gallery and allows saving it', () => {
 });
 
 it('allows a new photo after removing one from a full gallery', async () => {
-  const { onImageUpload } = setup(20);
+  const { onImageUpload } = setup(10);
   userEvent.click(screen.getAllByText('Remove photo')[0]);
   await act(async () => userEvent.click(screen.getByText('Select 25 photos')));
   expect(onImageUpload).toHaveBeenCalledTimes(1);

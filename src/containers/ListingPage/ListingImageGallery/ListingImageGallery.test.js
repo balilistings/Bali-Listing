@@ -3,6 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import ListingImageGallery from './ListingImageGallery';
 
 jest.mock('../../../components/ResponsiveImage/ResponsiveImage', () => ({ image, alt, variants, sizes }) => <img sizes={sizes} alt={alt} srcSet={image?.attributes?.variants?.[variants[0]]?.url} />);
+jest.mock('../../../components/NamedLink/NamedLink', () => ({ children, to, onClick }) => <a href="/login" onClick={onClick} data-return-to={to?.state?.from}>{children}</a>);
 jest.mock('../../../util/api', () => ({ get: jest.fn() }));
 
 jest.mock('../../../util/reactIntl', () => ({

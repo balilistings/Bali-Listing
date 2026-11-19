@@ -7,6 +7,7 @@ const sharetribeIntegrationSdk = require('sharetribe-flex-integration-sdk');
 const { S3Client } = require('@aws-sdk/client-s3');
 const { fetchRate } = require('./currencyLogic');
 const publicReadCache = require('./publicReadCache');
+const { withListingImageAccess } = require('./listingImageAccess');
 // Keep permission/configuration assets short; only anonymous listing reads use three minutes.
 const cachedPublicRead = publicReadCache();
 const cachedListings = publicReadCache({ ttlMs: 3 * 60 * 1000 });
@@ -183,10 +184,15 @@ const getSdk = (req, res, shareAnonymous = false) => {
         return stable ? cachedStableAssets : cachedPublicRead;
       })
     );
-    anonymousSdk = { ...sdk, currency };
+    anonymousSdk = withListingImageAccess({ ...sdk, currency }, false);
     return anonymousSdk;
   }
-  return { ...sdk, currency };
+  // Read the SDK token state after the API call, including any token refresh.
+  const isCrawler = /bot|spider|crawler|facebookexternalhit|meta-externalfetcher|ChatGPT-User/i
+    .test(String(req.headers?.['user-agent'] || ''));
+  return shareAnonymous ? withListingImageAccess({ ...sdk, currency },
+    async () => !isCrawler && (await sdk.authInfo()).isAnonymous === false
+  ) : { ...sdk, currency };
 };
 
 // Authentication and API operations always keep their token store on this request.

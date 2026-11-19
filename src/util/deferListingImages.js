@@ -16,7 +16,7 @@ export default response => {
       ...data,
       included: data?.included?.map(resource =>
         resource.type === 'image' && deferredIds.has(resource.id.uuid)
-          ? { id: resource.id, type: resource.type, attributes: { variants: {}, deferred: true } }
+          ? { id: resource.id, type: resource.type, attributes: { variants: {}, deferred: true, loginRequired: resource.attributes?.loginRequired === true } }
           : resource
       ),
     },

@@ -40,7 +40,6 @@ import {
   Button,
   H3,
   H5,
-  IconCollection,
   ModalInMobile,
   NamedRedirect,
   Page,

@@ -26,7 +26,7 @@ test('featured gallery requests remove non-cover URLs before sending them to the
  const r = res();
  await routes.listings({ body: { params: { perPage: 3 }, deferImages: true } }, r);
  expect(query).toHaveBeenCalledWith({ perPage: 3 });
- expect(r.send.mock.calls[0][0].included[1].attributes).toEqual({ variants: {}, deferred: true });
+ expect(r.send.mock.calls[0][0].included[1].attributes).toEqual({ variants: {}, deferred: true, loginRequired: false });
  expect(original.data.included[1].attributes.variants.scaled.url).toBe('extra.jpg');
 });
 test('malformed location bounds are rejected before querying listings',async()=>{
