@@ -6,7 +6,7 @@ const { join } = require('node:path');
 const { Pool } = require('pg');
 const { loadPilotImage } = require('./r2-pilot.cjs');
 const { importRecentListing, serveRecentListing } = require('./recent-listing.cjs');
-const { runAccountPilot } = require('./account-pilot.cjs');
+const { runAccountPilot, AccountPilotError } = require('./account-pilot.cjs');
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -111,11 +111,15 @@ async function start() {
   });
   void importRecentListing(database, process.env.PILOT_LISTING_JSON).then(snapshot => {
     recentListing = snapshot;
-    if (process.env.ACCOUNT_PILOT_ENABLED === 'true' && snapshot) {
-      void runAccountPilot(database, process.env).then(() => {
-        console.info('Account pilot imported one customer, one provider and their listing link');
-      }).catch(() => {
-        console.error('Account pilot failed. Check the integration client, selected accounts and staging database.');
+    if (snapshot) {
+      void runAccountPilot(database, process.env).then(report => {
+        if (!report) return;
+        console.info(report.providerVerified
+          ? 'Account pilot preflight verified Sharetribe access, the published listing and its provider'
+          : 'Account pilot imported one customer, one provider and their listing link');
+      }).catch(error => {
+        const reason = error instanceof AccountPilotError ? error.message : 'upstream or database error';
+        console.error('Account pilot failed:', reason);
       });
     }
   }).catch(error => {

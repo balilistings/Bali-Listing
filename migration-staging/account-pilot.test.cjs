@@ -119,3 +119,13 @@ test('rolls back both accounts and their links when an identity conflicts', asyn
   assert.equal(queries.at(-1).sql, 'release');
   assert.ok(!queries.some(q => q.sql === 'COMMIT'));
 });
+
+test('preflight verifies the listing and provider without a customer or database writes', async () => {
+  const { database, fetch, queries, apiCalls } = fixtures();
+  const preflightEnv = { ...env, ACCOUNT_PILOT_ENABLED: 'preflight', ACCOUNT_PILOT_CUSTOMER_ID: '' };
+  assert.deepEqual(await runAccountPilot(database, preflightEnv, fetch), { providerVerified: true });
+  assert.deepEqual(apiCalls, [
+    '/v1/auth/token', '/v1/integration_api/listings/show', '/v1/integration_api/users/show',
+  ]);
+  assert.deepEqual(queries, []);
+});

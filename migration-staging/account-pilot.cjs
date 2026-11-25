@@ -3,11 +3,13 @@
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const permissionNames = ['postListings', 'initiateTransactions', 'read'];
 
+class AccountPilotError extends Error {}
+
 async function requestJson(fetchImpl, url, options, label) {
   const response = await fetchImpl(url, {
     ...options, redirect: 'error', signal: AbortSignal.timeout(10_000),
   });
-  if (!response.ok) throw new Error(`${label} returned HTTP ${response.status}`);
+  if (!response.ok) throw new AccountPilotError(`${label} returned HTTP ${response.status}`);
   return response.json();
 }
 
@@ -15,17 +17,17 @@ function normalizeUser(document, id, role) {
   const user = document.data;
   const attributes = user?.attributes;
   if (user?.id !== id || user.type !== 'user' || !attributes) {
-    throw new Error('Sharetribe returned the wrong account');
+    throw new AccountPilotError('Sharetribe returned the wrong account');
   }
   if (attributes.deleted || attributes.profile?.publicData?.userType !== role) {
-    throw new Error('Sharetribe account is deleted or has a different role');
+    throw new AccountPilotError('Sharetribe account is deleted or has a different role');
   }
   if (!['active', 'banned', 'pendingApproval'].includes(attributes.state) ||
       !attributes.createdAt || !Number.isFinite(Date.parse(attributes.createdAt)) ||
       typeof attributes.profile.displayName !== 'string' ||
       typeof attributes.email !== 'string' || !attributes.email ||
       typeof attributes.emailVerified !== 'boolean') {
-    throw new Error('Sharetribe account metadata is incomplete');
+    throw new AccountPilotError('Sharetribe account metadata is incomplete');
   }
 
   const permissionRef = user.relationships?.effectivePermissionSet?.data;
@@ -35,14 +37,14 @@ function normalizeUser(document, id, role) {
   if (!permissions || permissionNames.some(
     name => !['permission/allow', 'permission/deny'].includes(permissions[name])
   )) {
-    throw new Error('Sharetribe effective account permissions are unavailable');
+    throw new AccountPilotError('Sharetribe effective account permissions are unavailable');
   }
 
   const googleSubjects = (attributes.identityProviders ?? [])
     .filter(identity => identity.idpId === 'google')
     .map(identity => identity.userId);
   if (googleSubjects.some(subject => typeof subject !== 'string' || !subject.trim())) {
-    throw new Error('Sharetribe returned an invalid Google identity');
+    throw new AccountPilotError('Sharetribe returned an invalid Google identity');
   }
 
   return {
@@ -78,7 +80,7 @@ async function savePilot(database, listingId, customer, provider) {
         [account.id, account.name, account.role, account.status, account.email,
           account.emailVerified, account.createdAt, account.state, account.permissions]
       );
-      if (rowCount !== 1) throw new Error('Imported account conflicts with an existing staging account');
+      if (rowCount !== 1) throw new AccountPilotError('Imported account conflicts with an existing staging account');
 
       await client.query("DELETE FROM account_identities WHERE account_id = $1 AND provider = 'google'", [account.id]);
       for (const subject of account.googleSubjects) {
@@ -94,7 +96,7 @@ async function savePilot(database, listingId, customer, provider) {
        WHERE id = $1 AND (owner_id IS NULL OR owner_id = $2)`,
       [listingId, provider.id]
     );
-    if (rowCount !== 1) throw new Error('Pilot listing snapshot is missing or has a different owner');
+    if (rowCount !== 1) throw new AccountPilotError('Pilot listing snapshot is missing or has a different owner');
     await client.query('COMMIT');
   } catch (error) {
     await client.query('ROLLBACK');
@@ -105,14 +107,15 @@ async function savePilot(database, listingId, customer, provider) {
 }
 
 async function runAccountPilot(database, env, fetchImpl = fetch) {
-  if (env.ACCOUNT_PILOT_ENABLED !== 'true') return undefined;
+  const preflight = env.ACCOUNT_PILOT_ENABLED === 'preflight';
+  if (!preflight && env.ACCOUNT_PILOT_ENABLED !== 'true') return undefined;
   if (env.RENDER_SERVICE_NAME !== 'balilistings-migration-staging') {
-    throw new Error('Account pilot requires the Bali Listings staging service');
+    throw new AccountPilotError('Account pilot requires the Bali Listings staging service');
   }
   const { ACCOUNT_PILOT_LISTING_ID: listingId, ACCOUNT_PILOT_CUSTOMER_ID: customerId,
     SHARETRIBE_INTEGRATION_CLIENT_ID: clientId, SHARETRIBE_INTEGRATION_CLIENT_SECRET: clientSecret } = env;
-  if (!uuid.test(listingId ?? '') || !uuid.test(customerId ?? '') || !clientId || !clientSecret) {
-    throw new Error('Account pilot configuration is incomplete');
+  if (!uuid.test(listingId ?? '') || (!preflight && !uuid.test(customerId ?? '')) || !clientId || !clientSecret) {
+    throw new AccountPilotError('Account pilot configuration is incomplete');
   }
 
   const auth = await requestJson(fetchImpl, 'https://flex-api.sharetribe.com/v1/auth/token', {
@@ -123,7 +126,7 @@ async function runAccountPilot(database, env, fetchImpl = fetch) {
     }),
   }, 'Sharetribe authentication');
   if (typeof auth.access_token !== 'string' || !auth.scope?.split(' ').includes('integ')) {
-    throw new Error('Sharetribe did not return an integration token');
+    throw new AccountPilotError('Sharetribe did not return an integration token');
   }
 
   const show = (resource, id, include) => requestJson(
@@ -136,14 +139,15 @@ async function runAccountPilot(database, env, fetchImpl = fetch) {
   const providerId = listing?.relationships?.author?.data?.id;
   if (listing?.id !== listingId || listing.type !== 'listing' ||
       listing.attributes?.state !== 'published' || listing.attributes?.deleted ||
-      !uuid.test(providerId ?? '') || providerId.toLowerCase() === customerId.toLowerCase()) {
-    throw new Error('Sharetribe pilot listing or its author could not be verified');
+      !uuid.test(providerId ?? '') || (!preflight && providerId.toLowerCase() === customerId.toLowerCase())) {
+    throw new AccountPilotError('Sharetribe pilot listing or its author could not be verified');
   }
 
-  const customer = normalizeUser(await show('users', customerId, 'effectivePermissionSet'), customerId, 'customer');
   const provider = normalizeUser(await show('users', providerId, 'effectivePermissionSet'), providerId, 'provider');
+  if (preflight) return { providerVerified: true };
+  const customer = normalizeUser(await show('users', customerId, 'effectivePermissionSet'), customerId, 'customer');
   await savePilot(database, listingId, customer, provider);
   return { customers: 1, providers: 1, linkedListings: 1 };
 }
 
-module.exports = { runAccountPilot };
+module.exports = { runAccountPilot, AccountPilotError };
