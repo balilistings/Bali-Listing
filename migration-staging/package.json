@@ -1,0 +1,7 @@
+{
+  "name": "balilistings-migration-staging",
+  "private": true,
+  "dependencies": {
+    "pg": "8.23.1"
+  }
+}
