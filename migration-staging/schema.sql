@@ -45,4 +45,19 @@ VALUES (
 )
 ON CONFLICT (id) DO NOTHING;
 
+CREATE TABLE IF NOT EXISTS pilot_listing_snapshots (
+  id uuid PRIMARY KEY,
+  created_on date NOT NULL,
+  title text NOT NULL,
+  description text NOT NULL,
+  yearly_rent_idr bigint NOT NULL CHECK (yearly_rent_idr > 0),
+  bedrooms int NOT NULL CHECK (bedrooms > 0),
+  area text NOT NULL,
+  source_url text NOT NULL,
+  cover_source_hash text NOT NULL,
+  cover_key text NOT NULL,
+  cover_content_type text NOT NULL,
+  cover_sha256 text NOT NULL
+);
+
 COMMIT;

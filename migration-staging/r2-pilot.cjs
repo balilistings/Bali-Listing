@@ -9,19 +9,24 @@ const image = Buffer.from(
   'base64'
 );
 
-async function loadPilotImage() {
+function createPilotStorage() {
   const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY } = process.env;
   if (![R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY].some(Boolean)) return undefined;
   if (!/^[a-f0-9]{32}$/.test(R2_ACCOUNT_ID || '') || !R2_ACCESS_KEY_ID || !R2_SECRET_ACCESS_KEY) {
     throw new Error('R2 staging credentials are incomplete');
   }
 
-  const storage = new S3Client({
+  return new S3Client({
     region: 'auto',
     endpoint: `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
     credentials: { accessKeyId: R2_ACCESS_KEY_ID, secretAccessKey: R2_SECRET_ACCESS_KEY },
     maxAttempts: 2,
   });
+}
+
+async function loadPilotImage() {
+  const storage = createPilotStorage();
+  if (!storage) return undefined;
 
   try {
     await storage.send(new PutObjectCommand({
@@ -48,4 +53,4 @@ async function loadPilotImage() {
   }
 }
 
-module.exports = { loadPilotImage };
+module.exports = { pilotBucket: Bucket, createPilotStorage, loadPilotImage };

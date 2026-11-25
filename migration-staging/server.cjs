@@ -5,6 +5,7 @@ const { createServer } = require('node:http');
 const { join } = require('node:path');
 const { Pool } = require('pg');
 const { loadPilotImage } = require('./r2-pilot.cjs');
+const { importRecentListing, serveRecentListing } = require('./recent-listing.cjs');
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -25,6 +26,7 @@ const fixtureId = '53ebcfc5-dc23-466b-b6c7-ce37a57f9fe2';
 let databaseReady = false;
 let checkingDatabase = false;
 let pilotImage;
+let recentListing;
 
 async function checkDatabase() {
   if (checkingDatabase) return;
@@ -83,6 +85,8 @@ const server = createServer(async (request, response) => {
       'Content-Length': pilotImage.length,
       'X-Content-Type-Options': 'nosniff',
     }).end(pilotImage);
+  } else if (serveRecentListing(request, response, recentListing)) {
+    return;
   } else if (request.url === '/api/pilot/listing') {
     try {
       await pilotListing(response);
@@ -103,6 +107,11 @@ async function start() {
     pilotImage = image;
   }).catch(() => {
     console.error('R2 staging image check failed');
+  });
+  void importRecentListing(database, process.env.PILOT_LISTING_JSON).then(snapshot => {
+    recentListing = snapshot;
+  }).catch(error => {
+    console.error('Recent listing pilot failed:', error.pilotStep || 'unexpected error');
   });
 }
 
