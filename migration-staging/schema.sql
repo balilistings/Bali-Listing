@@ -60,4 +60,16 @@ CREATE TABLE IF NOT EXISTS pilot_listing_snapshots (
   cover_sha256 text NOT NULL
 );
 
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS sharetribe_state text;
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS sharetribe_permissions jsonb;
+
+CREATE TABLE IF NOT EXISTS account_identities (
+  provider text NOT NULL,
+  subject text NOT NULL,
+  account_id uuid NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+  PRIMARY KEY (provider, subject)
+);
+
+ALTER TABLE pilot_listing_snapshots ADD COLUMN IF NOT EXISTS owner_id uuid REFERENCES accounts (id);
+
 COMMIT;
