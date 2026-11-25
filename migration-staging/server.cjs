@@ -4,6 +4,7 @@ const { readFile } = require('node:fs/promises');
 const { createServer } = require('node:http');
 const { join } = require('node:path');
 const { Pool } = require('pg');
+const { loadPilotImage } = require('./r2-pilot.cjs');
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -23,6 +24,7 @@ const fixtureId = '53ebcfc5-dc23-466b-b6c7-ce37a57f9fe2';
 
 let databaseReady = false;
 let checkingDatabase = false;
+let pilotImage;
 
 async function checkDatabase() {
   if (checkingDatabase) return;
@@ -71,6 +73,16 @@ const server = createServer(async (request, response) => {
     response.writeHead(200).end('ok\n');
   } else if (request.url === '/readyz') {
     response.writeHead(databaseReady ? 200 : 503).end(databaseReady ? 'ready\n' : 'not ready\n');
+  } else if (request.url === '/api/pilot/image') {
+    if (!pilotImage) {
+      response.writeHead(503).end('not ready\n');
+      return;
+    }
+    response.writeHead(200, {
+      'Content-Type': 'image/png',
+      'Content-Length': pilotImage.length,
+      'X-Content-Type-Options': 'nosniff',
+    }).end(pilotImage);
   } else if (request.url === '/api/pilot/listing') {
     try {
       await pilotListing(response);
@@ -87,6 +99,11 @@ async function start() {
   await checkDatabase();
   server.listen(Number(process.env.PORT) || 10000, '0.0.0.0');
   setInterval(checkDatabase, 15_000).unref();
+  void loadPilotImage().then(image => {
+    pilotImage = image;
+  }).catch(() => {
+    console.error('R2 staging image check failed');
+  });
 }
 
 start().catch(async () => {
