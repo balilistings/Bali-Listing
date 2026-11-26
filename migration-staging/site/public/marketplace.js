@@ -77,7 +77,7 @@ function card(listing, period) {
   return `<article class="card"><a href="${property(listing.id)}">
     ${listing.cover ? `<img src="${e(listing.cover)}" alt="" loading="lazy">` : '<div class="no-photo" aria-hidden="true"></div>'}
     <div class="card-info"><h3>${e(listing.title)}</h3>
-    <p class="meta">${e([listing.area, listing.bedrooms == null ? '' : listing.bedrooms + ' bedrooms', listing.reference].filter(Boolean).join(' � '))}</p>
+    <p class="meta">${e([listing.area, listing.bedrooms == null ? '' : listing.bedrooms + ' bedrooms', listing.reference].filter(Boolean).join(' · '))}</p>
     <p class="price">${e(priceText(listing, period))}</p></div></a></article>`;
 }
 
@@ -137,7 +137,7 @@ async function listingPage(id) {
     : '';
   show(section(`<a href="/s">Browse listings</a><h1>${e(listing.title)}</h1>
     <p class="meta">${e([listing.area, labels[listing.category], listing.bedrooms == null ? '' : listing.bedrooms + ' bedrooms',
-      listing.reference].filter(Boolean).join(' � '))}</p>
+      listing.reference].filter(Boolean).join(' · '))}</p>
     <div class="gallery">${listing.photos.map((photo, i) => `<img src="${e(photo.url)}" alt="${e(listing.title)} photo ${i + 1}"${i ? ' loading="lazy"' : ''}>`).join('')}</div>
     <div class="details"><div class="stack"><h2>About this property</h2><p>${e(listing.description)}</p></div>
     <aside class="side"><h3>Price</h3>${Object.keys(listing.prices || {}).map(period => `<p class="price">${e(priceText(listing, period))}</p>`).join('')}
@@ -202,7 +202,7 @@ function authPage(action) {
     <div class="actions"><button value="email">${setup ? 'Save password' : login ? 'Log in' : 'Email me a link'}</button>
       ${google ? '<button class="secondary" value="google">Continue with Google</button>' : ''}</div>
     ${formNotice}</form>
-    <div class="actions">${login ? '<a href="/signup">Create an account</a> � <a href="/account/recovery">Forgot password?</a>'
+    <div class="actions">${login ? '<a href="/signup">Create an account</a> · <a href="/account/recovery">Forgot password?</a>'
       : '<a href="/login">Back to login</a>'}</div>`), title);
   const form = document.getElementById('account-form');
   if (page.searchParams.has('error')) notice(form, page.searchParams.get('error'), true);
@@ -256,7 +256,7 @@ async function editor(id) {
     <div class="actions">${index ? `<button class="secondary" type="button" data-cover="${e(photo.id)}">Make cover</button>` : ''}
     <button class="secondary" type="button" data-remove="${e(photo.id)}">Remove</button></div></div>`).join('');
   show(section(`<h1>${title}</h1>
-    ${id ? `<p class="lede">${e(stateLabels[state])}${listing.reference ? ' � ' + e(listing.reference) : ''}</p>` : ''}
+    ${id ? `<p class="lede">${e(stateLabels[state])}${listing.reference ? ' · ' + e(listing.reference) : ''}</p>` : ''}
     <form class="form" id="listing-form">${listingFields(listing)}
       <div class="actions"><button>${id ? 'Save listing' : 'Save draft'}</button>${id ? `<a href="${property(id)}">View listing</a>` : ''}</div>${formNotice}</form>
     ${id ? `<section class="stack" id="listing-actions"><h2>Photos</h2>
@@ -338,7 +338,7 @@ async function manage(moderation = false) {
   const title = moderation ? 'Listing moderation' : 'Your listings';
   show(section(`<div class="page-title"><h1>${title}</h1>${!moderation && session.account.canPost ? '<a class="button" href="/l/new">Add a listing</a>' : ''}</div>
     ${listings.length ? '<ul class="items">' + listings.map(listing =>
-      `<li><div><h3>${e(listing.title)}</h3><p class="meta">${e(stateLabels[listing.state])}${listing.reference ? ' � ' + e(listing.reference) : ''}</p></div>
+      `<li><div><h3>${e(listing.title)}</h3><p class="meta">${e(stateLabels[listing.state])}${listing.reference ? ' · ' + e(listing.reference) : ''}</p></div>
         <a href="${property(listing.id)}/edit">${moderation ? 'Review' : 'Edit listing'}</a></li>`).join('') + '</ul>'
       : '<p class="lede">There are no listings here yet.</p>'}`), title);
 }
@@ -360,9 +360,9 @@ async function start() {
   session = await api('/api/auth/session');
   const nav = document.getElementById('account-nav');
   if (session.account) {
-    nav.innerHTML = `<a href="/listings">Your listings</a> � <a href="/profile-settings">Profile</a>
-      ${session.account.staff ? ' � <a href="/moderation">Moderation</a>' : ''}
-      � <button class="secondary" id="logout">Log out</button>`;
+    nav.innerHTML = `<a href="/listings">Your listings</a> · <a href="/profile-settings">Profile</a>
+      ${session.account.staff ? ' · <a href="/moderation">Moderation</a>' : ''}
+      · <button class="secondary" id="logout">Log out</button>`;
     document.getElementById('logout').addEventListener('click', async event => {
       try {
         await api('/api/auth/logout', { method: 'POST' });
