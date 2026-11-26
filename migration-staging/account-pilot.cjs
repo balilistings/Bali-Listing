@@ -106,22 +106,15 @@ async function savePilot(database, listingId, participant, provider) {
   }
 }
 
-async function runAccountPilot(database, env, fetchImpl = fetch) {
-  const preflight = env.ACCOUNT_PILOT_ENABLED === 'preflight';
-  if (!preflight && env.ACCOUNT_PILOT_ENABLED !== 'true') return undefined;
+function requireStaging(env) {
   if (env.RENDER_SERVICE_NAME !== 'balilistings-migration-staging') {
     throw new AccountPilotError('Account pilot requires the Bali Listings staging service');
   }
-  const { ACCOUNT_PILOT_LISTING_ID: listingId, ACCOUNT_PILOT_CUSTOMER_ID: customerId,
-    ACCOUNT_PILOT_CONTACT_PROVIDER_ID: contactProviderId,
-    SHARETRIBE_INTEGRATION_CLIENT_ID: clientId, SHARETRIBE_INTEGRATION_CLIENT_SECRET: clientSecret } = env;
-  const participantId = customerId || contactProviderId;
-  const participantRole = contactProviderId ? 'provider' : 'customer';
-  if ((customerId && contactProviderId) || !uuid.test(listingId ?? '') ||
-      ((!preflight || participantId) && !uuid.test(participantId ?? '')) || !clientId || !clientSecret) {
-    throw new AccountPilotError('Account pilot configuration is incomplete');
-  }
+}
 
+async function sharetribeGet(env, fetchImpl) {
+  const { SHARETRIBE_INTEGRATION_CLIENT_ID: clientId, SHARETRIBE_INTEGRATION_CLIENT_SECRET: clientSecret } = env;
+  if (!clientId || !clientSecret) throw new AccountPilotError('Sharetribe credential is missing');
   const auth = await requestJson(fetchImpl, 'https://flex-api.sharetribe.com/v1/auth/token', {
     method: 'POST',
     headers: { Accept: 'application/json', 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -133,12 +126,28 @@ async function runAccountPilot(database, env, fetchImpl = fetch) {
     throw new AccountPilotError('Sharetribe did not return an integration token');
   }
 
-  const show = (resource, id, include) => requestJson(
-    fetchImpl, `https://flex-integ-api.sharetribe.com/v1/integration_api/${resource}/show?` +
-      new URLSearchParams({ id, include }),
+  return (endpoint, params) => requestJson(
+    fetchImpl, `https://flex-integ-api.sharetribe.com/v1/integration_api/${endpoint}?` +
+      new URLSearchParams(params),
     { headers: { Accept: 'application/json', Authorization: `Bearer ${auth.access_token}` } },
-    `Sharetribe ${resource} lookup`
+    'Sharetribe read'
   );
+}
+
+async function runAccountPilot(database, env, fetchImpl = fetch) {
+  const preflight = env.ACCOUNT_PILOT_ENABLED === 'preflight';
+  if (!preflight && env.ACCOUNT_PILOT_ENABLED !== 'true') return undefined;
+  requireStaging(env);
+  const { ACCOUNT_PILOT_LISTING_ID: listingId, ACCOUNT_PILOT_CUSTOMER_ID: customerId,
+    ACCOUNT_PILOT_CONTACT_PROVIDER_ID: contactProviderId } = env;
+  const participantId = customerId || contactProviderId;
+  const participantRole = contactProviderId ? 'provider' : 'customer';
+  if ((customerId && contactProviderId) || !uuid.test(listingId ?? '') ||
+      ((!preflight || participantId) && !uuid.test(participantId ?? ''))) {
+    throw new AccountPilotError('Account pilot configuration is incomplete');
+  }
+  const get = await sharetribeGet(env, fetchImpl);
+  const show = (resource, id, include) => get(`${resource}/show`, { id, include });
   const { data: listing } = await show('listings', listingId, 'author');
   const providerId = listing?.relationships?.author?.data?.id;
   if (listing?.id !== listingId || listing.type !== 'listing' ||
@@ -160,4 +169,4 @@ async function runAccountPilot(database, env, fetchImpl = fetch) {
   };
 }
 
-module.exports = { runAccountPilot, AccountPilotError };
+module.exports = { runAccountPilot, AccountPilotError, requireStaging, sharetribeGet, uuid, permissionNames };
