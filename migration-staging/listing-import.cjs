@@ -9,7 +9,11 @@ const { maxPhotoBytes, photoStorage } = require('./site/media.cjs');
 const categories = { rentalvillas: 'rental', villaforsale: 'sale', landforsale: 'land' };
 const rentFields = { monthly: 'monthprice', yearly: 'yearprice', weekly: 'weekprice' };
 const states = new Set(['draft', 'pendingApproval', 'published', 'closed']);
-const photoFields = { include: 'images', 'fields.image': 'variants.scaled-xlarge,variants.default' };
+const sourceFields = {
+  include: 'author,images',
+  'fields.user': 'profile.displayName',
+  'fields.image': 'variants.scaled-xlarge,variants.default',
+};
 const positive = value => Number.isSafeInteger(value) && value > 0;
 
 class ListingImportError extends Error {}
@@ -228,16 +232,19 @@ async function writeListing(database, storage, fetchImpl, item) {
 }
 
 async function pilotIds(database, read) {
-  const runName = 'recent-category-pilot';
+  const runName = 'recent-category-pilot-v2';
   const { rows: [known] } = await database.query(
     'SELECT listing_ids FROM listing_import_pilot WHERE run_name=$1', [runName],
   );
   if (known) return known.listing_ids;
   const ids = [];
-  const createdAtEnd = new Date().toISOString();
+  const now = Date.now();
+  const createdAtStart = new Date(now - 180 * 86400000).toISOString();
+  const createdAtEnd = new Date(now).toISOString();
   for (const category of Object.keys(categories)) {
     const { data } = await read('listings/query', {
-      states: 'published', sort: '-createdAt', pub_categoryLevel1: category, perPage: 3, createdAtEnd,
+      states: 'published', sort: 'createdAt', pub_categoryLevel1: category, perPage: 3,
+      createdAtStart, createdAtEnd,
     });
     if (!Array.isArray(data)) throw new ListingImportError('incomplete pilot inventory');
     ids.push(...data.filter(row => !row.attributes?.deleted).map(row => row.id));
@@ -269,7 +276,7 @@ async function runListingImport(database, env, { fetchImpl = fetch, storage = ph
   const report = { mode, selected: ids.length, listings: [] };
   for (const id of ids) {
     try {
-      const item = normalizeListing(await read('listings/show', { id, ...photoFields }), id);
+      const item = normalizeListing(await read('listings/show', { id, ...sourceFields }), id);
       const result = mode === 'dry-run' ? (await checkTarget(database, item), 'ready') :
         await writeListing(database, storage, fetchImpl, item);
       const rerun = mode === 'pilot' ? await writeListing(database, storage, fetchImpl, item) : undefined;

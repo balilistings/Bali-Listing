@@ -57,14 +57,26 @@ test('listing pilot dry-runs, verifies ordered photos, and reruns without duplic
       return Response.json({ access_token: 'fixture', scope: 'integ' });
     }
     if (urls.includes(url)) return new Response(Buffer.alloc(30, urls.indexOf(url) + 1));
-    assert.equal(new URL(url).searchParams.get('id'), id);
+    const request = new URL(url);
+    if (request.pathname.endsWith('/listings/query')) {
+      assert.equal(request.searchParams.get('states'), 'published');
+      assert.equal(request.searchParams.get('sort'), 'createdAt');
+      assert.ok(request.searchParams.get('createdAtStart'));
+      return Response.json({ data: request.searchParams.get('pub_categoryLevel1') === 'rentalvillas'
+        ? [document.data] : [] });
+    }
+    assert.equal(request.searchParams.get('id'), id);
+    assert.equal(request.searchParams.get('include'), 'author,images');
     return Response.json(document);
   };
   const env = {
     RENDER_SERVICE_NAME: 'balilistings-migration-staging', LISTING_IMPORT_IDS: id,
     SHARETRIBE_INTEGRATION_CLIENT_ID: 'fixture', SHARETRIBE_INTEGRATION_CLIENT_SECRET: 'fixture',
   };
-  const run = mode => runListingImport(database, { ...env, LISTING_IMPORT_MODE: mode }, { storage, fetchImpl });
+  const run = mode => runListingImport(database, {
+    ...env, LISTING_IMPORT_MODE: mode,
+    ...(mode === 'pilot' ? { LISTING_IMPORT_IDS: undefined } : {}),
+  }, { storage, fetchImpl });
   assert.equal((await run('dry-run')).listings[0].result, 'ready');
   assert.equal(writes, 0);
   const { listings: [record] } = await run('pilot');
