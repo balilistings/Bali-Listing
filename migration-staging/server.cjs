@@ -8,6 +8,7 @@ const { loadPilotImage } = require('./r2-pilot.cjs');
 const { importRecentListing, serveRecentListing } = require('./recent-listing.cjs');
 const { runAccountPilot, AccountPilotError } = require('./account-pilot.cjs');
 const { runAccountAudit } = require('./account-audit.cjs');
+const { runAccountImport } = require('./account-import.cjs');
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -110,6 +111,12 @@ async function start() {
   }).catch(error => {
     const reason = error instanceof AccountPilotError ? error.message : 'upstream error';
     console.error('Sharetribe account audit failed:', reason);
+  });
+  void runAccountImport(database, process.env).then(report => {
+    if (report) console.info('Sharetribe bulk account import committed:', JSON.stringify(report));
+  }).catch(error => {
+    const reason = error instanceof AccountPilotError ? error.message : 'upstream or database error';
+    console.error('Sharetribe bulk account import failed:', reason);
   });
   void loadPilotImage().then(image => {
     pilotImage = image;
