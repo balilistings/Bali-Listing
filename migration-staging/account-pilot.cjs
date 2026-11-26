@@ -61,11 +61,11 @@ function normalizeUser(document, id, role) {
   };
 }
 
-async function savePilot(database, listingId, customer, provider) {
+async function savePilot(database, listingId, participant, provider) {
   const client = await database.connect();
   try {
     await client.query('BEGIN');
-    for (const account of [customer, provider]) {
+    for (const account of [participant, provider]) {
       const { rowCount } = await client.query(
         `INSERT INTO accounts (
           id, display_name, role, status, email, email_verified, created_at,
@@ -113,8 +113,12 @@ async function runAccountPilot(database, env, fetchImpl = fetch) {
     throw new AccountPilotError('Account pilot requires the Bali Listings staging service');
   }
   const { ACCOUNT_PILOT_LISTING_ID: listingId, ACCOUNT_PILOT_CUSTOMER_ID: customerId,
+    ACCOUNT_PILOT_CONTACT_PROVIDER_ID: contactProviderId,
     SHARETRIBE_INTEGRATION_CLIENT_ID: clientId, SHARETRIBE_INTEGRATION_CLIENT_SECRET: clientSecret } = env;
-  if (!uuid.test(listingId ?? '') || (!preflight && !uuid.test(customerId ?? '')) || !clientId || !clientSecret) {
+  const participantId = customerId || contactProviderId;
+  const participantRole = contactProviderId ? 'provider' : 'customer';
+  if ((customerId && contactProviderId) || !uuid.test(listingId ?? '') ||
+      ((!preflight || participantId) && !uuid.test(participantId ?? '')) || !clientId || !clientSecret) {
     throw new AccountPilotError('Account pilot configuration is incomplete');
   }
 
@@ -139,15 +143,21 @@ async function runAccountPilot(database, env, fetchImpl = fetch) {
   const providerId = listing?.relationships?.author?.data?.id;
   if (listing?.id !== listingId || listing.type !== 'listing' ||
       listing.attributes?.state !== 'published' || listing.attributes?.deleted ||
-      !uuid.test(providerId ?? '') || (!preflight && providerId.toLowerCase() === customerId.toLowerCase())) {
+      !uuid.test(providerId ?? '') || providerId.toLowerCase() === participantId?.toLowerCase()) {
     throw new AccountPilotError('Sharetribe pilot listing or its author could not be verified');
   }
 
   const provider = normalizeUser(await show('users', providerId, 'effectivePermissionSet'), providerId, 'provider');
+  const participant = participantId
+    ? normalizeUser(await show('users', participantId, 'effectivePermissionSet'), participantId, participantRole)
+    : undefined;
   if (preflight) return { providerVerified: true };
-  const customer = normalizeUser(await show('users', customerId, 'effectivePermissionSet'), customerId, 'customer');
-  await savePilot(database, listingId, customer, provider);
-  return { customers: 1, providers: 1, linkedListings: 1 };
+  await savePilot(database, listingId, participant, provider);
+  return {
+    customers: participant.role === 'customer' ? 1 : 0,
+    providers: participant.role === 'provider' ? 2 : 1,
+    linkedListings: 1,
+  };
 }
 
 module.exports = { runAccountPilot, AccountPilotError };
