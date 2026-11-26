@@ -1,6 +1,7 @@
 import { useDispatch, useSelector, shallowEqual } from 'react-redux';
 import { saveLocale, setLocale } from '../ducks/locale.duck';
 import { useCallback } from 'react';
+import { nativeMarketplace } from '../util/nativeMarketplace';
 const { getSupportedLocales } = require('../util/translation');
 
 export const languageNames = {
@@ -17,6 +18,12 @@ const DEFAULT_LOCALE = 'en';
 
 // This function is now only used for initialization in the app.
 export const getInitialLocale = currentLocale => {
+  const urlLocale = typeof window === 'undefined' ? null : window.location.pathname.split('/').filter(Boolean)[0];
+  // Render staging boots in the browser. Honor an explicit language link before the stored preference.
+  if (nativeMarketplace && SUPPORTED_LOCALES.includes(urlLocale)) {
+    return urlLocale;
+  }
+
   if (currentLocale && SUPPORTED_LOCALES.includes(currentLocale)) {
     return currentLocale;
   }
@@ -25,9 +32,8 @@ export const getInitialLocale = currentLocale => {
     return DEFAULT_LOCALE;
   }
 
-  const pathParts = window.location.pathname.split('/').filter(p => p);
-  if (pathParts.length > 0 && SUPPORTED_LOCALES.includes(pathParts[0])) {
-    return pathParts[0];
+  if (SUPPORTED_LOCALES.includes(urlLocale)) {
+    return urlLocale;
   }
 
   const storedLocale = localStorage.getItem('locale');
