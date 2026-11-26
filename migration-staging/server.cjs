@@ -116,7 +116,7 @@ async function start() {
         if (!report) return;
         console.info(report.providerVerified
           ? 'Account pilot preflight verified Sharetribe access, the published listing and its provider'
-          : 'Account pilot imported one customer, one provider and their listing link');
+          : `Account pilot imported customers=${report.customers} providers=${report.providers} linkedListings=${report.linkedListings}`);
       }).catch(error => {
         const reason = error instanceof AccountPilotError ? error.message : 'upstream or database error';
         console.error('Account pilot failed:', reason);
