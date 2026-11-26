@@ -168,7 +168,7 @@ test('staging marketplace serves and authorizes the complete account and listing
   class LatLng { constructor(lat, lng) { Object.assign(this, { lat, lng }); } }
   const sdk = createNativeMarketplaceSdk({}, { UUID, Money, LatLng }, (url, options = {}) =>
     call(url, options.method, options.body, owner,
-      options.method === 'POST' && (url.endsWith('/listings') || url.endsWith('/photos')) ? 201 : 200)
+      options.method === 'POST' && (url.endsWith('/listings') || url.endsWith('/photos') || url.endsWith('/profile/photo')) ? 201 : 200)
       .then(response => response.reply));
   const wizard = await sdk.ownListings.createDraft({
     title: 'Original editor draft', description: 'Created with the original listing wizard',
@@ -232,6 +232,47 @@ test('staging marketplace serves and authorizes the complete account and listing
   await call(item, 'GET', undefined, customer, 404);
   await call(privatePhoto.url, 'GET', undefined, customer, 404);
   assert.equal((await call(item + '/approve', 'POST', undefined, staff)).reference, published.reference);
+  const avatar = (await sdk.images.upload({ image: appPng })).data.data;
+  await call('/api/media/profile/' + avatar.id.uuid, 'GET', undefined, undefined, 404);
+  await call('/api/marketplace/profile', 'PATCH', { name: 'Other provider', profilePhotoId: avatar.id.uuid }, otherOwner, 403);
+  const profile = (await sdk.currentUser.updateProfile({
+    profileImageId: avatar.id, protectedData: { phoneNumber: '+62 812 345 678' },
+  })).data;
+  assert.equal(profile.data.relationships.profileImage.data.id.uuid, avatar.id.uuid);
+  assert.equal(profile.data.attributes.profile.protectedData.phoneNumber, '+62 812 345 678');
+  await call('/api/media/profile/' + avatar.id.uuid);
+  assert.equal((await call(item)).owner.profilePhotoId, avatar.id.uuid);
+  assert.equal((await call('/api/marketplace/profiles/' + ownerId)).phoneNumber, undefined);
+
+  const draft = (await sdk.ownListings.createDraft({
+    title: 'Draft to discard', description: 'Hidden after discarding',
+    publicData: { categoryLevel1: 'rentalvillas', bedrooms: '2' },
+  })).data.data;
+  const discardPath = '/api/marketplace/listings/' + draft.id.uuid;
+  await call(discardPath + '/discard', 'POST', {}, otherOwner, 404);
+  await call(item + '/discard', 'POST', {}, owner, 409);
+  await sdk.ownListings.discardDraft({ id: draft.id });
+  await call(discardPath, 'GET', undefined, owner, 404);
+  assert.ok(!(await call('/api/marketplace/mine', 'GET', undefined, owner)).listings.some(l => l.id === draft.id.uuid));
+
+  await call('/api/auth/change-password', 'POST', { currentPassword: 'incorrect', newPassword: password }, owner, 403);
+  const newPassword = 'updated test password 43';
+  const rotated = await call('/api/auth/change-password', 'POST', { currentPassword: password, newPassword }, owner);
+  assert.equal((await call('/api/auth/session', 'GET', undefined, owner)).account, null);
+  const newEmail = 'new-provider@example.test';
+  await call('/api/auth/change-email', 'POST', { email: newEmail, currentPassword: newPassword }, rotated.cookie);
+  const pending = (await call('/api/auth/session', 'GET', undefined, rotated.cookie)).account;
+  assert.equal(pending.email, 'provider@example.test');
+  assert.equal(pending.pendingEmail, newEmail);
+  const emailToken = mails.get(newEmail);
+  await call('/api/auth/confirm-email-change', 'POST', { token: emailToken }, otherOwner, 400);
+  await call('/api/auth/confirm-email-change', 'POST', { token: emailToken }, rotated.cookie);
+  assert.equal((await call('/api/auth/session', 'GET', undefined, rotated.cookie)).account.email, newEmail);
+  await call('/api/auth/confirm-email-change', 'POST', { token: emailToken }, rotated.cookie, 400);
+  await call('/api/auth/login', 'POST', { email: 'provider@example.test', password: newPassword }, undefined, 401);
+  const changedLogin = await call('/api/auth/login', 'POST', { email: newEmail, password: newPassword });
+  assert.equal((await call('/api/auth/session', 'GET', undefined, changedLogin.cookie)).account.id, ownerId);
+
   await call('/api/auth/logout', 'POST', undefined, customer);
   assert.equal((await call('/api/auth/session', 'GET', undefined, customer)).account, null);
   await call('/api/marketplace/listings', 'POST', listing, undefined, 401);

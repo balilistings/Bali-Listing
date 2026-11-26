@@ -42,6 +42,9 @@ function viewAccount(account, staff) {
     abbreviatedName: account.profile?.abbreviatedName,
     bio: account.profile?.bio,
     locale: account.profile?.locale,
+    phoneNumber: account.profile?.phoneNumber,
+    pendingEmail: account.pending_email,
+    profilePhotoId: account.profile_photo_id,
     emailVerified: account.email_verified, staff: staff.has(account.id),
     canRead: account.sharetribe_permissions?.read !== 'permission/deny',
     canPost: account.role === 'provider' && account.sharetribe_permissions?.postListings !== 'permission/deny',
@@ -117,11 +120,23 @@ function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
     if (!value) return null;
     const { rows: [account] } = await database.query(
       `SELECT a.id, a.display_name, a.email, a.email_verified, a.role, a.status, a.sharetribe_permissions,
-              a.sharetribe_profile AS profile
+              a.sharetribe_profile AS profile, a.profile_photo_id,
+              (SELECT new_email FROM account_email_changes WHERE account_id=a.id AND expires_at>now()) AS pending_email
        FROM account_sessions s JOIN accounts a ON a.id = s.account_id
        WHERE s.token_hash = $1 AND s.expires_at > now()`, [digest(value)],
     );
     return active(account) && account.email_verified ? viewAccount(account, staff) : null;
+  }
+
+  async function sendEmail(email, subject, text) {
+    const result = await fetchImpl(mailUrl, {
+      method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8000),
+      headers: { Authorization: 'Bearer ' + mailToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: env.MARKETPLACE_EMAIL_FROM, to: useCloudflare ? email : [email], subject, text }),
+    }).catch(() => null);
+    return result?.ok && (!useCloudflare || await result.json().then(data =>
+      data.success === true && [data.result?.delivered, data.result?.queued]
+        .some(entries => entries?.includes(email))).catch(() => false));
   }
 
   async function emailLink(action, body) {
@@ -161,19 +176,9 @@ function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
     if (send) {
       const path = env.MARKETPLACE_RENDER_ORIGINAL_FRONTEND === 'true' ? '/reset-password#' : '/account/setup#';
       const link = origin + path + value;
-      const result = await fetchImpl(mailUrl, {
-        method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8000),
-        headers: { Authorization: 'Bearer ' + mailToken, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          from: env.MARKETPLACE_EMAIL_FROM, to: useCloudflare ? email : [email],
-          subject: action === 'signup' ? 'Set up your Bali Listings account' : 'Your Bali Listings sign-in link',
-          text: 'Set your Bali Listings password using this one-time link. It expires in 30 minutes.\n\n' + link
-            + '\n\nIf you did not request it, you can ignore this email.',
-        }),
-      }).catch(() => null);
-      const sent = result?.ok && (!useCloudflare || await result.json().then(data =>
-        data.success === true && [data.result?.delivered, data.result?.queued]
-          .some(entries => entries?.includes(email))).catch(() => false));
+      const sent = await sendEmail(email, action === 'signup' ? 'Set up your Bali Listings account' : 'Your Bali Listings sign-in link',
+        'Set your Bali Listings password using this one-time link. It expires in 30 minutes.\n\n' + link +
+        '\n\nIf you did not request it, you can ignore this email.');
       if (!sent) {
         await database.query('DELETE FROM account_email_tokens WHERE token_hash = $1', [digest(value)]);
         console.error('Marketplace transactional email could not be sent');
@@ -210,11 +215,128 @@ function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
       );
       await client.query('UPDATE accounts SET email_verified = true WHERE id = $1', [account.id]);
       await client.query('DELETE FROM account_email_tokens WHERE account_id = $1', [account.id]);
+      await client.query('DELETE FROM account_email_changes WHERE account_id = $1', [account.id]);
       await client.query('DELETE FROM account_sessions WHERE account_id = $1', [account.id]);
       return account.id;
     });
     await startSession(accountId, req, res);
     return { message: 'Password saved.' };
+  }
+
+  async function requireViewer(req) {
+    const actor = await viewer(req);
+    if (!actor) throw new SiteError(401, 'Sign in to manage your Bali Listings account.');
+    return actor;
+  }
+
+  async function requirePassword(actor, password) {
+    rate('settings:' + actor.id, 12);
+    if (typeof password !== 'string' || password.length > 128) {
+      throw new SiteError(400, 'Enter your current password.');
+    }
+    const { rows: [row] } = await database.query(
+      'SELECT password_hash FROM account_passwords WHERE account_id=$1', [actor.id],
+    );
+    if (!row?.password_hash) throw new SiteError(400, 'Set a password using Forgot password first.');
+    if (!await slowPassword(() => passwordMatches(password, row.password_hash))) {
+      throw new SiteError(403, 'The current password is incorrect.');
+    }
+    return row.password_hash;
+  }
+
+  async function changePassword(body, req, res) {
+    const actor = await requireViewer(req);
+    passwordAllowed(body.newPassword);
+    const previous = await requirePassword(actor, body.currentPassword);
+    const replacement = await slowPassword(() => passwordHash(body.newPassword));
+    await transaction(database, async client => {
+      const { rowCount: available } = await client.query(
+        "SELECT id FROM accounts WHERE id=$1 AND status='active' FOR UPDATE", [actor.id],
+      );
+      if (!available) throw new SiteError(403, 'This account is restricted.');
+      const { rowCount } = await client.query(
+        'UPDATE account_passwords SET password_hash=$2 WHERE account_id=$1 AND password_hash=$3',
+        [actor.id, replacement, previous],
+      );
+      if (!rowCount) throw new SiteError(409, 'Your password changed. Sign in and retry.');
+      await client.query('DELETE FROM account_sessions WHERE account_id=$1', [actor.id]);
+      await client.query('DELETE FROM account_email_tokens WHERE account_id=$1', [actor.id]);
+      await client.query('DELETE FROM account_email_changes WHERE account_id=$1', [actor.id]);
+    });
+    await startSession(actor.id, req, res);
+    return { message: 'Password changed.' };
+  }
+
+  async function changeEmail(body, req, resend = false) {
+    const actor = await requireViewer(req);
+    if (!mailReady) throw new SiteError(503, 'Email delivery is not configured yet.');
+    const email = accountEmail(resend ? actor.pendingEmail : body.email);
+    if (!email || email === accountEmail(actor.email)) throw new SiteError(400, 'Enter a different email address.');
+    const password = resend ? null : await requirePassword(actor, body.currentPassword);
+    rate('change-email:' + actor.id, 4);
+    const value = token();
+    const hash = digest(value);
+    await transaction(database, async client => {
+      const { rows: [account] } = await client.query(
+        'SELECT email, status FROM accounts WHERE id=$1 FOR UPDATE', [actor.id],
+      );
+      if (account?.status !== 'active' || accountEmail(account.email) !== accountEmail(actor.email)) {
+        throw new SiteError(409, 'The account changed. Sign in and retry.');
+      }
+      const { rows: [pending] } = await client.query(
+        'SELECT new_email FROM account_email_changes WHERE account_id=$1 AND expires_at>now()', [actor.id],
+      );
+      if (resend && pending?.new_email !== email) throw new SiteError(409, 'Request a new email change.');
+      if (!resend) {
+        const { rowCount } = await client.query(
+          'SELECT 1 FROM account_passwords WHERE account_id=$1 AND password_hash=$2', [actor.id, password],
+        );
+        if (!rowCount) throw new SiteError(409, 'Your password changed. Sign in and retry.');
+      }
+      const { rowCount } = await client.query('SELECT 1 FROM accounts WHERE lower(btrim(email))=$1', [email]);
+      if (rowCount) throw new SiteError(409, 'This email address is already in use.');
+      await client.query(
+        `INSERT INTO account_email_changes (account_id, token_hash, old_email, new_email, expires_at)
+         VALUES ($1,$2,$3,$4,now()+interval '30 minutes')
+         ON CONFLICT (account_id) DO UPDATE SET token_hash=excluded.token_hash,
+           old_email=excluded.old_email, new_email=excluded.new_email, expires_at=excluded.expires_at`,
+        [actor.id, hash, accountEmail(actor.email), email],
+      );
+    });
+    if (!await sendEmail(email, 'Confirm your new Bali Listings email address',
+      'Open this link in the browser where you are signed in. It expires in 30 minutes.\n\n' +
+      origin + '/verify-email#' + value)) {
+      await database.query('DELETE FROM account_email_changes WHERE account_id=$1 AND token_hash=$2', [actor.id, hash]);
+      throw new SiteError(503, 'Could not send the confirmation. Try again.');
+    }
+    return { message: 'Check your new address for a confirmation link.' };
+  }
+
+  async function confirmEmail(body, req) {
+    const actor = await requireViewer(req);
+    if (!opaqueToken.test(body.token || '')) throw new SiteError(400, 'Open the confirmation link from your email.');
+    try {
+      await transaction(database, async client => {
+        const { rows: [account] } = await client.query(
+          'SELECT status, email FROM accounts WHERE id=$1 FOR UPDATE', [actor.id],
+        );
+        const { rows: [pending] } = await client.query(
+          'DELETE FROM account_email_changes WHERE account_id=$1 AND token_hash=$2 AND expires_at>now() RETURNING old_email, new_email',
+          [actor.id, digest(body.token)],
+        );
+        if (account?.status !== 'active' || !pending || pending.old_email !== accountEmail(account.email)) {
+          throw new SiteError(400, 'This link has expired or has already been used.');
+        }
+        await client.query('UPDATE accounts SET email=$2, email_verified=true WHERE id=$1', [actor.id, pending.new_email]);
+        await client.query('DELETE FROM account_email_tokens WHERE account_id=$1', [actor.id]);
+        await client.query('DELETE FROM account_sessions WHERE account_id=$1 AND token_hash<>$2',
+          [actor.id, digest(cookie(req, sessionKey))]);
+      });
+    } catch (error) {
+      if (error.code === '23505') throw new SiteError(409, 'This email address is already in use.');
+      throw error;
+    }
+    return { message: 'Email address confirmed.' };
   }
 
   async function login(body, req, res) {
@@ -328,7 +450,8 @@ function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
     return saved.next_path;
   }
 
-  return { viewer, emailLink, finishPassword, login, logout, googleStart, googleCallback, mailReady, googleReady, rate };
+  return { viewer, emailLink, finishPassword, changePassword, changeEmail, confirmEmail,
+    login, logout, googleStart, googleCallback, mailReady, googleReady, rate };
 }
 
 module.exports = { createAuth, passwordHash, passwordMatches };

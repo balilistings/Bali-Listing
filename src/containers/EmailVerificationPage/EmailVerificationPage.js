@@ -8,6 +8,7 @@ import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { parse } from '../../util/urlHelpers';
 import { ensureCurrentUser } from '../../util/data';
+import { nativeMarketplace } from '../../util/nativeMarketplace';
 import { verify } from '../../ducks/emailVerification.duck';
 import { isScrollingDisabled } from '../../ducks/ui.duck';
 import {
@@ -75,7 +76,9 @@ export const EmailVerificationPageComponent = props => {
   } = props;
 
   const initialValues = {
-    verificationToken: parseVerificationToken(location ? location.search : null),
+    verificationToken: nativeMarketplace
+      ? location?.hash?.slice(1) || null
+      : parseVerificationToken(location ? location.search : null),
   };
   const user = ensureCurrentUser(currentUser);
 

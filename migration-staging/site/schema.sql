@@ -18,6 +18,21 @@ CREATE TABLE IF NOT EXISTS account_email_tokens (
   expires_at timestamptz NOT NULL
 );
 CREATE INDEX IF NOT EXISTS account_email_tokens_owner ON account_email_tokens (account_id);
+CREATE TABLE IF NOT EXISTS account_email_changes (
+  account_id uuid PRIMARY KEY REFERENCES accounts (id) ON DELETE CASCADE,
+  token_hash text NOT NULL UNIQUE,
+  old_email text NOT NULL,
+  new_email text NOT NULL,
+  expires_at timestamptz NOT NULL
+);
+CREATE TABLE IF NOT EXISTS marketplace_profile_photos (
+  id uuid PRIMARY KEY,
+  account_id uuid NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+  object_key text NOT NULL UNIQUE,
+  content_type text NOT NULL CHECK (content_type IN ('image/jpeg', 'image/png', 'image/webp')),
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS profile_photo_id uuid REFERENCES marketplace_profile_photos (id);
 CREATE TABLE IF NOT EXISTS marketplace_oauth_states (
   state_hash text PRIMARY KEY,
   browser_hash text NOT NULL,
@@ -40,6 +55,7 @@ ALTER TABLE listings ADD COLUMN IF NOT EXISTS contact_phone text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS reference_code text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS legacy_reference text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS discarded_at timestamptz;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS editor_private_data jsonb NOT NULL DEFAULT '{}';
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS sharetribe_source_hash text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS sharetribe_synced_at timestamptz;

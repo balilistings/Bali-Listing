@@ -91,7 +91,9 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
   const user = (viewer, type = 'user') => ({
     ...relation(type, viewer.id),
     attributes: {
-      ...(type === 'currentUser' ? { email: viewer.email, emailVerified: viewer.emailVerified } : {}),
+      ...(type === 'currentUser' ? {
+        email: viewer.email, emailVerified: viewer.emailVerified, pendingEmail: viewer.pendingEmail,
+      } : {}),
       banned: false,
       deleted: false,
       state: 'active',
@@ -103,10 +105,13 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
         bio: viewer.bio || '',
         metadata: {},
         publicData: { userType: viewer.role || 'provider' },
-        protectedData: type === 'currentUser' && viewer.locale ? { locale: viewer.locale } : {},
+        protectedData: type === 'currentUser' ? { locale: viewer.locale, phoneNumber: viewer.phoneNumber } : {},
         ...(type === 'currentUser' ? { privateData: {} } : {}),
       },
     },
+    ...(viewer.profilePhotoId ? { relationships: {
+      profileImage: { data: relation('image', viewer.profilePhotoId) },
+    } } : {}),
   });
   const currentUser = viewer => {
     if (!viewer) throw Object.assign(new Error('Please log in.'), { status: 401 });
@@ -116,8 +121,8 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
       attributes: { postListings: permission(viewer.canPost), read: permission(viewer.canRead),
         initiateTransactions: permission(viewer.canRead) },
     };
-    value.relationships = { effectivePermissionSet: { data: relation('permissionSet', viewer.id) } };
-    return result(value, [permissions]);
+    value.relationships = { ...value.relationships, effectivePermissionSet: { data: relation('permissionSet', viewer.id) } };
+    return result(value, [permissions, ...userImages(viewer)]);
   };
   const image = (photo, fields = []) => ({
     ...relation('image', photo.id),
@@ -133,6 +138,9 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
       }])),
     },
   });
+  const userImages = viewer => viewer.profilePhotoId ? [image({
+    id: viewer.profilePhotoId, url: '/api/media/profile/' + viewer.profilePhotoId,
+  }, ['square-small', 'square-small2x', 'square-xsmall', 'square-xsmall2x'])] : [];
   const listing = (row, params = {}, type = 'listing') => {
     const original = row.publicData || {};
     const prices = Object.fromEntries(Object.entries(amounts)
@@ -140,7 +148,7 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
     const photos = row.photos || (row.cover ? [{ id: row.cover.split('/').pop(), url: row.cover }] : []);
     const fields = [].concat(params['fields.image'] || []).map(field => field.replace(/^variants\./, ''));
     const included = photos.map(photo => image(photo, fields));
-    if (row.owner) included.push(user(row.owner));
+    if (row.owner) included.push(user(row.owner), ...userImages(row.owner));
     const amount = row.prices?.[row.pricePeriod];
     return {
       entity: {
@@ -224,15 +232,23 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
       create: ({ email, firstName, lastName, publicData }) => post('/api/auth/signup', {
         email, name: [firstName, lastName].filter(Boolean).join(' '), role: publicData?.userType, accepted: true,
       }),
-      updateProfile: async ({ displayName, firstName, lastName, bio, protectedData }) => {
+      updateProfile: async ({ displayName, firstName, lastName, bio, protectedData, profileImageId }) => {
         const { account } = await session();
         await call(api + '/profile', { method: 'PATCH', body: {
           name: displayName || [firstName, lastName].filter(Boolean).join(' ') || account.name,
-          firstName, lastName, bio, locale: protectedData?.locale,
+          firstName, lastName, bio, locale: protectedData?.locale, phoneNumber: protectedData?.phoneNumber,
+          ...(profileImageId === undefined ? {} : { profilePhotoId: idOf(profileImageId) }),
         } });
         return currentUser((await session()).account);
       },
-      sendVerificationEmail: notEnabled,
+      changePassword: ({ currentPassword, newPassword }) =>
+        post('/api/auth/change-password', { currentPassword, newPassword }),
+      changeEmail: async ({ email, currentPassword }) => {
+        await post('/api/auth/change-email', { email, currentPassword });
+        return currentUser((await session()).account);
+      },
+      sendVerificationEmail: () => post('/api/auth/resend-email-change', {}),
+      verifyEmail: ({ verificationToken }) => post('/api/auth/confirm-email-change', { token: verificationToken }),
     },
     passwordReset: {
       request: ({ email }) => post('/api/auth/recovery', { email }),
@@ -285,18 +301,22 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
       publishDraft: (params, query) => changeState(params, 'publish', query),
       close: (params, query) => changeState(params, 'close', query),
       open: (params, query) => changeState(params, 'publish', query),
+      discardDraft: ({ id }) => post(listingPath(id) + '/discard', {}),
     },
     images: {
       upload: async ({ image: file, listingId }, query) => {
-        if (!listingId) return notEnabled();
-        const photo = await call(listingPath(listingId) + '/photos', { method: 'POST', body: file, raw: true });
-        const gallery = galleries.get(idOf(listingId));
+        const path = listingId ? listingPath(listingId) + '/photos' : api + '/profile/photo';
+        const photo = await call(path, { method: 'POST', body: file, raw: true });
+        const gallery = listingId ? galleries.get(idOf(listingId)) : null;
         if (gallery) gallery[photo.position] = photo.id;
         const variants = [].concat(query?.['fields.image'] || []).map(field => field.replace(/^variants\./, ''));
         return result(image(photo, variants));
       },
     },
-    users: { show: async ({ id }) => result(user(await call(api + '/profiles/' + idOf(id)))) },
+    users: { show: async ({ id }) => {
+      const profile = await call(api + '/profiles/' + idOf(id));
+      return result(user(profile), userImages(profile));
+    } },
     reviews: { query: async () => result([]) },
     transactions: { query: async () => result([]), initiate: notEnabled },
     timeslots: { query: async () => result([]) },

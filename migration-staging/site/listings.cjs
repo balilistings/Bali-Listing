@@ -79,7 +79,7 @@ function publicListing(row, privateView = false) {
     publicData,
     coordinates: row.latitude == null || row.longitude == null ? null :
       { lat: row.latitude, lng: row.longitude },
-    ...(row.owner_name ? { owner: { id: row.owner_id, name: row.owner_name } } : {}),
+    ...(row.owner_name ? { owner: { id: row.owner_id, name: row.owner_name, profilePhotoId: row.owner_photo_id } } : {}),
     ...(privateView ? { state: row.state, phone: row.contact_phone, privateData: row.editor_private_data } : {}),
   };
 }
@@ -91,9 +91,10 @@ function createListings(database, storage, origin, env) {
   async function getListing(id, client = database, lock = false) {
     if (!uuid.test(id || '')) throw new SiteError(404, 'Listing not found.');
     const { rows: [row] } = await client.query(
-      `SELECT l.*, a.status AS owner_status, a.role AS owner_role, a.display_name AS owner_name,
+      `SELECT l.*, a.status AS owner_status, a.role AS owner_role, a.display_name AS owner_name, a.profile_photo_id AS owner_photo_id,
               (SELECT id FROM marketplace_listing_photos WHERE listing_id = l.id AND position = 0) AS cover_id
-       FROM listings l JOIN accounts a ON a.id = l.owner_id WHERE l.id = $1 AND NOT l.is_pilot_fixture
+       FROM listings l JOIN accounts a ON a.id = l.owner_id
+       WHERE l.id = $1 AND NOT l.is_pilot_fixture AND discarded_at IS NULL
        ${lock ? 'FOR UPDATE OF l' : ''}`, [id],
     );
     if (!row) throw new SiteError(404, 'Listing not found.');
@@ -121,7 +122,7 @@ function createListings(database, storage, origin, env) {
     }
     const priceSort = sort === 'price' || sort === 'price-desc' ? sort : null;
     const { rows } = await database.query(
-      `SELECT l.*, a.display_name AS owner_name, count(*) OVER () AS listing_total,
+      `SELECT l.*, a.display_name AS owner_name, a.profile_photo_id AS owner_photo_id, count(*) OVER () AS listing_total,
           (SELECT id FROM marketplace_listing_photos WHERE listing_id = l.id AND position = 0) AS cover_id
        FROM listings l JOIN accounts a ON a.id = l.owner_id
        WHERE l.state = 'published' AND NOT l.is_pilot_fixture AND a.status = 'active' AND a.role = 'provider'
@@ -156,7 +157,7 @@ function createListings(database, storage, origin, env) {
       `SELECT id FROM marketplace_listing_photos WHERE listing_id = $1 AND ($2::boolean OR position = 0)
        ORDER BY position`, [id, canReadPrivate(actor, row)],
     );
-    return { ...publicListing(row, own), owner: { id: row.owner_id, name: row.owner_name },
+    return { ...publicListing(row, own),
       photos: rows.map(photo => ({ id: photo.id, url: '/api/media/' + photo.id })),
       canManage: own, hasContact: Boolean(row.contact_phone) };
   }
@@ -164,18 +165,20 @@ function createListings(database, storage, origin, env) {
   async function profile(id) {
     if (!uuid.test(id || '')) throw new SiteError(404, 'Profile not found.');
     const { rows: [row] } = await database.query(
-      `SELECT id, display_name, sharetribe_profile->>'bio' AS bio
+      `SELECT id, display_name, sharetribe_profile->>'bio' AS bio, profile_photo_id
        FROM accounts WHERE id = $1 AND status = 'active' AND role = 'provider'`, [id],
     );
     if (!row) throw new SiteError(404, 'Profile not found.');
-    return { id, name: row.display_name, bio: row.bio, ...await search(new URLSearchParams(), id) };
+    return { id, name: row.display_name, bio: row.bio, profilePhotoId: row.profile_photo_id,
+      ...await search(new URLSearchParams(), id) };
   }
 
   async function ownListings(actor) {
     if (!actor) throw new SiteError(401, 'Sign in to manage listings.');
     const { rows } = await database.query(
       `SELECT l.*, (SELECT id FROM marketplace_listing_photos WHERE listing_id = l.id AND position = 0) AS cover_id
-       FROM listings l WHERE owner_id = $1 AND NOT is_pilot_fixture ORDER BY updated_at DESC, id`, [actor.id],
+       FROM listings l WHERE owner_id = $1 AND NOT is_pilot_fixture AND discarded_at IS NULL
+       ORDER BY updated_at DESC, id`, [actor.id],
     );
     return { listings: rows.map(row => publicListing(row, true)) };
   }
@@ -251,6 +254,11 @@ function createListings(database, storage, origin, env) {
 
   async function changeState(actor, id, action) {
     return owned(actor, id, async (client, row) => {
+      if (action === 'discard') {
+        if (row.state !== 'draft') throw new SiteError(409, 'Only drafts can be discarded.');
+        await client.query('UPDATE listings SET discarded_at=now(), updated_at=now() WHERE id=$1', [id]);
+        return { discarded: true };
+      }
       if (action === 'availability') {
         if (row.state !== 'published') throw new SiteError(409, 'Publish this listing before confirming availability.');
         const { rows: [updated] } = await client.query(
@@ -375,7 +383,8 @@ function createListings(database, storage, origin, env) {
     const { rows: [row] } = await database.query(
       `SELECT p.*, l.owner_id, l.state, a.status AS owner_status, a.role AS owner_role
        FROM marketplace_listing_photos p JOIN listings l ON l.id = p.listing_id
-       JOIN accounts a ON a.id = l.owner_id WHERE p.id = $1 AND NOT l.is_pilot_fixture`, [photoId],
+       JOIN accounts a ON a.id = l.owner_id
+       WHERE p.id = $1 AND NOT l.is_pilot_fixture AND l.discarded_at IS NULL`, [photoId],
     );
     if (!row || (!canManage(actor, row) && (!isPublic(row) || (row.position !== 0 && !canReadPrivate(actor, row))))) {
       throw new SiteError(404, 'Photo not found.');
