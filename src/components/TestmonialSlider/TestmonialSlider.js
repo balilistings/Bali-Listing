@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { nativeCall } from '../../util/nativeMarketplace';
+import originalAvatars from './avatars.json';
 import styles from './TestmonialSlider.module.css';
 
 const testimonials = [
@@ -7,8 +9,6 @@ const testimonials = [
       "Thanks, Bali Listings! Finally, someone has implemented a modern idea to help us market our properties. I recommend it, and I believe it's very necessary for the Bali market.",
     name: 'Mirah',
     title: 'Agency',
-    avatar:
-      'https://sharetribe.imgix.net/67a98290-7785-4d51-a13e-9ff34051f0d5/682d7c49-a202-4afe-9078-5ddfeb3b574e?auto=format&crop=edges&fit=crop&h=120&w=120&s=67ae706751f85828c29e2de7632ed5f6',
     linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
   },
   {
@@ -16,8 +16,6 @@ const testimonials = [
       'Thanks to this team, we can now enjoy a proper and consistent marketplace, just like anywhere else. They make our lives significantly easier and more productive. Thanks, Bali Listings! I highly recommend their services.',
     name: 'KLS',
     title: 'Agency',
-    avatar:
-      'https://sharetribe.imgix.net/67a98290-7785-4d51-a13e-9ff34051f0d5/682d7ebb-5e5e-488c-b894-5ac9fadaae6a?auto=format&crop=edges&fit=crop&h=120&w=120&s=42c58b88f10ae19e3f44be3d9a4c5737',
     linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
   },
   {
@@ -25,8 +23,6 @@ const testimonials = [
       'The platform is super easy to use with quick filters, this was missing in Bali.  Best of all, it’s free of cost with no commissions, saving us money while reaching more buyers.',
     name: 'Rezy Balitecture',
     title: 'Agency',
-    avatar:
-      'https://sharetribe.imgix.net/67a98290-7785-4d51-a13e-9ff34051f0d5/683fce23-ac06-4459-a7dc-f7e87b5c4362?auto=format&crop=edges&fit=crop&h=120&w=120&s=0c4261849d8766940c9338d658c5a2d5',
     linkedin: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/linkedin.svg',
   },
   // ...add more testimonials as needed
@@ -85,8 +81,20 @@ const testimonials2 = [
 ];
 
 const duplicateTestimonials = [...testimonials, ...testimonials];
+const useSnapshot = process.env.REACT_APP_NATIVE_ASSET_SNAPSHOT === 'true';
 
 const TestmonialSlider = () => {
+  const [avatars, setAvatars] = useState(useSnapshot ? {} : originalAvatars);
+  useEffect(() => {
+    if (!useSnapshot) return;
+    let mounted = true;
+    nativeCall('/static/presentation/testimonial-avatars.json').then(
+      images => { if (mounted) setAvatars(images); },
+      () => {} // The existing placeholder also covers unavailable avatars.
+    );
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <div className={styles.sliderContainer}>
       <div className={styles.scrollContainer}>
@@ -95,8 +103,8 @@ const TestmonialSlider = () => {
             <div key={idx} className={styles.card}>
               <div className={styles.testimonialText}>"{t.text}"</div>
               <div className={styles.profile}>
-                {t.avatar ? (
-                  <img src={t.avatar} alt={t.name} className={styles.avatar} />
+                {avatars[t.name] ? (
+                  <img src={avatars[t.name]} alt={t.name} className={styles.avatar} />
                 ) : (
                   <span className={styles.avatarPlaceholder}>
                     <svg

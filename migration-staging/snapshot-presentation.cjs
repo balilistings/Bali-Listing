@@ -18,7 +18,10 @@ const requiredConfigs = ['/design/branding.json', '/listings/listing-types.json'
 const imageTypes = {
   'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/avif': 'avif', 'image/gif': 'gif',
 };
-const vendorImages = new Set(['sharetribe.imgix.net', 'cdn.st-api.com', 'assets-sharetribecom.sharetribe.com']);
+const vendorImages = new Set([
+  'sharetribe.imgix.net', 'sharetribe-assets.imgix.net', 'cdn.st-api.com', 'assets-sharetribecom.sharetribe.com',
+]);
+const testimonialAvatars = require('../src/components/TestmonialSlider/avatars.json');
 const maxImageBytes = 8 * 1024 * 1024;
 const pageName = /^[a-z0-9][a-z0-9-]{0,190}$/;
 
@@ -91,7 +94,7 @@ async function snapshotPresentation(env, { root = resolve(__dirname, '..'), fetc
         const ext = imageTypes[response.headers.get('content-type')?.split(';')[0]];
         if (!response.ok || !ext || !response.body) {
           await response.body?.cancel();
-          throw new Error('Unable to copy a Sharetribe presentation image: ' + response.status);
+          throw new Error('Unable to copy a presentation image from ' + url.hostname + ': HTTP ' + response.status);
         }
         let size = 0;
         const chunks = [];
@@ -121,6 +124,7 @@ async function snapshotPresentation(env, { root = resolve(__dirname, '..'), fetc
 
   const configFile = join(out, 'config.json');
   await writeFile(configFile, JSON.stringify(await replaceImages(app)));
+  await writeFile(join(out, 'testimonial-avatars.json'), JSON.stringify(await replaceImages(testimonialAvatars)));
   for (const [name, doc] of pages) {
     const file = join(out, 'pages', name + '.json');
     await mkdir(dirname(file), { recursive: true });
