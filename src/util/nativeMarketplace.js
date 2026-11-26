@@ -139,6 +139,9 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
             location: { ...original.location, address: original.location?.address || row.area },
             area: row.area,
             ...prices,
+            ...(row.category === 'rental' ? { pricee: Object.keys(amounts).filter(period =>
+              row.prices?.[period] != null
+            ) } : {}),
             availableNow: row.confirmedAt ? 'yes' : original.availableNow,
             nativeContact: row.hasContact === true,
           },
