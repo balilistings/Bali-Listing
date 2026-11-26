@@ -112,6 +112,25 @@ test('checks scope, listing state, account role and effective permissions before
   assert.equal(apiCalls.length, 0);
 });
 
+test('an explicitly selected contact provider keeps its role without taking ownership of the listing', async () => {
+  const config = { ...env, ACCOUNT_PILOT_CUSTOMER_ID: '', ACCOUNT_PILOT_CONTACT_PROVIDER_ID: customerId };
+  const { database, fetch, queries } = fixtures({ customerRole: 'provider' });
+  const wrongRole = fixtures();
+  await assert.rejects(runAccountPilot(wrongRole.database, config, wrongRole.fetch), /different role/);
+  assert.deepEqual(wrongRole.queries, []);
+  await assert.rejects(
+    runAccountPilot(database, { ...config, ACCOUNT_PILOT_CUSTOMER_ID: customerId }, fetch),
+    /configuration is incomplete/
+  );
+  assert.deepEqual(queries, []);
+  const report = await runAccountPilot(database, config, fetch);
+  assert.deepEqual(report, { customers: 0, providers: 2, linkedListings: 1 });
+  const users = queries.filter(q => q.sql.includes('INSERT INTO accounts')).map(q => q.values);
+  assert.deepEqual(users.map(q => [q[0], q[2]]), [[customerId, 'provider'], [providerId, 'provider']]);
+  assert.deepEqual(queries.find(q => q.sql.includes('UPDATE pilot_listing_snapshots')).values,
+    [listingId, providerId]);
+});
+
 test('rolls back both accounts and their links when an identity conflicts', async () => {
   const { database, fetch, queries } = fixtures({ failInsert: true });
   await assert.rejects(runAccountPilot(database, env, fetch), /Conflict/);
