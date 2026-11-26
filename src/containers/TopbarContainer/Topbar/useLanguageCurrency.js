@@ -28,6 +28,17 @@ export const useLanguageCurrency = (config, currentPage) => {
       return ;
     }
 
+    if (nativeMarketplace) {
+      const { pathname, search, hash } = window.location;
+      const routeParts = pathname.split('/').filter(Boolean);
+      if (SUPPORTED_LOCALES.includes(routeParts[0])) routeParts.shift();
+      if (newLocale !== DEFAULT_LOCALE) routeParts.unshift(newLocale);
+      localStorage.setItem('locale', newLocale);
+      localStorage.setItem('useDefaultLocale', String(newLocale === DEFAULT_LOCALE));
+      window.location.assign('/' + routeParts.join('/') + search + hash);
+      return;
+    }
+
     return import(`../../../translations/${newLocale}.json`)
       .then(newMessages => {
         dispatch(setMessages(newMessages.default));
@@ -56,16 +67,12 @@ export const useLanguageCurrency = (config, currentPage) => {
           newPath = `/${newLocale}/${cleanPath}${location.search}${location.hash}`;
         }
 
-        if (nativeMarketplace) {
-          window.location.assign(newPath);
-        } else {
-          history.push(newPath);
-        }
+        history.push(newPath);
       })
       .catch(error => {
         console.error('Failed to load translation', error);
       });
-  }, [dispatch, history, location, locale, updateLocale]);
+  }, [DEFAULT_LOCALE, SUPPORTED_LOCALES, dispatch, history, location, locale, updateLocale]);
 
   const showCurrencyToggler =
     config.multiCurrencyEnabled && ['LandingPage', 'search', 'ListingPage'].includes(currentPage);
