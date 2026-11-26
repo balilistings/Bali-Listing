@@ -3,6 +3,7 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
 const { runAccountAudit } = require('./account-audit.cjs');
+const { runAccountImport } = require('./account-import.cjs');
 
 const env = {
   ACCOUNT_AUDIT_ENABLED: 'true',
@@ -90,4 +91,69 @@ test('does not read Sharetribe when disabled or used outside staging', async () 
   const fetch = () => assert.fail('The source must not be queried');
   assert.equal(await runAccountAudit({ ...env, ACCOUNT_AUDIT_ENABLED: 'false' }, fetch), undefined);
   await assert.rejects(runAccountAudit({ ...env, RENDER_SERVICE_NAME: 'production' }, fetch), /staging service/);
+});
+
+const importEnv = { ...env, ACCOUNT_AUDIT_ENABLED: 'false', ACCOUNT_BULK_IMPORT_ENABLED: 'true' };
+
+function importDatabase({ identityCollision = false } = {}) {
+  const calls = [];
+  let incoming;
+  return {
+    calls,
+    async connect() {
+      return {
+        release() { calls.push(['release']); },
+        async query(sql, params) {
+          calls.push([sql, params]);
+          if (sql.includes('NOT (id = ANY')) return { rows: [{ count: 0 }] };
+          if (sql.includes('INSERT INTO accounts')) {
+            incoming = JSON.parse(params[0]);
+            return { rowCount: incoming.length };
+          }
+          if (sql.includes('INSERT INTO account_identities')) {
+            if (identityCollision) throw new Error('Synthetic duplicate identity');
+            return { rowCount: JSON.parse(params[0]).length };
+          }
+          if (sql.includes('AS "roleReview"')) {
+            return { rows: [{ total: incoming.length, roleReview: incoming.filter(a => a.role === null).length,
+              restricted: incoming.filter(a => a.status === 'restricted').length }] };
+          }
+          return {};
+        },
+      };
+    },
+  };
+}
+
+test('commits source UUIDs, permissions and identity links while keeping unknown roles and bans restricted', async () => {
+  const google = { idpId: 'google', userId: 'test-google' };
+  const facebook = { idpId: 'facebook', userId: 'test-facebook' };
+  const users = [
+    user(1, { identityProviders: [google, google] }),
+    user(2, { state: 'banned', identityProviders: [facebook], profile: { displayName: 'Old provider' } }),
+    user(3, { deleted: true }),
+  ];
+  const database = importDatabase();
+  const report = await runAccountImport(database, importEnv, mockedSource(users).fetch);
+  assert.deepEqual(report, { total: 2, roleReview: 1, restricted: 1, linkedIdentities: 2,
+    customers: 1, providers: 0, banned: 1, deletedExcluded: 1 });
+  const accountParams = database.calls.find(([sql]) => sql.includes('INSERT INTO accounts'))[1];
+  const rows = JSON.parse(accountParams[0]);
+  assert.deepEqual(rows.map(row => [row.id, row.role, row.status]), [
+    [users[0].id, 'customer', 'active'], [users[1].id, null, 'restricted'],
+  ]);
+  assert.equal(rows[1].permissions.postListings, 'permission/deny');
+  assert.deepEqual(database.calls.at(-2), ['COMMIT', undefined]);
+});
+
+test('refuses unsafe overlap and rolls back writes on a destination identity conflict', async () => {
+  const userWithIdentity = user(1, { identityProviders: [{ idpId: 'google', userId: 'test-google' }] });
+  const database = importDatabase({ identityCollision: true });
+  const source = mockedSource([userWithIdentity]);
+  await assert.rejects(runAccountImport(database, { ...importEnv, ACCOUNT_AUDIT_ENABLED: 'true' }, source.fetch),
+    /switches to be off/);
+  assert.deepEqual(source.requests, []);
+  assert.deepEqual(database.calls, []);
+  await assert.rejects(runAccountImport(database, importEnv, source.fetch), /Synthetic duplicate identity/);
+  assert.deepEqual(database.calls.at(-2), ['ROLLBACK', undefined]);
 });
