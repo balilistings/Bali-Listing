@@ -18,7 +18,7 @@ export const constructLocalizedAssetName = (baseAssetName, match, currentLocale)
 
   // If there's a locale in the URL, use it directly
   if (urlLocale) {
-    return `${baseAssetName}-${urlLocale}`;
+    return urlLocale === DEFAULT_LOCALE ? baseAssetName : `${baseAssetName}-${urlLocale}`;
   }
 
   // If no locale in URL, check if we need to redirect based on saved locale

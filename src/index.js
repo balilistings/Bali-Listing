@@ -75,6 +75,12 @@ const render = (store, shouldHydrate) => {
       const hostedConfig = configEntries.reduce((collectedData, [name, content]) => {
         return { ...collectedData, [name]: content.data || {} };
       }, {});
+      if (nativeMarketplace && process.env.REACT_APP_GOOGLE_MAPS_API_KEY) {
+        hostedConfig.maps = {
+          ...hostedConfig.maps,
+          googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY,
+        };
+      }
 
       if (shouldHydrate) {
         const container = document.getElementById('root');

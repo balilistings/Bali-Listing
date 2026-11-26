@@ -22,7 +22,7 @@ const uiRoutes = /^\/(?:$|(?:s|l|u|user|p|blog|login|signup|confirm|lists?|listi
 const csp = [
   "default-src 'self'", "object-src 'none'", "base-uri 'none'", "frame-ancestors 'none'",
   "script-src 'self' https://api.mapbox.com https://maps.googleapis.com https://maps.gstatic.com",
-  "connect-src 'self' https://cdn.st-api.com https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://maps.googleapis.com",
+  "connect-src 'self' https://cdn.st-api.com https://api.mapbox.com https://events.mapbox.com https://*.tiles.mapbox.com https://maps.googleapis.com https://places.googleapis.com",
   "img-src 'self' data: blob: https:", "style-src 'self' 'unsafe-inline' https://api.mapbox.com https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com", "worker-src 'self' blob:",
 ].join('; ');

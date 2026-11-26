@@ -4,6 +4,7 @@ import { saveCurrency } from '../../../ducks/currency.js';
 import { useLocale, useUpdateLocale } from '../../../context/localeContext.js';
 import { setMessages } from '../../../ducks/locale.duck.js';
 import { useCallback } from 'react';
+import { nativeMarketplace } from '../../../util/nativeMarketplace';
 
 const currencies = [
   { code: 'IDR', name: 'Indonesian Rupiah', symbol: 'RP' },
@@ -55,7 +56,11 @@ export const useLanguageCurrency = (config, currentPage) => {
           newPath = `/${newLocale}/${cleanPath}${location.search}${location.hash}`;
         }
 
-        history.push(newPath);
+        if (nativeMarketplace) {
+          window.location.assign(newPath);
+        } else {
+          history.push(newPath);
+        }
       })
       .catch(error => {
         console.error('Failed to load translation', error);

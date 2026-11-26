@@ -23,6 +23,10 @@ export const getInitialLocale = currentLocale => {
   if (nativeMarketplace && SUPPORTED_LOCALES.includes(urlLocale)) {
     return urlLocale;
   }
+  if (nativeMarketplace && typeof window !== 'undefined' &&
+      localStorage.getItem('useDefaultLocale') === 'true') {
+    return DEFAULT_LOCALE;
+  }
 
   if (currentLocale && SUPPORTED_LOCALES.includes(currentLocale)) {
     return currentLocale;
