@@ -37,7 +37,11 @@ function active(account) {
 function viewAccount(account, staff) {
   return {
     id: account.id, name: account.display_name, email: account.email, role: account.role,
-    bio: account.bio,
+    firstName: account.profile?.firstName,
+    lastName: account.profile?.lastName,
+    abbreviatedName: account.profile?.abbreviatedName,
+    bio: account.profile?.bio,
+    locale: account.profile?.locale,
     emailVerified: account.email_verified, staff: staff.has(account.id),
     canRead: account.sharetribe_permissions?.read !== 'permission/deny',
     canPost: account.role === 'provider' && account.sharetribe_permissions?.postListings !== 'permission/deny',
@@ -105,7 +109,7 @@ function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
     if (!value) return null;
     const { rows: [account] } = await database.query(
       `SELECT a.id, a.display_name, a.email, a.email_verified, a.role, a.status, a.sharetribe_permissions,
-              a.sharetribe_profile->>'bio' AS bio
+              a.sharetribe_profile AS profile
        FROM account_sessions s JOIN accounts a ON a.id = s.account_id
        WHERE s.token_hash = $1 AND s.expires_at > now()`, [digest(value)],
     );

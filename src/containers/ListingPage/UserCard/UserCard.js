@@ -13,6 +13,7 @@ import { IoMdStar } from 'react-icons/io';
 import css from './UserCard.module.css';
 import { useSelector } from 'react-redux';
 import { get } from '../../../util/api';
+import { nativeMarketplace } from '../../../util/nativeMarketplace';
 
 // Approximated collapsed size so that there are ~three lines of text
 // in the desktop layout in the author section of the ListingPage.
@@ -101,7 +102,7 @@ const UserCard = props => {
     setMounted(true);
     const fetchAuthorSlug = async () => {
       const userId = ensuredUser?.id?.uuid;
-      if (!userId) return;
+      if (!userId || nativeMarketplace) return;
 
       try {
         const response = await get(`/api/users/${userId}/slug`);

@@ -18,7 +18,7 @@ const staticFiles = {
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
 };
-const uiRoutes = /^\/(?:$|(?:[a-z]{2}(?:-[a-z]{2})?\/)?(?:s|l|u|user|p|blog|login|signup|confirm|lists?|listings|favorites|profile-settings|account|recover-password|reset-password|verify-email|inbox|terms-of-service|privacy-policy|notfound|no-[a-z-]+)(?:\/|$))/i;
+const uiRoutes = /^\/(?:$|(?:s|l|u|user|p|blog|login|signup|confirm|lists?|listings|favorites|profile-settings|account|recover-password|reset-password|verify-email|inbox|terms-of-service|privacy-policy|preview|notfound|no-[a-z-]+)(?:\/|$))/i;
 const csp = [
   "default-src 'self'", "object-src 'none'", "base-uri 'none'", "frame-ancestors 'none'",
   "script-src 'self' https://api.mapbox.com https://maps.googleapis.com https://maps.gstatic.com",
@@ -54,7 +54,8 @@ async function createOriginalFrontend(env) {
       }
       return true;
     }
-    if (!uiRoutes.test(pathname) || pathname.startsWith('/l/') && pathname.endsWith('/edit')) return false;
+    const pagePath = pathname.replace(/^\/(?:en|id|ru)(?=\/|$)/i, '') || '/';
+    if (!uiRoutes.test(pagePath) || /^\/l\/[a-f0-9-]{36}\/edit$/i.test(pagePath)) return false;
     res.writeHead(200, {
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Length': index.length,

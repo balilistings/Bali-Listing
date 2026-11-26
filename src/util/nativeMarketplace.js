@@ -76,10 +76,14 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
       state: 'active',
       profile: {
         displayName: viewer.name,
-        abbreviatedName: viewer.name?.split(/\s+/).slice(0, 2).map(name => name.charAt(0)).join(''),
+        abbreviatedName: viewer.abbreviatedName ||
+          viewer.name?.split(/\s+/).slice(0, 2).map(name => name.charAt(0)).join(''),
+        ...(type === 'currentUser' ? { firstName: viewer.firstName || '', lastName: viewer.lastName || '' } : {}),
         bio: viewer.bio || '',
+        metadata: {},
         publicData: { userType: viewer.role || 'provider' },
-        protectedData: {},
+        protectedData: type === 'currentUser' && viewer.locale ? { locale: viewer.locale } : {},
+        ...(type === 'currentUser' ? { privateData: {} } : {}),
       },
     },
   });
@@ -184,11 +188,11 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
       create: ({ email, firstName, lastName, publicData }) => post('/api/auth/signup', {
         email, name: [firstName, lastName].filter(Boolean).join(' '), role: publicData?.userType, accepted: true,
       }),
-      updateProfile: async ({ displayName, firstName, lastName, bio }) => {
+      updateProfile: async ({ displayName, firstName, lastName, bio, protectedData }) => {
         const { account } = await session();
         await call(api + '/profile', { method: 'PATCH', body: {
           name: displayName || [firstName, lastName].filter(Boolean).join(' ') || account.name,
-          bio: bio ?? account.bio,
+          firstName, lastName, bio, locale: protectedData?.locale,
         } });
         return currentUser((await session()).account);
       },

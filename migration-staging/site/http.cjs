@@ -73,10 +73,14 @@ function createMarketplace(database, env, { storage = photoStorage(), fetchImpl 
       const body = await readJson(req);
       const name = cleanText(body.name, 100);
       if (!name) throw new SiteError(400, 'Enter a display name.');
-      const bio = cleanText(body.bio, 2000);
+      const profile = {};
+      if (typeof body.bio === 'string') profile.bio = cleanText(body.bio, 2000);
+      if (typeof body.firstName === 'string') profile.firstName = cleanText(body.firstName, 100);
+      if (typeof body.lastName === 'string') profile.lastName = cleanText(body.lastName, 100);
+      if (['en', 'id', 'ru'].includes(body.locale)) profile.locale = body.locale;
       await database.query(
-        `UPDATE accounts SET display_name = $2, sharetribe_profile = coalesce(sharetribe_profile,'{}'::jsonb) || jsonb_build_object('bio',$3::text)
-         WHERE id = $1 AND status = 'active'`, [actor.id, name, bio],
+        `UPDATE accounts SET display_name = $2, sharetribe_profile = coalesce(sharetribe_profile,'{}'::jsonb) || $3::jsonb
+         WHERE id = $1 AND status = 'active'`, [actor.id, name, profile],
       );
       return json(res, 200, { saved: true });
     }

@@ -15,6 +15,8 @@ const env = {
   REACT_APP_SHARETRIBE_SDK_CLIENT_ID: 'f4a347fa-5223-46ed-b013-d5587d0725fb',
   REACT_APP_SHARETRIBE_USING_SSL: 'true',
   REACT_APP_MULTICURRENCY_ENABLED: 'true',
+  REACT_APP_USE_NEW_BLOG_PAGE: 'true',
+  REACT_APP_SUPPORTED_LOCALES: 'en,id,ru',
   REACT_APP_MARKETPLACE_NAME: 'Bali Listings',
   REACT_APP_MARKETPLACE_ROOT_URL: process.env.MARKETPLACE_ORIGIN || process.env.RENDER_EXTERNAL_URL ||
     'https://balilistings-migration-staging.onrender.com',

@@ -418,7 +418,7 @@ export const fetchCurrentUser = options => (dispatch, getState, sdk) => {
       // set current user id to the logger
       log.setUserId(currentUser.id.uuid);
 
-      if (isUserProvider(currentUser)) {
+      if (!sdk.nativeMarketplace && isUserProvider(currentUser)) {
         get(`/api/users/${currentUser.id.uuid}/slug`)
           .then(response => {
             currentUser.slug = response.slug;
