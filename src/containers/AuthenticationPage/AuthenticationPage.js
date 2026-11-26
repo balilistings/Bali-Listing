@@ -11,6 +11,7 @@ import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { camelize } from '../../util/string';
 import { pathByRouteName } from '../../util/routes';
 import { apiBaseUrl } from '../../util/api';
+import { nativeCall, nativeMarketplace } from '../../util/nativeMarketplace';
 import { FormattedMessage, useIntl } from '../../util/reactIntl';
 import { propTypes } from '../../util/types';
 import { ensureCurrentUser } from '../../util/data';
@@ -63,6 +64,7 @@ import { FacebookLogo, GoogleLogo } from './socialLoginLogos';
 export const SocialLoginButtonsMaybe = props => {
   const routeConfiguration = useRouteConfiguration();
   const { isLogin, showFacebookLogin, showGoogleLogin, from, userType } = props;
+  const [socialError, setSocialError] = useState(null);
   const showSocialLogins = showFacebookLogin || showGoogleLogin;
 
   const getDataForSSORoutes = () => {
@@ -92,7 +94,20 @@ export const SocialLoginButtonsMaybe = props => {
     window.location.href = `${baseUrl}/api/auth/facebook?${queryParams}`;
   };
 
-  const authWithGoogle = () => {
+  const authWithGoogle = async () => {
+    if (nativeMarketplace) {
+      try {
+        const { url } = await nativeCall('/api/auth/google', { method: 'POST', body: {
+          ...(isLogin ? {} : { role: userType, accepted: true }),
+          next: from,
+        } });
+        if (new URL(url).origin !== 'https://accounts.google.com') throw new Error('Invalid Google sign-in URL');
+        window.location.assign(url);
+      } catch (error) {
+        setSocialError(error.message);
+      }
+      return;
+    }
     const { baseUrl, queryParams } = getDataForSSORoutes();
     window.location.href = `${baseUrl}/api/auth/google?${queryParams}`;
   };
@@ -130,6 +145,7 @@ export const SocialLoginButtonsMaybe = props => {
           </div>
         ) : null}
       </div>
+      {socialError ? <p className={css.error} role="alert">{socialError}</p> : null}
     </div>
   ) : null;
 };

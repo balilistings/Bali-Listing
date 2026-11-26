@@ -147,7 +147,8 @@ function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
       return rowCount === 1;
     });
     if (send) {
-      const link = origin + '/account/setup#' + value;
+      const path = env.MARKETPLACE_RENDER_ORIGINAL_FRONTEND === 'true' ? '/reset-password#' : '/account/setup#';
+      const link = origin + path + value;
       const result = await fetchImpl('https://api.resend.com/emails', {
         method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8000),
         headers: { Authorization: 'Bearer ' + env.MARKETPLACE_RESEND_API_KEY, 'Content-Type': 'application/json' },

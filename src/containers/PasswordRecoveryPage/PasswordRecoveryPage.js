@@ -145,6 +145,7 @@ export const PasswordRecoveryPageComponent = props => {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const emailParam = searchParams.get('email');
+  const nativeSignupSent = process.env.REACT_APP_NATIVE_MARKETPLACE === 'true' && searchParams.get('signup') === 'sent';
 
   const {
     scrollingDisabled,
@@ -193,6 +194,14 @@ export const PasswordRecoveryPageComponent = props => {
             showPasswordRecoveryForm
           ) : recoveryError ? (
             <GenericError />
+          ) : nativeSignupSent ? (
+            <div className={css.emailSubmittedContent}>
+              <IconKeys className={css.modalIcon} />
+              <Heading as="h1" rootClassName={css.modalTitle}>
+                <FormattedMessage id="PasswordRecoveryPage.emailSubmittedTitle" />
+              </Heading>
+              <p className={css.modalMessage}>If the email address is eligible, use the link in your inbox to finish setting up your account.</p>
+            </div>
           ) : alreadyrequested ? (
             <EmailSubmittedContent
               passwordRequested={passwordRequested}

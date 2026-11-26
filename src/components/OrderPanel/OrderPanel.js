@@ -41,6 +41,7 @@ import css from './OrderPanel.module.css';
 import { types as sdkTypes } from '../../util/sdkLoader';
 import { useSelector, useDispatch } from 'react-redux';
 import { createShortUrl } from '../../util/api';
+import { nativeCall, nativeMarketplace } from '../../util/nativeMarketplace';
 import { useRouteConfiguration } from '../../context/routeConfigurationContext';
 import { handleToggleFavorites, isFavorite } from '../../util/userFavorites';
 import { updateProfile } from '../../containers/ProfileSettingsPage/ProfileSettingsPage.duck';
@@ -551,6 +552,21 @@ const OrderPanel = props => {
     }
 
     const listingId = listing.id.uuid;
+    if (nativeMarketplace) {
+      contactInProgress.current = true;
+      setContacting(true);
+      try {
+        const { url } = await nativeCall('/api/marketplace/listings/' + listingId + '/contact');
+        if (new URL(url).origin !== 'https://wa.me') throw new Error('Invalid contact URL');
+        window.location.assign(url);
+      } catch {
+        window.alert('WhatsApp contact is unavailable for this listing.');
+      } finally {
+        contactInProgress.current = false;
+        setContacting(false);
+      }
+      return;
+    }
     const isFav = isFavorite(currentUser, listingId);
     contactInProgress.current = true;
     setContacting(true);

@@ -29,6 +29,9 @@ import { resetPassword } from './PasswordResetPage.duck';
 import css from './PasswordResetPage.module.css';
 
 const parseUrlParams = location => {
+  if (process.env.REACT_APP_NATIVE_MARKETPLACE === 'true' && location.hash) {
+    return { token: location.hash.slice(1), email: 'verified-link' };
+  }
   const params = parse(location.search);
   const { t: token, e: email } = params;
   return { token, email };

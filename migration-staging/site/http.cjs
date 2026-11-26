@@ -61,7 +61,9 @@ function createMarketplace(database, env, { storage = photoStorage(), fetchImpl 
   async function marketplaceRoute(req, res, url, parts) {
     const [resource, id, action, extra] = parts;
     if (extra) throw new SiteError(404, 'This page was not found.');
-    if (req.method === 'GET' && resource === 'listings' && !id) return json(res, 200, await listings.search(url.searchParams));
+    if (req.method === 'GET' && resource === 'listings' && !id) {
+      return json(res, 200, await listings.search(url.searchParams, url.searchParams.get('owner')));
+    }
     if (req.method === 'GET' && resource === 'profiles' && id && !action) return json(res, 200, await listings.profile(id));
     const actor = await auth.viewer(req);
     if (req.method === 'GET' && resource === 'mine' && !id) return json(res, 200, await listings.ownListings(actor));

@@ -338,7 +338,7 @@ export const searchListings = (searchParams, config) => (dispatch, getState, sdk
     ? responseFromEntities(before, previous.currentPageResultIds, previous.pagination, previous.publicRead.fetchedAt)
     : null;
   return reusePublicRead(sdk, key, PUBLIC_LISTING_TTL, allowed, seed, () =>
-    typeof window === 'undefined' ? sdk.listings.query(params)
+    typeof window === 'undefined' || sdk.nativeMarketplace ? sdk.listings.query(params)
       : post('/api/public-read/listings', { params }).then(data => ({ data }))
   )
     .then(response => {

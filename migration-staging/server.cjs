@@ -10,6 +10,7 @@ const { runAccountPilot, AccountPilotError } = require('./account-pilot.cjs');
 const { runAccountAudit } = require('./account-audit.cjs');
 const { runAccountImport } = require('./account-import.cjs');
 const { createMarketplace } = require('./site/http.cjs');
+const { createOriginalFrontend } = require('./site/original-frontend.cjs');
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -32,6 +33,7 @@ let databaseReady = false;
 let checkingDatabase = false;
 let pilotImage;
 let recentListing;
+let originalFrontend;
 
 async function checkDatabase() {
   if (checkingDatabase) return;
@@ -73,6 +75,7 @@ const server = createServer(async (request, response) => {
   response.setHeader('Content-Type', 'text/plain; charset=utf-8');
   response.setHeader('X-Robots-Tag', 'noindex, nofollow');
   response.setHeader('Cache-Control', 'no-store');
+  if (await originalFrontend(request, response)) return;
   if (await marketplace(request, response)) return;
 
   if (request.method !== 'GET' && request.method !== 'HEAD') {
@@ -105,6 +108,7 @@ const server = createServer(async (request, response) => {
 });
 
 async function start() {
+  originalFrontend = await createOriginalFrontend(process.env);
   await database.query(await readFile(join(__dirname, 'schema.sql'), 'utf8'));
   await database.query(await readFile(join(__dirname, 'site', 'schema.sql'), 'utf8'));
   await checkDatabase();

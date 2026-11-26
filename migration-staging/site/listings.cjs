@@ -49,11 +49,17 @@ function numericFilter(value, maximum) {
 }
 
 function publicListing(row, privateView = false) {
+  const { contactPhone, email, phonenumber, ...publicData } = row.public_data || {};
   return {
     id: row.id, title: row.title, area: row.area, category: row.category, description: row.description,
     bedrooms: row.bedrooms, prices: row.prices, reference: row.legacy_reference || row.reference_code,
     confirmedAt: row.availability_confirmed_at, pricePeriod: row.price_period,
     cover: row.cover_id ? '/api/media/' + row.cover_id : null,
+    createdAt: row.created_at,
+    publicData,
+    coordinates: row.latitude == null || row.longitude == null ? null :
+      { lat: row.latitude, lng: row.longitude },
+    ...(row.owner_name ? { owner: { id: row.owner_id, name: row.owner_name } } : {}),
     ...(privateView ? { state: row.state, phone: row.contact_phone } : {}),
   };
 }
@@ -85,27 +91,41 @@ function createListings(database, storage, origin, env) {
     const high = numericFilter(params.get('max'), maxPrice);
     if (low !== null && high !== null && low > high) throw new SiteError(400, 'The minimum exceeds the maximum.');
     const offset = numericFilter(params.get('offset'), 100000) ?? 0;
+    const limit = Math.max(1, numericFilter(params.get('limit'), 100) ?? 24);
+    const bedroomValues = params.get('bedrooms');
+    const bedrooms = bedroomValues ? bedroomValues.split(',').map(value => numericFilter(value, 99)) : null;
+    const rawIds = params.get('ids');
+    const ids = rawIds ? rawIds.split(',') : null;
+    if (ids && (ids.length > 100 || ids.some(value => !uuid.test(value)))) {
+      throw new SiteError(400, 'Some listing IDs are invalid.');
+    }
+    const priceSort = sort === 'price' || sort === 'price-desc' ? sort : null;
     const { rows } = await database.query(
-      `SELECT l.*, (SELECT id FROM marketplace_listing_photos WHERE listing_id = l.id AND position = 0) AS cover_id
+      `SELECT l.*, a.display_name AS owner_name, count(*) OVER () AS listing_total,
+          (SELECT id FROM marketplace_listing_photos WHERE listing_id = l.id AND position = 0) AS cover_id
        FROM listings l JOIN accounts a ON a.id = l.owner_id
        WHERE l.state = 'published' AND NOT l.is_pilot_fixture AND a.status = 'active' AND a.role = 'provider'
          AND ($1::text IS NULL OR l.category = $1) AND ($2::text IS NULL OR strpos(lower(l.area), lower($2)) > 0)
-         AND ($3::int IS NULL OR l.bedrooms = $3)
+         AND ($3::int[] IS NULL OR l.bedrooms = ANY($3))
          AND ($4::text IS NULL OR strpos(lower(l.title || ' ' || l.description || ' ' || l.area || ' ' ||
               coalesce(l.reference_code, '') || ' ' || coalesce(l.legacy_reference, '')), lower($4)) > 0)
          AND ($5::numeric IS NULL OR coalesce((l.prices->>$6)::numeric, CASE WHEN $6::text IS NULL THEN l.price_amount END) >= $5)
          AND ($7::numeric IS NULL OR coalesce((l.prices->>$6)::numeric, CASE WHEN $6::text IS NULL THEN l.price_amount END) <= $7)
          AND (NOT $8::boolean OR l.availability_confirmed_at >= now() - interval '30 days')
          AND ($9::uuid IS NULL OR l.owner_id = $9)
-       ORDER BY CASE WHEN $10::boolean THEN coalesce((l.prices->>$6)::numeric, l.price_amount) END ASC NULLS LAST,
+         AND ($12::uuid[] IS NULL OR l.id = ANY($12))
+       ORDER BY CASE WHEN $10::text = 'price' THEN coalesce((l.prices->>$6)::numeric, l.price_amount) END ASC NULLS LAST,
+         CASE WHEN $10::text = 'price-desc' THEN coalesce((l.prices->>$6)::numeric, l.price_amount) END DESC NULLS LAST,
          l.created_at DESC, l.id
-       LIMIT 25 OFFSET $11`,
+       LIMIT $13 OFFSET $11`,
       [categories.includes(category) ? category : null, cleanText(params.get('area'), 100) || null,
-        numericFilter(params.get('bedrooms'), 99), cleanText(params.get('q'), 100) || null, low,
+        bedrooms, cleanText(params.get('q'), 100) || null, low,
         [...rentPeriods, ...salePeriods].includes(period) ? period : null, high,
-        params.get('available') === '1', ownerId, sort === 'price', offset],
+        params.get('available') === '1', ownerId, priceSort, offset, ids, limit + 1],
     );
-    return { listings: rows.slice(0, 24).map(row => publicListing(row)), nextOffset: rows.length > 24 ? offset + 24 : null };
+    return { listings: rows.slice(0, limit).map(row => publicListing(row)),
+      total: rows.length ? Number(rows[0].listing_total) : 0,
+      nextOffset: rows.length > limit ? offset + limit : null };
   }
 
   async function detail(id, actor) {

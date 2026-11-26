@@ -103,7 +103,7 @@ export const fetchFeaturedListings = (
       }),
     };
     // Keep photo IDs for swipe navigation, but expose only covers until selected.
-    const response = typeof window === 'undefined'
+    const response = sdk.nativeMarketplace ? await sdk.listings.query(query) : typeof window === 'undefined'
       ? deferListingImages(await sdk.listings.query(query))
       : { data: await post('/api/public-read/listings', { params: query, deferImages: true }) };
 

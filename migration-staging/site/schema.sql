@@ -32,6 +32,8 @@ ALTER TABLE listings ADD COLUMN IF NOT EXISTS request_key uuid;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS category text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS area text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS bedrooms integer;
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS latitude double precision;
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS longitude double precision;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS price_period text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS prices jsonb NOT NULL DEFAULT '{}';
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS contact_phone text;

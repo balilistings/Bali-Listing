@@ -29,6 +29,7 @@ import configureStore from './store';
 
 // Utils
 import { createInstance, types as sdkTypes } from './util/sdkLoader';
+import { createNativeMarketplaceSdk, nativeMarketplace } from './util/nativeMarketplace';
 import { mergeConfig } from './util/configHelpers';
 import { matchPathname } from './util/routes';
 import * as apiUtils from './util/api';
@@ -133,7 +134,10 @@ if (typeof window !== 'undefined') {
   // eslint-disable-next-line no-underscore-dangle
   const preloadedState = window.__PRELOADED_STATE__ || '{}';
   const initialState = JSON.parse(preloadedState, sdkTypes.reviver);
-  const sdk = createInstance({
+  if (nativeMarketplace && process.env.REACT_APP_NATIVE_ASSET_VERSION) {
+    initialState.hostedAssets = { ...initialState.hostedAssets, version: process.env.REACT_APP_NATIVE_ASSET_VERSION };
+  }
+  const presentationSdk = createInstance({
     transitVerbose: appSettings.sdk.transitVerbose,
     clientId: appSettings.sdk.clientId,
     secure: appSettings.usingSSL,
@@ -141,11 +145,12 @@ if (typeof window !== 'undefined') {
     ...baseUrl,
     ...assetCdnBaseUrl,
   });
+  const sdk = nativeMarketplace ? createNativeMarketplaceSdk(presentationSdk, sdkTypes) : presentationSdk;
 
   // Note: on localhost:3000, you need to use environment variable.
   const googleAnalyticsIdFromSSR = initialState?.hostedAssets?.googleAnalyticsId;
   const googleAnalyticsId = googleAnalyticsIdFromSSR || process.env.REACT_APP_GOOGLE_ANALYTICS_ID;
-  const analyticsHandlers = setupAnalyticsHandlers(googleAnalyticsId);
+  const analyticsHandlers = setupAnalyticsHandlers(nativeMarketplace ? null : googleAnalyticsId);
   const store = configureStore(initialState, sdk, analyticsHandlers);
 
   require('./util/polyfills');

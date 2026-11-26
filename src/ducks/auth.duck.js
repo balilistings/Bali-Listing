@@ -224,7 +224,10 @@ export const signup = params => (dispatch, getState, sdk) => {
   return sdk.currentUser
     .create(params)
     .then(() => dispatch(signupSuccess()))
-    .then(() => dispatch(login(params.email, params.password)))
+    .then(() => {
+      if (!sdk.nativeMarketplace) return dispatch(login(params.email, params.password));
+      window.location.assign('/recover-password?signup=sent');
+    })
     .catch(e => {
       dispatch(signupError(storableError(e)));
       log.error(e, 'signup-failed', {

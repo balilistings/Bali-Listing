@@ -347,13 +347,13 @@ export const showListing = (listingId, config, isOwn = false) => (dispatch, getS
     ? responseFromEntities(state, [listingId], {}, previous.fetchedAt, true) : null;
   const show = reusePublicRead(sdk, key, PUBLIC_LISTING_TTL, allowed, seed, () =>
     isOwn ? sdk.ownListings.show(params)
-      : typeof window === 'undefined' ? sdk.listings.show(params)
+      : typeof window === 'undefined' || sdk.nativeMarketplace ? sdk.listings.show(params)
       : post('/api/listings/show-gallery-cover', { params }).then(data => ({ data }))
   );
 
   return show
     .then(response => {
-      const data = isOwn ? response : deferListingImages(response);
+      const data = isOwn || sdk.nativeMarketplace ? response : deferListingImages(response);
       const listingFields = config?.listing?.listingFields;
       const sanitizeConfig = { listingFields };
       dispatch(addMarketplaceEntities(data, sanitizeConfig));
@@ -379,7 +379,7 @@ export const fetchReviews = (listingId, config) => (dispatch, getState, sdk) => 
   const previous = page.publicReviewRead;
   const seed = previous?.key === key ? previous.response : null;
   return reusePublicRead(sdk, key, 5 * MINUTE_IN_MS, allowed, seed, () =>
-    typeof window === 'undefined' ? sdk.reviews.query(params)
+    typeof window === 'undefined' || sdk.nativeMarketplace ? sdk.reviews.query(params)
       : post('/api/public-read/reviews', { params }).then(data => ({ data }))
   )
     .then(response => {
