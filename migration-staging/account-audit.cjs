@@ -5,8 +5,7 @@ const { AccountPilotError, requireStaging, sharetribeGet, uuid, permissionNames 
 const pageSize = 100;
 const userFields = 'banned,deleted,state,createdAt,email,emailVerified,identityProviders,profile.publicData,profile.displayName';
 
-async function runAccountAudit(env, fetchImpl = fetch) {
-  if (env.ACCOUNT_AUDIT_ENABLED !== 'true') return undefined;
+async function scanAccounts(env, fetchImpl, onAccount) {
   requireStaging(env);
   const get = await sharetribeGet(env, fetchImpl);
   // Keep signups that arrive while paging outside this inventory.
@@ -27,7 +26,9 @@ async function runAccountAudit(env, fetchImpl = fetch) {
   for (let page = 1; page <= (lastPage ?? 1); page += 1) {
     const doc = await get('users/query', {
       page, perPage: pageSize, createdAtEnd, include: 'effectivePermissionSet',
-      'fields.user': userFields,
+      'fields.user': onAccount
+        ? userFields + ',profile.firstName,profile.lastName,profile.abbreviatedName,profile.bio'
+        : userFields,
     });
     const { totalItems, totalPages, perPage } = doc.meta ?? {};
     if (!Array.isArray(doc.data) || doc.meta?.page !== page ||
@@ -98,6 +99,26 @@ async function runAccountAudit(env, fetchImpl = fetch) {
       if (providers.has('facebook')) stats.facebookLinked += 1;
       if (providers.has('facebook') && !providers.has('google')) stats.facebookWithoutGoogle += 1;
       if ([...providers].some(provider => provider !== 'facebook' && provider !== 'google')) stats.otherLinked += 1;
+      onAccount?.({
+        id: user.id,
+        display_name: a.profile?.displayName,
+        role: role === 'customer' || role === 'provider' ? role : null,
+        status: a.state === 'active' && !a.banned && (role === 'customer' || role === 'provider')
+          ? 'active' : 'restricted',
+        email: typeof a.email === 'string' ? a.email.trim() : null,
+        email_verified: a.emailVerified,
+        created_at: a.createdAt,
+        source_state: a.state,
+        permissions: effective,
+        profile: {
+          firstName: a.profile?.firstName,
+          lastName: a.profile?.lastName,
+          abbreviatedName: a.profile?.abbreviatedName,
+          bio: a.profile?.bio,
+          sourceRole: typeof role === 'string' ? role : null,
+        },
+        identities: a.identityProviders,
+      });
     }
   }
   if (ids.size !== expected) throw new AccountPilotError('Sharetribe account total did not reconcile');
@@ -105,4 +126,9 @@ async function runAccountAudit(env, fetchImpl = fetch) {
     duplicateIdentities: duplicateIdentities.size };
 }
 
-module.exports = { runAccountAudit };
+async function runAccountAudit(env, fetchImpl = fetch) {
+  if (env.ACCOUNT_AUDIT_ENABLED !== 'true') return undefined;
+  return scanAccounts(env, fetchImpl);
+}
+
+module.exports = { runAccountAudit, scanAccounts };
