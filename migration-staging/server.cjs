@@ -7,6 +7,7 @@ const { Pool } = require('pg');
 const { loadPilotImage } = require('./r2-pilot.cjs');
 const { importRecentListing, serveRecentListing } = require('./recent-listing.cjs');
 const { runAccountPilot, AccountPilotError } = require('./account-pilot.cjs');
+const { runAccountAudit } = require('./account-audit.cjs');
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -104,6 +105,12 @@ async function start() {
   await checkDatabase();
   server.listen(Number(process.env.PORT) || 10000, '0.0.0.0');
   setInterval(checkDatabase, 15_000).unref();
+  void runAccountAudit(process.env).then(report => {
+    if (report) console.info('Sharetribe account audit:', JSON.stringify(report));
+  }).catch(error => {
+    const reason = error instanceof AccountPilotError ? error.message : 'upstream error';
+    console.error('Sharetribe account audit failed:', reason);
+  });
   void loadPilotImage().then(image => {
     pilotImage = image;
   }).catch(() => {
