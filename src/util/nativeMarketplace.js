@@ -10,7 +10,10 @@ export const nativeCall = async (path, { method = 'GET', body, raw = false } = {
       body: raw ? body : JSON.stringify(body),
     }),
   });
-  const data = await response.json();
+  const data = await response.json().catch(error => {
+    if (response.ok) throw error;
+    return {};
+  });
   if (!response.ok) {
     throw Object.assign(new Error(data.error || response.statusText), {
       status: response.status,
@@ -82,6 +85,23 @@ export function nativeSearchParams(params = {}) {
 }
 
 export function createNativeMarketplaceSdk(presentationSdk, types, call = nativeCall) {
+  let configSnapshot;
+  const loadSnapshotAsset = async ({ path }) => {
+    const name = String(path || '').match(/^\/?content\/pages\/([a-z0-9][a-z0-9-]{0,190})\.json$/i)?.[1];
+    if (!name) throw Object.assign(new Error('Page not found.'), { status: 404 });
+    return { data: await call('/static/presentation/pages/' + name + '.json') };
+  };
+  const loadSnapshotConfig = async ({ paths }) => {
+    configSnapshot ??= call('/static/presentation/config.json').catch(error => {
+      configSnapshot = undefined;
+      throw error;
+    });
+    const snapshot = await configSnapshot;
+    const pathsWanted = new Set(paths.map(path => path.startsWith('/') ? path : '/' + path));
+    return { data: { ...snapshot, data: snapshot.data.filter(asset =>
+      pathsWanted.has(asset.attributes?.assetPath)), included: snapshot.included || [] } };
+  };
+  const useSnapshot = process.env.REACT_APP_NATIVE_ASSET_SNAPSHOT === 'true';
   const uuid = value => new types.UUID(value);
   const relation = (type, value) => ({ type, id: uuid(value) });
   const result = (data, included = [], meta = {}) => ({
@@ -220,10 +240,10 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
   return {
     nativeMarketplace: true,
     // Only immutable public assets use the legacy SDK in the staging build.
-    assetByAlias: params => presentationSdk.assetByAlias(params),
-    assetByVersion: params => presentationSdk.assetByVersion(params),
-    assetsByAlias: params => presentationSdk.assetsByAlias(params),
-    assetsByVersion: params => presentationSdk.assetsByVersion(params),
+    assetByAlias: useSnapshot ? loadSnapshotAsset : params => presentationSdk.assetByAlias(params),
+    assetByVersion: useSnapshot ? loadSnapshotAsset : params => presentationSdk.assetByVersion(params),
+    assetsByAlias: useSnapshot ? loadSnapshotConfig : params => presentationSdk.assetsByAlias(params),
+    assetsByVersion: useSnapshot ? loadSnapshotConfig : params => presentationSdk.assetsByVersion(params),
     authInfo: async () => ({ isAnonymous: !(await session()).account }),
     login: ({ username, password }) => post('/api/auth/login', { email: username, password }),
     logout: () => post('/api/auth/logout', {}),

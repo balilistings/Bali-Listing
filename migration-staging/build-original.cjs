@@ -11,6 +11,7 @@ const env = {
   INLINE_RUNTIME_CHUNK: 'false',
   REACT_APP_ENV: 'production',
   REACT_APP_NATIVE_MARKETPLACE: 'true',
+  REACT_APP_NATIVE_ASSET_SNAPSHOT: process.env.MARKETPLACE_SNAPSHOT_PRESENTATION === 'true' ? 'true' : 'false',
   REACT_APP_NATIVE_ASSET_VERSION: 'ZwtpQ7zZZGMCoUUEW6ErzQ',
   REACT_APP_SHARETRIBE_SDK_CLIENT_ID: 'f4a347fa-5223-46ed-b013-d5587d0725fb',
   REACT_APP_SHARETRIBE_USING_SSL: 'true',
@@ -38,4 +39,7 @@ if (process.env.MARKETPLACE_RENDER_ORIGINAL_FRONTEND === 'true') {
     '--registry', 'https://registry.npmjs.org/']);
   run('yarn', ['build-web']);
   run('node', ['scripts/build-locale-assets.cjs']);
+  if (env.REACT_APP_NATIVE_ASSET_SNAPSHOT === 'true') {
+    run('node', ['migration-staging/snapshot-presentation.cjs']);
+  }
 }
