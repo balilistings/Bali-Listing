@@ -9,6 +9,7 @@ const { importRecentListing, serveRecentListing } = require('./recent-listing.cj
 const { runAccountPilot, AccountPilotError } = require('./account-pilot.cjs');
 const { runAccountAudit } = require('./account-audit.cjs');
 const { runAccountImport } = require('./account-import.cjs');
+const { runListingImport, ListingImportError } = require('./listing-import.cjs');
 const { createMarketplace } = require('./site/http.cjs');
 const { createOriginalFrontend } = require('./site/original-frontend.cjs');
 
@@ -125,6 +126,12 @@ async function start() {
   }).catch(error => {
     const reason = error instanceof AccountPilotError ? error.message : 'upstream or database error';
     console.error('Sharetribe bulk account import failed:', reason);
+  });
+  void runListingImport(database, process.env).then(report => {
+    if (report) console.info('Sharetribe listing import:', JSON.stringify(report));
+  }).catch(error => {
+    const reason = error instanceof ListingImportError || error instanceof AccountPilotError ? error.message : 'database or source error';
+    console.error('Sharetribe listing import failed:', reason);
   });
   void loadPilotImage().then(image => {
     pilotImage = image;

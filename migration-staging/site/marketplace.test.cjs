@@ -3,7 +3,7 @@
 const { readFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { createServer } = require('node:http');
-const { randomUUID } = require('node:crypto');
+const { randomUUID, webcrypto } = require('node:crypto');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { PGlite } = require('@electric-sql/pglite');
@@ -67,8 +67,14 @@ test('staging marketplace serves and authorizes the complete account and listing
         .setAudience('test-client').setSubject(googleSubject).setIssuedAt().setExpirationTime('5m').sign(pair.privateKey);
       return Response.json({ id_token: idToken });
     }
-    assert.equal(url, 'https://api.resend.com/emails');
     const body = JSON.parse(init.body);
+    if (url.startsWith('https://api.cloudflare.com/')) {
+      assert.equal(url, 'https://api.cloudflare.com/client/v4/accounts/' + 'a'.repeat(32) + '/email/sending/send');
+      assert.equal(init.headers.Authorization, 'Bearer synthetic');
+      mails.set(body.to, body.text.match(/#([A-Za-z0-9_-]{43})/)[1]);
+      return Response.json({ success: true, result: { queued: [body.to] } });
+    }
+    assert.equal(url, 'https://api.resend.com/emails');
     mails.set(body.to[0], body.text.match(/#([A-Za-z0-9_-]{43})/)[1]);
     return new Response('accepted', { status: 200 });
   };
@@ -81,7 +87,9 @@ test('staging marketplace serves and authorizes the complete account and listing
   t.after(() => new Promise(resolve => server.close(resolve)));
   const origin = 'http://127.0.0.1:' + server.address().port;
   marketplace = createMarketplace(database, {
-    MARKETPLACE_ORIGIN: origin, MARKETPLACE_RESEND_API_KEY: 'synthetic', MARKETPLACE_EMAIL_FROM: 'test@example.test',
+    MARKETPLACE_ORIGIN: origin, MARKETPLACE_EMAIL_FROM: 'test@example.test',
+    MARKETPLACE_EMAIL_PROVIDER: 'cloudflare', MARKETPLACE_CLOUDFLARE_ACCOUNT_ID: 'a'.repeat(32),
+    MARKETPLACE_CLOUDFLARE_EMAIL_TOKEN: 'synthetic',
     MARKETPLACE_GOOGLE_CLIENT_ID: 'test-client', MARKETPLACE_GOOGLE_CLIENT_SECRET: 'synthetic',
     MARKETPLACE_STAFF_IDS: originalOwner, MARKETPLACE_LISTING_APPROVAL: 'true',
   }, { storage, fetchImpl: fetchMail, googleKeySet });
@@ -150,6 +158,35 @@ test('staging marketplace serves and authorizes the complete account and listing
   const [customer] = await signUp('visitor@example.test', 'customer');
   const [owner, ownerId] = await signUp('provider@example.test', 'provider');
   const [otherOwner] = await signUp('other@example.test', 'provider');
+  const adapterSource = readFileSync(join(__dirname, '..', '..', 'src', 'util', 'nativeMarketplace.js'));
+  const { createNativeMarketplaceSdk } = await import('data:text/javascript;base64,' + adapterSource.toString('base64'));
+  const previousWindow = global.window;
+  global.window = { crypto: webcrypto };
+  t.after(() => { global.window = previousWindow; });
+  class UUID { constructor(value) { this.uuid = value; } }
+  class Money { constructor(amount, currency) { Object.assign(this, { amount, currency }); } }
+  class LatLng { constructor(lat, lng) { Object.assign(this, { lat, lng }); } }
+  const sdk = createNativeMarketplaceSdk({}, { UUID, Money, LatLng }, (url, options = {}) =>
+    call(url, options.method, options.body, owner,
+      options.method === 'POST' && (url.endsWith('/listings') || url.endsWith('/photos')) ? 201 : 200)
+      .then(response => response.reply));
+  const wizard = await sdk.ownListings.createDraft({
+    title: 'Original editor draft', description: 'Created with the original listing wizard',
+    publicData: { categoryLevel1: 'rentalvillas', bedrooms: '2', phonenumber: '+62812345678' },
+  });
+  const wizardId = wizard.data.data.id;
+  await sdk.ownListings.update({ id: wizardId, geolocation: new LatLng(-8.68, 115.17),
+    publicData: { location: { address: 'Umalas, Bali' } } });
+  await sdk.ownListings.update({ id: wizardId,
+    price: new Money(3200000000, 'IDR'), publicData: { pricee: ['monthly'], monthprice: 32000000 } });
+  const photo = await sdk.images.upload({ image: appPng, listingId: wizardId });
+  await sdk.ownListings.update({ id: wizardId, images: [photo.data.data.id] });
+  const submitted = (await sdk.ownListings.publishDraft({ id: wizardId })).data.data;
+  assert.equal(submitted.attributes.state, 'pendingApproval');
+  assert.equal(submitted.attributes.geolocation.lat, -8.68);
+  assert.equal(submitted.attributes.publicData.phonenumber, '+62812345678');
+  assert.equal(submitted.attributes.publicData.monthprice, 32000000);
+  assert.equal(submitted.relationships.images.data[0].id.uuid, photo.data.data.id.uuid);
   await call('/api/marketplace/profile', 'PATCH', { name: 'Bali test owner', bio: 'About the test owner' }, owner);
   assert.equal((await call('/api/marketplace/profiles/' + ownerId)).name, 'Bali test owner');
   const listing = {

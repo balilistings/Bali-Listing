@@ -727,7 +727,9 @@ export function requestImageUpload(actionPayload, listingImageConfig) {
 
     dispatch(uploadImageRequest(actionPayload));
     const upload = optimizeListingPhoto(actionPayload.file)
-      .then(image => sdk.images.upload({ image }, queryParams))
+      .then(image => sdk.images.upload({
+        image, ...(sdk.nativeMarketplace ? { listingId: actionPayload.listingId } : {}),
+      }, queryParams))
       .then(resp => {
         const img = resp.data.data;
         // Uploaded image has an existing id that refers to file

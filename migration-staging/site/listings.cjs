@@ -9,7 +9,17 @@ const salePeriods = ['total'];
 const maxPrice = 999_999_999_999_999;
 const maxPhotos = 10;
 
-function listingInput(body) {
+function normalizePhone(phone) {
+  return cleanText(phone, 40).replace(/[\s().-]/g, '').replace(/^\+/, '').replace(/^0(?=8)/, '62');
+}
+
+const objectData = value => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+function listingFields(value) {
+  const { contactPhone, email, phonenumber, ...publicData } = objectData(value);
+  return publicData;
+}
+
+function listingInput(body, draft = false) {
   const title = cleanText(body.title, 160);
   const description = cleanText(body.description, 10000);
   const area = cleanText(body.area, 100);
@@ -17,8 +27,9 @@ function listingInput(body) {
   const bedrooms = Number(body.bedrooms);
   const hasBedrooms = body.bedrooms !== '' && body.bedrooms != null;
   const category = body.category;
-  if (!categories.includes(category) || !title || !description || !area ||
-      (category !== 'land' && (!hasBedrooms || !Number.isInteger(bedrooms) || bedrooms < 0 || bedrooms > 99))) {
+  if (!categories.includes(category) || !title || !description || (!draft && !area) ||
+      (category !== 'land' && ((!draft && !hasBedrooms) ||
+        (hasBedrooms && (!Number.isInteger(bedrooms) || bedrooms < 0 || bedrooms > 99))))) {
     throw new SiteError(400, 'Enter a title, description, area and valid property details.');
   }
   const prices = {};
@@ -31,12 +42,19 @@ function listingInput(body) {
     prices[period] = amount;
   }
   const [pricePeriod] = Object.keys(prices);
-  const normalizedPhone = phone.replace(/[\s().-]/g, '').replace(/^\+/, '');
+  const normalizedPhone = normalizePhone(phone);
   if (phone && !/^[1-9]\d{7,14}$/.test(normalizedPhone)) {
     throw new SiteError(400, 'Enter a WhatsApp number with its country code.');
   }
-  return { title, description, area, category, bedrooms: category === 'land' ? null : bedrooms, prices, pricePeriod,
-    priceAmount: prices[pricePeriod] ?? null, currency: pricePeriod ? 'IDR' : null, phone: normalizedPhone || null };
+  const point = body.coordinates;
+  if (point != null && (!Number.isFinite(point.lat) || Math.abs(point.lat) > 90 ||
+      !Number.isFinite(point.lng) || Math.abs(point.lng) > 180)) {
+    throw new SiteError(400, 'Choose a valid listing location.');
+  }
+  return { title, description, area, category, bedrooms: category === 'land' || !hasBedrooms ? null : bedrooms,
+    prices, pricePeriod, priceAmount: prices[pricePeriod] ?? null, currency: pricePeriod ? 'IDR' : null,
+    phone: normalizedPhone || null, point: point || {}, publicData: listingFields(body.publicData),
+    privateData: objectData(body.privateData) };
 }
 
 function numericFilter(value, maximum) {
@@ -49,18 +67,20 @@ function numericFilter(value, maximum) {
 }
 
 function publicListing(row, privateView = false) {
-  const { contactPhone, email, phonenumber, ...publicData } = row.public_data || {};
+  const publicData = listingFields(row.public_data);
   return {
     id: row.id, title: row.title, area: row.area, category: row.category, description: row.description,
     bedrooms: row.bedrooms, prices: row.prices, reference: row.legacy_reference || row.reference_code,
     confirmedAt: row.availability_confirmed_at, pricePeriod: row.price_period,
     cover: row.cover_id ? '/api/media/' + row.cover_id : null,
+    sourcePrice: row.source_price_minor == null ? null :
+      { amount: Number(row.source_price_minor), currency: row.source_price_currency },
     createdAt: row.created_at,
     publicData,
     coordinates: row.latitude == null || row.longitude == null ? null :
       { lat: row.latitude, lng: row.longitude },
     ...(row.owner_name ? { owner: { id: row.owner_id, name: row.owner_name } } : {}),
-    ...(privateView ? { state: row.state, phone: row.contact_phone } : {}),
+    ...(privateView ? { state: row.state, phone: row.contact_phone, privateData: row.editor_private_data } : {}),
   };
 }
 
@@ -164,14 +184,16 @@ function createListings(database, storage, origin, env) {
     if (!actor) throw new SiteError(401, 'Sign in to create a listing.');
     if (!actor.canPost) throw new SiteError(403, 'This account cannot create listings.');
     if (!uuid.test(body.requestKey || '')) throw new SiteError(400, 'Start a new draft and retry.');
-    const input = listingInput(body);
+    const input = listingInput(body, body.wizard === true);
     const { rows: [row] } = await database.query(
       `INSERT INTO listings (id, owner_id, request_key, slug, title, description, state, price_amount, currency,
-          category, area, bedrooms, price_period, prices, contact_phone, created_at)
-       VALUES ($1::uuid,$2,$3,($1::uuid)::text,$4,$5,'draft',$6,$7,$8,$9,$10,$11,$12,$13,now())
+          category, area, bedrooms, price_period, prices, contact_phone, created_at, latitude, longitude,
+          public_data, editor_private_data)
+       VALUES ($1::uuid,$2,$3,($1::uuid)::text,$4,$5,'draft',$6,$7,$8,$9,$10,$11,$12,$13,now(),$14,$15,$16,$17)
        ON CONFLICT (owner_id, request_key) DO UPDATE SET request_key = EXCLUDED.request_key RETURNING id`,
       [randomUUID(), actor.id, body.requestKey, input.title, input.description, input.priceAmount, input.currency,
-        input.category, input.area, input.bedrooms, input.pricePeriod, input.prices, input.phone],
+        input.category, input.area, input.bedrooms, input.pricePeriod, input.prices, input.phone,
+        input.point.lat, input.point.lng, input.publicData, input.privateData],
     );
     return { id: row.id };
   }
@@ -186,16 +208,30 @@ function createListings(database, storage, origin, env) {
   }
 
   async function edit(actor, id, body) {
-    const input = listingInput(body);
     return owned(actor, id, async (client, row) => {
+      const wizard = body.wizard === true;
+      const values = wizard ? {
+        title: row.title, description: row.description, area: row.area, phone: row.contact_phone,
+        category: row.category, bedrooms: row.bedrooms, prices: row.prices,
+        coordinates: row.latitude == null ? null : { lat: row.latitude, lng: row.longitude },
+        ...body,
+        publicData: { ...row.public_data, ...objectData(body.publicData) },
+        privateData: { ...row.editor_private_data, ...objectData(body.privateData) },
+      } : { ...body, publicData: row.public_data, privateData: row.editor_private_data,
+        coordinates: row.latitude == null ? null : { lat: row.latitude, lng: row.longitude } };
+      const input = listingInput(values, wizard && row.state === 'draft');
       if (row.state === 'published' && (!input.priceAmount || !input.phone)) {
         throw new SiteError(400, 'Published listings need a price and a WhatsApp number.');
       }
       await client.query(
         `UPDATE listings SET title=$2, description=$3, price_amount=$4, currency=$5, category=$6,
-         area=$7, bedrooms=$8, price_period=$9, prices=$10, contact_phone=$11, updated_at=now() WHERE id=$1`,
+         area=$7, bedrooms=$8, price_period=$9, prices=$10, contact_phone=$11, updated_at=now(),
+         latitude=$12, longitude=$13, public_data=$14, editor_private_data=$15,
+         source_price_minor=CASE WHEN $16 THEN NULL ELSE source_price_minor END,
+         source_price_currency=CASE WHEN $16 THEN NULL ELSE source_price_currency END WHERE id=$1`,
         [id, input.title, input.description, input.priceAmount, input.currency, input.category, input.area,
-          input.bedrooms, input.pricePeriod, input.prices, input.phone],
+          input.bedrooms, input.pricePeriod, input.prices, input.phone, input.point.lat, input.point.lng,
+          input.publicData, input.privateData, Object.hasOwn(body, 'prices')],
       );
       return { id };
     });
@@ -217,8 +253,11 @@ function createListings(database, storage, origin, env) {
     return owned(actor, id, async (client, row) => {
       if (action === 'availability') {
         if (row.state !== 'published') throw new SiteError(409, 'Publish this listing before confirming availability.');
-        await client.query('UPDATE listings SET availability_confirmed_at = now(), updated_at = now() WHERE id = $1', [id]);
-        return { state: row.state, reference: row.legacy_reference || row.reference_code };
+        const { rows: [updated] } = await client.query(
+          'UPDATE listings SET availability_confirmed_at = now(), updated_at = now() WHERE id = $1 RETURNING availability_confirmed_at',
+          [id],
+        );
+        return { confirmedAvailableAt: updated.availability_confirmed_at };
       }
       if (action === 'close') {
         if (!['published', 'pendingApproval', 'closed'].includes(row.state)) throw new SiteError(409, 'This is still a draft.');
@@ -230,8 +269,8 @@ function createListings(database, storage, origin, env) {
         throw new SiteError(403, 'This account cannot publish the listing.');
       }
       if (row.state === 'published') return { state: row.state, reference: row.legacy_reference || row.reference_code };
-      if (!row.price_amount || !row.contact_phone || !row.cover_id) {
-        throw new SiteError(400, 'Add a price, a WhatsApp contact number and a photo before publishing.');
+      if (!row.price_amount || !row.contact_phone || !row.cover_id || !row.area) {
+        throw new SiteError(400, 'Add a location, price, WhatsApp number and a photo before publishing.');
       }
       const state = env.MARKETPLACE_LISTING_APPROVAL === 'true' && action !== 'approve' ? 'pendingApproval' : 'published';
       const reference = row.reference_code || (!row.legacy_reference && state === 'published' ? await reserveReference(client) : null);
@@ -269,17 +308,18 @@ function createListings(database, storage, origin, env) {
     let uploaded = false;
     try {
       return await owned(actor, id, async client => {
-        const { rows: [{ count }] } = await client.query(
-          'SELECT count(*)::int AS count FROM marketplace_listing_photos WHERE listing_id = $1', [id],
+        const { rows: [{ count, position }] } = await client.query(
+          'SELECT count(*)::int AS count, coalesce(max(position) + 1, 0) AS position FROM marketplace_listing_photos WHERE listing_id = $1', [id],
         );
         if (count >= maxPhotos) throw new SiteError(409, 'A listing can have up to 10 photos.');
         await storage.put(key, bytes, contentType);
         uploaded = true;
         await client.query(
           'INSERT INTO marketplace_listing_photos (id, listing_id, object_key, content_type, position) VALUES ($1,$2,$3,$4,$5)',
-          [photo, id, key, contentType, count],
+          [photo, id, key, contentType, position],
         );
-        return { id: photo, url: '/api/media/' + photo };
+        await client.query('UPDATE listings SET updated_at=now() WHERE id=$1', [id]);
+        return { id: photo, url: '/api/media/' + photo, position };
       });
     } catch (error) {
       if (uploaded) {
@@ -292,14 +332,14 @@ function createListings(database, storage, origin, env) {
   }
 
   async function orderPhotos(actor, id, body) {
-    const validIds = ids => Array.isArray(ids) && ids.length <= maxPhotos && new Set(ids).size === ids.length &&
+    const validIds = ids => Array.isArray(ids) && ids.length <= 100 && new Set(ids).size === ids.length &&
       ids.every(value => typeof value === 'string' && uuid.test(value));
     if (!validIds(body.ids) || !validIds(body.previousIds)) {
       throw new SiteError(400, 'The photo order is invalid.');
     }
     const unused = await owned(actor, id, async (client, row) => {
       const { rows } = await client.query(
-        'SELECT id, object_key, content_type FROM marketplace_listing_photos WHERE listing_id = $1 ORDER BY position', [id],
+        'SELECT id, object_key, content_type, source_url_hash FROM marketplace_listing_photos WHERE listing_id = $1 ORDER BY position', [id],
       );
       if (rows.length !== body.previousIds.length || rows.some((photo, index) => photo.id !== body.previousIds[index])) {
         throw new SiteError(409, 'The gallery changed. Refresh before editing the photo order.');
@@ -308,18 +348,19 @@ function createListings(database, storage, origin, env) {
       if (body.ids.some(photo => !byId.has(photo)) || (row.state === 'published' && body.ids.length === 0)) {
         throw new SiteError(409, 'Published listings need a cover photo. Refresh and try again.');
       }
-      if (body.ids.length < rows.length && body.ids.length + 1 !== rows.length) {
+      if (!body.wizard && body.ids.length < rows.length && body.ids.length + 1 !== rows.length) {
         throw new SiteError(409, 'Remove photos one at a time.');
       }
       await client.query('DELETE FROM marketplace_listing_photos WHERE listing_id = $1', [id]);
       for (const [position, photoId] of body.ids.entries()) {
         const photo = byId.get(photoId);
         await client.query(
-          'INSERT INTO marketplace_listing_photos (id, listing_id, object_key, content_type, position) VALUES ($1,$2,$3,$4,$5)',
-          [photoId, id, photo.object_key, photo.content_type, position],
+          'INSERT INTO marketplace_listing_photos (id, listing_id, object_key, content_type, position, source_url_hash) VALUES ($1,$2,$3,$4,$5,$6)',
+          [photoId, id, photo.object_key, photo.content_type, position, photo.source_url_hash],
         );
         byId.delete(photoId);
       }
+      await client.query('UPDATE listings SET updated_at=now() WHERE id=$1', [id]);
       return [...byId.values()];
     });
     for (const photo of unused) {
@@ -345,4 +386,4 @@ function createListings(database, storage, origin, env) {
   return { search, detail, profile, ownListings, createDraft, edit, changeState, moderation, contact, addPhoto, orderPhotos, photo };
 }
 
-module.exports = { createListings, listingInput };
+module.exports = { createListings, listingInput, normalizePhone, listingFields };

@@ -40,6 +40,11 @@ ALTER TABLE listings ADD COLUMN IF NOT EXISTS contact_phone text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS reference_code text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS legacy_reference text;
 ALTER TABLE listings ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS editor_private_data jsonb NOT NULL DEFAULT '{}';
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS sharetribe_source_hash text;
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS sharetribe_synced_at timestamptz;
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS source_price_minor bigint;
+ALTER TABLE listings ADD COLUMN IF NOT EXISTS source_price_currency text;
 CREATE UNIQUE INDEX IF NOT EXISTS listing_request_per_owner ON listings (owner_id, request_key);
 CREATE UNIQUE INDEX IF NOT EXISTS listing_reference_unique ON listings (reference_code);
 CREATE INDEX IF NOT EXISTS published_listing_catalog ON listings (category, area, created_at DESC)
@@ -54,8 +59,17 @@ CREATE TABLE IF NOT EXISTS marketplace_listing_photos (
   listing_id uuid NOT NULL REFERENCES listings (id) ON DELETE CASCADE,
   object_key text NOT NULL UNIQUE,
   content_type text NOT NULL CHECK (content_type IN ('image/jpeg', 'image/png', 'image/webp')),
-  position integer NOT NULL CHECK (position BETWEEN 0 AND 9),
+  position integer NOT NULL,
   UNIQUE (listing_id, position)
+);
+ALTER TABLE marketplace_listing_photos DROP CONSTRAINT IF EXISTS marketplace_listing_photos_position_check;
+ALTER TABLE marketplace_listing_photos ADD CONSTRAINT marketplace_listing_photos_position_check
+  CHECK (position BETWEEN 0 AND 99);
+ALTER TABLE marketplace_listing_photos ADD COLUMN IF NOT EXISTS source_url_hash text;
+
+CREATE TABLE IF NOT EXISTS listing_import_pilot (
+  run_name text PRIMARY KEY,
+  listing_ids uuid[] NOT NULL
 );
 
 -- The pilot already fetched and verified the image in R2 and mapped its actual author.

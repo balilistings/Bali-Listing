@@ -1,13 +1,13 @@
 // Adapter for the existing React app. Presentation assets still use the public asset SDK.
 export const nativeMarketplace = process.env.REACT_APP_NATIVE_MARKETPLACE === 'true';
 
-export const nativeCall = async (path, { method = 'GET', body } = {}) => {
+export const nativeCall = async (path, { method = 'GET', body, raw = false } = {}) => {
   const response = await window.fetch(path, {
     method,
     credentials: 'same-origin',
     ...(body === undefined ? {} : {
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      headers: { 'Content-Type': raw ? (body.type || 'application/octet-stream') : 'application/json' },
+      body: raw ? body : JSON.stringify(body),
     }),
   });
   const data = await response.json();
@@ -27,6 +27,27 @@ const idOf = id => id?.uuid || id;
 const dateOf = value => value ? new Date(value) : undefined;
 const permission = allowed => allowed ? 'permission/allow' : 'permission/deny';
 const api = '/api/marketplace';
+const listingPath = id => api + '/listings/' + encodeURIComponent(idOf(id));
+
+function editorValues({ title, description, publicData, privateData, geolocation, price }) {
+  const values = { wizard: true, title, description, publicData, privateData };
+  const category = Object.keys(originalCategories).find(key => originalCategories[key] === publicData?.categoryLevel1);
+  if (category) values.category = category;
+  if (publicData && Object.hasOwn(publicData, 'bedrooms')) {
+    const bedrooms = parseInt(publicData.bedrooms, 10);
+    values.bedrooms = Number.isFinite(bedrooms) ? bedrooms : null;
+  }
+  if (publicData && Object.hasOwn(publicData, 'phonenumber')) values.phone = publicData.phonenumber;
+  if (publicData?.location?.address) values.area = publicData.location.address;
+  if (geolocation) values.coordinates = { lat: geolocation.lat, lng: geolocation.lng };
+  if (Array.isArray(publicData?.pricee)) {
+    values.prices = Object.fromEntries(publicData.pricee.filter(period => amounts[period])
+      .map(period => [period, publicData[amounts[period]]]));
+  } else if (price) {
+    values.prices = { total: price.amount / 100 };
+  }
+  return values;
+}
 
 export function nativeSearchParams(params = {}) {
   const query = new URLSearchParams();
@@ -131,7 +152,9 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
           deleted: false,
           createdAt: dateOf(row.createdAt),
           metadata: row.metadata || {},
-          price: amount == null ? null : new types.Money(amount * 100, 'IDR'),
+          price: row.sourcePrice
+            ? new types.Money(row.sourcePrice.amount, row.sourcePrice.currency)
+            : amount == null ? null : new types.Money(amount * 100, 'IDR'),
           geolocation: row.coordinates ? new types.LatLng(row.coordinates.lat, row.coordinates.lng) : null,
           publicData: {
             listingType: 'free-listing',
@@ -139,7 +162,7 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
             unitType: 'inquiry',
             ...original,
             categoryLevel1: original.categoryLevel1 || originalCategories[row.category],
-            ...(row.bedrooms == null ? {} : { bedrooms: String(row.bedrooms) }),
+            ...(row.bedrooms == null ? {} : { bedrooms: original.bedrooms ?? String(row.bedrooms) }),
             location: { ...original.location, address: original.location?.address || row.area },
             area: row.area,
             ...prices,
@@ -148,7 +171,12 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
             ) } : {}),
             availableNow: row.confirmedAt ? 'yes' : original.availableNow,
             nativeContact: row.hasContact === true,
+            ...(row.reference ? { referenceCode: row.reference } : {}),
+            ...(type === 'ownListing' && row.phone ? { phonenumber: '+' + row.phone } : {}),
           },
+          ...(type === 'ownListing' ? { privateData: {
+            ...row.privateData, blAvailabilityConfirmedAt: row.confirmedAt,
+          } } : {}),
         },
         relationships: {
           images: { data: photos.map(photo => relation('image', photo.id)) },
@@ -165,13 +193,21 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
     ));
     return result(values.map(value => value.entity), [...included.values()], meta);
   };
+  const galleries = new Map();
+  let draftRequestKey;
   const show = async (params, type) => {
-    const row = await call(api + '/listings/' + encodeURIComponent(idOf(params.id)));
+    const row = await call(listingPath(params.id));
+    if (type === 'ownListing') {
+      if (!row.canManage) throw Object.assign(new Error('Listing not found.'), { status: 404 });
+      galleries.set(row.id, row.photos.map(photo => photo.id));
+    }
     const value = listing(row, params, type);
     return result(value.entity, value.included);
   };
   const session = () => call('/api/auth/session');
   const post = (path, body) => call(path, { method: 'POST', body });
+  const changeState = (params, action, query) => post(listingPath(params.id) + '/' + action, {})
+    .then(() => show({ ...query, ...params }, 'ownListing'));
 
   return {
     nativeMarketplace: true,
@@ -226,9 +262,39 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
           page, perPage, totalItems: matches.length, totalPages: Math.ceil(matches.length / perPage),
         }, 'ownListing');
       },
-      show: params => show(params, 'ownListing'),
-      close: ({ id }) => post(api + '/listings/' + idOf(id) + '/close', {}),
-      open: ({ id }) => post(api + '/listings/' + idOf(id) + '/publish', {}),
+      show: (params, query) => show({ ...query, ...params }, 'ownListing'),
+      createDraft: async (values, query) => {
+        draftRequestKey ||= window.crypto.randomUUID();
+        const { id } = await post(api + '/listings', { ...editorValues(values), requestKey: draftRequestKey });
+        const response = await show({ ...query, id }, 'ownListing');
+        draftRequestKey = undefined;
+        return response;
+      },
+      update: async (values, query) => {
+        const { id, images } = values;
+        const path = listingPath(id);
+        if (images) {
+          await call(path + '/photos', { method: 'PUT', body: {
+            ids: images.map(idOf), previousIds: galleries.get(idOf(id)), wizard: true,
+          } });
+        } else {
+          await call(path, { method: 'PATCH', body: editorValues(values) });
+        }
+        return show({ ...query, id }, 'ownListing');
+      },
+      publishDraft: (params, query) => changeState(params, 'publish', query),
+      close: (params, query) => changeState(params, 'close', query),
+      open: (params, query) => changeState(params, 'publish', query),
+    },
+    images: {
+      upload: async ({ image: file, listingId }, query) => {
+        if (!listingId) return notEnabled();
+        const photo = await call(listingPath(listingId) + '/photos', { method: 'POST', body: file, raw: true });
+        const gallery = galleries.get(idOf(listingId));
+        if (gallery) gallery[photo.position] = photo.id;
+        const variants = [].concat(query?.['fields.image'] || []).map(field => field.replace(/^variants\./, ''));
+        return result(image(photo, variants));
+      },
     },
     users: { show: async ({ id }) => result(user(await call(api + '/profiles/' + idOf(id)))) },
     reviews: { query: async () => result([]) },

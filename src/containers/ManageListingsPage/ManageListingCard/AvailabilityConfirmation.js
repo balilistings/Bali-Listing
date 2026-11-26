@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { post } from '../../../util/api';
+import { nativeCall, nativeMarketplace } from '../../../util/nativeMarketplace';
 import css from './ManageListingCard.module.css';
 
 export default function AvailabilityConfirmation({ listing }) {
@@ -16,7 +17,10 @@ export default function AvailabilityConfirmation({ listing }) {
     setSaving(true);
     setError('');
     try {
-      const result = await post('/api/listings/confirm-availability', { listingId: listing.id.uuid });
+      const listingId = listing.id.uuid;
+      const result = nativeMarketplace
+        ? await nativeCall('/api/marketplace/listings/' + listingId + '/availability', { method: 'POST', body: {} })
+        : await post('/api/listings/confirm-availability', { listingId });
       setSavedAt(result.confirmedAvailableAt);
     } catch (_) { setError('Could not save confirmation. Please try again.'); }
     finally { setSaving(false); }

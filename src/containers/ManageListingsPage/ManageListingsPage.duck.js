@@ -306,11 +306,11 @@ export const closeListing = listingId => (dispatch, getState, sdk) => {
     .close({ id: listingId }, { expand: true })
     .then(response => {
       // Call custom API to update Supabase
-      updateListingState({
-        listingId: listingId.uuid,
-        state: 'closed',
-        listing_deleted: true,
-      }).catch(e => console.error('Failed to update Supabase listing state:', e));
+      if (!sdk.nativeMarketplace) {
+        updateListingState({
+          listingId: listingId.uuid, state: 'closed', listing_deleted: true,
+        }).catch(e => console.error('Failed to update Supabase listing state:', e));
+      }
       dispatch(closeListingSuccess(response));
       return response;
     })
@@ -326,11 +326,11 @@ export const openListing = listingId => (dispatch, getState, sdk) => {
     .open({ id: listingId }, { expand: true })
     .then(response => {
       // Call custom API to update Supabase
-      updateListingState({
-        listingId: listingId.uuid,
-        state: 'published',
-        listing_deleted: false,
-      }).catch(e => console.error('Failed to update Supabase listing state:', e));
+      if (!sdk.nativeMarketplace) {
+        updateListingState({
+          listingId: listingId.uuid, state: 'published', listing_deleted: false,
+        }).catch(e => console.error('Failed to update Supabase listing state:', e));
+      }
       dispatch(openListingSuccess(response));
       return response;
     })

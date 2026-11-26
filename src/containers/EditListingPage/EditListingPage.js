@@ -298,7 +298,7 @@ export const EditListingPageComponent = props => {
           onPayoutDetailsSubmit={onPayoutDetailsSubmit}
           onGetStripeConnectAccountLink={onGetStripeConnectAccountLink}
           getAccountLinkInProgress={getAccountLinkInProgress}
-          onImageUpload={onImageUpload}
+          onImageUpload={(data, imageConfig) => onImageUpload({ ...data, listingId }, imageConfig)}
           onRemoveImage={onRemoveListingImage}
           currentUser={currentUser}
           onManageDisableScrolling={onManageDisableScrolling}

@@ -2,7 +2,7 @@
   "name": "balilistings-migration-staging",
   "private": true,
   "scripts": {
-    "test": "node --test account-audit.test.cjs account-pilot.test.cjs site/marketplace.test.cjs"
+    "test": "node --test account-audit.test.cjs account-pilot.test.cjs listing-import.test.cjs site/marketplace.test.cjs"
   },
   "dependencies": {
     "pg": "8.23.1",

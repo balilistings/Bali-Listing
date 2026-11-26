@@ -58,7 +58,15 @@ function cookie(req, key) {
 function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
   const secure = origin.startsWith('https:');
   const staff = new Set((env.MARKETPLACE_STAFF_IDS || '').split(',').map(id => id.trim()).filter(id => uuid.test(id)));
-  const mailReady = Boolean(env.MARKETPLACE_RESEND_API_KEY && env.MARKETPLACE_EMAIL_FROM);
+  const mailProvider = env.MARKETPLACE_EMAIL_PROVIDER || 'resend';
+  const useCloudflare = mailProvider === 'cloudflare';
+  const mailToken = useCloudflare ? env.MARKETPLACE_CLOUDFLARE_EMAIL_TOKEN : env.MARKETPLACE_RESEND_API_KEY;
+  const cloudflareAccount = env.MARKETPLACE_CLOUDFLARE_ACCOUNT_ID;
+  const mailReady = Boolean(mailToken && env.MARKETPLACE_EMAIL_FROM &&
+    (mailProvider === 'resend' || (useCloudflare && /^[a-f0-9]{32}$/i.test(cloudflareAccount || ''))));
+  const mailUrl = useCloudflare
+    ? 'https://api.cloudflare.com/client/v4/accounts/' + cloudflareAccount + '/email/sending/send'
+    : 'https://api.resend.com/emails';
   const googleReady = Boolean(env.MARKETPLACE_GOOGLE_CLIENT_ID && env.MARKETPLACE_GOOGLE_CLIENT_SECRET);
   const oauthCallback = origin + '/api/auth/google/callback';
   const attempts = new Map();
@@ -153,17 +161,20 @@ function createAuth(database, env, origin, fetchImpl = fetch, googleKeySet) {
     if (send) {
       const path = env.MARKETPLACE_RENDER_ORIGINAL_FRONTEND === 'true' ? '/reset-password#' : '/account/setup#';
       const link = origin + path + value;
-      const result = await fetchImpl('https://api.resend.com/emails', {
+      const result = await fetchImpl(mailUrl, {
         method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8000),
-        headers: { Authorization: 'Bearer ' + env.MARKETPLACE_RESEND_API_KEY, 'Content-Type': 'application/json' },
+        headers: { Authorization: 'Bearer ' + mailToken, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: env.MARKETPLACE_EMAIL_FROM, to: [email],
+          from: env.MARKETPLACE_EMAIL_FROM, to: useCloudflare ? email : [email],
           subject: action === 'signup' ? 'Set up your Bali Listings account' : 'Your Bali Listings sign-in link',
           text: 'Set your Bali Listings password using this one-time link. It expires in 30 minutes.\n\n' + link
             + '\n\nIf you did not request it, you can ignore this email.',
         }),
       }).catch(() => null);
-      if (!result?.ok) {
+      const sent = result?.ok && (!useCloudflare || await result.json().then(data =>
+        data.success === true && [data.result?.delivered, data.result?.queued]
+          .some(entries => entries?.includes(email))).catch(() => false));
+      if (!sent) {
         await database.query('DELETE FROM account_email_tokens WHERE token_hash = $1', [digest(value)]);
         console.error('Marketplace transactional email could not be sent');
       }
