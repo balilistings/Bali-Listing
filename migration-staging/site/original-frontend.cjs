@@ -29,7 +29,12 @@ const csp = [
 
 async function createOriginalFrontend(env) {
   if (env.MARKETPLACE_RENDER_ORIGINAL_FRONTEND !== 'true') return async () => false;
-  const index = await readFile(resolve(build, 'index.html'));
+  const { ChunkExtractor } = require('@loadable/server');
+  const extractor = new ChunkExtractor({ statsFile: resolve(build, 'loadable-stats.json') });
+  const template = await readFile(resolve(build, 'index.html'), 'utf8');
+  const index = Buffer.from(template
+    .replace('<!--!ssrStyles-->', extractor.getStyleTags())
+    .replace('<!--!ssrScripts-->', extractor.getScriptTags()));
   return async (req, res) => {
     if (!['GET', 'HEAD'].includes(req.method)) return false;
     const { pathname } = new URL(req.url, 'http://localhost');
