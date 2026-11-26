@@ -126,6 +126,7 @@ export function createNativeMarketplaceSdk(presentationSdk, types, call = native
           state: row.state || 'published',
           deleted: false,
           createdAt: dateOf(row.createdAt),
+          metadata: row.metadata || {},
           price: amount == null ? null : new types.Money(amount * 100, 'IDR'),
           geolocation: row.coordinates ? new types.LatLng(row.coordinates.lat, row.coordinates.lng) : null,
           publicData: {
