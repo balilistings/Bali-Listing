@@ -9,6 +9,7 @@ const { importRecentListing, serveRecentListing } = require('./recent-listing.cj
 const { runAccountPilot, AccountPilotError } = require('./account-pilot.cjs');
 const { runAccountAudit } = require('./account-audit.cjs');
 const { runAccountImport } = require('./account-import.cjs');
+const { createMarketplace } = require('./site/http.cjs');
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -17,12 +18,13 @@ if (!connectionString) {
 
 const database = new Pool({
   connectionString,
-  max: 2,
+  max: 6,
   connectionTimeoutMillis: 3000,
   query_timeout: 3000,
   statement_timeout: 3000,
   idleTimeoutMillis: 10_000,
 });
+const marketplace = createMarketplace(database, process.env);
 
 const fixtureId = '53ebcfc5-dc23-466b-b6c7-ce37a57f9fe2';
 
@@ -71,6 +73,7 @@ const server = createServer(async (request, response) => {
   response.setHeader('Content-Type', 'text/plain; charset=utf-8');
   response.setHeader('X-Robots-Tag', 'noindex, nofollow');
   response.setHeader('Cache-Control', 'no-store');
+  if (await marketplace(request, response)) return;
 
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     response.writeHead(405, { Allow: 'GET, HEAD' }).end();
@@ -103,6 +106,7 @@ const server = createServer(async (request, response) => {
 
 async function start() {
   await database.query(await readFile(join(__dirname, 'schema.sql'), 'utf8'));
+  await database.query(await readFile(join(__dirname, 'site', 'schema.sql'), 'utf8'));
   await checkDatabase();
   server.listen(Number(process.env.PORT) || 10000, '0.0.0.0');
   setInterval(checkDatabase, 15_000).unref();
