@@ -62,6 +62,20 @@ CREATE TABLE IF NOT EXISTS pilot_listing_snapshots (
 
 ALTER TABLE accounts ADD COLUMN IF NOT EXISTS sharetribe_state text;
 ALTER TABLE accounts ADD COLUMN IF NOT EXISTS sharetribe_permissions jsonb;
+ALTER TABLE accounts ADD COLUMN IF NOT EXISTS sharetribe_profile jsonb;
+ALTER TABLE accounts ALTER COLUMN role DROP NOT NULL;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conrelid = 'accounts'::regclass AND conname = 'accounts_unassigned_role_restricted'
+  ) THEN
+    ALTER TABLE accounts ADD CONSTRAINT accounts_unassigned_role_restricted
+      CHECK (role IS NOT NULL OR status = 'restricted');
+  END IF;
+END
+$$;
+CREATE UNIQUE INDEX IF NOT EXISTS accounts_normalized_email_unique
+  ON accounts ((lower(btrim(email)))) WHERE email IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS account_identities (
   provider text NOT NULL,
